@@ -7,7 +7,8 @@ using UnityEngine.UIElements;
 // "Continue" picks up the most recently played save. Below it are three slot cards:
 // a used slot shows its hero, where they are and their level; click it to carry on.
 // An empty slot starts a new adventure (character select) that will save into it.
-// Keys: Enter = Continue, 1/2/3 = that slot.
+// Keys: 1/2/3 open that slot. Left/Right (d-pad, stick) move the highlight, which starts on
+// the most recent save, and Enter (A) opens the highlighted slot, so Enter alone continues.
 [RequireComponent(typeof(UIDocument))]
 public class TitleController : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class TitleController : MonoBehaviour
     private Button continueButton;
     private readonly int[] eraseArmed = { 0, 0, 0 }; // erasing takes two clicks
     private bool leaving;
+    public int Highlighted { get; private set; }
 
     private void Start()
     {
@@ -38,15 +40,26 @@ public class TitleController : MonoBehaviour
             // Don't let the erase click also open the slot.
             erase.RegisterCallback<ClickEvent>(e => e.StopPropagation());
         }
+        Highlight(Mathf.Max(0, SaveSystem.MostRecentSlot()));
         Refresh();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Continue();
-        if (Input.GetKeyDown(KeyCode.Alpha1)) OpenSlot(0);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) OpenSlot(1);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) OpenSlot(2);
+        if (GameInput.ConfirmPressed) OpenSlot(Highlighted);
+        if (GameInput.LeftPressed) Highlight(Highlighted - 1, sound: true);
+        if (GameInput.RightPressed) Highlight(Highlighted + 1, sound: true);
+        for (int i = 0; i < SaveSystem.SlotCount; i++)
+            if (GameInput.NumberPressed(i + 1)) OpenSlot(i);
+    }
+
+    public void Highlight(int slot, bool sound = false)
+    {
+        slot = Mathf.Clamp(slot, 0, SaveSystem.SlotCount - 1);
+        if (sound && slot != Highlighted) AudioManager.Play(selectSound);
+        Highlighted = slot;
+        for (int i = 0; i < SaveSystem.SlotCount; i++)
+            root.Q($"slot-{i}").EnableInClassList("selected", i == Highlighted);
     }
 
     // Redraw the cards from the save files.

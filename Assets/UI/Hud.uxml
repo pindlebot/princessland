@@ -83,11 +83,11 @@
                     <ui:Label class="inventory-title" text="How to play" />
                     <ui:Label class="inventory-close" text="H: close" />
                 </ui:VisualElement>
-                <ui:Label class="help-line" text="W A S D:  walk" />
-                <ui:Label class="help-line" text="Space or Click:  magic! (it aims by itself)" />
-                <ui:Label class="help-line" text="E:  open, talk, pick up" />
-                <ui:Label class="help-line" text="I:  bag      K:  skills      M:  music on/off" />
-                <ui:Label class="help-line" text="R:  try again      Esc:  choose a hero" />
+                <ui:Label class="help-line" text="W A S D or stick:  walk" />
+                <ui:Label class="help-line" text="Space, Click or X:  magic! (it aims by itself)" />
+                <ui:Label class="help-line" text="E or A:  open, talk, pick up" />
+                <ui:Label class="help-line" text="I or Y:  bag      K or View:  skills      M:  music" />
+                <ui:Label class="help-line" text="R:  try again      Esc or Start:  title screen" />
             </ui:VisualElement>
         </ui:VisualElement>
 

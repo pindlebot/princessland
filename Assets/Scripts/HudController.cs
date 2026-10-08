@@ -34,7 +34,7 @@ public class HudController : MonoBehaviour
 
     public bool IsInventoryOpen => inventoryPanel.ClassListContains("open");
     public bool IsHelpOpen => helpPanel.ClassListContains("open");
-    public string SpellKey => usedMouseLast ? "Click" : "Space";
+    public string SpellKey => GameInput.UsingGamepad ? "X" : usedMouseLast ? "Click" : "Space";
 
     private VisualElement root, manaFill, spellSlot, spellCooldown, banner, objectiveCard, monstersRow;
     private Label enemiesLeft, objectiveHint, bannerTitle, prompt, contextHint, toast, spellKey;
@@ -163,19 +163,19 @@ public class HudController : MonoBehaviour
     private void HandleKeys()
     {
         if (DialogueController.BlocksInput) return;
-        if (Input.GetKeyDown(KeyCode.I))
+        if (GameInput.InventoryPressed)
         {
             SetInventoryOpen(!IsInventoryOpen);
             AudioManager.Play(clickSound, 0.6f);
         }
-        if (Input.GetKeyDown(KeyCode.H))
+        if (GameInput.HelpPressed)
         {
             SetHelpOpen(!IsHelpOpen);
             AudioManager.Play(clickSound, 0.6f);
         }
         // Which button does this player cast with? Show that one on the spell slot.
-        if (Input.GetMouseButtonDown(0) && !PointerOverUi) usedMouseLast = true;
-        if (Input.GetKeyDown(KeyCode.Space)) usedMouseLast = false;
+        if (GameInput.ClickPressed && !PointerOverUi) usedMouseLast = true;
+        if (GameInput.CastPressed) usedMouseLast = false;
     }
 
     // ---------- Hearts ----------
@@ -298,7 +298,7 @@ public class HudController : MonoBehaviour
     {
         var usable = interactor.Current;
         prompt.EnableInClassList("visible", usable != null);
-        if (usable != null) prompt.text = $"E: {usable.Prompt}";
+        if (usable != null) prompt.text = $"{GameInput.InteractKey}: {usable.Prompt}";
 
         if (!hasWalked)
             hasWalked = Vector3.Distance(playerHealth.transform.position, startPosition) > 2f
@@ -396,8 +396,9 @@ public class HudController : MonoBehaviour
     {
         var panel = root.panel;
         if (panel == null) return false;
-        // Input.mousePosition has y=0 at the bottom; UI Toolkit has y=0 at the top.
-        var screen = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+        // The mouse position has y=0 at the bottom; UI Toolkit has y=0 at the top.
+        var mouse = GameInput.MousePosition;
+        var screen = new Vector2(mouse.x, Screen.height - mouse.y);
         var picked = panel.Pick(RuntimePanelUtils.ScreenToPanel(panel, screen));
         return picked != null; // decorative elements use picking-mode="Ignore", so they don't count
     }

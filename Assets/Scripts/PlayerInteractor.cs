@@ -20,7 +20,7 @@ public class PlayerInteractor : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && !DialogueController.BlocksInput)
+        if (GameInput.InteractPressed && !DialogueController.BlocksInput)
             TryInteract();
     }
 

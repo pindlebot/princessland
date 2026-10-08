@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 // The character select screen (Assets/UI/CharacterSelect.uxml). Click a card or press
-// 1/2 (or Left/Right) to choose, then Start or Enter. The choice goes into GameSession
+// 1/2 (or Left/Right, d-pad) to choose, then Start or Enter (A). Esc (B) goes back. The choice goes into GameSession
 // so the levels know who to spawn.
 [RequireComponent(typeof(UIDocument))]
 public class CharacterSelectController : MonoBehaviour
@@ -40,10 +40,12 @@ public class CharacterSelectController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.LeftArrow)) Select(0);
-        if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.RightArrow)) Select(1);
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) StartGame();
-        if (Input.GetKeyDown(KeyCode.Escape) && !starting) SceneManager.LoadScene(titleScene); // back to the slots
+        if (GameInput.NumberPressed(1)) Select(0);
+        if (GameInput.NumberPressed(2)) Select(1);
+        if (GameInput.LeftPressed) Select(Selected - 1);
+        if (GameInput.RightPressed) Select(Selected + 1);
+        if (GameInput.ConfirmPressed) StartGame();
+        if (GameInput.BackPressed && !starting) SceneManager.LoadScene(titleScene); // back to the slots
     }
 
     public void Select(int index) => Select(index, silent: false);

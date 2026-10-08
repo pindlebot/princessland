@@ -41,9 +41,9 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (DialogueController.BlocksInput) return;
-        if (Input.GetKeyDown(KeyCode.R))
+        if (GameInput.RestartPressed)
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (GameInput.MenuPressed)
             SceneManager.LoadScene(titleScene);
     }
 }

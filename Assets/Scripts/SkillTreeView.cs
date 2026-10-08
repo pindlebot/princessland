@@ -42,7 +42,7 @@ public class SkillTreeView : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K) && !DialogueController.BlocksInput)
+        if (GameInput.SkillTreePressed && !DialogueController.BlocksInput)
             SetOpen(!IsOpen);
     }
 

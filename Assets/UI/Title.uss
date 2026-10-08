@@ -16,9 +16,17 @@
     transition-property: scale;
 }
 
-.slot:hover {
+.slot:hover,
+.slot.selected {
     opacity: 1;
     scale: 1.04 1.04;
+}
+
+/* The keyboard/gamepad highlight: a soft gold glow around the card. */
+.slot.selected {
+    border-width: 3px;
+    border-color: rgb(232, 196, 104);
+    border-radius: 6px;
 }
 
 .slot-portrait {

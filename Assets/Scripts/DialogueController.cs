@@ -116,10 +116,7 @@ public class DialogueController : MonoBehaviour
             Advance();
     }
 
-    private static bool AdvancePressed() =>
-        Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space) ||
-        Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) ||
-        Input.GetMouseButtonDown(0);
+    private static bool AdvancePressed() => GameInput.AdvancePressed;
 
     private void ShowLine()
     {

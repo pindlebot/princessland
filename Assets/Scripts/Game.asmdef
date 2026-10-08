@@ -1,5 +1,7 @@
 {
     "name": "Game",
-    "references": [],
+    "references": [
+        "Unity.InputSystem"
+    ],
     "autoReferenced": true
 }

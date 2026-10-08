@@ -40,8 +40,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 Move()
     {
-        var input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        input = Vector2.ClampMagnitude(input, 1f);
+        Vector2 input = GameInput.Move; // keys, stick or d-pad
 
         // In an isometric view "up" on screen isn't world +Z. Flatten the camera's
         // forward/right vectors onto the ground so W moves toward the top of the screen.

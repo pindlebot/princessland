@@ -57,7 +57,7 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
+        if (GameInput.MutePressed)
         {
             musicMuted = !musicMuted;
             musicSource.mute = musicMuted;
