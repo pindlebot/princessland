@@ -16,7 +16,7 @@ public class SaveTests
     [SetUp]
     public void UseTemporaryFolder()
     {
-        folder = Path.Combine(Path.GetTempPath(), "IsoDungeonSaveTests_" + System.Guid.NewGuid().ToString("N"));
+        folder = Path.Combine(Path.GetTempPath(), "TidecrownSaveTests_" + System.Guid.NewGuid().ToString("N"));
         SaveSystem.FolderOverride = folder;
     }
 

@@ -106,7 +106,7 @@ public class GamepadTests : InputTestFixture
     [UnityTest]
     public IEnumerator TheTitleAndHeroPickerWorkWithThePad()
     {
-        string folder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "IsoDungeonPad_" + System.Guid.NewGuid().ToString("N"));
+        string folder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TidecrownPad_" + System.Guid.NewGuid().ToString("N"));
         SaveSystem.FolderOverride = folder;
         try
         {
@@ -194,7 +194,7 @@ public class GamepadTests : InputTestFixture
     {
         int quits = 0;
         AppQuit.Override = () => quits++;
-        string folder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "IsoDungeonPad_" + System.Guid.NewGuid().ToString("N"));
+        string folder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TidecrownPad_" + System.Guid.NewGuid().ToString("N"));
         SaveSystem.FolderOverride = folder; // no saves, so the highlight starts on slot 1
         try
         {

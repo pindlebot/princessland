@@ -15,13 +15,24 @@ public class LevelMap : MonoBehaviour
     public Color FloorColor => floorColor;
     public Color WallColor => wallColor;
 
-    // Walls: '#' stone ('T' with a torch), 'H' hedge, 'K' castle. Anything else except
+    // Walls: '#' stone ('T' with a torch), 'H' hedge, 'K' castle, '%' rock ('|' with a waterfall
+    // pouring down its front). Anything else except
     // ' ' (nothing) is walkable ground: '.', ',' grass, '=' path, '_' bathroom tiles,
     // and the markers P/E/C/I/D/X/B/W/S/R/O (and the bedroom's A/N/U/G/v/r).
-    public static bool IsWall(char c) => c == '#' || c == 'T' || c == 'H' || c == 'K';
+    public static bool IsWall(char c) => c == '#' || c == 'T' || c == 'H' || c == 'K' || c == '%' || c == '|';
 
-    // Pond water ('w', and 'm' where the mermaid sits): not walkable, drawn blue on the minimap.
-    public static bool IsWater(char c) => c == 'w' || c == 'm';
+    // Water: 'w', and the water under 'm' Coralie, 'Z' Pearl, '&' a dark mermaid and '@' the
+    // pirate ship. Not walkable, drawn blue on the minimap.
+    public static bool IsWater(char c) => c == 'w' || c == 'm' || c == '&' || c == '@' || c == 'Z';
+
+    // Beach sand ('g') and wooden planks ('h', jetties over the sea): walkable ground.
+    public static bool IsSand(char c) => c == 'g';
+    public static bool IsPlanks(char c) => c == 'h';
+
+    // The physics layer of the invisible walls that keep everyone out of the water. Spells,
+    // bolts and line-of-sight checks ignore it, so you can fight across the water.
+    // (Layer 4 is Unity's built-in "Water" layer.)
+    public const int WaterLayer = 4;
 
     // Hazards: walkable, but they hurt. '~' lava, '^' a spike trap (see Hazard.cs).
     public static bool IsLava(char c) => c == '~';

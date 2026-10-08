@@ -112,6 +112,7 @@ public abstract class HeroAbility : MonoBehaviour
     public static void Push(EnemyAI enemy, Vector3 direction, float distance)
     {
         direction.y = 0f;
+        if (enemy.Stationary) return; // rooted to its spot (a dark mermaid in the water)
         var body = enemy.GetComponent<CharacterController>();
         if (body != null && body.enabled && direction.sqrMagnitude > 0.0001f)
             body.Move(direction.normalized * distance);

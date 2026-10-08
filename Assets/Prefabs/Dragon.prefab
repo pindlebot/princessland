@@ -80,9 +80,9 @@ MonoBehaviour:
     smallTalk: 0
     lines:
     - heroSpeaks: 0
-      text: Well now, a visitor! Don't be frightened, {hero}. I don't bite... often.
+      text: Well now, a visitor! You found my cave! Don't be frightened, {hero}. I don't bite... often.
     - heroSpeaks: 1
-      text: A dragon?! Here, at the castle?
+      text: A dragon?! Hiding up here, by the castle?
     - heroSpeaks: 0
       text: I am Amethyra, last of the amethyst dragons. I've watched over this castle for three hundred years.
     - heroSpeaks: 0
@@ -90,7 +90,7 @@ MonoBehaviour:
     - heroSpeaks: 1
       text: Won't you come and help?
     - heroSpeaks: 0
-      text: My fighting days are long behind me, little one. But I'll be right here, cheering you on. Go on, {hero}!
+      text: My fighting days are long behind me, little one. But I'll be right here in my cave, cheering you on. Go on, {hero}!
   - requires: 
     notIf: 
     sets: 
@@ -98,7 +98,7 @@ MonoBehaviour:
     smallTalk: 1
     lines:
     - heroSpeaks: 0
-      text: 'Back again, {hero}? The way down lies past my castle. Mind those skeletons: all bones and bad manners.'
+      text: 'Back again, {hero}? The way down lies east of the fountain. Mind those skeletons: all bones and bad manners.'
   - requires: 
     notIf: 
     sets: 

@@ -22,8 +22,16 @@ public static partial class DungeonBuilder
     //   Pond     w  water (not walkable)    m  Coralie the mermaid, in the water    f  the bush hiding the frog
     //   Dungeon  c  campfire (warm up: full health)    n  Bonesy, the friendly skeleton    o  barrel    x  crate
     //            j  bones    u  glowing mushrooms    p  puddle    d  wooden door    k  locked door    y  the Rusty Key
-    //            (trees and the fountain are solid, so keep them off the walking routes)
+    //   Woods    t  pine    i  birch    a  autumn tree    O  boulder    z  stump    l  log    V  tent
+    //            s  pebbles    e  fern    (and the dungeon's c campfire works outdoors too)
+    //   Cave     %  rock (a crag, or a low rock where a crag would hide what's behind it)    :  cave floor
+    //            (trees, boulders, stumps, logs, the tent and the fountain are solid, so keep them off the walking routes)
     //   Hazards  ~  lava (hurts while you stand in it)    ^  spike trap (hurts while its spikes are up)
+    //   Cove     J  pirate    &  dark mermaid, in the water (throws bolts)    Z  Pearl, in the water
+    //            q  palm    @  the pirates' ship, on the water    $  treasure heap    h  wooden planks (jetties, bridges)
+    //            |  rock with a waterfall pouring down its front (put water below it)
+    //            (header "water: sea" makes 'w' the sea; "ground: sand" makes '.' and the markers beach sand.
+    //             On outdoor levels, water on the map's edge spills off the island, and doors are rowboats.)
     // Torches go on the side of the wall that faces the camera (south or west), so put
     // them on walls with floor directly below (south) or to the left (west).
 
@@ -42,6 +50,7 @@ public static partial class DungeonBuilder
         public string NextScene;         // where the exit leads ("" = final exit, wins the game)
         public bool ExitNeedsAllEnemiesDefeated;
         public Color MinimapFloor, MinimapWall;
+        public bool Sea, SandGround;       // "water: sea", "ground: sand" (Mermaid Cove)
     }
 
     private const string LevelsFolder = "Assets/Levels";
@@ -76,6 +85,8 @@ public static partial class DungeonBuilder
             ShowEnemyCount = file.Get("enemy_count", "show") != "hide",
             MinimapFloor = HexColor(file.Get("minimap_floor", "#7A6E62")),
             MinimapWall = HexColor(file.Get("minimap_wall", "#AAA4B8")),
+            Sea = file.Get("water") == "sea",
+            SandGround = file.Get("ground") == "sand",
         };
     }
 
@@ -119,12 +130,26 @@ public static partial class DungeonBuilder
                 // Seeding by grid position gives the same "random" layout on every rebuild.
                 var rng = new System.Random(row * 1000 + col);
 
+                // On the island's rim: water spills over the edge, everything else gets the earthy
+                // cliff under it (hedges add their own).
+                if (spec.Theme == Theme.Outdoor && c != 'H' && OnMapEdge(map, col, row))
+                {
+                    if (LevelMap.IsWater(c)) AddEdgeFall(level, map, col, row, pos, mats);
+                    else AddCliff(level, pos, mats["EarthSide"]);
+                }
+
                 if (c == '#' || c == 'T')
                 {
                     var wall = Block("Wall", level, pos + Vector3.up * WallHeight * 0.5f,
                                      new Vector3(Tile, WallHeight, Tile), mats["WallSide"]);
                     AddCap(wall, mats["WallTop"]);
                     if (c == 'T') PlaceTorch(assets.Torch, decor, map, col, row, pos);
+                    continue;
+                }
+                if (c == '%' || c == '|')
+                {
+                    BuildRock(level, map, col, row, pos, mats, tall: c == '|');
+                    if (c == '|') AddWaterfall(level, decor, assets, pos);
                     continue;
                 }
                 if (c == 'H')
@@ -138,7 +163,10 @@ public static partial class DungeonBuilder
 
                 if (LevelMap.IsWater(c))
                 {
-                    BuildWater(level, decor, assets, map, col, row, pos, rng, c == 'm');
+                    var friend = c == 'm' ? assets.Mermaid : c == 'Z' ? assets.Pearl : null;
+                    BuildWater(level, decor, assets, map, col, row, pos, rng, friend, spec.Sea);
+                    if (c == '&') Place(assets.DarkMermaid, enemies, pos + Vector3.up);
+                    if (c == '@') Place(assets.Ship, decor, pos);
                     continue;
                 }
                 if (LevelMap.IsLava(c))
@@ -152,8 +180,9 @@ public static partial class DungeonBuilder
                     continue;
                 }
 
+                bool isDoor = spec.File.Legend.TryGetValue(c, out var legendEntry) && legendEntry.Kind == "door";
                 var floor = Block("Floor", level, pos + Vector3.down * 0.25f, new Vector3(Tile, 0.5f, Tile),
-                                  mats[FloorMaterial(spec.Theme, map, c, col, row, rng.Next(100))]);
+                                  mats[FloorMaterial(spec, map, c, col, row, rng.Next(100), isDoor)]);
                 // Turning tiles in 90° steps hides the repetition of only three textures.
                 floor.transform.rotation = Quaternion.Euler(0f, 90f * rng.Next(4), 0f);
 
@@ -162,7 +191,8 @@ public static partial class DungeonBuilder
                     case 'P': spawn.position = pos + Vector3.up; break;
                     case 'E':
                     case 'L':
-                        var e = Place(c == 'E' ? assets.Skeleton : assets.Slime, enemies, pos + Vector3.up);
+                    case 'J':
+                        var e = Place(c == 'E' ? assets.Skeleton : c == 'L' ? assets.Slime : assets.Pirate, enemies, pos + Vector3.up);
                         e.transform.rotation = Quaternion.Euler(0f, rng.Next(360), 0f);
                         break;
                     case 'M': boss = Place(assets.SlimeKing, enemies, pos + Vector3.up).GetComponent<Health>(); break;
@@ -197,7 +227,18 @@ public static partial class DungeonBuilder
                         AddMotes(decor, pos, assets.Mote);
                         break;
                     case 'b': Place(assets.Bush, decor, pos); break;
+                    case 't': Place(assets.Pine, decor, pos); break;
+                    case 'i': Place(assets.Birch, decor, pos); break;
+                    case 'a': Place(assets.AutumnTree, decor, pos); break;
+                    case 'O': Place(assets.Boulder, decor, pos); break;
+                    case 'z': Place(assets.Stump, decor, pos); break;
+                    case 'l': Place(assets.Log, decor, pos); break;
+                    case 'V': Place(assets.Tent, decor, pos); break;
+                    case 's': Place(assets.Stones, decor, pos + new Vector3(rng.Next(-4, 5) * 0.1f, 0f, rng.Next(-4, 5) * 0.1f)); break;
+                    case 'e': Place(assets.Fern, decor, pos + new Vector3(rng.Next(-4, 5) * 0.1f, 0f, rng.Next(-4, 5) * 0.1f)); break;
                     case 'Q': Place(assets.Flag, decor, pos); break; // a banner on a pole
+                    case 'q': Place(assets.Palm, decor, pos); break;
+                    case '$': Place(assets.Treasure, decor, pos); break;
                     case '*': Place(assets.Butterfly, decor, pos); break;
                     case 'f': Place(assets.FrogBush, decor, pos); break;
                     case 'c': Place(assets.Campfire, decor, pos); break;
@@ -221,13 +262,20 @@ public static partial class DungeonBuilder
                         break;
                 }
 
+                // Now and then a shell or a starfish on the beach.
+                if (spec.SandGround && c == '.' && rng.Next(18) == 0)
+                    Place(rng.Next(2) == 0 ? assets.Shell : assets.Starfish, decor,
+                          pos + new Vector3(rng.Next(-5, 6) * 0.1f, 0.01f, rng.Next(-5, 6) * 0.1f));
+
                 // Symbols from the file's legend: doors to other scenes and named arrival spots.
+                // Outdoors, a door is a rowboat at the end of a jetty.
                 if (spec.File.Legend.TryGetValue(c, out var entry))
                 {
                     if (entry.Kind == "spawn")
                         namedSpawns.Add(SpawnPoint(entry.Args[0], pos + Vector3.up, Quaternion.identity));
                     else if (entry.Kind == "door")
-                        PlaceDoor(spec.File, assets.HouseDoor, decor, namedSpawns, col, row, pos);
+                        PlaceDoor(spec.File, spec.Theme == Theme.Outdoor ? assets.Rowboat : assets.HouseDoor,
+                                  decor, namedSpawns, col, row, pos);
                 }
             }
         }
@@ -293,27 +341,35 @@ public static partial class DungeonBuilder
         var (fc, fr) = MapValidator.FloorBeside(file, col, row).Value; // the validator made sure there is one
         var arrive = new Vector3(fc * Tile, 1f, (file.Rows.Length - 1 - fr) * Tile);
         var awayFromDoor = new Vector3(arrive.x - pos.x, 0f, arrive.z - pos.z);
+        if (prefab.name == "Rowboat") MoorBoat(door.gameObject, -awayFromDoor, info.TargetScene);
         spawns.Add(SpawnPoint(MapFile.SpawnNameFor(info.TargetScene), arrive, Quaternion.LookRotation(awayFromDoor)));
     }
 
-    // A pond tile: water a little below the ground, an invisible wall so nobody walks in,
-    // the odd lily pad, and on 'm' Coralie the mermaid (talked to from the nearest shore).
+    // A water tile: water a little below the ground, an invisible wall so nobody walks in (on
+    // the Water layer, so spells and bolts fly over it), and on 'm' / 'Z' a mermaid friend
+    // (talked to from the nearest shore). The pond gets the odd lily pad; the sea, foam
+    // lapping at the rocks.
     private static void BuildWater(Transform level, Transform decor, SharedAssets assets, string[] map,
-                                   int col, int row, Vector3 pos, System.Random rng, bool mermaid)
+                                   int col, int row, Vector3 pos, System.Random rng, GameObject friend, bool sea)
     {
-        var water = Block("Water", level, pos + Vector3.down * 0.45f, new Vector3(Tile, 0.5f, Tile), assets.Materials["Water"]);
+        var water = Block("Water", level, pos + Vector3.down * 0.45f, new Vector3(Tile, 0.5f, Tile),
+                          assets.Materials[sea ? "Sea" : "Water"]);
         water.isStatic = false; // its texture drifts
         water.AddComponent<WaterScroll>();
         var bank = new GameObject("Bank").AddComponent<BoxCollider>();
+        bank.gameObject.layer = LevelMap.WaterLayer;
         bank.transform.SetParent(water.transform, false);
         bank.transform.position = pos + Vector3.up;
         bank.size = new Vector3(1f, 4f, 1f); // in the water block's scaled space (2 x 0.5 x 2): a 2m-tall wall
-        AddBanks(water.transform.parent, map, col, row, pos, assets.Materials["Bank"]);
-        if (!mermaid && rng.Next(4) == 0) // the odd lily pad, not a carpet of them
+        AddBanks(water.transform.parent, map, col, row, pos, assets.Materials[sea ? "SandBank" : "Bank"]);
+        bool open = friend == null && "&@".IndexOf(MapAt(map, col, row)) < 0;
+        if (!sea && open && rng.Next(4) == 0) // the odd lily pad, not a carpet of them
             Place(assets.Lily, decor, pos + new Vector3(rng.Next(-5, 6) * 0.1f, -0.18f, rng.Next(-5, 6) * 0.1f));
-        if (!mermaid) return;
+        if (sea && open && CountAround(map, col, row, '%') + CountAround(map, col, row, '|') > 0 && rng.Next(2) == 0)
+            Place(assets.Foam, decor, pos + new Vector3(rng.Next(-3, 4) * 0.1f, -0.18f, rng.Next(-3, 4) * 0.1f));
+        if (friend == null) return;
 
-        var coralie = Place(assets.Mermaid, decor, pos + Vector3.down * 0.15f);
+        var coralie = Place(friend, decor, pos + Vector3.down * 0.15f);
         coralie.transform.rotation = Quaternion.identity;
         // Talk from whichever side has dry land.
         foreach (var (dc, dr) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
@@ -348,17 +404,23 @@ public static partial class DungeonBuilder
         }
     }
 
-    private static string FloorMaterial(Theme theme, string[] map, char c, int col, int row, int roll)
+    private static string FloorMaterial(LevelSpec spec, string[] map, char c, int col, int row, int roll, bool door)
     {
+        var theme = spec.Theme;
         // A monster standing in a puddle stands in water too (not on a dry square).
         if ("EL".IndexOf(c) >= 0 && MapAt(map, col - 1, row) == 'p' && MapAt(map, col + 1, row) == 'p') c = 'p';
         if (theme == Theme.Home)
             return "_WSR".IndexOf(c) >= 0 ? "BathTile" : "WoodFloor";
         if (c == 'p') return "Puddle";
+        if (c == 'h' || (door && theme == Theme.Outdoor)) return "Planks"; // jetties, bridges, a rowboat's mooring
+        // The cave floor, and anything standing on it (Amethyra, mushrooms): a marker with cave floor
+        // on two sides is inside the cave too.
+        if (c == ':' || (c != '.' && CountAround(map, col, row, ':') >= 2)) return "CaveFloor";
         if (theme == Theme.Dungeon)
             return roll < 65 ? "Floor_0" : roll < 85 ? "Floor_1" : "Floor_2";
         if (c == '=' || c == 'X') return roll < 80 ? "Path" : "Path_1"; // now and then, a stone
         if (c == 'K') return "Floor_0"; // the castle courtyard is paved
+        if (spec.SandGround) return roll < 92 ? "Sand_0" : "Sand_1"; // the beach (now and then, a shell)
         // Large, quiet patches: smooth Perlin noise across the map rather than a random pick per
         // tile, so neighbouring tiles usually match and the ground reads as calm areas of green.
         float patch = Mathf.PerlinNoise(col * 0.16f + 3.7f, row * 0.16f + 9.1f);
@@ -384,10 +446,17 @@ public static partial class DungeonBuilder
         sun.transform.rotation = theme == Theme.Outdoor ? ArtStyle.OutdoorSun : ArtStyle.IndoorSun; // blob shadows lean the same way
     }
 
+    private static int CountAround(string[] map, int col, int row, char c) =>
+        new[] { (1, 0), (-1, 0), (0, 1), (0, -1) }.Count(d => MapAt(map, col + d.Item1, row + d.Item2) == c);
+
     private static char MapAt(string[] map, int col, int row) =>
         row >= 0 && row < map.Length && col >= 0 && col < map[row].Length ? map[row][col] : ' ';
 
     private static bool IsFloor(char c) => c != ' ' && !LevelMap.IsWall(c);
+
+    // Is this tile on the rim of the map (next to nothing, or the map's border)?
+    private static bool OnMapEdge(string[] map, int col, int row) =>
+        new[] { (1, 0), (-1, 0), (0, 1), (0, -1) }.Any(d => MapAt(map, col + d.Item1, row + d.Item2) == ' ');
 
     // A torch hangs on the face of its wall block that looks into a room *and* toward the
     // camera: the south face (floor below it on the map) or else the west face.

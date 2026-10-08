@@ -20,6 +20,15 @@ Out:  Assets/Art/Environment/
         Puddle.png                   32x32  dungeon flagstones under a shallow sheet of water
         Lava.png                     32x32  crusted lava with glowing cracks (hurts; glows and drifts in game)
         SpikePlate.png               32x32  an iron plate with nine holes for a spike trap's spikes
+        RockSide.png / RockSideLow.png 32x40 / 32x20  the rocky hill around Amethyra's cave (2.5m crags,
+                                            and 1.2m rocks where a crag would hide the ground behind it)
+        RockTop.png                  32x32  the top of a rock block, with a patch of moss
+        CaveFloor.png                32x32  the cave's floor: dark packed earth with a few pebbles
+        Sand_0.png / Sand_1.png      32x32  Mermaid Cove's beach: pale, calm sand (Sand_1 has a shell)
+        Sea.png                      32x32  the cove's sea: a step deeper than the pond, with one glint
+        SandBank.png                 32x4   the sea's bank: a sandy lip over wet sand
+        Planks.png                   32x32  the cove's jetties and boardwalks: driftwood boards
+        Waterfall.png                32x16  falling water, repeating downward (scrolls fast in game)
 
 Every texture is seamless: mortar lines sit on the left/top edge only, so two
 tiles placed side by side share a single 1px joint.
@@ -339,6 +348,84 @@ def water_tile():
     return img
 
 
+def sand_tile(seed, shell):
+    """Pale beach sand: broad colour, a few darker grains, and (shell=True) one small coral shell."""
+    rng = random.Random(seed)
+    img = Image.new("RGB", (32, 32), pal.BEACH)
+    px = img.load()
+    for _ in range(6):
+        px[rng.randrange(32), rng.randrange(32)] = pal.BEACH_SHADE
+    if shell:
+        x, y = rng.randrange(6, 24), rng.randrange(6, 24)
+        for dx, dy in ((0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (1, 2)):
+            px[x + dx, y + dy] = pal.CORAL_LIGHT
+        px[x + 1, y] = pal.CREAM
+        px[x + 3, y + 1] = pal.BEACH_SHADE  # its little shadow, away from the sun
+    return img
+
+
+def sea_tile():
+    """The open sea: the pond's calm look a step deeper, with one short glint and a faint swell."""
+    img = Image.new("RGB", (32, 32), pal.SEA)
+    px = img.load()
+    for i in range(3):
+        px[8 + i, 11] = pal.FOAM
+    px[11, 11] = shade(pal.SEA, 18)
+    for x in range(18, 27):
+        px[x, 24] = pal.SEA_DEEP
+    return img
+
+
+def sand_bank():
+    """32x4: the 0.25m of beach you see above the sea. A light sandy lip, then wet sand."""
+    img = Image.new("RGB", (32, 4))
+    px = img.load()
+    for x in range(32):
+        px[x, 0] = pal.BEACH
+        px[x, 1] = pal.BEACH_SHADE
+        px[x, 2] = pal.WET_SAND
+        px[x, 3] = shade(pal.WET_SAND, -18)
+    return img
+
+
+def planks():
+    """Four driftwood boards across the tile, with dark gaps between them and a nail at each end."""
+    img = Image.new("RGB", (32, 32), pal.PLANK)
+    px = img.load()
+    for board in range(4):
+        y0 = board * 8
+        tone = (0, -6, 4, -3)[board]
+        for y in range(y0, y0 + 8):
+            for x in range(32):
+                px[x, y] = shade(pal.PLANK, tone)
+        for x in range(32):
+            px[x, y0] = pal.PLANK_SHADE           # the gap between boards
+            px[x, y0 + 1] = shade(pal.PLANK_LIGHT, tone)
+        for nx in (3, 28):
+            px[nx, y0 + 4] = pal.PLANK_SHADE
+        gx = (board * 11 + 7) % 26 + 3            # a short grain line
+        for i in range(4):
+            px[gx + i, y0 + 5] = shade(pal.PLANK, tone - 10)
+    return img
+
+
+def waterfall():
+    """32x16 of falling water, seamless downward: soft vertical streaks of sea, foam and glint.
+    Repeats every metre on the cliff; WaterScroll slides it down quickly."""
+    rng = random.Random(121)
+    img = Image.new("RGB", (32, 16), pal.WATER)
+    px = img.load()
+    for x in range(32):
+        lane = rng.choice((pal.WATER, pal.WATER, pal.SEA, pal.WATER_DEEP))
+        for y in range(16):
+            px[x, y] = lane
+    for _ in range(7):                            # streaks of white water
+        x, y, n = rng.randrange(32), rng.randrange(16), rng.randint(3, 6)
+        for i in range(n):
+            px[x, (y + i) % 16] = pal.FOAM if i else pal.WATER_GLINT
+    return img
+
+
 def puddle_tile():
     """The dungeon floor, darkened and tinted blue, with glints: a shallow, walkable puddle."""
     rng = random.Random(91)
@@ -389,6 +476,66 @@ def lava_tile():
     return img
 
 
+def rock_side(height, seed):
+    """Lavender-grey rock in broad horizontal ledges, each lit along its top edge, with a few
+    cracks. 32 wide (2m) and 16px per metre tall. Seamless across: ledges wrap at the edges."""
+    rng = random.Random(seed)
+    img = Image.new("RGB", (32, height), pal.STONE_SHADE)
+    px = img.load()
+    y = 0
+    while y < height:
+        h = rng.randint(6, 10)
+        tone = rng.randint(-8, 6)
+        wave = rng.uniform(0, 2 * math.pi)
+        for x in range(32):
+            top = y + round(1.2 * math.sin(x / 32 * 2 * math.pi + wave))
+            for yy in range(max(0, top), min(height, y + h)):
+                c = shade(pal.STONE_SHADE, tone)
+                if yy == max(0, top):
+                    c = shade(pal.STONE, tone)        # the lit lip of the ledge
+                elif yy == y + h - 1:
+                    c = shade(pal.ROCK, tone - 6)     # its shaded underside
+                px[x, yy] = c
+        y += h
+    for _ in range(height // 10):                     # cracks
+        x, yy = rng.randrange(32), rng.randrange(height - 4)
+        for i in range(rng.randint(2, 4)):
+            px[(x + i // 2) % 32, yy + i] = shade(pal.ROCK, -14)
+    for x in range(32):                               # grime where it meets the ground
+        px[x, height - 1] = shade(pal.ROCK, -10)
+    return img
+
+
+def rock_top():
+    rng = random.Random(91)
+    img = Image.new("RGB", (32, 32), pal.STONE_SHADE)
+    px = img.load()
+    for y in range(32):
+        for x in range(32):
+            if rng.random() < 0.08:
+                px[x, y] = shade(pal.STONE_SHADE, rng.choice((-8, 8)))
+    for cx, cy, r in ((10, 11, 6), (22, 22, 4)):      # moss patches
+        for y in range(32):
+            for x in range(32):
+                d = (x - cx) ** 2 + (y - cy) ** 2
+                if d <= r * r:  # shaded along the rim away from the sun
+                    rim = d > (r - 1.5) ** 2 and (x > cx or y > cy)
+                    px[x, y] = pal.SAGE_DEEP if rim else pal.SAGE_DARK
+    return img
+
+
+def cave_floor():
+    """Dark, cool packed earth: darker than the grass outside so the cave reads as a hollow."""
+    rng = random.Random(77)
+    base = (98, 86, 96)
+    img, px = noisy((32, 32), base, rng, spread=(-4, 0, 0, 0, 3))
+    for _ in range(5):
+        x, y = rng.randrange(31), rng.randrange(31)
+        px[x, y] = pal.PEBBLE_SHADE
+        px[x + 1, y] = shade(pal.PEBBLE_SHADE, -16)
+    return img
+
+
 def spike_plate():
     """An iron plate with nine holes (3x3, 9px apart) where the spikes come up. The holes are
     symmetrical, so the plate looks the same however the floor block turns it."""
@@ -436,7 +583,17 @@ def main():
     water_tile().save(OUT / "Water.png")
     puddle_tile().save(OUT / "Puddle.png")
     lava_tile().save(OUT / "Lava.png")
+    rock_side(40, 31).save(OUT / "RockSide.png")
+    rock_side(20, 32).save(OUT / "RockSideLow.png")
+    rock_top().save(OUT / "RockTop.png")
+    cave_floor().save(OUT / "CaveFloor.png")
     spike_plate().save(OUT / "SpikePlate.png")
+    sand_tile(131, shell=False).save(OUT / "Sand_0.png")
+    sand_tile(132, shell=True).save(OUT / "Sand_1.png")
+    sea_tile().save(OUT / "Sea.png")
+    sand_bank().save(OUT / "SandBank.png")
+    planks().save(OUT / "Planks.png")
+    waterfall().save(OUT / "Waterfall.png")
     print("Wrote", ", ".join(sorted(p.name for p in OUT.glob("*.png"))))
 
 

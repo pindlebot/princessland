@@ -1,0 +1,48 @@
+// Mermaid Cove: Pearl's home by the sea (she's Coralie's big sister), reached by rowboat from
+// the castle grounds' pond. Pirates have taken over the beaches, and their captain's grumpy
+// sea-spell has turned the cove's mermaids dark: they rise out of the water and throw bolts.
+// Waterfalls pour off the cliffs along the north into a lagoon (the pirates' ship is anchored
+// there) and a stream that splits the beach in two; two plank bridges (h) cross it. The sea
+// spills off the island's south and west edges.
+// The sea cave in the north-east hides the pirates' treasure (a chest and a heap of gold) and a
+// secret stair down into the dungeon, which opens once every pirate and dark mermaid is beaten.
+title: Mermaid Cove
+theme: Outdoor
+music: music_cove
+water: sea
+ground: sand
+exit: Dungeon
+exit_needs: all_monsters
+locked_hint: Break the sea-spell!
+open_hint: A secret stair in the sea cave!
+minimap_floor: #EED8AA
+minimap_wall: #A69EB4
+---
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%||%%%%%%%%%%%%%%|%%%%%%%%%%%%%%%%%%%%%%
+%%wwwwwww%%%%..,..%%www%%..,..q...%%%%%%%%%%
+%wwwwwwww&w%%.........www.....J...%%%%%%%%%%
+wwwwwwwwwwww...q.......www.....,..%%%%u:::%%
+www@wwwwhhhhh..........hhh.........%%:::$:%%
+wwwwwwww&www...J....q..www....o.x..%%:C:::%%
+wwwwwwwwwwww....,......www.........%%::J::%%
+wwwwwwwwwwww.......s...www..q......%%%:::%%%
+www&wwwwwwww..q.........www........%%%:X:%%%
+wwwwwwwwwwwww..........,www....J...%%%:::%%%
+wwwwwwwwwwwwww....o.x...www........%%%%::%%%
+wwwwwwwwwwwwww..c...J....www..s...q.%%%::%%%
+wwwwwwwwwwwwww.o.........www......O..%%::%%%
+wwwwwwwwwwwww..V.........www...........::..%
+wwwwwwwwwwww.............hhh....,......;...%
+wwwwwwwwwww....q..........www........J.....%
+wwwwwwwwww...................www.......q...%
+www&wwwwwZ........,...........www..........%
+wwwwwwwwww...q.................ww&wwww.....%
+wwwwwwwwwwww....P..........wwwwwwwwwwww....%
+wwwwwwwwwwwwwwwh...q....wwwwwwwwwwwwwwwww..%
+wwwwwwwwwwwwwwwhwwwwwwwwwwwwwwwwwww&wwwwwww%
+wwwwwwwwwwwwwwwhwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwww1wwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+---
+1 = door Level0

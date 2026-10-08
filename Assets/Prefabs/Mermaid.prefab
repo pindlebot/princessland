@@ -124,6 +124,24 @@ MonoBehaviour:
     lines:
     - heroSpeaks: 0
       text: A wish came true at the fountain! The water sparkled all the way into my pond!
+  - requires: 
+    notIf: met:Pearl
+    sets: 
+    giveGold: 0
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: My big sister Pearl lives in Mermaid Cove, down the river. I haven't heard from her in ages...
+    - heroSpeaks: 0
+      text: The rowboat at the corner of my pond goes all the way there. Would you check on her, {hero}?
+  - requires: thanked:cove
+    notIf: 
+    sets: 
+    giveGold: 0
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Pearl told me everything! You broke the sea-spell AND scared off the pirates. You're my hero, {hero}!
   talkOffset: {x: 0, y: 0, z: 0}
   flipbook: {fileID: 2530459861725407900}
   idleFrames:

@@ -58,6 +58,20 @@ public static partial class DungeonBuilder
             SmallTalk = true, Requires = WishingFountain.GrantedFlag,
             Lines = new[] { N("A wish came true at the fountain! The water sparkled all the way into my pond!") },
         },
+        new Talk
+        {
+            SmallTalk = true, NotIf = "met:Pearl",
+            Lines = new[]
+            {
+                N("My big sister Pearl lives in Mermaid Cove, down the river. I haven't heard from her in ages..."),
+                N("The rowboat at the corner of my pond goes all the way there. Would you check on her, {hero}?"),
+            },
+        },
+        new Talk
+        {
+            SmallTalk = true, Requires = "thanked:cove",
+            Lines = new[] { N("Pearl told me everything! You broke the sea-spell AND scared off the pirates. You're my hero, {hero}!") },
+        },
     };
 
     private static Talk[] BonesyTalks() => new[]

@@ -379,6 +379,38 @@ def defeat():
     return arpeggio(["G4", "F#4", "F4", "E4"], 0.25, 0.4, "triangle", 0.6)
 
 
+def pirate_hit():  # a gruff "oof!": a short, low buzzy grunt
+    return envelope(lowpass(tone(170, 0.14, "saw", freq_end=120), 900), attack=0.005, curve=2)
+
+
+def pirate_death():  # "arrr...": a falling, wobbling growl
+    return envelope(lowpass(tone(220, 0.5, "saw", freq_end=90, vibrato=0.05), 1100), attack=0.01, curve=1.4)
+
+
+def siren_cast():  # a dark, bubbly whoosh sinking in pitch
+    bubble = envelope(tone(700, 0.3, freq_end=260, vibrato=0.12), attack=0.02, curve=1.6)
+    hiss = envelope(lowpass(noise(0.3, seed=21), 1800, 500), curve=2)
+    return mix(bubble, [s * 0.4 for s in hiss])
+
+
+def siren_hit():  # a wet slap with a sharp splash
+    return mix(envelope(highpass(noise(0.18, seed=22), 1200), curve=3),
+               [s * 0.5 for s in envelope(tone(300, 0.12, freq_end=160), curve=3)])
+
+
+def bolt_impact():  # a soft, inky splat
+    return mix(envelope(lowpass(noise(0.25, seed=23), 1400, 300), curve=2.2),
+               [s * 0.6 for s in envelope(tone(180, 0.2, freq_end=70), curve=2)])
+
+
+def oars():  # climbing into the rowboat: a wooden knock, then two oar splashes
+    knock = envelope(tone(260, 0.06, "triangle", freq_end=200), curve=3)
+    out = list(knock)
+    for k in range(2):
+        place(out, [s * 0.5 for s in envelope(highpass(noise(0.22, seed=24 + k), 700), attack=0.03, curve=2)], 0.2 + k * 0.35)
+    return out
+
+
 # ---------- Music ----------
 # Each song: tempo, a melody as (note or None for a rest, length in beats), and a bass
 # line. Both parts add up to exactly the same number of beats, so the loop is seamless.
@@ -475,6 +507,36 @@ def home_theme():
                render_part(bass, beat, "sine", 0.45, gap=0.7))
 
 
+def cove_theme():
+    """A sea shanty in D minor, 6/8 (two swaying beats a bar, each split in three), 100 bpm,
+    8 bars: Dm - C - Bb - A, twice, with waves washing in and out underneath."""
+    beat = 60 / 100 / 3  # an eighth note: three to a swaying beat
+    melody = [
+        ("D5", 2), ("A4", 1), ("D5", 2), ("E5", 1),              # Dm
+        ("F5", 2), ("E5", 1), ("D5", 2), ("C5", 1),              # C
+        ("D5", 2), ("A#4", 1), ("A4", 2), ("G4", 1),             # Bb
+        ("A4", 3), ("C#5", 2), ("E5", 1),                        # A
+        ("F5", 2), ("E5", 1), ("D5", 2), ("F5", 1),              # Dm
+        ("G5", 2), ("E5", 1), ("C5", 3),                         # C
+        ("D5", 2), ("A#4", 1), ("G4", 2), ("A#4", 1),            # Bb
+        ("A4", 3), ("D5", 3),                                    # A -> home
+    ]
+    bass = []
+    for root, fifth in [("D3", "A3"), ("C3", "G3"), ("A#2", "F3"), ("A2", "E3")] * 2:
+        bass += [(root, 2), (fifth, 1), (root, 2), (fifth, 1)]
+    eighths = 48
+    out = mix(render_part(melody, beat, "square", 0.3, duty=0.3, gap=0.85),
+              render_part(bass, beat, "triangle", 0.5, gap=0.8))
+    # Waves: filtered noise swelling in and out once every two bars.
+    total = int(eighths * beat * RATE)
+    surf = lowpass(noise(eighths * beat, seed=25), 700)
+    period = 12 * beat * RATE
+    for i in range(min(total, len(surf))):
+        swell = 0.5 - 0.5 * math.cos(2 * math.pi * i / period)
+        out[i] += surf[i] * 0.12 * swell
+    return out[:total]
+
+
 SOUNDS = {
     "ribbit": ribbit, "plink": plink, "wish": wish, "voice_mermaid": voice_mermaid,
     "voice_bonesy": voice_bonesy, "door_locked": door_locked,
@@ -490,6 +552,8 @@ SOUNDS = {
     "slime_hit": slime_hit, "slime_attack": slime_attack, "slime_death": slime_death,
     "boss_roar": boss_roar, "slam_windup": slam_windup, "slam_land": slam_land, "summon": summon,
     "stairs_open": stairs_open, "poof": poof, "spikes": spikes, "sizzle": sizzle,
+    "pirate_hit": pirate_hit, "pirate_death": pirate_death, "siren_cast": siren_cast, "siren_hit": siren_hit,
+    "bolt_impact": bolt_impact, "oars": oars,
 }
 
 if __name__ == "__main__":
@@ -498,6 +562,7 @@ if __name__ == "__main__":
     save("music_castle", castle_theme(), peak=0.7)
     save("music_dungeon", dungeon_theme(), peak=0.7)
     save("music_home", home_theme(), peak=0.65)
+    save("music_cove", cove_theme(), peak=0.65)
     for f in sorted(OUT.glob("*.wav")):
         with wave.open(str(f)) as w:
             print(f"{f.name:20} {w.getnframes() / w.getframerate():5.2f}s")

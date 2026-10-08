@@ -104,6 +104,10 @@ MonoBehaviour:
   defeatEffect: {fileID: 397231879088370502, guid: a902f4d8f13304ebab7e30de3775a73a, type: 3}
   defeatSound: {fileID: 8300000, guid: 08eb47ddb61b74b7fb0b233c80548d75, type: 3}
   attackSound: {fileID: 8300000, guid: d0375c3e70da345038e4c7f64b80797a, type: 3}
+  boltPrefab: {fileID: 0}
+  throwPoint: {fileID: 0}
+  throwDelay: 0.3
+  stationary: 0
 --- !u!114 &6600089297306077466
 MonoBehaviour:
   m_ObjectHideFlags: 0

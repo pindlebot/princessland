@@ -20,7 +20,7 @@ public class PauseMenuTests : InputTestFixture
         base.Setup();
         pad = InputSystem.AddDevice<Gamepad>();
         keyboard = InputSystem.AddDevice<Keyboard>();
-        folder = Path.Combine(Path.GetTempPath(), "IsoDungeonPause_" + System.Guid.NewGuid().ToString("N"));
+        folder = Path.Combine(Path.GetTempPath(), "TidecrownPause_" + System.Guid.NewGuid().ToString("N"));
         SaveSystem.FolderOverride = folder;
     }
 
