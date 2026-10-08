@@ -18,7 +18,10 @@ public static partial class DungeonBuilder
     //            C  chest    I  Ember Ring    D  dragon    X  exit (sealed until the boss, if any, is dead)
     //   Home     B  bed    W  toilet    S  sink    R  paper towel
     //   Legend   doors, the castle gate and named arrival spots are defined per file (MapFile.cs)
-    //   Scenery  Y  tree    F  fountain    b  bush    Q  banner    *  butterflies    ;  flowers
+    //   Scenery  Y  tree    F  fountain (make a wish!)    b  bush    Q  banner    *  butterflies    ;  flowers
+    //   Pond     w  water (not walkable)    m  Coralie the mermaid, in the water    f  the bush hiding the frog
+    //   Dungeon  c  campfire (warm up: full health)    n  Bonesy, the friendly skeleton    o  barrel    x  crate
+    //            j  bones    u  glowing mushrooms    p  puddle    d  wooden door    k  locked door    y  the Rusty Key
     //            (trees and the fountain are solid, so keep them off the walking routes)
     // Torches go on the side of the wall that faces the camera (south or west), so put
     // them on walls with floor directly below (south) or to the left (west).
@@ -132,8 +135,14 @@ public static partial class DungeonBuilder
                     continue;
                 }
 
+                if (LevelMap.IsWater(c))
+                {
+                    BuildWater(level, decor, assets, map, col, row, pos, rng, c == 'm');
+                    continue;
+                }
+
                 var floor = Block("Floor", level, pos + Vector3.down * 0.25f, new Vector3(Tile, 0.5f, Tile),
-                                  mats[FloorMaterial(spec.Theme, c, col, row, rng.Next(100))]);
+                                  mats[FloorMaterial(spec.Theme, map, c, col, row, rng.Next(100))]);
                 // Turning tiles in 90° steps hides the repetition of only three textures.
                 floor.transform.rotation = Quaternion.Euler(0f, 90f * rng.Next(4), 0f);
 
@@ -172,6 +181,26 @@ public static partial class DungeonBuilder
                     case 'b': Place(assets.Bush, decor, pos); break;
                     case 'Q': Place(assets.Flag, decor, pos); break; // a banner on a pole
                     case '*': Place(assets.Butterfly, decor, pos); break;
+                    case 'f': Place(assets.FrogBush, decor, pos); break;
+                    case 'c': Place(assets.Campfire, decor, pos); break;
+                    case 'n': Place(assets.Bonesy, decor, pos); break;
+                    case 'o': Place(assets.Barrel, decor, pos); break;
+                    case 'x': Place(assets.Crate, decor, pos); break;
+                    case 'j': Place(assets.Bones, decor, pos + new Vector3(rng.Next(-4, 5) * 0.1f, 0f, rng.Next(-4, 5) * 0.1f)); break;
+                    case 'u': Place(assets.Mushrooms, decor, pos); break;
+                    case 'p':
+                        if (rng.Next(6) == 0) // now and then, a drip landing in the puddle
+                            Place(assets.Ripple, decor, pos + new Vector3(rng.Next(-5, 6) * 0.1f, 0.02f, rng.Next(-5, 6) * 0.1f));
+                        break;
+                    // Doors and the key remember being used (scene/col,row), like chests.
+                    case 'd':
+                    case 'k':
+                        SetString(Place(c == 'd' ? assets.Door : assets.LockedDoor, decor, pos).GetComponent<DungeonDoor>(),
+                                  "persistentId", $"{sceneName}/{col},{row}");
+                        break;
+                    case 'y':
+                        SetString(Place(assets.Key, decor, pos).GetComponent<KeyPickup>(), "persistentId", $"{sceneName}/{col},{row}");
+                        break;
                 }
 
                 // Symbols from the file's legend: doors to other scenes and named arrival spots.
@@ -249,10 +278,42 @@ public static partial class DungeonBuilder
         spawns.Add(SpawnPoint(MapFile.SpawnNameFor(info.TargetScene), arrive, Quaternion.LookRotation(awayFromDoor)));
     }
 
-    private static string FloorMaterial(Theme theme, char c, int col, int row, int roll)
+    // A pond tile: water a little below the ground, an invisible wall so nobody walks in,
+    // the odd lily pad, and on 'm' Coralie the mermaid (talked to from the nearest shore).
+    private static void BuildWater(Transform level, Transform decor, SharedAssets assets, string[] map,
+                                   int col, int row, Vector3 pos, System.Random rng, bool mermaid)
     {
+        var water = Block("Water", level, pos + Vector3.down * 0.45f, new Vector3(Tile, 0.5f, Tile), assets.Materials["Water"]);
+        water.isStatic = false; // its texture drifts
+        water.AddComponent<WaterScroll>();
+        var bank = new GameObject("Bank").AddComponent<BoxCollider>();
+        bank.transform.SetParent(water.transform, false);
+        bank.transform.position = pos + Vector3.up;
+        bank.size = new Vector3(1f, 4f, 1f); // in the water block's scaled space (2 x 0.5 x 2): a 2m-tall wall
+        if (!mermaid && rng.Next(3) == 0)
+            Place(assets.Lily, decor, pos + new Vector3(rng.Next(-5, 6) * 0.1f, -0.18f, rng.Next(-5, 6) * 0.1f));
+        if (!mermaid) return;
+
+        var coralie = Place(assets.Mermaid, decor, pos + Vector3.down * 0.15f);
+        coralie.transform.rotation = Quaternion.identity;
+        // Talk from whichever side has dry land.
+        foreach (var (dc, dr) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+        {
+            char next = MapAt(map, col + dc, row + dr);
+            if (next == ' ' || LevelMap.IsWall(next) || LevelMap.IsWater(next)) continue;
+            SetVector3(coralie.GetComponent<Npc>(), "talkOffset", new Vector3(dc, 0f, -dr) * 1.1f);
+            break;
+        }
+        Place(assets.Ripple, decor, pos + new Vector3(0.3f, -0.17f, -0.5f));
+    }
+
+    private static string FloorMaterial(Theme theme, string[] map, char c, int col, int row, int roll)
+    {
+        // A monster standing in a puddle stands in water too (not on a dry square).
+        if ("EL".IndexOf(c) >= 0 && MapAt(map, col - 1, row) == 'p' && MapAt(map, col + 1, row) == 'p') c = 'p';
         if (theme == Theme.Home)
             return "_WSR".IndexOf(c) >= 0 ? "BathTile" : "WoodFloor";
+        if (c == 'p') return "Puddle";
         if (theme == Theme.Dungeon)
             return roll < 65 ? "Floor_0" : roll < 85 ? "Floor_1" : "Floor_2";
         if (c == '=' || c == 'X') return "Path";

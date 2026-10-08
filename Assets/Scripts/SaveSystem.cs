@@ -84,6 +84,7 @@ public static class SaveSystem
             scene = scene,
             spawn = spawn ?? "",
             flags = GameSession.Flags.ToList(),
+            counters = GameSession.Counters.Select(c => new SaveData.Counter { key = c.Key, value = c.Value }).ToList(),
             level = p.Level,
             xp = p.Xp,
             gold = p.Gold,
@@ -112,6 +113,7 @@ public static class SaveSystem
         GameSession.NewGame(hero);
         GameSession.Slot = slot;
         foreach (var flag in data.flags) GameSession.Flags.Add(flag);
+        foreach (var c in data.counters ?? new List<SaveData.Counter>()) GameSession.Counters[c.key] = c.value;
         GameSession.Progress.Restore(data.level, data.xp, data.gold, data.skillPoints, data.skills);
         GameSession.Inventory.Bag.AddRange(data.bag);
         foreach (var e in data.equipped) GameSession.Inventory.Equipped[e.slot] = e.item;

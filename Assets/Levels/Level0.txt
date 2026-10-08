@@ -1,4 +1,6 @@
 // The castle grounds: the first level. The stairs (X) open once every skeleton and slime is beaten.
+// Coralie the mermaid (m) sits in the pond (w). Easter eggs: one bush (f) hides Sir Hopsalot
+// the frog, and the fountain (F) grants a wish if you toss in enough coins.
 title: The Castle Grounds
 theme: Outdoor
 music: music_castle
@@ -14,15 +16,15 @@ HY;Y....KKKKKKK.....Y.YH
 Hb......KKKKKKK......*.H
 H.......KKKKKKK........H
 H.......KKKKKKK....X...H
-H.........Q=Q..L...=...H
-H...E......=......=....H
-H..........=======.....H
-Hb.........=.......E...H
-H.....L....=...........H
+H.;.......Q=Q..L...=...H
+H.www......=......=....H
+H.wwwm.....=======.....H
+Hb.ww..E...=.......E...H
+H...;.L....=...........H
 H...========...F.;.....H
 H...=.........;...E....H
 H.*.=....E.............H
-H...=.........D.......bH
+H...=.........D.......fH
 H.P.=.b...........b....H
 HHHHHHHHHHHHHHHHHHHHHHHH
 ---

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,6 +22,10 @@ public class PersistenceTests
         foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
     }
 
+    // The dungeon has two chests; the storeroom one (west of the locked treasure room) is the one used here.
+    private static Chest StoreroomChest() =>
+        Object.FindObjectsByType<Chest>().OrderBy(c => c.transform.position.x).First();
+
     [UnityTest]
     public IEnumerator InventoryAndUsedThingsSurviveSceneChanges()
     {
@@ -34,7 +39,7 @@ public class PersistenceTests
         var inventory = player.GetComponent<Inventory>();
         Assert.IsTrue(inventory.Equip(inventory.Bag[0]));
         Assert.AreEqual(2, player.GetComponent<SpellAbility>().Damage);
-        var chest = Object.FindAnyObjectByType<Chest>();
+        var chest = StoreroomChest();
         chest.Interact(player);
         int goldAfterChest = GameSession.Progress.Gold;
         Assert.AreEqual(25, goldAfterChest);
@@ -50,7 +55,7 @@ public class PersistenceTests
         // Back again: the ring isn't lying on the floor a second time, and the chest stays open and empty.
         yield return Load("Dungeon");
         Assert.IsNull(Object.FindAnyObjectByType<ItemPickup>(), "no second ring on the floor");
-        chest = Object.FindAnyObjectByType<Chest>();
+        chest = StoreroomChest();
         Assert.IsTrue(chest.IsOpen, "the chest is still open");
         Assert.IsFalse(chest.CanInteract);
         Assert.AreEqual(goldAfterChest, GameSession.Progress.Gold);
@@ -59,7 +64,7 @@ public class PersistenceTests
         GameSession.NewGame(null);
         yield return Load("Dungeon");
         Assert.IsNotNull(Object.FindAnyObjectByType<ItemPickup>(), "a fresh game has the ring again");
-        Assert.IsFalse(Object.FindAnyObjectByType<Chest>().IsOpen);
+        Assert.IsFalse(StoreroomChest().IsOpen);
         Assert.AreEqual(0, LevelBootstrap.Current.Player.GetComponent<Inventory>().Bag.Count);
     }
 }

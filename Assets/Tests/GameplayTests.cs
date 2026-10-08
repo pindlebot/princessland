@@ -28,7 +28,7 @@ public class GameplayTests
     public IEnumerator SceneHasPlayerEnemiesAndExit()
     {
         yield return null;
-        Assert.AreEqual(7, EnemyAI.AliveCount, "4 skeletons, 2 slimes and the Slime King");
+        Assert.AreEqual(9, EnemyAI.AliveCount, "5 skeletons, 3 slimes and the Slime King");
         Assert.IsNotNull(Object.FindAnyObjectByType<ExitZone>());
         Assert.IsFalse(GameManager.Instance.IsGameOver);
     }
@@ -55,7 +55,7 @@ public class GameplayTests
         Assert.IsTrue(ability.TryCast());
         yield return new WaitForSeconds(0.5f);
         Assert.IsTrue(enemyHealth.IsDead);
-        Assert.AreEqual(6, EnemyAI.AliveCount);
+        Assert.AreEqual(8, EnemyAI.AliveCount);
     }
 
     [UnityTest]
@@ -174,7 +174,7 @@ public class GameplayTests
     public IEnumerator DecorIsPlacedFromTheMap()
     {
         yield return null;
-        Assert.AreEqual(7, Object.FindObjectsByType<FlickerLight>().Length, "one light per T on the map");
+        Assert.AreEqual(10, Object.FindObjectsByType<FlickerLight>().Length, "one light per T on the map, plus Bonesy's campfire");
         Assert.Greater(GameObject.Find("Decor").transform.childCount, 20, "grass tufts, torches and the chest");
     }
 
@@ -260,7 +260,7 @@ public class GameplayTests
         yield return null;
         Assert.IsTrue(anim.GetCurrentAnimatorStateInfo(0).IsName("Die"));
         Assert.IsFalse(enemy.GetComponent<CharacterController>().enabled, "corpses shouldn't block shots");
-        Assert.AreEqual(6, EnemyAI.AliveCount);
+        Assert.AreEqual(8, EnemyAI.AliveCount);
 
         yield return new WaitForSeconds(2.2f); // corpseLifetime is 2s
         Assert.IsTrue(enemy == null, "corpse should be removed"); // Unity overloads == for destroyed objects
@@ -330,7 +330,8 @@ public class GameplayTests
     }
 
     // The skeleton farthest from any other enemy, so auto-aim can't pick a neighbour at the
-    // same distance. (Skeletons only: these tests rely on their 2 health.)
+    // same distance. (Skeletons only: these tests rely on their 2 health.) It also needs open
+    // floor 4m to its west, where the tests stand to shoot it (the maze has narrow tunnels).
     private static EnemyAI IsolatedEnemy()
     {
         var all = Object.FindObjectsByType<EnemyAI>();
@@ -339,6 +340,9 @@ public class GameplayTests
         foreach (var a in all)
         {
             if (!a.name.StartsWith("Skeleton")) continue;
+            var knee = new Vector3(a.transform.position.x, 0.6f, a.transform.position.z); // below the 1.2m wall tops
+            if (Physics.Raycast(knee, Vector3.left, 4.6f, ~0, QueryTriggerInteraction.Ignore))
+                continue;
             float gap = float.MaxValue;
             foreach (var b in all)
                 if (a != b) gap = Mathf.Min(gap, Vector3.Distance(a.transform.position, b.transform.position));

@@ -14,6 +14,8 @@ Out:  Assets/Art/Environment/
         Gate.png                     32x32  the castle's wooden gate
         WoodFloor.png                32x32  floorboards for the hero's home
         BathTile.png                 32x32  blue-and-white bathroom tiles
+        Water.png                    32x32  the castle-grounds pond (scrolls slowly in game)
+        Puddle.png                   32x32  dungeon flagstones under a shallow sheet of water
 
 Every texture is seamless: mortar lines sit on the left/top edge only, so two
 tiles placed side by side share a single 1px joint.
@@ -273,6 +275,35 @@ def bath_tile():
     return img
 
 
+def water_tile():
+    """Soft blue with a few wavy highlight dashes; seamless because nothing crosses the edges."""
+    rng = random.Random(81)
+    img, px = noisy((32, 32), (78, 156, 206), rng, (-4, -2, 0, 2, 4))
+    for _ in range(9):
+        x, y = rng.randrange(2, 26), rng.randrange(1, 31)
+        for i in range(rng.randint(3, 5)):
+            px[x + i, y] = (196, 236, 250)
+            if i == 0:
+                px[x + i, y] = (140, 200, 236)
+    return img
+
+
+def puddle_tile():
+    """The dungeon floor, darkened and tinted blue, with glints: a shallow, walkable puddle."""
+    rng = random.Random(91)
+    img = floor_tile(4)
+    px = img.load()
+    for y in range(32):
+        for x in range(32):
+            r, g, b = px[x, y]
+            px[x, y] = (round(r * 0.55 + 20), round(g * 0.62 + 34), round(b * 0.7 + 62))
+    for _ in range(6):
+        x, y = rng.randrange(2, 27), rng.randrange(2, 30)
+        for i in range(rng.randint(2, 4)):
+            px[x + i, y] = (170, 210, 236)
+    return img
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     floor_tile(1).save(OUT / "Floor_0.png")
@@ -291,6 +322,8 @@ def main():
     gate().save(OUT / "Gate.png")
     wood_floor().save(OUT / "WoodFloor.png")
     bath_tile().save(OUT / "BathTile.png")
+    water_tile().save(OUT / "Water.png")
+    puddle_tile().save(OUT / "Puddle.png")
     print("Wrote", ", ".join(sorted(p.name for p in OUT.glob("*.png"))))
 
 

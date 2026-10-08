@@ -14,6 +14,7 @@ public class SaveData
     public string spawn;          // the named spawn point there ("" = the level start)
 
     public List<string> flags = new List<string>();
+    public List<Counter> counters = new List<Counter>();
 
     public int level = 1, xp, gold, skillPoints;
     public List<string> skills = new List<string>();
@@ -22,6 +23,13 @@ public class SaveData
     public List<EquippedItem> equipped = new List<EquippedItem>();
 
     public GameSettings settings = new GameSettings();
+
+    [Serializable]
+    public class Counter
+    {
+        public string key;
+        public int value;
+    }
 
     [Serializable]
     public class EquippedItem

@@ -16,6 +16,8 @@ stairs and starting a new adventure autosave; the pause menu's "Save and go to t
 and at 0 hearts the hero naps and wakes by the last fountain she passed (or where she came in) with everything kept;
 the boss's warning circle lasts 1.6× longer. **Adventurer** is the classic rules, with slightly faster monsters.
 In Level 0, walk up to **Amethyra the dragon** and press **E** to talk (E / Space / Enter / click to continue).
+**Coralie the mermaid** sits in the pond and has lost her frog. Easter eggs: one bush hides **Sir Hopsalot** (find him
+and tell Coralie), the fountain takes wishes (1 coin each; the third comes true), and Amethyra tells jokes.
 Press **E** at the **castle gate** to go inside to the hero's home (bed, toilet, sink, paper towel); the front
 door brings you back out by the gate. Cleared levels and finished conversations are remembered between scenes.
 
@@ -24,6 +26,10 @@ door brings you back out by the gate. Cleared levels and finished conversations 
 and a **skill point**. Press **K** for the skill tree: 3 branches × 3 tiers, each skill needs the one above it.
 Tier 1 works (+1 spell damage / +2 max health / +15 max mana); tiers 2–3 are "coming soon" placeholders.
 Level, XP, gold and skills carry across scenes and reset when you pick a hero.
+
+**The dungeon** is a labyrinth: wooden doors (E to open), a storeroom of barrels and crates, **Bonesy** the friendly
+skeleton at his campfire (warm up there for full health), a great puddle hall full of slimes, twisty tunnels hiding
+the **Rusty Key**, and a locked treasure room it opens.
 
 **Boss:** the dungeon's last room holds **the Slime King** (30 HP, hits for 2, worth 400 XP and 15–20 coins).
 The crystal is sealed until he falls. *Ground Slam*: a red circle grows under you, then he leaps and lands
@@ -95,7 +101,9 @@ at half health he splits off 3 slimelings. A boss health bar appears once he not
 | `DungeonBuilder.Props.cs` | Chest, torch, grass, Ember Ring pickup, flag |
 | `Levels/*.txt`, `Scripts/MapFile.cs`, `MapValidator.cs` | **The maps** as text files, their parser and the door checker |
 | `DungeonBuilder.Levels.cs` | How a scene is assembled from a map file (`LevelSpec`, the tile switch) |
-| `DungeonBuilder.Dragon.cs` | Amethyra's prefab **and her dialogue lines** (edit them here) |
+| `Scripts/Npc.cs` | Any friendly character: conversations picked by story flags, small talk that takes turns |
+| `DungeonBuilder.Dragon.cs` | The NPC recipe, Amethyra's prefab **and her dialogue lines** (edit them here) |
+| `DungeonBuilder.Friends.cs` | Coralie's and Bonesy's lines, the frog, the wishing fountain, the dungeon props |
 | `DungeonBuilder.Home.cs` | The home's furniture and front door (prompts and messages live here) |
 | `DungeonBuilder.Castle.cs` | The castle from stacked wall blocks + a hand-built pyramid mesh for roofs |
 | `DungeonBuilder.CharacterSelect.cs` | The select screen scene |
@@ -110,7 +118,8 @@ and `MapFileTests` runs it too). Adding a room = writing a file and running **Du
 
 Built-in tiles: `.` ground · `,` grass tufts · `=` path · `#` stone wall · `T` wall + torch · `H` hedge ·
 `K` castle (a rectangle) · `P` start · `E` skeleton · `L` slime · `M` Slime King (boss) · `C` chest · `I` Ember Ring · `D` dragon · `X` exit ·
-`_` bathroom tiles · `Y` tree · `F` fountain · `b` bush · `Q` banner · `*` butterflies · `;` flowers · `B` bed · `W` toilet · `S` sink · `R` paper towel.
+`_` bathroom tiles · `Y` tree · `F` fountain · `b` bush · `Q` banner · `*` butterflies · `;` flowers · `B` bed · `W` toilet · `S` sink · `R` paper towel ·
+`w` pond · `m` mermaid · `f` frog bush · `c` campfire · `n` Bonesy · `o` barrel · `x` crate · `j` bones · `u` mushrooms · `p` puddle · `d` door · `k` locked door · `y` key.
 
 ## Character sprites
 Each character is a sprite sheet (one animation per row) plus a JSON layout, drawn by a script in `Tools/`:

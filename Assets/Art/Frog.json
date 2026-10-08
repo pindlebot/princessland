@@ -1,0 +1,21 @@
+{
+  "frameSize": 32,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Idle",
+      "row": 0,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Hop",
+      "row": 1,
+      "frames": 2,
+      "fps": 6,
+      "loop": true
+    }
+  ]
+}

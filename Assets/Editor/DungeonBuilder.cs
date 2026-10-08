@@ -14,7 +14,8 @@ using UnityEngine;
 //   DungeonBuilder.Props.cs            chest, torch, grass, item pickup, flag
 //   DungeonBuilder.Levels.cs           how a level scene is assembled from Assets/Levels/<Scene>.txt
 //   DungeonBuilder.Castle.cs           the decorative castle in Level 0
-//   DungeonBuilder.Dragon.cs           Amethyra the dragon and her dialogue
+//   DungeonBuilder.Dragon.cs           the NPC recipe, Amethyra the dragon and her dialogue
+//   DungeonBuilder.Friends.cs          Coralie, Bonesy, the frog, the wishing fountain, dungeon props
 //   DungeonBuilder.Home.cs             the furniture and front door of the hero's home
 //   DungeonBuilder.CharacterSelect.cs  the character select screen
 //   DungeonBuilder.Title.cs            the title screen and its save slots
@@ -31,6 +32,8 @@ public static partial class DungeonBuilder
         public GameObject Skeleton, Slime, SlimeKing, Chest, Torch, RingPickup, Flag, Dragon;
         public GameObject Bed, Toilet, Sink, PaperTowel, HouseDoor;
         public GameObject Tree, Fountain, Bush, Butterfly, Mote, Cloud, Stairs;
+        public GameObject Mermaid, Bonesy, Frog, FrogBush;
+        public GameObject Campfire, Barrel, Crate, Bones, Mushrooms, Door, LockedDoor, Key, Ripple, Lily;
         public SpriteSheetImporter.SpriteSheet Props;
         public GameObject[] Grass;
 
@@ -96,6 +99,7 @@ public static partial class DungeonBuilder
         };
         CreateHomePrefabs(assets, furniture, wizardArt.Shadow);
         CreateSceneryPrefabs(assets, props, wizardArt.Shadow);
+        CreateFriendsAndDungeonProps(assets, wizardArt.Shadow, sparkle);
         assets.Props = props;
         return assets;
     }
@@ -182,7 +186,7 @@ public static partial class DungeonBuilder
                  {
                      "Floor_0", "Floor_1", "Floor_2", "WallSide", "WallTop",
                      "Grass_0", "Grass_1", "Grass_2", "Path", "HedgeSide", "HedgeTop", "Roof", "Gate", "EarthSide",
-                     "WoodFloor", "BathTile",
+                     "WoodFloor", "BathTile", "Water", "Puddle",
                  })
             mats[name] = Mat(name, Color.white, texture: PixelTexture(name));
         mats["Exit"] = Mat("Exit", new Color(0.2f, 0.9f, 0.3f), new Color(0.2f, 1.2f, 0.3f));
@@ -295,6 +299,13 @@ public static partial class DungeonBuilder
     {
         var so = new SerializedObject(target);
         so.FindProperty(field).intValue = value;
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void SetVector3(Object target, string field, Vector3 value)
+    {
+        var so = new SerializedObject(target);
+        so.FindProperty(field).vector3Value = value;
         so.ApplyModifiedPropertiesWithoutUndo();
     }
 

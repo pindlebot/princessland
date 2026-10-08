@@ -20,6 +20,7 @@ public class Minimap : MonoBehaviour
     [SerializeField] private float enemySenseRadius = 7f; // in tiles
 
     private static readonly Color32 Hidden = new Color32(0, 0, 0, 0);
+    private static readonly Color32 Water = new Color32(96, 170, 220, 255);
 
     private Texture2D texture;
     private Color32[] pixels;
@@ -89,6 +90,7 @@ public class Minimap : MonoBehaviour
                 char c = map.At(col, row);
                 Color32 color = !explored[col, row] || c == ' ' ? Hidden
                               : LevelMap.IsWall(c) ? (Color32)map.WallColor
+                              : LevelMap.IsWater(c) ? Water
                               : (Color32)map.FloorColor;
                 FillTile(col, row, color);
             }
@@ -130,7 +132,7 @@ public class Minimap : MonoBehaviour
         foreach (var interactable in Interactables.All)
         {
             bool isChest = interactable is Chest chest && !chest.IsOpen;
-            bool isNpc = interactable is DragonNpc;
+            bool isNpc = interactable is Npc;
             if (!isChest && !isNpc) continue;
             Vector2 c = map.WorldToMap(interactable.Position);
             if (IsExploredAt(c)) Show(isNpc ? "map-dragon" : "map-chest", c, hero, box);

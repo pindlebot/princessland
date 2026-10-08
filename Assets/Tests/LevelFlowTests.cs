@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -109,7 +110,7 @@ public class LevelFlowTests
         var player = LevelBootstrap.Current.Player;
         player.GetComponent<PlayerController>().enabled = false;
         foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
-        var dragon = Object.FindAnyObjectByType<DragonNpc>();
+        var dragon = Object.FindObjectsByType<Npc>().First(n => n.Name == "Amethyra");
         var hud = Object.FindAnyObjectByType<HudController>().GetComponent<UIDocument>().rootVisualElement;
 
         float dragonHeight = dragon.GetComponentInChildren<SpriteRenderer>().bounds.size.y;

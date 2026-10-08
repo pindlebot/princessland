@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 // One line of a conversation. [Serializable] lets Unity show and save arrays of these
-// in the Inspector (see DragonNpc's Introduction).
+// in the Inspector (see the conversations in DungeonBuilder.Dragon.cs).
 [Serializable]
 public struct DialogueLine
 {
@@ -21,6 +21,7 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private float lettersPerSecond = 45f;
     [SerializeField] private AudioClip npcVoice;
     [SerializeField] private AudioClip heroVoice;
+    private AudioClip currentNpcVoice; // each NPC can bring their own voice
     [SerializeField] private int lettersPerBlip = 3;
 
     public static DialogueController Instance { get; private set; }
@@ -60,12 +61,13 @@ public class DialogueController : MonoBehaviour
     }
 
     public void Begin(DialogueLine[] conversation, string npc, Sprite npcPicture,
-                      CharacterDefinition hero, Action finished = null)
+                      CharacterDefinition hero, Action finished = null, AudioClip voice = null)
     {
         if (IsOpen || conversation == null || conversation.Length == 0) return;
         lines = conversation;
         index = 0;
         NpcName = npc;
+        currentNpcVoice = voice != null ? voice : npcVoice;
         npcPortrait = npcPicture;
         heroName = hero.DisplayName;
         heroShortName = heroName.Split(" the ")[0]; // "Aldric the Wizard" -> "Aldric"
@@ -106,7 +108,7 @@ public class DialogueController : MonoBehaviour
             if (shown / lettersPerBlip > blipsPlayed) // a little voice blip every few letters
             {
                 blipsPlayed = shown / lettersPerBlip;
-                AudioManager.Play(lines[index].heroSpeaks ? heroVoice : npcVoice, 0.5f);
+                AudioManager.Play(lines[index].heroSpeaks ? heroVoice : currentNpcVoice, 0.5f);
             }
             UpdateHint();
         }

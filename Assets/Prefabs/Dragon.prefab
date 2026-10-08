@@ -67,25 +67,75 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 993d8d8b34a954049b05eb7b4bbba012, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Game::DragonNpc
+  m_EditorClassIdentifier: Game::Npc
   npcName: Amethyra
   portrait: {fileID: 21300000, guid: 7f267f10f48ab4afe93f0f8e408f159c, type: 3}
-  introduction:
-  - heroSpeaks: 0
-    text: Well now, a visitor! Don't be frightened, {hero}. I don't bite... often.
-  - heroSpeaks: 1
-    text: A dragon?! Here, at the castle?
-  - heroSpeaks: 0
-    text: I am Amethyra, last of the amethyst dragons. I've watched over this castle for three hundred years.
-  - heroSpeaks: 0
-    text: Those rattling skeletons crawled up from the dungeon below. Clear them away, and the way down will open.
-  - heroSpeaks: 1
-    text: Won't you come and help?
-  - heroSpeaks: 0
-    text: My fighting days are long behind me, little one. But I'll be right here, cheering you on. Go on, {hero}!
-  laterChat:
-  - heroSpeaks: 0
-    text: 'Back again, {hero}? The way down lies past my castle. Mind those skeletons: all bones and bad manners.'
+  voice: {fileID: 8300000, guid: b5dfac46aeba941cbb72c5f3bea2d323, type: 3}
+  giftSound: {fileID: 8300000, guid: a142d3c7adcfa46989d2fae3161d654d, type: 3}
+  conversations:
+  - requires: 
+    notIf: met:Amethyra
+    sets: met:Amethyra
+    giveGold: 0
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Well now, a visitor! Don't be frightened, {hero}. I don't bite... often.
+    - heroSpeaks: 1
+      text: A dragon?! Here, at the castle?
+    - heroSpeaks: 0
+      text: I am Amethyra, last of the amethyst dragons. I've watched over this castle for three hundred years.
+    - heroSpeaks: 0
+      text: Those rattling skeletons crawled up from the dungeon below. Clear them away, and the way down will open.
+    - heroSpeaks: 1
+      text: Won't you come and help?
+    - heroSpeaks: 0
+      text: My fighting days are long behind me, little one. But I'll be right here, cheering you on. Go on, {hero}!
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: 'Back again, {hero}? The way down lies past my castle. Mind those skeletons: all bones and bad manners.'
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Knock knock.
+    - heroSpeaks: 1
+      text: Who's there?
+    - heroSpeaks: 0
+      text: Dragon.
+    - heroSpeaks: 1
+      text: Dragon who?
+    - heroSpeaks: 0
+      text: Dragon your feet won't open those stairs! Off you go! Ha!
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Why didn't the skeleton go to the castle ball?
+    - heroSpeaks: 1
+      text: Why?
+    - heroSpeaks: 0
+      text: Because he had no BODY to go with! Hoo hoo hoo!
+  - requires: wish:granted
+    notIf: 
+    sets: 
+    giveGold: 0
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: I saw the fountain sparkle! Someone's wish came true. Was it yours, {hero}?
+  talkOffset: {x: 0, y: 0, z: 0}
   flipbook: {fileID: 3465369928831926180}
   idleFrames:
   - {fileID: 1013168404, guid: b12f0622f36ab4fe584084408505c263, type: 3}

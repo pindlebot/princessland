@@ -1,4 +1,9 @@
-// The dungeon under the castle. The Slime King (M) guards the stairs: they open when he falls.
+// The dungeon under the castle: a labyrinth of rooms and winding tunnels.
+//   The storeroom (barrels and crates) is through the door east of the start room.
+//   Bonesy, a friendly skeleton, keeps a campfire going south of the start (warm up there!).
+//   The great puddle hall has slimes splashing about; the Slime King (M) waits below it.
+//   The Rusty Key (y) hides deep in the maze under the campfire room; it opens the
+//   locked door (k) to the treasure room at the end of the long hall.
 // No "exit:" here, so the stairs are the end of the adventure (for now).
 title: Escape the dungeon
 theme: Dungeon
@@ -9,20 +14,34 @@ open_hint: The stairs are open!
 minimap_floor: #4E463E
 minimap_wall: #AAA4B8
 ---
-####T################T####
-#P......#        #......C#
-#....I..#        #.L.E...T
-#.......####T#####.......#
-#.....E.....L.....E...E..#
-#,,.....##########.....,,#
-#########        ####.####
-                    #.#
-           ###T###T##.####
-           #,,...........#
-           #.............T
-           #......M......#
-           #.............#
-           #.............#
-           #....,#X#,....#
-           ###############
+####T#####     #####T#####       ####T####
+#P.......#     #oo......C#       #o.....x#
+#....I...#######x........#########.....C.#
+#........d..........E............k.......#
+#........#######..j......#########.......#
+#,,......#     #.......xo#       #u..u..o#
+####.#####     #####.#####       #########
+   #.#          ####.######T#####T####
+####.#T######   #u...................#
+#ox.........#   #.........ppp......E.#
+#...........#####......ppppppppp.....#
+#.....cn....d.........pppLppppppp....#
+#...........#####.....pppppppLppp....#
+#...........#   #......ppppppppp.....#
+#,.........o#   #.E.......ppp........#
+######.######   #...................j#
+ #####.####T################.#########
+ #..........E......# #####T#.#######T#####
+ #.###############.# #,,................,#
+ #.#.....#       #.# #...................#
+ #.#j###.#########.# #...................#
+ #.### #.....L.....# #...................#
+ #.###################...................#
+ #.............#...u##.........M.........#
+ #.###########.#.##.##...................#
+ #E##.u.##...#.#y##.##...................#
+ #.###.###.###.####.##...................#
+ #.........# #.u.j..##...................#
+ ########### #########j......,#X#,......u#
+                     #####################
 ---

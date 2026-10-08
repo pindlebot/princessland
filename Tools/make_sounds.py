@@ -325,6 +325,39 @@ def poof():  # a soft, friendly puff
     return place([x * 0.7 for x in puff], [x * 0.35 for x in twinkle], 0.06)
 
 
+def ribbit():  # Sir Hopsalot: two croaky, buzzy chirps
+    croak = lambda f: envelope(lowpass(tone(f, 0.09, "square", duty=0.3, freq_end=f * 0.8, vibrato=0.15), 1400), curve=1.4)
+    return place(list(croak(300)), croak(360), 0.13)
+
+
+def plink():  # a coin dropping into the fountain: a high drip and a little splash
+    drip = envelope(tone(1400, 0.12, "sine", freq_end=2200), curve=2.5)
+    splash = envelope(lowpass(noise(0.15, seed=70), 3000), attack=0.003, curve=2)
+    return place([x * 0.7 for x in drip], [x * 0.3 for x in splash], 0.05)
+
+
+def wish():  # a wish coming true: a sparkly rising harp run
+    out = []
+    for k, note in enumerate(["C6", "E6", "G6", "B6", "D7", "G7"]):
+        place(out, [x * 0.45 for x in envelope(tone(midi(n(note)), 0.5, "sine"), curve=2)], k * 0.06)
+    return out
+
+
+def voice_mermaid():  # a bubbly, bright blip with a wobble
+    return envelope(tone(720, 0.05, "sine", freq_end=860, vibrato=0.3), attack=0.003, curve=1.5)
+
+
+def voice_bonesy():  # a woody, rattly clack
+    return envelope(highpass(tone(420, 0.045, "square", duty=0.2, freq_end=380), 300), attack=0.002, curve=2)
+
+
+def door_locked():  # a rattle against a heavy lock
+    out = []
+    for k in range(3):
+        place(out, [x * 0.6 for x in envelope(lowpass(noise(0.05, seed=80 + k), 2400), curve=2)], k * 0.07)
+    return place(out, envelope(lowpass(tone(110, 0.15, "square"), 600), curve=2), 0.2)
+
+
 def victory():
     out = arpeggio(["C5", "E5", "G5"], 0.12, 0.25, "square")
     return place(out, [s * 0.6 for s in envelope(tone(midi(n("C6")), 1.0, "triangle"), curve=1.2)], 0.36)
@@ -431,6 +464,8 @@ def home_theme():
 
 
 SOUNDS = {
+    "ribbit": ribbit, "plink": plink, "wish": wish, "voice_mermaid": voice_mermaid,
+    "voice_bonesy": voice_bonesy, "door_locked": door_locked,
     "cast_fire": cast_fire, "cast_water": cast_water,
     "impact_fire": impact_fire, "impact_water": impact_water,
     "enemy_hit": enemy_hit, "enemy_attack": enemy_attack, "enemy_death": enemy_death,

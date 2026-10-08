@@ -20,6 +20,9 @@ public class LevelMap : MonoBehaviour
     // and the markers P/E/C/I/D/X/B/W/S/R/O.
     public static bool IsWall(char c) => c == '#' || c == 'T' || c == 'H' || c == 'K';
 
+    // Pond water ('w', and 'm' where the mermaid sits): not walkable, drawn blue on the minimap.
+    public static bool IsWater(char c) => c == 'w' || c == 'm';
+
     public char At(int col, int row) =>
         row >= 0 && row < Height && col >= 0 && col < rows[row].Length ? rows[row][col] : ' ';
 

@@ -27,6 +27,11 @@ public static class GameSession
     // so leaving and re-entering a scene doesn't undo them.
     public static readonly HashSet<string> Flags = new HashSet<string>();
 
+    // Things worth counting, e.g. "wishes" made at the fountain or "talks:Coralie".
+    public static readonly Dictionary<string, int> Counters = new Dictionary<string, int>();
+    public static int GetCounter(string key) => Counters.TryGetValue(key, out int n) ? n : 0;
+    public static int AddToCounter(string key, int amount = 1) => Counters[key] = GetCounter(key) + amount;
+
     // Level, experience, gold and skills.
     public static Progression Progress = new Progression();
 
@@ -47,6 +52,7 @@ public static class GameSession
         EnteredBy = "";
         Settings = new GameSettings();
         Flags.Clear();
+        Counters.Clear();
         Progress = new Progression();
         Inventory = new InventoryState();
     }

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -143,7 +144,7 @@ public class GamepadTests : InputTestFixture
         yield return Load("Level0");
         var player = LevelBootstrap.Current.Player;
         foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
-        Object.FindAnyObjectByType<DragonNpc>().Interact(player);
+        Object.FindObjectsByType<Npc>().First(n => n.Name == "Amethyra").Interact(player);
         yield return null;
         yield return null;
         Assert.IsTrue(DialogueController.BlocksInput, "the conversation is open");

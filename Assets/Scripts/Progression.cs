@@ -52,6 +52,15 @@ public class Progression
         Changed?.Invoke();
     }
 
+    // Pay for something (a wish at the fountain, later the shop). False if there isn't enough.
+    public bool SpendGold(int amount)
+    {
+        if (Gold < amount) return false;
+        Gold -= amount;
+        Changed?.Invoke();
+        return true;
+    }
+
     // ---------- Skills ----------
 
     public bool Has(string skillId) => learned.Contains(skillId);
