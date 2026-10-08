@@ -19,7 +19,10 @@ the boss's warning circle lasts 1.6× longer. **Adventurer** is the classic rule
 In Level 0, walk up to **Amethyra the dragon** and press **E** to talk (E / Space / Enter / click to continue).
 **Coralie the mermaid** sits in the pond and has lost her frog. Easter eggs: one bush hides **Sir Hopsalot** (find him
 and tell Coralie), the fountain takes wishes (1 coin each; the third comes true), and Amethyra tells jokes.
-Press **E** at the **castle gate** to go inside to the hero's home (bed, toilet, sink, paper towel); the front
+Press **E** at the **castle gate** to go inside to the hero's home. The bedroom has a bed (a nap restores health
+and mana), a lamp to switch on and off, and a wardrobe, bookshelf, toy chest and plant that say something different
+each time. In the bathroom you can sit on the toilet (E again flushes and stands you up; so does walking away), then
+wash your hands and dry them on the paper towel. The front
 door brings you back out by the gate. Cleared levels and finished conversations are remembered between scenes.
 
 **Progression:** enemies drop gold coins (walk near them) and give XP (skeleton 15, slime 20; the chest holds
@@ -148,6 +151,7 @@ and `MapFileTests` runs it too). Adding a room = writing a file and running **Du
 Built-in tiles: `.` ground · `,` grass tufts · `=` path · `#` stone wall · `T` wall + torch · `H` hedge ·
 `K` castle (a rectangle) · `P` start · `E` skeleton · `L` slime · `M` Slime King (boss) · `C` chest · `I` Ember Ring · `D` dragon · `X` exit ·
 `_` bathroom tiles · `Y` tree · `F` fountain · `b` bush · `Q` banner · `*` butterflies · `;` flowers · `B` bed · `W` toilet · `S` sink · `R` paper towel ·
+`A` wardrobe · `N` nightstand and lamp · `U` bookshelf · `G` toy chest · `v` plant · `r` rug ·
 `w` pond · `m` mermaid · `f` frog bush · `c` campfire · `n` Bonesy · `o` barrel · `x` crate · `j` bones · `u` mushrooms · `p` puddle · `d` door · `k` locked door · `y` key ·
 `~` lava · `^` spike trap.
 
@@ -156,12 +160,12 @@ Each character is a sprite sheet (one animation per row) plus a JSON layout, dra
 
 | Sheet | Script | Action state |
 |---|---|---|
-| `Assets/Art/Wizard.png` (player) | `make_wizard_sprites.py` | `Cast` |
-| `Assets/Art/Princess.png` (player) | `make_princess_sprites.py` | `Cast` |
+| `Assets/Art/Wizard.png` (player) | `make_wizard_sprites.py` | `Cast`, plus `Sit` (front only) |
+| `Assets/Art/Princess.png` (player) | `make_princess_sprites.py` | `Cast`, plus `Sit` (front only) |
 | `Assets/Art/Skeleton.png` (enemy) | `make_skeleton_sprites.py` | `Attack` |
 | `Assets/Art/Slime.png` (enemy) | `make_slime_sprites.py` | `Attack` (squash-and-stretch lunge) |
 | `Assets/Art/SlimeKing.png` (boss, 64×64) | `make_slime_sprites.py` (same code at 2.6× scale) | `Attack` |
-| `Assets/Art/Furniture.png` (64×64 frames) | `make_furniture_sprites.py` | (static: bed, toilet, sink, paper towel, door) |
+| `Assets/Art/Furniture.png` (64×64 frames) | `make_furniture_sprites.py` | (static: bed, toilet, sink, paper towel, door, wardrobe, nightstand, bookshelf, toy chest, plant; the rug is `Rug.png`) |
 | `Assets/Art/Dragon.png` (NPC, 64×64 frames) | `make_dragon_sprites.py` | (Idle/Talk via `SpriteFlipbook`) |
 
 Shared drawing helpers live in `Tools/sprite_common.py`. Regenerate with e.g.

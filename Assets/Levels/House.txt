@@ -1,4 +1,7 @@
 // Inside the castle: a bedroom on the left, a tiled bathroom on the right.
+// Bedroom: B bed (a tile out from the walls, so it doesn't poke into them), r the rug at its
+// foot, N nightstand with a lamp, A wardrobe, U bookshelf, G toy chest, v a potted plant.
+// Bathroom: W toilet (you can sit on it), S sink, R paper towel.
 // "{hero}" in the title becomes the hero's name.
 title: {hero}'s Home
 theme: Home
@@ -11,12 +14,12 @@ minimap_floor: #96683E
 minimap_wall: #AAA4B8
 ---
 ###T###T###T##
-#B.......#W_S#
-#........#___#
-#........#_R_#
+#N....A.U#W_S#
+#.B......#___#
+#.r.....G#_R_#
 #........____#
 #........#####
-#.....P......#
+#v....P......#
 ######1#######
 ---
 1 = door Level0

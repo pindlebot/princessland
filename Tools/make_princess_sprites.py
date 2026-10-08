@@ -23,31 +23,35 @@ ROD = (200, 206, 222, 255)
 ORB, ORB_HI = (100, 228, 220, 255), (232, 255, 252, 255)
 
 
-def draw_princess(back=False, bob=0, legs=(0, 0), wand_up=0, glow=0, hurt=False):
+def draw_princess(back=False, bob=0, legs=(0, 0), wand_up=0, glow=0, hurt=False, sit=False, kick=0):
     """Same pose controls as the wizard: bob lowers the upper body, legs lifts a foot
-    (the gown sways that way), wand_up raises the wand, glow (0-2) lights the orb."""
+    (the gown sways that way), wand_up raises the wand, glow (0-2) lights the orb.
+    sit draws her sitting down (facing front), feet dangling; kick swings one foot up."""
     c = Canvas()
-    b = bob
+    b = bob + (SIT_DROP if sit else 0)
     sway = -1 if legs[1] > legs[0] else (1 if legs[0] > legs[1] else 0)
 
-    # Little shoes peek out under the hem when she steps
-    if legs[0]:
-        c.rect(11, 30, 13, 30, SHOE)
-    if legs[1]:
-        c.rect(18, 30, 20, 30, SHOE)
+    if sit:
+        draw_lap(c, kick)
+    else:
+        # Little shoes peek out under the hem when she steps
+        if legs[0]:
+            c.rect(11, 30, 13, 30, SHOE)
+        if legs[1]:
+            c.rect(18, 30, 20, 30, SHOE)
 
-    # Bell-shaped gown with a white hem
-    top = 17 + b
-    for y in range(top, 31):
-        hw = 3 + round((y - top) * 0.55)
-        cx = 15 + (sway if y >= 26 else 0)
-        c.rect(cx - hw, y, cx + hw, y, GOWN_SH if back else GOWN)
-        c.dot(cx - hw, y, GOWN_HI)
-        c.dot(cx + hw, y, GOWN_SH)
-        if not back and y > top + 1:  # a lighter front panel that widens toward the hem
-            pw = (y - top) // 4
-            c.rect(cx - pw, y, cx + 1 + pw, y, GOWN_HI)
-    c.rect(15 + sway - 10, 29, 15 + sway + 10, 29, TRIM)
+        # Bell-shaped gown with a white hem
+        top = 17 + b
+        for y in range(top, 31):
+            hw = 3 + round((y - top) * 0.55)
+            cx = 15 + (sway if y >= 26 else 0)
+            c.rect(cx - hw, y, cx + hw, y, GOWN_SH if back else GOWN)
+            c.dot(cx - hw, y, GOWN_HI)
+            c.dot(cx + hw, y, GOWN_SH)
+            if not back and y > top + 1:  # a lighter front panel that widens toward the hem
+                pw = (y - top) // 4
+                c.rect(cx - pw, y, cx + 1 + pw, y, GOWN_HI)
+        c.rect(15 + sway - 10, 29, 15 + sway + 10, 29, TRIM)
 
     # Bodice and puffed sleeves
     c.rect(13, 13 + b, 18, 17 + b, GOWN_SH if back else GOWN)
@@ -111,6 +115,24 @@ def draw_princess(back=False, bob=0, legs=(0, 0), wand_up=0, glow=0, hurt=False)
     return img
 
 
+# Sitting, everything above the waist drops this many pixels.
+SIT_DROP = 6
+
+
+def draw_lap(c, kick):
+    """Sitting, seen from the front: the gown spreads over her knees and her legs dangle
+    below the hem, one foot swinging up when kick is set."""
+    for y, hw in ((23, 5), (24, 6), (25, 7), (26, 7)):
+        c.rect(15 - hw, y, 16 + hw, y, GOWN)
+        c.dot(15 - hw, y, GOWN_HI)
+        c.dot(16 + hw, y, GOWN_SH)
+        c.rect(14, y, 17, y, GOWN_HI)  # the front panel
+    c.rect(8, 27, 23, 27, TRIM)  # the hem, over her knees
+    for x, lift in ((12, kick), (18, 0)):
+        c.rect(x, 28 - lift, x + 1, 29 - lift, SKIN)
+        c.rect(x - (1 if x < 15 else 0), 30 - lift, x + 1 + (1 if x > 15 else 0), 30 - lift, SHOE)
+
+
 def fallen(angle, darken=0.0):
     """Death frames: tip the hurt pose over around her feet, like the wizard."""
     big = Image.new("RGBA", (F * 3, F * 3), CLEAR)
@@ -141,6 +163,8 @@ def build_animations():
             ]),
             (f"Hurt_{facing}", 8, False, [draw_princess(back, bob=1, hurt=True)]),
         ]
+    # Sitting on something (the toilet at home): front only, swinging her feet.
+    anims.append(("Sit", 3, True, [draw_princess(sit=True), draw_princess(sit=True, kick=1)]))
     anims.append(("Die", 8, False, [fallen(0), fallen(30), fallen(60), fallen(90, darken=0.35)]))
     return anims
 

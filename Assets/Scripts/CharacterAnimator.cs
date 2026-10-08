@@ -11,6 +11,7 @@ using UnityEngine;
 //                            princess, Attack for the skeleton), then back to Idle
 //   Hurt        (trigger) -> Hurt, then back to Idle
 //   Dead        (bool)    -> Die (and nothing can interrupt it)
+//   Sitting     (bool)    -> Sit, for heroes sitting down (PlayerController.IsSeated)
 //
 // Left/right isn't an Animator parameter at all: we just mirror the sprite with flipX.
 [RequireComponent(typeof(CharacterController), typeof(Health))]
@@ -22,18 +23,22 @@ public class CharacterAnimator : MonoBehaviour
     private static readonly int ActionId = Animator.StringToHash("Action");
     private static readonly int HurtId = Animator.StringToHash("Hurt");
     private static readonly int DeadId = Animator.StringToHash("Dead");
+    private static readonly int SittingId = Animator.StringToHash("Sitting");
 
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
 
     private CharacterController controller;
+    private PlayerController player; // null for enemies
     private Camera cam;
 
     public Animator Animator => animator;
+    public SpriteRenderer SpriteRenderer => spriteRenderer;
 
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        player = GetComponent<PlayerController>();
         cam = Camera.main;
 
         var health = GetComponent<Health>();
@@ -55,6 +60,7 @@ public class CharacterAnimator : MonoBehaviour
         Vector3 velocity = controller.enabled ? controller.velocity : Vector3.zero;
         velocity.y = 0f;
         animator.SetFloat(SpeedId, velocity.magnitude);
+        animator.SetBool(SittingId, player != null && player.IsSeated);
 
         // Which way is the character facing *on screen*? Compare its forward vector
         // with the camera's screen-right and screen-up directions (flattened onto the floor).

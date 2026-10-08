@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2203613609274076469
+--- !u!1 &1030369430718177710
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,106 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5592611113483230888}
-  - component: {fileID: 8812071103760797506}
-  - component: {fileID: 2990980115282425751}
+  - component: {fileID: 8627526267415192781}
+  - component: {fileID: 1285840244837697255}
+  m_Layer: 0
+  m_Name: LampLight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8627526267415192781
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1030369430718177710}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6427033242257291192}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!108 &1285840244837697255
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1030369430718177710}
+  m_Enabled: 1
+  serializedVersion: 13
+  m_Type: 2
+  m_Color: {r: 1, g: 0.7, b: 0.6, a: 1}
+  m_Intensity: 1.5
+  m_Range: 5
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.802082
+  m_CookieSize2D: {x: 0.5, y: 0.5}
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
+  m_ShapeRadius: 0.025
+  m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
+--- !u!1 &1477652745400487778
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8482540535898425368}
+  - component: {fileID: 5936077702707460873}
+  - component: {fileID: 8772500061079235188}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -18,29 +115,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5592611113483230888
+--- !u!4 &8482540535898425368
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2203613609274076469}
+  m_GameObject: {fileID: 1477652745400487778}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8205062154906421969}
+  m_Father: {fileID: 6427033242257291192}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &8812071103760797506
+--- !u!212 &5936077702707460873
 SpriteRenderer:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2203613609274076469}
+  m_GameObject: {fileID: 1477652745400487778}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -82,7 +179,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 980652628, guid: b38caa757aa3a41e3894c80ac2185685, type: 3}
+  m_Sprite: {fileID: 846908480, guid: b38caa757aa3a41e3894c80ac2185685, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -93,19 +190,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &2990980115282425751
+--- !u!114 &8772500061079235188
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2203613609274076469}
+  m_GameObject: {fileID: 1477652745400487778}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 502420a4bf9fa47588f60892af5832e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Billboard
---- !u!1 &2432881467812529618
+--- !u!1 &4900730044992483540
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,40 +210,41 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8205062154906421969}
-  - component: {fileID: 318802148098404311}
-  - component: {fileID: 6319416645101957009}
+  - component: {fileID: 6427033242257291192}
+  - component: {fileID: 5165263481794474292}
+  - component: {fileID: 5264249432186229465}
   m_Layer: 0
-  m_Name: Toilet
+  m_Name: Nightstand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8205062154906421969
+--- !u!4 &6427033242257291192
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2432881467812529618}
+  m_GameObject: {fileID: 4900730044992483540}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5592611113483230888}
-  - {fileID: 6907438742491690067}
+  - {fileID: 8482540535898425368}
+  - {fileID: 5089120459256240498}
+  - {fileID: 8627526267415192781}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &318802148098404311
+--- !u!65 &5165263481794474292
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2432881467812529618}
+  m_GameObject: {fileID: 4900730044992483540}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -159,32 +257,32 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1.2, y: 1, z: 0.8}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &6319416645101957009
+--- !u!114 &5264249432186229465
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2432881467812529618}
+  m_GameObject: {fileID: 4900730044992483540}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edc04a256fd79408d9a584a329dbb9bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::HouseFixture
-  prompt: Sit on the toilet
-  message: You sit down on the toilet. Ahh.
-  effect: 4
-  sound: {fileID: 0}
+  prompt: Turn the lamp off
+  message: 
+  effect: 5
+  sound: {fileID: 8300000, guid: 461491437aa714f4e8bb63d3b5494b62, type: 3}
   standPrompt: Flush and stand up
-  standMessage: '*Flush!* Much better. Now wash your hands!'
-  standSound: {fileID: 8300000, guid: 7e6eb5b6391654a95bbab8828c39f2a0, type: 3}
+  standMessage: 
+  standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
-  lamp: {fileID: 0}
+  lamp: {fileID: 1285840244837697255}
   offPrompt: Turn the lamp on
---- !u!1 &5283625899036765237
+--- !u!1 &8645653667902669617
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,9 +290,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6907438742491690067}
-  - component: {fileID: 4130119217396195536}
-  - component: {fileID: 8754402221082693522}
+  - component: {fileID: 5089120459256240498}
+  - component: {fileID: 195218609195464934}
+  - component: {fileID: 3009501701018584601}
   m_Layer: 0
   m_Name: Shadow
   m_TagString: Untagged
@@ -202,29 +300,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6907438742491690067
+--- !u!4 &5089120459256240498
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5283625899036765237}
+  m_GameObject: {fileID: 8645653667902669617}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0.049999993, y: 0.02, z: 0.08660254}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8205062154906421969}
+  m_Father: {fileID: 6427033242257291192}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &4130119217396195536
+--- !u!212 &195218609195464934
 SpriteRenderer:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5283625899036765237}
+  m_GameObject: {fileID: 8645653667902669617}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -277,13 +375,13 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &8754402221082693522
+--- !u!114 &3009501701018584601
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5283625899036765237}
+  m_GameObject: {fileID: 8645653667902669617}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: caf46237c181847899153f7615269a67, type: 3}

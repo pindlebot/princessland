@@ -283,3 +283,10 @@ MonoBehaviour:
   message: You wash your hands. Now they're all wet.
   effect: 2
   sound: {fileID: 8300000, guid: 74bfc32a122894e7194ecce884de31d5, type: 3}
+  standPrompt: Flush and stand up
+  standMessage: 
+  standSound: {fileID: 0}
+  seatHeight: 0.85
+  seatForward: 0.35
+  lamp: {fileID: 0}
+  offPrompt: Turn the lamp on

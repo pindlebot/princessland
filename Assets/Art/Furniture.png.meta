@@ -119,7 +119,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 256
+        y: 576
         width: 64
         height: 64
       alignment: 7
@@ -141,7 +141,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 192
+        y: 512
         width: 64
         height: 64
       alignment: 7
@@ -163,7 +163,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
+        y: 448
         width: 64
         height: 64
       alignment: 7
@@ -185,7 +185,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
+        y: 384
         width: 64
         height: 64
       alignment: 7
@@ -207,7 +207,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 320
         width: 64
         height: 64
       alignment: 7
@@ -220,6 +220,116 @@ TextureImporter:
       bones: []
       spriteID: 53bccfb8b0c9c4f0793e72fdd6be37bf
       internalID: -1326738740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Wardrobe_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 711b7642463804f4b8a989eb29eec2bd
+      internalID: 773345914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Nightstand_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbe2c8f8edd294018b3eefe9db00897d
+      internalID: 846908480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bookshelf_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea293b74563b241f780648a7e44bdf9e
+      internalID: 1018583454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ToyChest_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eab17dc9734244bc8b55424313ad4119
+      internalID: 1021344480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plant_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1c5ba60dffa94f41803b190d7c5e3b9
+      internalID: -420767284
       vertices: []
       indices: 
       edges: []
@@ -239,10 +349,15 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Bed_0: 1377452566
+      Bookshelf_0: 1018583454
       Door_0: -1326738740
+      Nightstand_0: 846908480
       PaperTowel_0: -1656005674
+      Plant_0: -420767284
       Sink_0: 1031098811
       Toilet_0: 980652628
+      ToyChest_0: 1021344480
+      Wardrobe_0: 773345914
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

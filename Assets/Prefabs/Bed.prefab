@@ -72,6 +72,13 @@ MonoBehaviour:
   message: You curl up for a quick nap. Health and mana restored!
   effect: 1
   sound: {fileID: 8300000, guid: 730c7a3d003744e55a6c6025a4c8c6eb, type: 3}
+  standPrompt: Flush and stand up
+  standMessage: 
+  standSound: {fileID: 0}
+  seatHeight: 0.85
+  seatForward: 0.35
+  lamp: {fileID: 0}
+  offPrompt: Turn the lamp on
 --- !u!1 &3205997248665598069
 GameObject:
   m_ObjectHideFlags: 0

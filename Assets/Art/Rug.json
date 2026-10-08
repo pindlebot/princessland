@@ -1,0 +1,14 @@
+{
+  "frameSize": 64,
+  "pixelsPerUnit": 16,
+  "pivot": "center",
+  "animations": [
+    {
+      "name": "Rug",
+      "row": 0,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    }
+  ]
+}

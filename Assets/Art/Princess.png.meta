@@ -119,7 +119,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 256
+        y: 288
         width: 32
         height: 32
       alignment: 7
@@ -141,7 +141,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 256
+        y: 288
         width: 32
         height: 32
       alignment: 7
@@ -163,7 +163,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 224
+        y: 256
         width: 32
         height: 32
       alignment: 7
@@ -185,7 +185,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 224
+        y: 256
         width: 32
         height: 32
       alignment: 7
@@ -207,7 +207,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 224
+        y: 256
         width: 32
         height: 32
       alignment: 7
@@ -229,7 +229,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 224
+        y: 256
         width: 32
         height: 32
       alignment: 7
@@ -251,7 +251,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 192
+        y: 224
         width: 32
         height: 32
       alignment: 7
@@ -273,7 +273,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 192
+        y: 224
         width: 32
         height: 32
       alignment: 7
@@ -295,7 +295,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 192
+        y: 224
         width: 32
         height: 32
       alignment: 7
@@ -317,7 +317,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 160
+        y: 192
         width: 32
         height: 32
       alignment: 7
@@ -339,7 +339,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
+        y: 160
         width: 32
         height: 32
       alignment: 7
@@ -361,7 +361,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 128
+        y: 160
         width: 32
         height: 32
       alignment: 7
@@ -383,7 +383,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 96
+        y: 128
         width: 32
         height: 32
       alignment: 7
@@ -405,7 +405,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 96
+        y: 128
         width: 32
         height: 32
       alignment: 7
@@ -427,7 +427,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 96
+        y: 128
         width: 32
         height: 32
       alignment: 7
@@ -449,7 +449,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 96
+        y: 128
         width: 32
         height: 32
       alignment: 7
@@ -471,7 +471,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
+        y: 96
         width: 32
         height: 32
       alignment: 7
@@ -493,7 +493,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 64
+        y: 96
         width: 32
         height: 32
       alignment: 7
@@ -515,7 +515,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 64
+        y: 96
         width: 32
         height: 32
       alignment: 7
@@ -537,7 +537,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 32
+        y: 64
         width: 32
         height: 32
       alignment: 7
@@ -642,6 +642,50 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Sit_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14eaa55f6f0d348cba8f27bfb7922656
+      internalID: 860938431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Sit_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 32
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb8f8ca2de58e4233a108f7288b197e3
+      internalID: 1523860478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -672,6 +716,8 @@ TextureImporter:
       Idle_Back_1: 408900418
       Idle_Front_0: 274647068
       Idle_Front_1: 1669478732
+      Sit_0: 860938431
+      Sit_1: 1523860478
       Walk_Back_0: 1319375053
       Walk_Back_1: 1902804358
       Walk_Back_2: -120178116
