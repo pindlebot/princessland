@@ -21,6 +21,8 @@ public class SaveData
     public List<string> bag = new List<string>();
     public List<EquippedItem> equipped = new List<EquippedItem>();
 
+    public GameSettings settings = new GameSettings();
+
     [Serializable]
     public class EquippedItem
     {

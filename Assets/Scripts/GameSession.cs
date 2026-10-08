@@ -16,6 +16,13 @@ public static class GameSession
     // outside the castle gate instead of at the level start). Used once, then cleared.
     public static string NextSpawn;
 
+    // The spawn point the hero arrived at in the current scene ("" = the level start), so
+    // "save and quit" can put her back by the same door.
+    public static string EnteredBy = "";
+
+    // Volume and Gentle/Adventurer mode, saved with each slot.
+    public static GameSettings Settings = new GameSettings();
+
     // Simple facts about this playthrough, e.g. "cleared:Level0" or "met:Amethyra",
     // so leaving and re-entering a scene doesn't undo them.
     public static readonly HashSet<string> Flags = new HashSet<string>();
@@ -37,6 +44,8 @@ public static class GameSession
     {
         SelectedCharacter = hero;
         NextSpawn = null;
+        EnteredBy = "";
+        Settings = new GameSettings();
         Flags.Clear();
         Progress = new Progression();
         Inventory = new InventoryState();

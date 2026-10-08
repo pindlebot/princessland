@@ -48,7 +48,7 @@ public class SpellAbility : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
-        if (DialogueController.BlocksInput) return; // the buttons are for the conversation
+        if (GameInput.GameplayBlocked) return; // the buttons are for the conversation or menu
 
         // Clicks on the HUD (e.g. the inventory) are for the UI, not for casting.
         bool click = GameInput.ClickHeld && !HudController.PointerOverUi;

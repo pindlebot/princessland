@@ -761,3 +761,116 @@ Label {
     margin-top: 6px;
     color: rgb(128, 88, 118);
 }
+
+/* ---------- Pause menu ---------- */
+
+.pause-screen {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(30, 14, 34, 0.55); /* dim the game behind it */
+    display: none;
+}
+
+.pause-screen.open {
+    display: flex;
+}
+
+.pause {
+    width: 400px;
+    padding: 18px 22px 20px 22px;
+    align-items: stretch;
+}
+
+.pause-title {
+    font-size: 26px;
+    color: rgb(164, 112, 40);
+    -unity-text-align: middle-center;
+    margin-bottom: 10px;
+}
+
+.pause-row {
+    flex-direction: row;
+    align-items: center;
+    height: 40px;
+    margin: 3px 0 3px 0;
+    padding: 0 10px 0 10px;
+    border-width: 2px;
+    border-radius: 8px;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* The row the keyboard / gamepad (or the mouse) is on. */
+.pause-row.selected {
+    border-color: rgb(222, 168, 70);
+    background-color: rgba(255, 236, 170, 0.6);
+}
+
+.pause-button {
+    justify-content: center;
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(74, 37, 69);
+}
+
+.pause-name {
+    font-size: 17px;
+    flex-grow: 1;
+}
+
+.pause-value {
+    width: 120px;
+    font-size: 17px;
+    -unity-text-align: middle-center;
+    color: rgb(164, 112, 40);
+}
+
+.pause-dots {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.pause-dot {
+    width: 14px;
+    height: 14px;
+    margin: 0 3px 0 3px;
+    border-radius: 7px;
+    border-width: 2px;
+    border-color: rgb(164, 112, 40);
+}
+
+.pause-dot.on {
+    background-color: rgb(222, 168, 70);
+}
+
+.pause-less,
+.pause-more {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(74, 37, 69);
+    background-color: rgba(222, 168, 70, 0.35);
+    border-width: 0;
+    border-radius: 15px;
+    margin: 0;
+    padding: 0;
+}
+
+.pause-less:hover,
+.pause-more:hover {
+    background-color: rgba(222, 168, 70, 0.8);
+}
+
+.pause-description {
+    font-size: 13px;
+    color: rgb(128, 88, 118);
+    -unity-text-align: middle-center;
+    margin: 0 0 6px 0;
+}

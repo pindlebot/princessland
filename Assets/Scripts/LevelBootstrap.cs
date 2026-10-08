@@ -56,6 +56,7 @@ public class LevelBootstrap : MonoBehaviour
             if (named != null && named.name == GameSession.NextSpawn)
                 spawn = named;
         GameSession.NextSpawn = null;
+        GameSession.EnteredBy = spawn == spawnPoint ? "" : spawn.name;
 
         Player = Instantiate(Character.Prefab, spawn.position, spawn.rotation);
         Player.name = Character.Prefab.name;

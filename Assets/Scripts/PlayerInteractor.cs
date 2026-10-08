@@ -20,7 +20,7 @@ public class PlayerInteractor : MonoBehaviour
 
     private void Update()
     {
-        if (GameInput.InteractPressed && !DialogueController.BlocksInput)
+        if (GameInput.InteractPressed && !GameInput.GameplayBlocked)
             TryInteract();
     }
 

@@ -11,7 +11,7 @@ using UnityEngine.InputSystem.Controls;
 //   Cast            Space / left click        X (west) / right trigger
 //   Inventory       I                         Y (north)
 //   Skill tree      K                         View / Select
-//   Menu            Esc                       Start
+//   Pause menu      Esc                       Start
 //   Back            Esc                       B (east)
 //   Confirm         Enter                     A
 //
@@ -99,7 +99,14 @@ public static class GameInput
     public static bool AdvancePressed =>
         Down(Keyboard.current?.eKey) || Down(Keyboard.current?.spaceKey) || ConfirmPressed || ClickPressed;
 
+    // Gameplay buttons are ignored while a conversation or the pause menu is open.
+    public static bool GameplayBlocked => DialogueController.BlocksInput || PauseMenu.IsOpen;
+
     // Menu navigation: arrow keys, d-pad, or a flick of the stick.
+    public static bool UpPressed =>
+        Down(Keyboard.current?.upArrowKey) || Down(Gamepad.current?.dpad.up) || Down(Gamepad.current?.leftStick.up);
+    public static bool DownPressed =>
+        Down(Keyboard.current?.downArrowKey) || Down(Gamepad.current?.dpad.down) || Down(Gamepad.current?.leftStick.down);
     public static bool LeftPressed =>
         Down(Keyboard.current?.leftArrowKey) || Down(Gamepad.current?.dpad.left) || Down(Gamepad.current?.leftStick.left);
     public static bool RightPressed =>

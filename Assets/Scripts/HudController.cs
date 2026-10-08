@@ -162,7 +162,7 @@ public class HudController : MonoBehaviour
 
     private void HandleKeys()
     {
-        if (DialogueController.BlocksInput) return;
+        if (GameInput.GameplayBlocked) return;
         if (GameInput.InventoryPressed)
         {
             SetInventoryOpen(!IsInventoryOpen);
@@ -308,7 +308,7 @@ public class HudController : MonoBehaviour
         if (usable == null && !DialogueController.IsOpen && GameManager.Instance != null && !GameManager.Instance.IsGameOver)
         {
             if (!hasWalked)
-                hint = "W A S D: Walk";
+                hint = GameInput.UsingGamepad ? "Stick: Walk" : "W A S D: Walk";
             else if (Time.time - spell.LastCastTime > 6f && spell.CanAfford && spell.FindTarget() != null)
                 hint = $"{SpellKey}: Magic!";
         }

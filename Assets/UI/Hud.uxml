@@ -87,7 +87,7 @@
                 <ui:Label class="help-line" text="Space, Click or X:  magic! (it aims by itself)" />
                 <ui:Label class="help-line" text="E or A:  open, talk, pick up" />
                 <ui:Label class="help-line" text="I or Y:  bag      K or View:  skills      M:  music" />
-                <ui:Label class="help-line" text="R:  try again      Esc or Start:  title screen" />
+                <ui:Label class="help-line" text="R:  try again      Esc or Start:  pause menu" />
             </ui:VisualElement>
         </ui:VisualElement>
 
@@ -166,7 +166,36 @@
         <ui:VisualElement class="centered-row banner-row" picking-mode="Ignore">
             <ui:VisualElement name="banner" class="panel banner" picking-mode="Ignore">
                 <ui:Label name="banner-title" class="banner-title" text="You died" />
-                <ui:Label class="banner-subtitle" text="R: try again      Esc: choose a hero" />
+                <ui:Label class="banner-subtitle" text="R: try again      Esc: menu" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Drawn last so it covers everything else. -->
+        <!-- Pause menu (Esc / Start): PauseMenu.cs. Each setting row is: name, <, value, > -->
+        <ui:VisualElement name="pause-screen" class="pause-screen">
+            <ui:VisualElement class="panel pause">
+                <ui:Label class="pause-title" text="Paused" />
+                <ui:Button name="pause-resume" class="pause-row pause-button" text="Keep playing" />
+                <ui:VisualElement name="pause-music" class="pause-row">
+                    <ui:Label class="pause-name" text="Music" />
+                    <ui:Button class="pause-less" text="&lt;" />
+                    <ui:VisualElement name="pause-music-value" class="pause-value pause-dots" />
+                    <ui:Button class="pause-more" text="&gt;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="pause-sounds" class="pause-row">
+                    <ui:Label class="pause-name" text="Sounds" />
+                    <ui:Button class="pause-less" text="&lt;" />
+                    <ui:VisualElement name="pause-sounds-value" class="pause-value pause-dots" />
+                    <ui:Button class="pause-more" text="&gt;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="pause-mode" class="pause-row">
+                    <ui:Label class="pause-name" text="Mode" />
+                    <ui:Button class="pause-less" text="&lt;" />
+                    <ui:Label name="pause-mode-value" class="pause-value" />
+                    <ui:Button class="pause-more" text="&gt;" />
+                </ui:VisualElement>
+                <ui:Label name="pause-mode-description" class="pause-description" />
+                <ui:Button name="pause-quit" class="pause-row pause-button" text="Save and go to title" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

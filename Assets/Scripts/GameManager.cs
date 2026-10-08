@@ -1,13 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Tracks win/lose state, restarts the level (R) or returns to the title screen (Esc).
+// Tracks win/lose state and restarts the level (R). (Esc opens the PauseMenu.)
 // Drawing all of this is the HUD's job.
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [SerializeField] private string titleScene = "Title";
     [SerializeField] private AudioClip winSound;
     [SerializeField] private AudioClip loseSound;
 
@@ -40,10 +39,8 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (DialogueController.BlocksInput) return;
+        if (GameInput.GameplayBlocked) return;
         if (GameInput.RestartPressed)
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        if (GameInput.MenuPressed)
-            SceneManager.LoadScene(titleScene);
     }
 }

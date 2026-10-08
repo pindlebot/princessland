@@ -38,7 +38,7 @@ public class AudioManager : MonoBehaviour
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.clip = music;
         musicSource.loop = true;
-        musicSource.volume = musicVolume;
+        musicSource.volume = musicVolume * GameSession.Settings.Music01;
         musicSource.mute = musicMuted;
         musicSource.playOnAwake = false;
 
@@ -57,6 +57,7 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
+        musicSource.volume = musicVolume * GameSession.Settings.Music01; // the pause menu's music setting
         if (GameInput.MutePressed)
         {
             musicMuted = !musicMuted;
@@ -76,7 +77,7 @@ public class AudioManager : MonoBehaviour
         var source = effectSources[nextVoice];
         nextVoice = (nextVoice + 1) % effectSources.Length;
         source.clip = clip;
-        source.volume = effectsVolume * volume;
+        source.volume = effectsVolume * GameSession.Settings.Sound01 * volume;
         source.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
         source.Play();
         LastPlayed = clip;

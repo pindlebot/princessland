@@ -425,6 +425,7 @@ public static partial class DungeonBuilder
         var controller = hud.AddComponent<HudController>();
         SetRef(controller, "clickSound", Sound("ui_select"));
         SetRef(hud.AddComponent<SkillTreeView>(), "learnSound", Sound("skill_learn"));
+        SetRef(hud.AddComponent<PauseMenu>(), "clickSound", Sound("ui_select"));
         var dialogue = hud.AddComponent<DialogueController>();
         SetRef(dialogue, "npcVoice", Sound("voice_dragon"));
         SetRef(dialogue, "heroVoice", Sound("voice_hero"));

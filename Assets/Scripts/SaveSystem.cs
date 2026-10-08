@@ -91,6 +91,7 @@ public static class SaveSystem
             skills = p.LearnedSkills.ToList(),
             bag = inv.Bag.ToList(),
             equipped = inv.Equipped.Select(e => new SaveData.EquippedItem { slot = e.Key, item = e.Value }).ToList(),
+            settings = GameSession.Settings,
         };
 
         Directory.CreateDirectory(Folder);
@@ -115,6 +116,7 @@ public static class SaveSystem
         GameSession.Inventory.Bag.AddRange(data.bag);
         foreach (var e in data.equipped) GameSession.Inventory.Equipped[e.slot] = e.item;
         GameSession.NextSpawn = string.IsNullOrEmpty(data.spawn) ? null : data.spawn;
+        GameSession.Settings = data.settings ?? new GameSettings();
         return data.scene;
     }
 
