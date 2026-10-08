@@ -1,0 +1,63 @@
+/* Title screen. Builds on CharacterSelect.uss (screen, title, cards, start button). */
+
+.title-name {
+    font-size: 52px;
+}
+
+.continue-button {
+    margin: 0 0 26px 0;
+}
+
+.slot {
+    width: 240px;
+    height: 290px;
+    opacity: 1;      /* every slot is a choice: no dimmed "unselected" look */
+    scale: 1 1;
+    transition-property: scale;
+}
+
+.slot:hover {
+    opacity: 1;
+    scale: 1.04 1.04;
+}
+
+.slot-portrait {
+    width: 120px; /* 24px portrait at 5x */
+    height: 120px;
+    margin: 12px 0 12px 0;
+}
+
+/* An empty slot shows a big plus instead of a portrait. */
+.slot.empty .slot-portrait {
+    background-image: none;
+    border-width: 3px;
+    border-color: rgba(128, 88, 118, 0.45);
+    border-radius: 60px;
+}
+
+.slot.empty .card-name {
+    color: rgb(128, 88, 118);
+}
+
+.slot-place {
+    font-size: 15px;
+}
+
+.slot-stats {
+    font-size: 13px;
+    color: rgb(128, 88, 118);
+    margin-top: 4px;
+}
+
+.slot-erase {
+    position: absolute;
+    bottom: 10px;
+    font-size: 12px;
+    color: rgb(128, 88, 118);
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+.slot-erase:hover {
+    color: rgb(190, 50, 70);
+}

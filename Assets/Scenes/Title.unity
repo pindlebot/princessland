@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 170862457}
   - component: {fileID: 170862456}
   m_Layer: 0
-  m_Name: CharacterSelect
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,14 +146,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 170862455}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b2935c80aa484e408b322b8dcd25b25, type: 3}
+  m_Script: {fileID: 11500000, guid: 2256370c6b613422aacbf6cd3b73e04a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Game::CharacterSelectController
-  characters:
+  m_EditorClassIdentifier: Game::TitleController
+  heroes:
   - {fileID: 11400000, guid: aeef1f53a55644e399c049a7ac9b9f80, type: 2}
   - {fileID: 11400000, guid: 51902a2e577e44650a74824e1e5c0ea3, type: 2}
-  firstLevel: Level0
-  titleScene: Title
+  characterSelectScene: CharacterSelect
   selectSound: {fileID: 8300000, guid: aba500c52dc15474087bcb509c30878c, type: 3}
   startSound: {fileID: 8300000, guid: 6c6644d12880944cd971ca1e23ccb558, type: 3}
 --- !u!114 &170862457
@@ -170,7 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: 08334cd991c7f46e6afc8d541de38af3, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 9b3a565a0bdf8400fb0832897a6dd0b0, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: cdc851189a5744ed8b9d76ed1d681dd4, type: 3}
   m_SortingOrder: 0
   m_Position: 0
   m_WorldSpaceSizeMode: 1

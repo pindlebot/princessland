@@ -17,9 +17,11 @@ using UnityEngine;
 //   DungeonBuilder.Dragon.cs           Amethyra the dragon and her dialogue
 //   DungeonBuilder.Home.cs             the furniture and front door of the hero's home
 //   DungeonBuilder.CharacterSelect.cs  the character select screen
+//   DungeonBuilder.Title.cs            the title screen and its save slots
 public static partial class DungeonBuilder
 {
     private const float Tile = 2f;
+    private const string TitleScenePath = "Assets/Scenes/Title.unity";
     private const string CharacterSelectScenePath = "Assets/Scenes/CharacterSelect.unity";
     private const string Level0ScenePath = "Assets/Scenes/Level0.unity";
     private const string DungeonScenePath = "Assets/Scenes/Dungeon.unity";
@@ -53,18 +55,20 @@ public static partial class DungeonBuilder
         BuildLevel(Dungeon(), assets);
         BuildLevel(House(), assets);
         BuildCharacterSelect(assets);
+        BuildTitle(assets);
 
         // The order here is the order scenes have in a build: index 0 is what the game starts with.
         EditorBuildSettings.scenes = new[]
         {
+            new EditorBuildSettingsScene(TitleScenePath, true),
             new EditorBuildSettingsScene(CharacterSelectScenePath, true),
             new EditorBuildSettingsScene(Level0ScenePath, true),
             new EditorBuildSettingsScene(DungeonScenePath, true),
             new EditorBuildSettingsScene(HouseScenePath, true),
         };
         AssetDatabase.SaveAssets();
-        EditorSceneManager.OpenScene(CharacterSelectScenePath);
-        Debug.Log("[DungeonBuilder] Built CharacterSelect, Level0, Dungeon and House");
+        EditorSceneManager.OpenScene(TitleScenePath);
+        Debug.Log("[DungeonBuilder] Built Title, CharacterSelect, Level0, Dungeon and House");
     }
 
     private static SharedAssets CreateAssets()

@@ -25,6 +25,7 @@ public class SceneDoor : MonoBehaviour, IInteractable
     {
         used = true;
         GameSession.NextSpawn = targetSpawn;
+        SaveSystem.Autosave(targetScene, targetSpawn); // every door is a save point
         AudioManager.Play(openSound);
         SceneManager.LoadScene(targetScene);
         return null;

@@ -9,6 +9,9 @@ public static class GameSession
     // so pressing Play directly in a level scene still works.
     public static CharacterDefinition SelectedCharacter;
 
+    // Which save slot (0-2) this game autosaves into; -1 = not saving (tests, Play in a level scene).
+    public static int Slot = -1;
+
     // Which named spawn point to arrive at in the next scene (e.g. "FromHouse" puts you
     // outside the castle gate instead of at the level start). Used once, then cleared.
     public static string NextSpawn;
@@ -28,7 +31,8 @@ public static class GameSession
     public static bool IsUsed(string persistentId) => Flags.Contains("used:" + persistentId);
     public static void MarkUsed(string persistentId) => Flags.Add("used:" + persistentId);
 
-    // Called when a hero is picked: forget the previous playthrough.
+    // Called when a hero is picked (or a save is loaded): forget the previous playthrough.
+    // The save slot is kept: the title screen picks it before the hero is chosen.
     public static void NewGame(CharacterDefinition hero)
     {
         SelectedCharacter = hero;

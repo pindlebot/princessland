@@ -11,12 +11,14 @@ public class CharacterSelectController : MonoBehaviour
 {
     [SerializeField] private CharacterDefinition[] characters;
     [SerializeField] private string firstLevel = "Level0";
+    [SerializeField] private string titleScene = "Title";
     [SerializeField] private AudioClip selectSound;
     [SerializeField] private AudioClip startSound;
 
     private VisualElement[] cards;
     private bool starting;
     public int Selected { get; private set; }
+    public CharacterDefinition[] Characters => characters;
 
     private void Start()
     {
@@ -41,6 +43,7 @@ public class CharacterSelectController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.LeftArrow)) Select(0);
         if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.RightArrow)) Select(1);
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) StartGame();
+        if (Input.GetKeyDown(KeyCode.Escape) && !starting) SceneManager.LoadScene(titleScene); // back to the slots
     }
 
     public void Select(int index) => Select(index, silent: false);
@@ -59,6 +62,7 @@ public class CharacterSelectController : MonoBehaviour
         if (starting) return;
         starting = true;
         GameSession.NewGame(characters[Selected]);
+        SaveSystem.Autosave(firstLevel, ""); // a new adventure gets its save slot right away
         StartCoroutine(StartAfterSound());
     }
 

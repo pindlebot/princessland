@@ -8,7 +8,7 @@
 
     <ui:VisualElement class="select-screen">
         <ui:Label class="select-title" text="Choose your hero" />
-        <ui:Label class="select-subtitle" text="Click a hero or press 1 / 2" />
+        <ui:Label class="select-subtitle" text="Click a hero or press 1 / 2   (Esc: back)" />
 
         <ui:VisualElement class="cards">
             <ui:VisualElement name="card-0" class="frame card">

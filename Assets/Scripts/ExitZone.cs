@@ -59,7 +59,11 @@ public class ExitZone : MonoBehaviour
         {
             used = true;
             if (string.IsNullOrEmpty(nextScene)) GameManager.Instance.Win();
-            else SceneManager.LoadScene(nextScene);
+            else
+            {
+                SaveSystem.Autosave(nextScene, ""); // the stairs are a door too
+                SceneManager.LoadScene(nextScene);
+            }
         }
     }
 }

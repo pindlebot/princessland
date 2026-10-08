@@ -1,13 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// Tracks win/lose state, restarts the level (R) or returns to character select (Esc).
+// Tracks win/lose state, restarts the level (R) or returns to the title screen (Esc).
 // Drawing all of this is the HUD's job.
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [SerializeField] private string characterSelectScene = "CharacterSelect";
+    [SerializeField] private string titleScene = "Title";
     [SerializeField] private AudioClip winSound;
     [SerializeField] private AudioClip loseSound;
 
@@ -44,6 +44,6 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         if (Input.GetKeyDown(KeyCode.Escape))
-            SceneManager.LoadScene(characterSelectScene);
+            SceneManager.LoadScene(titleScene);
     }
 }

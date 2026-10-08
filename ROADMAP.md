@@ -349,9 +349,9 @@ Each phase ends with something playable. **Acceptance criterion for every phase:
 Watch where she gets stuck without saying anything, and fix that before moving on.
 
 ### Phase 0: Foundations (no new content)
-- [ ] `git init`, first commit, and a `.gitattributes` for Unity YAML (`*.unity`, `*.prefab`, `*.asset` → `merge=unityyamlmerge`)
-- [ ] Move the inventory into `GameSession`; persist it across scenes (with a test)
-- [ ] Save/load (3 slots, autosave on every door), title screen with Continue / New / slot pictures
+- [x] `git init`, first commit, and a `.gitattributes` for Unity YAML (`*.unity`, `*.prefab`, `*.asset` → `merge=unityyamlmerge`)
+- [x] Move the inventory into `GameSession`; persist it across scenes (with a test)
+- [x] Save/load (3 slots, autosave on every door), title screen with Continue / New / slot pictures
 - [ ] Input System + gamepad
 - [ ] Pause menu (resume, options, mode, quit to title)
 - [ ] Gentle Mode (wake at the fountain instead of Game Over)

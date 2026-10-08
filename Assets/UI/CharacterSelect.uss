@@ -1,4 +1,5 @@
-/* Character select screen. Reuses Hud.uss for Label colors and the 9-sliced .frame. */
+/* Character select screen. Reuses Hud.uss for Label colors and the 9-sliced .frame.
+   The cards are cream storybook panels, so their text uses the HUD's plum inks. */
 
 .select-screen {
     position: absolute;
@@ -51,7 +52,7 @@
     left: 16px;
     top: 12px;
     font-size: 14px;
-    color: rgba(236, 228, 210, 0.6);
+    color: rgb(128, 88, 118);
 }
 
 .card-portrait {
@@ -62,7 +63,7 @@
 
 .card-name {
     font-size: 22px;
-    color: rgb(232, 196, 104);
+    color: rgb(164, 112, 40);
     margin-bottom: 6px;
 }
 

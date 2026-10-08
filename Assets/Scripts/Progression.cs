@@ -55,6 +55,18 @@ public class Progression
     // ---------- Skills ----------
 
     public bool Has(string skillId) => learned.Contains(skillId);
+    public IEnumerable<string> LearnedSkills => learned;
+
+    // Put back a saved state (SaveSystem.Load). No events: nothing is listening yet.
+    public void Restore(int level, int xp, int gold, int skillPoints, IEnumerable<string> skills)
+    {
+        Level = Mathf.Clamp(level, 1, MaxLevel);
+        Xp = Mathf.Max(0, xp);
+        Gold = Mathf.Max(0, gold);
+        SkillPoints = Mathf.Max(0, skillPoints);
+        learned.Clear();
+        foreach (var id in skills) learned.Add(id);
+    }
 
     public bool MeetsRequirement(SkillDefinition skill) => skill.Requires == null || Has(skill.Requires);
 
