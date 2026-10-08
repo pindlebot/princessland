@@ -107,7 +107,7 @@
             <ui:Label name="item-details" class="item-details" text="" />
         </ui:VisualElement>
 
-        <!-- Skill tree (press K). SkillTreeView builds the branches and nodes from SkillCatalog. -->
+        <!-- Skill tree (press K). SkillTreeView builds the hero's path of nodes from SkillCatalog. -->
         <ui:VisualElement class="centered-row skills-row" picking-mode="Ignore">
             <ui:VisualElement name="skills" class="panel skills">
                 <ui:VisualElement class="inventory-header" picking-mode="Ignore">
@@ -129,6 +129,7 @@
                 </ui:VisualElement>
                 <ui:Label class="help-line" text="W A S D or stick:  walk" />
                 <ui:Label class="help-line" text="Space, Click or X:  magic! (it aims by itself)" />
+                <ui:Label class="help-line" text="Q or LB,  F or LT:  abilities from the skill path" />
                 <ui:Label class="help-line" text="E or A:  open, talk, pick up" />
                 <ui:Label class="help-line" text="I or Y:  bag      K or View:  skills      M:  music" />
                 <ui:Label class="help-line" text="H or RB:  this help      R:  try again" />
@@ -140,17 +141,33 @@
         <ui:VisualElement class="bottom-row" picking-mode="Ignore">
             <ui:VisualElement name="hotbar" class="hotbar" picking-mode="Ignore">
                 <!-- The hero's spell: one clear slot -->
-                <ui:VisualElement name="slot-spell" class="slot spell-slot">
-                    <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
-                    <ui:VisualElement name="spell-cooldown" class="slot-cooldown" picking-mode="Ignore" />
-                    <ui:Label name="spell-cost" class="slot-cost" text="10" picking-mode="Ignore" />
-                    <!-- A four-point star that flashes as the spell goes off -->
-                    <ui:VisualElement name="spell-flash" class="spell-flash" picking-mode="Ignore" />
+                <ui:VisualElement class="hotbar-item" picking-mode="Ignore">
+                    <ui:VisualElement name="slot-spell" class="slot spell-slot">
+                        <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
+                        <ui:VisualElement name="spell-cooldown" class="slot-cooldown" picking-mode="Ignore" />
+                        <ui:Label name="spell-cost" class="slot-cost" text="10" picking-mode="Ignore" />
+                        <!-- A four-point star that flashes as the spell goes off -->
+                        <ui:VisualElement name="spell-flash" class="spell-flash" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label name="spell-key" class="spell-key" text="Space" picking-mode="Ignore" />
                 </ui:VisualElement>
-                <ui:Label name="spell-key" class="spell-key" text="Space" picking-mode="Ignore" />
-                <!-- Future abilities: hidden until there's something to put in them -->
-                <ui:VisualElement name="slot-2" class="slot future-slot" />
-                <ui:VisualElement name="slot-3" class="slot future-slot" />
+                <!-- The abilities from the skill path (steps 3 and 4): hidden until learned -->
+                <ui:VisualElement name="ability-2" class="hotbar-item future-slot" picking-mode="Ignore">
+                    <ui:VisualElement name="slot-2" class="slot ability-slot">
+                        <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
+                        <ui:VisualElement class="slot-cooldown" picking-mode="Ignore" />
+                        <ui:Label class="slot-cost" text="20" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label class="spell-key" text="Q" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="ability-3" class="hotbar-item future-slot" picking-mode="Ignore">
+                    <ui:VisualElement name="slot-3" class="slot ability-slot">
+                        <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
+                        <ui:VisualElement class="slot-cooldown" picking-mode="Ignore" />
+                        <ui:Label class="slot-cost" text="30" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label class="spell-key" text="F" picking-mode="Ignore" />
+                </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement class="bottom-right" picking-mode="Ignore">

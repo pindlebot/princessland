@@ -27,7 +27,9 @@ public class SpellAbility : MonoBehaviour
     public event Action Cast;
 
     // 0 = just cast, 1 = ready. Read by the HUD.
-    public float CooldownProgress => cooldown <= 0f ? 1f : Mathf.Clamp01(1f - (readyAt - Time.time) / cooldown);
+    public float CooldownProgress => Cooldown <= 0f ? 1f : Mathf.Clamp01(1f - (readyAt - Time.time) / Cooldown);
+    // Skills can make it recharge faster (the princess's Swift Tides).
+    public float Cooldown => cooldown * GameSession.Progress.SpellCooldownFactor;
     public string SpellName => spellName;
     public Sprite Icon => icon;
     public float ManaCost => manaCost;
@@ -80,7 +82,7 @@ public class SpellAbility : MonoBehaviour
         var projectile = Instantiate(projectilePrefab, castPoint.position, Quaternion.LookRotation(direction));
         projectile.Launch(Damage);
         AudioManager.Play(castSound);
-        readyAt = Time.time + cooldown;
+        readyAt = Time.time + Cooldown;
         LastCastTime = Time.time;
         Cast?.Invoke();
         return true;

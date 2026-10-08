@@ -29,7 +29,7 @@ public class DevCapture : MonoBehaviour
         yield return Menu("Title", "title");
         yield return Menu("CharacterSelect", "character_select");
         GameSession.Progress.AddGold(37);
-        GameSession.Progress.AddXp(60); // level 2, with a skill point to spend
+        GameSession.Progress.AddXp(Progression.FirstLevelXp + 20); // level 2, with a skill point to spend
 
         yield return Visit("Level0", 'P', 0, 0, "level0_spawn", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("Level0", 'm', 1, 1, "level0_pond", max: 6, hearts: 3, manaFraction: 0.5f);

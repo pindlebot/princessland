@@ -115,6 +115,7 @@ public static class SaveSystem
         foreach (var flag in data.flags) GameSession.Flags.Add(flag);
         foreach (var c in data.counters ?? new List<SaveData.Counter>()) GameSession.Counters[c.key] = c.value;
         GameSession.Progress.Restore(data.level, data.xp, data.gold, data.skillPoints, data.skills);
+        GameSession.Progress.RefundSkillsNotIn(SkillCatalog.PathFor(SkillCatalog.CurrentHero).Select(s => s.Id));
         GameSession.Inventory.Bag.AddRange(data.bag);
         foreach (var e in data.equipped) GameSession.Inventory.Equipped[e.slot] = e.item;
         GameSession.NextSpawn = string.IsNullOrEmpty(data.spawn) ? null : data.spawn;

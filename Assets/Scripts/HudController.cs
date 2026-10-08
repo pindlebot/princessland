@@ -20,6 +20,7 @@ public class HudController : MonoBehaviour
     private Health playerHealth;
     private Mana playerMana;
     private SpellAbility spell;
+    private HeroAbility[] abilities; // hotbar slots 2 and 3, once learned
     private PlayerInteractor interactor;
     private Inventory inventory;
     private CharacterDefinition character;
@@ -53,6 +54,16 @@ public class HudController : MonoBehaviour
     private VisualElement inventoryPanel, equipRing;
     private VisualElement[] bagSlots;
     private Label itemDetails, statDamage;
+    private readonly List<AbilitySlot> abilitySlots = new List<AbilitySlot>();
+
+    // One learned-ability slot in the hotbar: its column (slot + key), the slot, and its parts.
+    private class AbilitySlot
+    {
+        public HeroAbility Ability;
+        public VisualElement Item, Slot, Cooldown;
+        public Label Key;
+        public System.Action OnUsed;
+    }
 
     // Remembered between frames, to spot changes worth reacting to.
     private int lastHealth = -1, lastAlive, defeated, lastGold = -1;
@@ -67,6 +78,7 @@ public class HudController : MonoBehaviour
         playerHealth = player.GetComponent<Health>();
         playerMana = player.GetComponent<Mana>();
         spell = player.GetComponent<SpellAbility>();
+        abilities = player.GetComponents<HeroAbility>();
         interactor = player.GetComponent<PlayerInteractor>();
         inventory = player.GetComponent<Inventory>();
         character = who;
@@ -118,8 +130,10 @@ public class HudController : MonoBehaviour
         spell.Cast += OnCast;
         progress = GameSession.Progress;
         progress.LeveledUp += OnLevelUp;
+        progress.SkillLearned += OnSkillLearned;
 
         SetUpInventory();
+        SetUpAbilitySlots();
 
         // Fill in who we're playing and where.
         root.Q("portrait").style.backgroundImage = new StyleBackground(character.Portrait);
@@ -153,6 +167,7 @@ public class HudController : MonoBehaviour
         UpdateHearts();
         manaFill.style.width = Length.Percent(100f * playerMana.Current / playerMana.Max);
         UpdateSpellSlot();
+        UpdateAbilitySlots();
         UpdateObjective();
         UpdateSecondary();
         UpdateHints();
@@ -280,6 +295,50 @@ public class HudController : MonoBehaviour
         spellKey.text = SpellKey;
     }
 
+    // ---------- Abilities (hotbar slots 2 and 3) ----------
+
+    private void SetUpAbilitySlots()
+    {
+        foreach (var ability in abilities)
+        {
+            var item = root.Q($"ability-{ability.Slot}");
+            if (item == null) continue;
+            var entry = new AbilitySlot
+            {
+                Ability = ability,
+                Item = item,
+                Slot = item.Q(className: "slot"),
+                Cooldown = item.Q(className: "slot-cooldown"),
+                Key = item.Q<Label>(className: "spell-key"),
+            };
+            entry.Slot.Q(className: "slot-icon").style.backgroundImage = new StyleBackground(ability.Icon);
+            entry.Slot.Q<Label>(className: "slot-cost").text = ability.ManaCost.ToString("0");
+            entry.OnUsed = () => Pop(entry.Slot, "cast", 90);
+            ability.Used += entry.OnUsed;
+            abilitySlots.Add(entry);
+        }
+    }
+
+    private void UpdateAbilitySlots()
+    {
+        foreach (var s in abilitySlots)
+        {
+            var a = s.Ability;
+            s.Item.EnableInClassList("unlocked", a.Unlocked); // the slot appears once its skill is learned
+            s.Cooldown.style.height = CooldownHeight * (1f - a.CooldownProgress);
+            s.Slot.EnableInClassList("no-mana", !a.CanAfford);
+            s.Key.text = GameInput.AbilityKey(a.Slot);
+        }
+    }
+
+    private void OnSkillLearned(SkillDefinition skill)
+    {
+        if (!skill.IsAbility) return;
+        foreach (var s in abilitySlots)
+            if (s.Ability.SkillId == skill.Id)
+                ShowToast($"New ability: {skill.Name}! Press {GameInput.AbilityKey(s.Ability.Slot)}");
+    }
+
     // ---------- Objective ----------
 
     private void UpdateObjective()
@@ -378,7 +437,13 @@ public class HudController : MonoBehaviour
     // Progression outlives this scene's HUD, so stop listening when the HUD goes away.
     private void OnDestroy()
     {
-        if (progress != null) progress.LeveledUp -= OnLevelUp;
+        if (progress != null)
+        {
+            progress.LeveledUp -= OnLevelUp;
+            progress.SkillLearned -= OnSkillLearned;
+        }
+        foreach (var s in abilitySlots)
+            if (s.Ability != null) s.Ability.Used -= s.OnUsed;
         if (playerHealth != null) playerHealth.Damaged -= OnPlayerHurt;
         if (spell != null) spell.Cast -= OnCast;
     }

@@ -14,7 +14,7 @@ The plan for growing IsoDungeon from a three-scene demo into a small, complete m
 | **Enemies** | Skeleton, Slime, Slime King (Ground Slam + Royal Split) |
 | **NPCs** | Amethyra the dragon (an intro and a "later" chat) |
 | **Items** | Ember Ring (one Ring slot, 8-slot bag), chest, coins |
-| **Progression** | XP/levels, gold, a 3×3 skill tree (only tier 1 is implemented) |
+| **Progression** | XP/levels (level 2 at 400 XP), gold, one 4-step skill path per hero ending in two abilities each |
 | **Systems** | `IInteractable` registry, `GameSession` static flags, typewriter dialogue, UI Toolkit HUD, minimap with fog of war, synthesized audio, Python sprite generators |
 | **Pipeline** | Every scene is generated from ASCII maps in `Editor/DungeonBuilder.Levels.cs` |
 
@@ -387,8 +387,8 @@ ability unlocks backtracking in the regions before it.
 - [ ] Frostpeak (Rainbow Chalk, Snow Yeti, ice, Mr. Frost's trade chain)
 
 ### Phase 4: Depth and collecting
-- [ ] Skill tree tiers 2–3
-- [ ] Second spell per hero
+- [x] Skill paths: one linear path per hero (2 enhancements, then 2 abilities)
+- [x] Second (and third) spell per hero: Flame Wave + Meteor, Bubble Shield + Whirlpool
 - [ ] Sticker Book screen
 - [ ] Wardrobe in the Home (star shards → hats)
 - [ ] Whiskers appearances in every region

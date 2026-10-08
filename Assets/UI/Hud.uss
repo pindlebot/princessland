@@ -517,8 +517,14 @@ Label {
 /* ---------- The spell slot ---------- */
 
 .hotbar {
-    flex-direction: column;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+/* A slot with its button underneath */
+.hotbar-item {
     align-items: center;
+    margin: 0 6px;
 }
 
 .slot {
@@ -624,9 +630,24 @@ Label {
     border-radius: 5px;
 }
 
-/* Slots for abilities that don't exist yet stay hidden until unlocked */
+/* The ability slots (2 and 3) stay hidden until their skill is learned */
 .future-slot {
     display: none;
+}
+
+/* The abilities' slots are a little smaller than the spell's, so the spell stays the star */
+.ability-slot {
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+.ability-slot.cast {
+    scale: 0.9 0.9;
+}
+
+.ability-slot .slot-cooldown {
+    left: 9px;
+    top: 9px;
 }
 
 .future-slot.unlocked {
@@ -770,7 +791,7 @@ Label {
 }
 
 .skills {
-    width: 620px;
+    width: 400px;
     padding: 14px 20px 14px 20px;
     display: none;
 }
@@ -784,24 +805,20 @@ Label {
     color: rgb(46, 140, 70);
 }
 
+/* One hero, one path: a single column of four steps */
 .skill-branches {
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     margin: 6px 0 10px 0;
 }
 
 .skill-branch {
-    width: 180px;
+    width: 280px;
     align-items: center;
 }
 
-.skill-branch-title {
-    font-size: var(--text-body);
-    margin-bottom: 8px;
-}
-
 .skill-node {
-    width: 170px;
+    width: 260px;
     height: 52px;
     padding: 6px 10px;
     justify-content: center;
@@ -836,7 +853,8 @@ Label {
     color: var(--ink-soft);
 }
 
-.skill-node.coming-soon .skill-tag {
+/* Steps 3 and 4 give a new ability: their tag is the magic purple */
+.skill-node.ability .skill-tag {
     color: rgb(140, 90, 190);
 }
 

@@ -50,9 +50,9 @@ public class SaveTests
         GameSession.NewGame(princess);
         GameSession.Flags.Add("met_dragon");
         GameSession.MarkUsed("Dungeon/5,2");
-        GameSession.Progress.AddXp(200);   // a couple of levels
+        GameSession.Progress.AddXp(Progression.FirstLevelXp + 200); // a couple of levels
         GameSession.Progress.AddGold(37);
-        GameSession.Progress.Learn(SkillCatalog.All.First(s => s.Requires == null));
+        GameSession.Progress.Learn(SkillCatalog.PathFor("Princess")[0]);
         GameSession.Inventory.Bag.Add("mystery_pebble");
         GameSession.Inventory.Equipped[EquipSlot.Ring] = "ember_ring";
         var p = GameSession.Progress;
@@ -87,6 +87,22 @@ public class SaveTests
         LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("Couldn't read slot 3"));
         Assert.IsNull(SaveSystem.Peek(2));
         Assert.AreEqual(1, SaveSystem.MostRecentSlot());
+    }
+
+    [UnityTest]
+    public IEnumerator LoadingRefundsSkillsThatArentOnTheHerosPath()
+    {
+        yield return Load("Title");
+        var heroes = Heroes();
+        GameSession.NewGame(heroes.First(h => h.name == "Princess"));
+        // An older save: the old 3-branch tree's skills, including one of the wizard's.
+        GameSession.Progress.Restore(4, 0, 0, 0, new[] { SkillCatalog.Toughness, SkillCatalog.Empowered, "blink" });
+        SaveSystem.Save(0, "Level0", "");
+
+        SaveSystem.Load(0, heroes);
+        CollectionAssert.AreEquivalent(new[] { SkillCatalog.Toughness }, GameSession.Progress.LearnedSkills.ToList(),
+            "her own skill stays");
+        Assert.AreEqual(2, GameSession.Progress.SkillPoints, "the other two come back as points");
     }
 
     [UnityTest]

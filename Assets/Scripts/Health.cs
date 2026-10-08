@@ -17,9 +17,14 @@ public class Health : MonoBehaviour
     public event Action<Health> Died;
     public event Action<Health> Revived;
     public event Action<Health> Healed;
+    public event Action<Health> Blocked; // a hit that a shield took instead
 
     // Optional: changes incoming damage (Gentle Mode halves the hero's). Returns the new amount.
     public Func<int, int> AdjustDamage;
+
+    // Optional: a shield that can take a hit instead (the princess's Bubble Shield).
+    // Returns true if it blocked this one.
+    public Func<bool> TryBlock;
     public bool PlayDeathSound = true;
 
     // No damage at all until this time (e.g. just after waking up).
@@ -38,6 +43,11 @@ public class Health : MonoBehaviour
     public void TakeDamage(int amount)
     {
         if (IsDead || IsInvulnerable) return;
+        if (TryBlock != null && TryBlock())
+        {
+            Blocked?.Invoke(this);
+            return;
+        }
         if (AdjustDamage != null) amount = AdjustDamage(amount);
 
         // Even a hit that costs no heart still flashes and makes a sound: it was a "bump".

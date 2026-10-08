@@ -91,8 +91,8 @@ public class HudTests
         yield return Load("Dungeon");
         yield return null;
         Assert.AreEqual("Space", hud.Q<Label>("spell-key").text);
-        foreach (var name in new[] { "slot-2", "slot-3" })
-            Assert.AreEqual(DisplayStyle.None, hud.Q(name).resolvedStyle.display, $"{name} stays hidden until an ability needs it");
+        foreach (var name in new[] { "ability-2", "ability-3" })
+            Assert.AreEqual(DisplayStyle.None, hud.Q(name).resolvedStyle.display, $"{name} stays hidden until its skill is learned");
         Assert.AreEqual(DisplayStyle.Flex, hud.Q("slot-spell").resolvedStyle.display);
         Assert.IsTrue(hud.Q("slot-spell").ClassListContains("ready"), "glows when ready");
 

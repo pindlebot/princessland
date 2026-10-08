@@ -1,0 +1,14 @@
+{
+  "frameSize": 64,
+  "pixelsPerUnit": 16,
+  "pivot": "center",
+  "animations": [
+    {
+      "name": "Impact",
+      "row": 0,
+      "frames": 5,
+      "fps": 14,
+      "loop": false
+    }
+  ]
+}

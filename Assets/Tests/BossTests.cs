@@ -50,7 +50,7 @@ public class BossTests
         boss.Health.TakeDamage(999);
         Assert.AreEqual(bossXp, GameSession.Progress.Xp + Enumerable.Range(1, GameSession.Progress.Level - 1).Sum(Progression.XpToNext),
             "all of the King's XP was awarded");
-        Assert.Greater(GameSession.Progress.Level, 3, "one boss is worth several levels");
+        Assert.AreEqual(2, GameSession.Progress.Level, "the King alone is worth the big first level");
         Assert.GreaterOrEqual(Object.FindObjectsByType<CoinPickup>().Length, 15, "a shower of coins");
         yield return null;
         Assert.IsTrue(exit.IsOpen);

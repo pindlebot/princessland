@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 3031246688207721467}
   - component: {fileID: 5625097730432169720}
   - component: {fileID: 5423879384780626763}
+  - component: {fileID: 8811158271209810368}
+  - component: {fileID: 8062198846861924241}
   - component: {fileID: 7056501271664427464}
   m_Layer: 0
   m_Name: Player_Wizard
@@ -177,6 +179,52 @@ MonoBehaviour:
   manaCost: 10
   baseDamage: 1
   faceTargetSeconds: 0.35
+--- !u!114 &8811158271209810368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2322335324994381703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d854ee8355ada4a7da28a87f49214e72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::FlameWave
+  abilityName: Flame Wave
+  icon: {fileID: 21300000, guid: 5e07a89f571d84ad395849bbb7175d3b, type: 3}
+  skillId: flame_wave
+  slot: 2
+  cooldown: 4
+  manaCost: 20
+  useSound: {fileID: 8300000, guid: d9a271204983f4413967996fed980b07, type: 3}
+  range: 4.5
+  halfAngle: 50
+  bonusDamage: 1
+  knockback: 1.5
+  burstPrefab: {fileID: 328360139785256122, guid: d594e00c2c9634433ba0109f30d3299b, type: 3}
+--- !u!114 &8062198846861924241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2322335324994381703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f64e2d64b25b44e73b26828d6f20952d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Meteor
+  abilityName: Meteor
+  icon: {fileID: 21300000, guid: 6ce51c05f376345ffaef7c5732039db5, type: 3}
+  skillId: meteor
+  slot: 3
+  cooldown: 9
+  manaCost: 30
+  useSound: {fileID: 8300000, guid: d9a271204983f4413967996fed980b07, type: 3}
+  strikePrefab: {fileID: 593993331375621400, guid: 876f8626f2a80414c8a466f1beb5ae19, type: 3}
+  reach: 4
+  bonusDamage: 2
 --- !u!114 &7056501271664427464
 MonoBehaviour:
   m_ObjectHideFlags: 0

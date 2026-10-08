@@ -43,6 +43,7 @@ public class CharacterAnimator : MonoBehaviour
 
         // Whichever action source this character has drives the Action state.
         if (TryGetComponent(out SpellAbility ability)) ability.Cast += PlayAction;
+        foreach (var extra in GetComponents<HeroAbility>()) extra.Used += PlayAction;
         if (TryGetComponent(out EnemyAI ai)) ai.Attacked += PlayAction;
     }
 

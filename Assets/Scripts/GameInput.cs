@@ -9,6 +9,8 @@ using UnityEngine.InputSystem.Controls;
 //   Move            WASD / arrow keys         left stick / d-pad
 //   Talk, open      E                         A (south)
 //   Cast            Space / left click        X (west) / right trigger
+//   Ability 2       Q                         LB (left shoulder)
+//   Ability 3       F                         LT (left trigger)
 //   Inventory       I                         Y (north)
 //   Skill tree      K                         View / Select
 //   Help            H                         RB (right shoulder)
@@ -86,6 +88,21 @@ public static class GameInput
 
     public static bool CastPressed =>
         Down(Keyboard.current?.spaceKey) || Down(Gamepad.current?.buttonWest) || Down(Gamepad.current?.rightTrigger);
+
+    // The learned abilities in hotbar slots 2 and 3 (Flame Wave and Meteor, Bubble Shield and Whirlpool).
+    public static bool AbilityPressed(int slot) => slot switch
+    {
+        2 => Down(Keyboard.current?.qKey) || Down(Gamepad.current?.leftShoulder),
+        3 => Down(Keyboard.current?.fKey) || Down(Gamepad.current?.leftTrigger),
+        _ => false,
+    };
+
+    public static string AbilityKey(int slot) => slot switch
+    {
+        2 => UsingGamepad ? "LB" : "Q",
+        3 => UsingGamepad ? "LT" : "F",
+        _ => "",
+    };
 
     public static bool InventoryPressed => Down(Keyboard.current?.iKey) || Down(Gamepad.current?.buttonNorth);
     public static bool SkillTreePressed => Down(Keyboard.current?.kKey) || Down(Gamepad.current?.selectButton);

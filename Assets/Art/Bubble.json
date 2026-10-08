@@ -1,0 +1,14 @@
+{
+  "frameSize": 40,
+  "pixelsPerUnit": 16,
+  "pivot": "center",
+  "animations": [
+    {
+      "name": "Wobble",
+      "row": 0,
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    }
+  ]
+}

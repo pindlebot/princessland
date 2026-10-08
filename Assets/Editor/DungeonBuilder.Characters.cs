@@ -13,6 +13,7 @@ public static partial class DungeonBuilder
         public string Spell, SpellIcon, CastSound, ImpactSound;
         public float Cooldown, ManaCost;
         public Color SpellLight;
+        public System.Action<GameObject, Projectile> AddAbilities; // the skill path's abilities (DungeonBuilder.Abilities.cs)
     }
 
     private static CharacterDefinition CreateWizard(CharacterSpriteBuilder.Result art, GameObject levelUpEffect, ItemDatabase items) => CreateHero(art, levelUpEffect, items, new HeroStats
@@ -25,6 +26,7 @@ public static partial class DungeonBuilder
         Spell = "Fireball", SpellIcon = "IconFireball", CastSound = "cast_fire", ImpactSound = "impact_fire",
         Cooldown = 0.6f, ManaCost = 10f,
         SpellLight = new Color(1f, 0.5f, 0.1f),
+        AddAbilities = AddWizardAbilities,
     });
 
     private static CharacterDefinition CreatePrincess(CharacterSpriteBuilder.Result art, GameObject levelUpEffect, ItemDatabase items) => CreateHero(art, levelUpEffect, items, new HeroStats
@@ -37,6 +39,7 @@ public static partial class DungeonBuilder
         Spell = "TidalOrb", SpellIcon = "IconTidalOrb", CastSound = "cast_water", ImpactSound = "impact_water",
         Cooldown = 0.45f, ManaCost = 8f,
         SpellLight = new Color(0.3f, 0.95f, 0.9f),
+        AddAbilities = AddPrincessAbilities,
     });
 
     // A hero = a player prefab + a CharacterDefinition asset pointing at it.
@@ -80,6 +83,7 @@ public static partial class DungeonBuilder
         SetFloat(ability, "cooldown", stats.Cooldown);
         SetFloat(ability, "manaCost", stats.ManaCost);
         SetRef(ability, "castSound", Sound(stats.CastSound));
+        stats.AddAbilities?.Invoke(go, projectile);
 
         // A dim "torch" that travels with the player for dungeon atmosphere.
         // LevelBootstrap switches it off outdoors.

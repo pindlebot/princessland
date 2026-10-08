@@ -19,14 +19,14 @@ public class ProgressionTests
     [Test]
     public void ExperienceCurveGrowsAndBigRewardsCanGiveSeveralLevels()
     {
-        Assert.AreEqual(40, Progression.XpToNext(1));
+        Assert.AreEqual(400, Progression.XpToNext(1), "level 2 is a big step: 10x the curve's 40");
         Assert.AreEqual(113, Progression.XpToNext(2));
         Assert.Greater(Progression.XpToNext(5), Progression.XpToNext(4));
 
         var progress = new Progression();
         int levelUps = 0;
         progress.LeveledUp += _ => levelUps++;
-        progress.AddXp(39);
+        progress.AddXp(399);
         Assert.AreEqual(1, progress.Level);
         progress.AddXp(1);
         Assert.AreEqual(2, progress.Level);
@@ -89,23 +89,28 @@ public class ProgressionTests
         var player = LevelBootstrap.Current.Player;
         var tree = Object.FindAnyObjectByType<SkillTreeView>();
         var progress = GameSession.Progress;
-        SkillDefinition Skill(string id) => SkillCatalog.All.First(s => s.Id == id);
+        SkillDefinition Skill(string id) => SkillCatalog.Find(id);
 
-        Assert.IsFalse(tree.TryLearn(Skill(SkillCatalog.Toughness)), "no points at level 1");
-        progress.AddXp(40 + 113); // level 3: two points
+        // The wizard's path, in order: two enhancements, then two abilities.
+        CollectionAssert.AreEqual(
+            new[] { SkillCatalog.Empowered, SkillCatalog.DeepReserves, SkillCatalog.FlameWave, SkillCatalog.Meteor },
+            tree.Path.Select(s => s.Id).ToArray());
+        Assert.IsFalse(tree.TryLearn(Skill(SkillCatalog.Empowered)), "no points at level 1");
+        progress.AddXp(Progression.FirstLevelXp + 113); // level 3: two points
         Assert.AreEqual(2, progress.SkillPoints);
 
-        Assert.IsFalse(tree.TryLearn(Skill("twin_cast")), "needs Empowered Spells first");
-        int healthBefore = player.GetComponent<Health>().Max;
-        Assert.IsTrue(tree.TryLearn(Skill(SkillCatalog.Toughness)));
-        Assert.AreEqual(healthBefore + 2, player.GetComponent<Health>().Max);
-        Assert.IsTrue(tree.NodeFor(SkillCatalog.Toughness).ClassListContains("learned"));
-
+        Assert.IsFalse(tree.TryLearn(Skill(SkillCatalog.DeepReserves)), "needs Empowered Spells first");
+        Assert.IsFalse(tree.TryLearn(Skill(SkillCatalog.Toughness)), "the princess's skills aren't on his path");
         int damageBefore = player.GetComponent<SpellAbility>().Damage;
         Assert.IsTrue(tree.TryLearn(Skill(SkillCatalog.Empowered)));
         Assert.AreEqual(damageBefore + 1, player.GetComponent<SpellAbility>().Damage);
+        Assert.IsTrue(tree.NodeFor(SkillCatalog.Empowered).ClassListContains("learned"));
+
+        float manaBefore = player.GetComponent<Mana>().Max;
+        Assert.IsTrue(tree.TryLearn(Skill(SkillCatalog.DeepReserves)));
+        Assert.AreEqual(manaBefore + 15f, player.GetComponent<Mana>().Max);
         Assert.AreEqual(0, progress.SkillPoints);
-        Assert.IsFalse(tree.TryLearn(Skill(SkillCatalog.DeepReserves)), "out of points");
+        Assert.IsFalse(tree.TryLearn(Skill(SkillCatalog.FlameWave)), "out of points");
         yield return null;
     }
 
@@ -113,7 +118,7 @@ public class ProgressionTests
     public IEnumerator ProgressCarriesIntoTheNextScene()
     {
         GameSession.Progress.AddGold(42);
-        GameSession.Progress.AddXp(50); // level 2
+        GameSession.Progress.AddXp(Progression.FirstLevelXp + 10); // level 2
         SceneManager.LoadScene("Level0");
         yield return null;
         yield return null;

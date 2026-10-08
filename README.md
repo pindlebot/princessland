@@ -23,10 +23,21 @@ Press **E** at the **castle gate** to go inside to the hero's home (bed, toilet,
 door brings you back out by the gate. Cleared levels and finished conversations are remembered between scenes.
 
 **Progression:** enemies drop gold coins (walk near them) and give XP (skeleton 15, slime 20; the chest holds
-25 gold). Levels need 40 × level^1.5 XP (40, 113, 208, 320, ...); each level gives +1 max health, +5 max mana
-and a **skill point**. Press **K** for the skill tree: 3 branches × 3 tiers, each skill needs the one above it.
-Tier 1 works (+1 spell damage / +2 max health / +15 max mana); tiers 2–3 are "coming soon" placeholders.
-Level, XP, gold and skills carry across scenes and reset when you pick a hero.
+25 gold). Level 2 is a big step at **400 XP** (about a whole adventure, Slime King included); after that levels need
+40 × level^1.5 XP (113, 208, 320, ...). Each level gives +1 max health, +5 max mana and a **skill point**.
+Press **K** for the skill path: each hero has one straight line of four steps, learned in order, one point each:
+two enhancements, then two new abilities that appear in the hotbar (slot 2: **Q** / LB, slot 3: **F** / LT).
+
+| Step | Aldric the Wizard | Princess Marina |
+|---|---|---|
+| 1 | Empowered Spells: +1 spell damage | Toughness: +2 max health |
+| 2 | Deep Reserves: +15 max mana | Swift Tides: Tidal Orb recharges 30% faster |
+| 3 | **Flame Wave** (Q, 20 mana, 4s): a fan of fire in front, burns and pushes back every monster in it | **Bubble Shield** (Q, 15 mana, 12s): blocks the next 2 hits (monsters, traps, lava) for 8s |
+| 4 | **Meteor** (F, 30 mana, 9s): a warning circle, then a meteor smashes everything in it | **Whirlpool** (F, 25 mana, 9s): a pool that drags monsters to its middle and splashes them for 3.5s |
+
+Abilities aim like the spell (the nearest monster on screen) and scale with its damage, so Empowered Spells and the
+Ember Ring help them too. Level, XP, gold and skills carry across scenes and reset when you pick a hero; loading an
+older save refunds any skill that isn't on the hero's path.
 
 **The dungeon** is a labyrinth: wooden doors (E to open), a storeroom of barrels and crates, **Bonesy** the friendly
 skeleton at his campfire (warm up there for full health), a great puddle hall full of slimes, twisty tunnels hiding
@@ -55,6 +66,7 @@ to its buttons as soon as you touch it.
 |---|---|---|
 | Walk | WASD / arrows | left stick / d-pad |
 | Magic (auto-aims) | Space / click | X / right trigger |
+| Abilities (once learned) | Q · F | LB · LT |
 | Talk, open, pick up | E | A |
 | Bag · skills | I · K | Y · View |
 | Pause menu · back | Esc | Start · B |
@@ -69,7 +81,8 @@ to its buttons as soon as you touch it.
 | `Scripts/PlayerController.cs` | `Update`, `CharacterController`, camera-relative input, facing the walk direction |
 | `Scripts/SpellAbility.cs` + `Projectile.cs` | Prefabs, `Instantiate`/`Destroy`, cooldowns, trigger colliders, auto-targeting (viewport + line-of-fire checks). One script, two spells |
 | `Scripts/CharacterDefinition.cs`, `GameSession.cs` | Heroes as data assets; carrying a choice between scenes with a static |
-| `Scripts/Progression.cs`, `SkillCatalog.cs` | Plain C# data that outlives scenes: XP curve, level-ups, gold, the skill tree's data |
+| `Scripts/Progression.cs`, `SkillCatalog.cs` | Plain C# data that outlives scenes: XP curve, level-ups, gold, each hero's skill path |
+| `Scripts/HeroAbility.cs` + `FlameWave`, `Meteor`, `BubbleShield`, `Whirlpool` | An abstract base class (button, cooldown, mana, aiming) with one small subclass per ability; area effects as their own objects (`MeteorStrike`, `WhirlpoolZone`) |
 | `Scripts/PlayerProgression.cs`, `Loot.cs`, `CoinPickup.cs` | Applying levels to the player; drops; static events (and unsubscribing in `OnDestroy`) |
 | `Scripts/SkillTreeView.cs` | Building UI Toolkit elements from code instead of UXML |
 | `Scripts/BossAbilities.cs` | A boss as "normal enemy + extra component"; telegraphed attacks as coroutine phases |
@@ -113,6 +126,7 @@ to its buttons as soon as you touch it.
 |---|---|
 | `DungeonBuilder.cs` | Entry point, materials, shared helpers |
 | `DungeonBuilder.Characters.cs` | Both heroes (stats live here), the skeleton, spell prefabs |
+| `DungeonBuilder.Abilities.cs` | The skill path abilities on each hero, and the meteor, whirlpool and bubble |
 | `DungeonBuilder.Props.cs` | Chest, torch, grass, Ember Ring pickup, flag |
 | `Levels/*.txt`, `Scripts/MapFile.cs`, `MapValidator.cs` | **The maps** as text files, their parser and the door checker |
 | `DungeonBuilder.Levels.cs` | How a scene is assembled from a map file (`LevelSpec`, the tile switch) |

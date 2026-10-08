@@ -1,0 +1,14 @@
+{
+  "frameSize": 64,
+  "pixelsPerUnit": 16,
+  "pivot": "center",
+  "animations": [
+    {
+      "name": "Spin",
+      "row": 0,
+      "frames": 4,
+      "fps": 10,
+      "loop": true
+    }
+  ]
+}
