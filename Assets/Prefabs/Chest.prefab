@@ -275,3 +275,4 @@ MonoBehaviour:
   openEffectPrefab: {fileID: 397231879088370502, guid: a902f4d8f13304ebab7e30de3775a73a, type: 3}
   openSound: {fileID: 8300000, guid: 12bd1a94e66224ba099c4ef327a6588b, type: 3}
   gold: 25
+  persistentId: 

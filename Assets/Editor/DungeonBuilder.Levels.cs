@@ -131,6 +131,7 @@ public static partial class DungeonBuilder
         var mats = assets.Materials;
         var map = spec.Map;
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        string sceneName = System.IO.Path.GetFileNameWithoutExtension(spec.ScenePath);
         SetUpLighting(spec.Theme);
 
         var level = new GameObject("Level").transform;
@@ -193,8 +194,13 @@ public static partial class DungeonBuilder
                         exit = CreateExit(pos, mats["Exit"], spec, assets.Props);
                         Place(assets.Stairs, decor, pos + Vector3.up * 0.02f);
                         break;
-                    case 'C': Place(assets.Chest, decor, pos); break;
-                    case 'I': Place(assets.RingPickup, decor, pos); break;
+                    // Chests and pickups get a stable id (scene/col,row) so they stay used when you return.
+                    case 'C':
+                        SetString(Place(assets.Chest, decor, pos).GetComponent<Chest>(), "persistentId", $"{sceneName}/{col},{row}");
+                        break;
+                    case 'I':
+                        SetString(Place(assets.RingPickup, decor, pos).GetComponent<ItemPickup>(), "persistentId", $"{sceneName}/{col},{row}");
+                        break;
                     case 'D': Place(assets.Dragon, decor, pos); break;
                     case 'B': Place(assets.Bed, decor, pos + Vector3.right); break; // the bed is ~1.5 tiles wide
                     case 'W': Place(assets.Toilet, decor, pos); break;

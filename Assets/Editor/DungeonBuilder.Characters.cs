@@ -15,7 +15,7 @@ public static partial class DungeonBuilder
         public Color SpellLight;
     }
 
-    private static CharacterDefinition CreateWizard(CharacterSpriteBuilder.Result art, GameObject levelUpEffect) => CreateHero(art, levelUpEffect, new HeroStats
+    private static CharacterDefinition CreateWizard(CharacterSpriteBuilder.Result art, GameObject levelUpEffect, ItemDatabase items) => CreateHero(art, levelUpEffect, items, new HeroStats
     {
         PrefabName = "Player_Wizard",
         DisplayName = "Aldric the Wizard",
@@ -27,7 +27,7 @@ public static partial class DungeonBuilder
         SpellLight = new Color(1f, 0.5f, 0.1f),
     });
 
-    private static CharacterDefinition CreatePrincess(CharacterSpriteBuilder.Result art, GameObject levelUpEffect) => CreateHero(art, levelUpEffect, new HeroStats
+    private static CharacterDefinition CreatePrincess(CharacterSpriteBuilder.Result art, GameObject levelUpEffect, ItemDatabase items) => CreateHero(art, levelUpEffect, items, new HeroStats
     {
         PrefabName = "Player_Princess",
         DisplayName = "Princess Marina",
@@ -40,10 +40,10 @@ public static partial class DungeonBuilder
     });
 
     // A hero = a player prefab + a CharacterDefinition asset pointing at it.
-    private static CharacterDefinition CreateHero(CharacterSpriteBuilder.Result art, GameObject levelUpEffect, HeroStats stats)
+    private static CharacterDefinition CreateHero(CharacterSpriteBuilder.Result art, GameObject levelUpEffect, ItemDatabase items, HeroStats stats)
     {
         var projectile = CreateSpellPrefab(stats.Spell, stats.SpellLight, Sound(stats.ImpactSound));
-        var prefab = CreatePlayerPrefab(art, projectile, stats, levelUpEffect);
+        var prefab = CreatePlayerPrefab(art, projectile, stats, levelUpEffect, items);
 
         var hero = LoadOrCreateAsset<CharacterDefinition>($"Assets/Characters/{stats.PrefabName.Replace("Player_", "")}.asset");
         var so = new SerializedObject(hero);
@@ -55,7 +55,7 @@ public static partial class DungeonBuilder
         return hero;
     }
 
-    private static GameObject CreatePlayerPrefab(CharacterSpriteBuilder.Result art, Projectile projectile, HeroStats stats, GameObject levelUpEffect)
+    private static GameObject CreatePlayerPrefab(CharacterSpriteBuilder.Result art, Projectile projectile, HeroStats stats, GameObject levelUpEffect, ItemDatabase items)
     {
         var go = NewCharacter(stats.PrefabName, stats.Health, Sound("player_hurt"), Sound("player_death"));
         go.AddComponent<PlayerController>();
@@ -63,7 +63,7 @@ public static partial class DungeonBuilder
         SetFloat(mana, "max", stats.Mana);
         SetFloat(mana, "regenPerSecond", stats.ManaRegen);
         go.AddComponent<PlayerInteractor>();
-        go.AddComponent<Inventory>();
+        SetRef(go.AddComponent<Inventory>(), "database", items); // the bag itself lives in GameSession
         var progression = go.AddComponent<PlayerProgression>(); // level-ups raise health and mana
         SetRef(progression, "levelUpSound", Sound("level_up"));
         SetRef(progression, "levelUpEffect", levelUpEffect);

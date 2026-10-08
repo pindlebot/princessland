@@ -126,6 +126,7 @@ public static partial class DungeonBuilder
     {
         var ring = LoadOrCreateAsset<ItemDefinition>("Assets/Items/EmberRing.asset");
         var so = new SerializedObject(ring);
+        so.FindProperty("id").stringValue = "ember_ring";
         so.FindProperty("displayName").stringValue = "Ember Ring";
         so.FindProperty("description").stringValue = "A gold band set with a smouldering gem. +1 spell damage.";
         so.FindProperty("icon").objectReferenceValue = SpriteSheetImporter.ImportSingle("Assets/Art/UI/IconEmberRing.png", 16);
@@ -133,6 +134,15 @@ public static partial class DungeonBuilder
         so.FindProperty("spellDamageBonus").intValue = 1;
         so.ApplyModifiedPropertiesWithoutUndo();
         return ring;
+    }
+
+    // Every item, so ids from the inventory (and later, save files) can be turned back into items.
+    // Add new items to this list as they're created.
+    private static ItemDatabase CreateItemDatabase(params ItemDefinition[] items)
+    {
+        var database = LoadOrCreateAsset<ItemDatabase>("Assets/Items/ItemDatabase.asset");
+        SetRefs(database, "items", items);
+        return database;
     }
 
     // An item on the floor: a bobbing, glinting sprite with a faint glow so it's easy to spot.

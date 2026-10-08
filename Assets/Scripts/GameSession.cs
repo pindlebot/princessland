@@ -20,6 +20,14 @@ public static class GameSession
     // Level, experience, gold and skills.
     public static Progression Progress = new Progression();
 
+    // What's in the bag and what's equipped (as item ids), so it survives going through doors.
+    public static InventoryState Inventory = new InventoryState();
+
+    // Things in the world that have been used up for good: an opened chest, a picked-up item.
+    // Keyed by each object's persistent id (scene/col,row), so they stay used when you come back.
+    public static bool IsUsed(string persistentId) => Flags.Contains("used:" + persistentId);
+    public static void MarkUsed(string persistentId) => Flags.Add("used:" + persistentId);
+
     // Called when a hero is picked: forget the previous playthrough.
     public static void NewGame(CharacterDefinition hero)
     {
@@ -27,5 +35,6 @@ public static class GameSession
         NextSpawn = null;
         Flags.Clear();
         Progress = new Progression();
+        Inventory = new InventoryState();
     }
 }

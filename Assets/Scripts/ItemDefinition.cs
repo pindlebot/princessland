@@ -10,6 +10,8 @@ public enum EquipSlot { None, Ring }
 [CreateAssetMenu(menuName = "Dungeon/Item", fileName = "NewItem")]
 public class ItemDefinition : ScriptableObject
 {
+    [Tooltip("A stable, unique id (e.g. \"ember_ring\"). Saves and the inventory store this, not the asset.")]
+    [SerializeField] private string id = "new_item";
     [SerializeField] private string displayName = "New Item";
     [TextArea] [SerializeField] private string description;
     [SerializeField] private Sprite icon;
@@ -21,6 +23,7 @@ public class ItemDefinition : ScriptableObject
     [FormerlySerializedAs("fireballDamageBonus")]
     [SerializeField] private int spellDamageBonus;
 
+    public string Id => id;
     public string DisplayName => displayName;
     public string Description => description;
     public Sprite Icon => icon;

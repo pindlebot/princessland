@@ -363,6 +363,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::ItemPickup
   item: {fileID: 11400000, guid: f8894dc7bfd9c406f8a35a7693875bdc, type: 2}
+  persistentId: 
   visual: {fileID: 7897158130483854298}
   bobHeight: 0.08
   bobSpeed: 3

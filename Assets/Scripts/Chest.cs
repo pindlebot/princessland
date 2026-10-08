@@ -11,6 +11,8 @@ public class Chest : MonoBehaviour, IInteractable
     [SerializeField] private GameObject openEffectPrefab; // sparkles + a flash of light
     [SerializeField] private AudioClip openSound;
     [SerializeField] private int gold = 25;
+    [Tooltip("Unique per placed chest (set by DungeonBuilder), so it stays open when you come back.")]
+    [SerializeField] private string persistentId;
 
     public bool IsOpen { get; private set; }
 
@@ -19,12 +21,23 @@ public class Chest : MonoBehaviour, IInteractable
     public bool CanInteract => !IsOpen;
 
     private void OnEnable() => Interactables.Register(this);
+
+    private void Start()
+    {
+        // Opened on an earlier visit: show it open (the last frame of the lid animation), already empty.
+        if (!string.IsNullOrEmpty(persistentId) && GameSession.IsUsed(persistentId))
+        {
+            IsOpen = true;
+            spriteRenderer.sprite = openFrames[openFrames.Length - 1];
+        }
+    }
     private void OnDisable() => Interactables.Unregister(this);
 
     public string Interact(GameObject player)
     {
         if (IsOpen) return null;
         IsOpen = true;
+        if (!string.IsNullOrEmpty(persistentId)) GameSession.MarkUsed(persistentId);
 
         StartCoroutine(PlayOpening());
         AudioManager.Play(openSound);

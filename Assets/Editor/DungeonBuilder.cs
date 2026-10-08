@@ -80,6 +80,8 @@ public static partial class DungeonBuilder
         var coin = CreateCoinPrefab(props);
 
         var slimePrefab = CreateEnemyPrefab(slime, SlimeStats, coin, sparkle);
+        var emberRing = CreateEmberRing();
+        var itemDatabase = CreateItemDatabase(emberRing);
         var assets = new SharedAssets
         {
             Materials = CreateMaterials(),
@@ -88,12 +90,12 @@ public static partial class DungeonBuilder
             SlimeKing = CreateSlimeKingPrefab(slimeKing, coin, slimePrefab, sparkle),
             Chest = CreateChestPrefab(props, wizardArt.Shadow, sparkle),
             Torch = CreateTorchPrefab(props),
-            RingPickup = CreateItemPickupPrefab(props, CreateEmberRing(), wizardArt.Shadow),
+            RingPickup = CreateItemPickupPrefab(props, emberRing, wizardArt.Shadow),
             Flag = CreateFlagPrefab(props),
             Dragon = CreateDragonPrefab(wizardArt.Shadow),
             Grass = new[] { "Grass_A", "Grass_B", "Grass_C" }.Select(g => CreateGrassPrefab(props, g)).ToArray(),
-            WizardPath = AssetDatabase.GetAssetPath(CreateWizard(wizardArt, sparkle)),
-            PrincessPath = AssetDatabase.GetAssetPath(CreatePrincess(princessArt, sparkle)),
+            WizardPath = AssetDatabase.GetAssetPath(CreateWizard(wizardArt, sparkle, itemDatabase)),
+            PrincessPath = AssetDatabase.GetAssetPath(CreatePrincess(princessArt, sparkle, itemDatabase)),
         };
         CreateHomePrefabs(assets, furniture, wizardArt.Shadow);
         CreateSceneryPrefabs(assets, props, wizardArt.Shadow);
