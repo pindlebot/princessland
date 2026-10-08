@@ -13,7 +13,7 @@ public static partial class DungeonBuilder
     {
         var scenery = SpriteSheetImporter.Import("Scenery");
         assets.Tree = Scenic("Tree", scenery, "Tree", new Vector3(0.8f, 2f, 0.8f), shadow, 3f);
-        assets.Fountain = Scenic("Fountain", scenery, "Fountain", new Vector3(2.6f, 1f, 2f), shadow, 3.6f);
+        assets.Fountain = Scenic("Fountain", scenery, "Fountain", new Vector3(2.6f, 1f, 2f), shadow, 3f);
         AddWakeSpot(assets.Fountain);
         assets.Bush = Scenic("Bush", scenery, "Bush", null, shadow, 1.8f);
 
@@ -36,7 +36,6 @@ public static partial class DungeonBuilder
 
         var cloud = new GameObject("Cloud");
         AddStaticSprite(cloud, scenery.Frames("Cloud")[0]);
-        cloud.transform.localScale = Vector3.one * 2f;
         cloud.AddComponent<Drift>();
         assets.Cloud = SavePrefab(cloud, "Cloud");
 
@@ -86,10 +85,11 @@ public static partial class DungeonBuilder
         PrefabUtility.UnloadPrefabContents(root);
     }
 
-    // Layered earth under the island's edge (the hedge tiles), so it reads as deliberate.
+    // Layered earth under the island's edge (the hedge tiles), so it reads as deliberate. 4m deep
+    // from the ground down, to match EarthSide.png's 64 texels (16 per unit, never stretched).
     private static void AddCliff(Transform parent, Vector3 tilePos, Material earth)
     {
-        Block("Cliff", parent, tilePos + Vector3.down * 2.25f, new Vector3(Tile, 3.5f, Tile), earth);
+        Block("Cliff", parent, tilePos + Vector3.down * 2f, new Vector3(Tile, 4f, Tile), earth);
     }
 
     // A few clouds well below the island, so they drift past underneath it on screen.

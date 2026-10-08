@@ -71,6 +71,7 @@ public static partial class DungeonBuilder
 
     private static SharedAssets CreateAssets()
     {
+        shadowSheet = SpriteSheetImporter.Import("Shadows");
         var props = SpriteSheetImporter.Import("Props");
         var furniture = SpriteSheetImporter.Import("Furniture");
         var skeleton = CharacterSpriteBuilder.Build("Skeleton");
@@ -188,7 +189,7 @@ public static partial class DungeonBuilder
         foreach (var name in new[]
                  {
                      "Floor_0", "Floor_1", "Floor_2", "WallSide", "WallTop",
-                     "Grass_0", "Grass_1", "Grass_2", "Path", "HedgeSide", "HedgeTop", "Roof", "Gate", "EarthSide",
+                     "Grass_0", "Grass_1", "Grass_2", "Path", "Path_1", "Bank", "HedgeSide", "HedgeTop", "Roof", "Gate", "EarthSide",
                      "WoodFloor", "BathTile", "Water", "Puddle", "SpikePlate",
                  })
             mats[name] = Mat(name, Color.white, texture: PixelTexture(name));

@@ -1,0 +1,56 @@
+{
+  "frameSize": 64,
+  "pixelsPerUnit": 16,
+  "pivot": "center",
+  "animations": [
+    {
+      "name": "Shadow_12",
+      "row": 0,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Shadow_16",
+      "row": 1,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Shadow_20",
+      "row": 2,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Shadow_28",
+      "row": 3,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Shadow_36",
+      "row": 4,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Shadow_48",
+      "row": 5,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Shadow_56",
+      "row": 6,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    }
+  ]
+}

@@ -74,7 +74,7 @@ public static partial class DungeonBuilder
             NextScene = file.Get("exit"),
             ExitNeedsAllEnemiesDefeated = file.Get("exit_needs") == "all_monsters",
             ShowEnemyCount = file.Get("enemy_count", "show") != "hide",
-            MinimapFloor = HexColor(file.Get("minimap_floor", "#4E463E")),
+            MinimapFloor = HexColor(file.Get("minimap_floor", "#7A6E62")),
             MinimapWall = HexColor(file.Get("minimap_wall", "#AAA4B8")),
         };
     }
@@ -301,7 +301,8 @@ public static partial class DungeonBuilder
         bank.transform.SetParent(water.transform, false);
         bank.transform.position = pos + Vector3.up;
         bank.size = new Vector3(1f, 4f, 1f); // in the water block's scaled space (2 x 0.5 x 2): a 2m-tall wall
-        if (!mermaid && rng.Next(3) == 0)
+        AddBanks(water.transform.parent, map, col, row, pos, assets.Materials["Bank"]);
+        if (!mermaid && rng.Next(4) == 0) // the odd lily pad, not a carpet of them
             Place(assets.Lily, decor, pos + new Vector3(rng.Next(-5, 6) * 0.1f, -0.18f, rng.Next(-5, 6) * 0.1f));
         if (!mermaid) return;
 
@@ -318,6 +319,28 @@ public static partial class DungeonBuilder
         Place(assets.Ripple, decor, pos + new Vector3(0.3f, -0.17f, -0.5f));
     }
 
+    // The pond sits 0.2m below the grass. Where it meets dry ground, a strip of bank (a grassy
+    // lip over damp earth) covers the ground block's side, so the water looks set into the
+    // ground rather than cut out of it. Each strip faces into the pond.
+    private static void AddBanks(Transform parent, string[] map, int col, int row, Vector3 pos, Material bank)
+    {
+        foreach (var (dc, dr) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+        {
+            char next = MapAt(map, col + dc, row + dr);
+            if (LevelMap.IsWater(next) || next == ' ') continue;
+            var outward = new Vector3(dc, 0f, -dr); // map rows go down the screen, world z goes up
+            var strip = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            strip.name = "Bank";
+            Object.DestroyImmediate(strip.GetComponent<MeshCollider>());
+            strip.transform.SetParent(parent);
+            strip.transform.position = pos + outward * (Tile * 0.5f - 0.005f) + Vector3.down * 0.125f;
+            strip.transform.rotation = Quaternion.LookRotation(outward); // a quad shows its back: it faces the water
+            strip.transform.localScale = new Vector3(Tile, 0.25f, 1f);   // 32 x 4 texels: 16 per unit, like everything
+            strip.GetComponent<Renderer>().sharedMaterial = bank;
+            strip.isStatic = true;
+        }
+    }
+
     private static string FloorMaterial(Theme theme, string[] map, char c, int col, int row, int roll)
     {
         // A monster standing in a puddle stands in water too (not on a dry square).
@@ -327,7 +350,7 @@ public static partial class DungeonBuilder
         if (c == 'p') return "Puddle";
         if (theme == Theme.Dungeon)
             return roll < 65 ? "Floor_0" : roll < 85 ? "Floor_1" : "Floor_2";
-        if (c == '=' || c == 'X') return "Path";
+        if (c == '=' || c == 'X') return roll < 80 ? "Path" : "Path_1"; // now and then, a stone
         if (c == 'K') return "Floor_0"; // the castle courtyard is paved
         // Large, quiet patches: smooth Perlin noise across the map rather than a random pick per
         // tile, so neighbouring tiles usually match and the ground reads as calm areas of green.
@@ -338,19 +361,20 @@ public static partial class DungeonBuilder
     private static void SetUpLighting(Theme theme)
     {
         RenderSettings.ambientMode = AmbientMode.Flat;
-        // Outdoors: warm sunlight with slightly cooler (blue-ish) ambient light in the shadows.
-        RenderSettings.ambientLight = theme == Theme.Outdoor ? new Color(0.46f, 0.53f, 0.68f)
+        // Outdoors: tuned so the tops of things (sun 0.7 x 0.77 + ambient) come out at about 1x,
+        // showing the palette as drawn; walls and cliffs facing the camera fall into cooler shade.
+        RenderSettings.ambientLight = theme == Theme.Outdoor ? new Color(0.46f, 0.47f, 0.53f)
                                     : theme == Theme.Home ? new Color(0.32f, 0.27f, 0.24f) // warm, cozy
                                     : new Color(0.18f, 0.18f, 0.24f);
 
         var sun = new GameObject("Directional Light").AddComponent<Light>();
         sun.type = LightType.Directional;
-        sun.intensity = theme == Theme.Outdoor ? 1.15f : theme == Theme.Home ? 0.35f : 0.6f;
-        sun.color = theme == Theme.Outdoor ? new Color(1f, 0.92f, 0.78f)
+        sun.intensity = theme == Theme.Outdoor ? 0.7f : theme == Theme.Home ? 0.35f : 0.6f;
+        sun.color = theme == Theme.Outdoor ? new Color(1f, 0.95f, 0.86f)
                   : theme == Theme.Home ? new Color(1f, 0.85f, 0.7f) : Color.white;
-        sun.shadows = LightShadows.Soft;
-        sun.shadowStrength = theme == Theme.Outdoor ? 0.6f : 1f; // softer, friendlier shadows outside
-        sun.transform.rotation = theme == Theme.Outdoor ? Quaternion.Euler(50f, 30f, 0f) : Quaternion.Euler(55f, 20f, 0f);
+        sun.shadows = LightShadows.Hard; // crisp edges, like the pixel art
+        sun.shadowStrength = theme == Theme.Outdoor ? 0.45f : 1f; // softer, friendlier shadows outside
+        sun.transform.rotation = theme == Theme.Outdoor ? ArtStyle.OutdoorSun : ArtStyle.IndoorSun; // blob shadows lean the same way
     }
 
     private static char MapAt(string[] map, int col, int row) =>
@@ -370,7 +394,7 @@ public static partial class DungeonBuilder
             Debug.LogWarning($"[DungeonBuilder] Torch at row {row}, col {col} has no visible face; skipped.");
             return;
         }
-        Place(prefab, parent, wallPos + outward * (Tile * 0.5f + 0.3f) + Vector3.up * 0.15f);
+        Place(prefab, parent, wallPos + outward * (Tile * 0.5f + 0.3f) + Vector3.up * 0.37f);
     }
 
     // A few tufts scattered around the tile. rng is the tile's own seeded random, so the
@@ -398,7 +422,7 @@ public static partial class DungeonBuilder
         cam.clearFlags = CameraClearFlags.SolidColor;
         // What you see past the edge of the map: night-dark indoors, a soft sky around the
         // floating island outside.
-        cam.backgroundColor = theme == Theme.Outdoor ? new Color(0.62f, 0.8f, 0.92f) : new Color(0.03f, 0.03f, 0.05f);
+        cam.backgroundColor = theme == Theme.Outdoor ? ArtStyle.Sky : ArtStyle.Night;
         cam.nearClipPlane = 0.1f;
         cam.farClipPlane = 100f;
         camGo.AddComponent<AudioListener>();
@@ -466,7 +490,8 @@ public static partial class DungeonBuilder
             PixelTexture(image, "UI"); // point filtering keeps the pixel art crisp when scaled
         foreach (var image in new[]
                  {
-                     "PanelCream", "Heart", "HeartHalf", "HeartEmpty", "IconMagic", "IconCoin",
+                     "PanelCream", "PanelStar", "StitchRule", "StarBurst", "MinimapRing",
+                     "Heart", "HeartHalf", "HeartEmpty", "IconMagic", "IconCoin",
                      "IconMonster", "PipMonster", "PipStar", "HurtVignette",
                  })
             SmoothTexture(image); // drawn at 4x, shrunk smoothly

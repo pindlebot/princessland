@@ -26,8 +26,10 @@ public class HudController : MonoBehaviour
     private ExitZone exit;
     private bool exitWasOpen;
 
-    private const float CooldownHeight = 72f; // matches .spell-slot .slot-icon in Hud.uss
+    private const float CooldownHeight = 48f; // matches .spell-slot .slot-icon in Hud.uss
     private const int MaxPips = 16;
+    private const int FullSizeHearts = 8;  // more than this and they shrink to fit one row...
+    private const int MaxHeartsShown = 12; // ...and past this, one heart and a count ("7 / 14")
     private const string DetailsHint = "Hover an item to inspect it. Click to equip or unequip.";
 
     // True while the mouse is over a clickable part of the HUD, so gameplay can ignore
@@ -39,9 +41,9 @@ public class HudController : MonoBehaviour
     public string SpellKey => GameInput.UsingGamepad ? "X" : usedMouseLast ? "Click" : "Space";
 
     private VisualElement root, manaFill, spellSlot, spellCooldown, banner, objectiveCard, monstersRow, sleepFade;
-    private Label enemiesLeft, objectiveHint, bannerTitle, prompt, contextHint, toast, spellKey;
-    private VisualElement heartsRow, pipsRow, xpFill, helpPanel, hurtFlash, goldIcon;
-    private Label levelBadge, goldText, pointsHint;
+    private Label enemiesLeft, objectiveHint, bannerTitle, bannerSubtitle, prompt, contextHint, toast, spellKey, helpPill;
+    private VisualElement heartsRow, pipsRow, xpFill, helpPanel, hurtFlash, goldIcon, spellFlash;
+    private Label levelBadge, goldText, pointsHint, heartsCount;
     private readonly List<VisualElement> hearts = new List<VisualElement>();
     private readonly List<VisualElement> pips = new List<VisualElement>();
     private Progression progress;
@@ -78,6 +80,8 @@ public class HudController : MonoBehaviour
         root.pickingMode = PickingMode.Ignore; // the full-screen root itself shouldn't count as "UI"
 
         heartsRow = root.Q("hearts");
+        heartsCount = root.Q<Label>("hearts-count");
+        spellFlash = root.Q("spell-flash");
         manaFill = root.Q("mana-fill");
         spellSlot = root.Q("slot-spell");
         spellCooldown = root.Q("spell-cooldown");
@@ -90,6 +94,8 @@ public class HudController : MonoBehaviour
         banner = root.Q("banner");
         sleepFade = root.Q("sleep-fade");
         bannerTitle = root.Q<Label>("banner-title");
+        bannerSubtitle = root.Q<Label>("banner-subtitle");
+        helpPill = root.Q<Label>("help-pill");
         prompt = root.Q<Label>("interact-prompt");
         toast = root.Q<Label>("toast");
         helpPanel = root.Q("help");
@@ -109,6 +115,7 @@ public class HudController : MonoBehaviour
 
         interactor.Interacted += ShowToast;
         playerHealth.Damaged += OnPlayerHurt;
+        spell.Cast += OnCast;
         progress = GameSession.Progress;
         progress.LeveledUp += OnLevelUp;
 
@@ -166,7 +173,9 @@ public class HudController : MonoBehaviour
             banner.EnableInClassList("won", game.PlayerWon);
             banner.EnableInClassList("lost", !game.PlayerWon);
             bannerTitle.text = game.PlayerWon ? "You did it!" : "Oh no! Try again?";
+            bannerSubtitle.text = GameInput.UsingGamepad ? "A: try again      Start: menu" : "R: try again      Esc: menu";
         }
+        helpPill.text = $"{GameInput.HelpKey}: Help";
     }
 
     private void HandleKeys()
@@ -205,23 +214,31 @@ public class HudController : MonoBehaviour
                 heartsRow.Add(heart);
                 hearts.Add(heart);
             }
+            // Always one row: smaller hearts past 8, and past 12 just one heart with a count.
+            heartsRow.EnableInClassList("compact", max > FullSizeHearts);
+            heartsCount.EnableInClassList("visible", max > MaxHeartsShown);
+            for (int i = 0; i < max; i++)
+                hearts[i].style.display = max > MaxHeartsShown && i > 0 ? DisplayStyle.None : DisplayStyle.Flex;
         }
+        bool counted = max > MaxHeartsShown;
         for (int i = 0; i < hearts.Count; i++)
         {
-            hearts[i].EnableInClassList("empty", i >= current);
-            hearts[i].EnableInClassList("half", half && i == current - 1);
+            // Counted: the one heart shown stands for the hero's state (full, half, or empty at 0).
+            hearts[i].EnableInClassList("empty", counted ? current == 0 : i >= current);
+            hearts[i].EnableInClassList("half", half && i == (counted ? 0 : current - 1));
         }
+        if (counted) heartsCount.text = $"{current} / {max}";
 
         if (lastHealth >= 0)
         {
             // Healing: the hearts that just refilled pop for a moment.
             for (int i = lastHealth; i < current && i < hearts.Count; i++)
-                Pop(hearts[i]);
+                Pop(hearts[counted ? 0 : i]);
             // Hurt: the hearts just lost (or just broken in half) jump and tilt.
             for (int i = current; i < lastHealth && i < hearts.Count; i++)
-                Pop(hearts[i], "hurt", 220);
+                Pop(hearts[counted ? 0 : i], "hurt", 220);
             if (half && !lastHalf && current == lastHealth)
-                Pop(hearts[current - 1], "hurt", 220);
+                Pop(hearts[counted ? 0 : current - 1], "hurt", 220);
         }
         lastHealth = current;
         lastHalf = half;
@@ -236,6 +253,13 @@ public class HudController : MonoBehaviour
 
     // Any hit, even a Gentle Mode bump that costs no heart: the screen's edges flash red.
     private void OnPlayerHurt(Health _) => Pop(hurtFlash, "visible", 140);
+
+    // The spell went off: the slot dips and a four-point star flashes over it, briefly.
+    private void OnCast()
+    {
+        Pop(spellSlot, "cast", 90);
+        Pop(spellFlash, "visible", 90);
+    }
 
     // Add a class, then remove it a moment later: USS transitions animate both ways.
     // (element.schedule is UI Toolkit's own timer, like setTimeout in a browser.)
@@ -324,6 +348,7 @@ public class HudController : MonoBehaviour
         pointsHint.text = progress.SkillPoints > 0
             ? $"{progress.SkillPoints} skill point{(progress.SkillPoints > 1 ? "s" : "")} · K"
             : "";
+        pointsHint.EnableInClassList("visible", progress.SkillPoints > 0);
     }
 
     // ---------- Hints: one short line at a time ----------
@@ -355,6 +380,7 @@ public class HudController : MonoBehaviour
     {
         if (progress != null) progress.LeveledUp -= OnLevelUp;
         if (playerHealth != null) playerHealth.Damaged -= OnPlayerHurt;
+        if (spell != null) spell.Cast -= OnCast;
     }
 
     private void OnLevelUp(int level) => ShowToast($"Level up! You're level {level}!");

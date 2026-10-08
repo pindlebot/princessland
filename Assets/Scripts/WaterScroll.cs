@@ -5,7 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Renderer))]
 public class WaterScroll : MonoBehaviour
 {
-    [SerializeField] private Vector2 speed = new Vector2(0.03f, 0.015f);
+    // Very slow: about one texel every three seconds, so the glints step along calmly.
+    [SerializeField] private Vector2 speed = new Vector2(0.01f, 0.005f);
 
     private static readonly int MainTexST = Shader.PropertyToID("_MainTex_ST");
     private Renderer rend;

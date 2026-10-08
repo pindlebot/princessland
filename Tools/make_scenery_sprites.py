@@ -4,23 +4,27 @@ Run:  Tools/.venv/bin/python Tools/make_scenery_sprites.py
 Out:  Assets/Art/Scenery.png / Scenery.json   (64x64 frames, bottom pivot)
         Tree      2 frames, looping  a round, friendly tree whose canopy sways a little
         Fountain  3 frames, looping  a stone fountain with splashing water
-        Bush      1 frame            a soft round shrub for softening edges
-        Cloud     1 frame            a puffy cloud drifting around the floating island
+        Bush      1 frame            a soft round shrub with a scalloped (garden-motif) top
+        Cloud     1 frame            a flat-bottomed puffy cloud drifting around the floating island,
+                                     with a soft lavender rim instead of a dark outline
 
-Colours are kept soft and close to the grass so they frame the scene without
-competing with characters, enemies and spells.
+Colours come from palette.py and stay soft and close to the grass, so they frame the
+scene without competing with characters, enemies and spells. Everything is placed at
+scale 1 (no stretched pixels); the ground shadows come from Shadows.png, not the art.
 """
 import math
 import random
 
+import palette as pal
 from sprite_common import Canvas, write_sheet
 
 S = 64
-LEAF, LEAF_SH, LEAF_HI = (78, 140, 66, 255), (54, 104, 52, 255), (120, 176, 90, 255)
-TRUNK, TRUNK_SH = (122, 84, 52, 255), (88, 58, 36, 255)
-STONE, STONE_SH, STONE_HI = (176, 170, 184, 255), (130, 124, 140, 255), (214, 210, 220, 255)
-WATER, WATER_HI, WATER_SH = (110, 200, 230, 255), (220, 248, 255, 255), (70, 150, 196, 255)
-CLOUD, CLOUD_SH = (255, 255, 255, 230), (220, 232, 244, 230)
+# Trees and bushes are a little deeper than the grass so they read as objects, but stay sage.
+LEAF, LEAF_SH, LEAF_HI = pal.rgba((100, 142, 88)), pal.rgba((74, 110, 74)), pal.rgba(pal.SAGE_LIGHT)
+TRUNK, TRUNK_SH = (134, 94, 66, 255), (98, 66, 52, 255)
+STONE, STONE_SH, STONE_HI = pal.rgba(pal.STONE), pal.rgba(pal.STONE_SHADE), pal.rgba(pal.STONE_LIGHT)
+WATER, WATER_HI, WATER_SH = pal.rgba(pal.WATER), pal.rgba(pal.WATER_GLINT), pal.rgba(pal.WATER_DEEP)
+CLOUD, CLOUD_SH = pal.rgba(pal.CLOUD), pal.rgba(pal.CLOUD_SHADE)
 
 
 def canopy(c, cx, cy, r, seed, sway):
@@ -76,18 +80,28 @@ def fountain(frame):
 
 
 def bush():
+    """A low, round mound whose top is three scallops (the garden motif), lit from the top-left."""
     c = Canvas(S)
-    canopy(c, 31.5, 52, 11, seed=9, sway=0)
-    c.rect(20, 60, 43, 61, LEAF_SH)
+    c.ellipse(31.5, 55, 13, 6.5, LEAF_SH)                            # the shaded body
+    for x, y, r in ((21.5, 52, 5.5), (31.5, 49, 6.5), (41.5, 52, 5.5)):
+        c.ellipse(x, y, r, r * 0.9, LEAF)                            # three scallops along the top
+    c.ellipse(31.5, 54, 11, 4, LEAF)
+    for x, y in ((19, 49), (29, 45), (39, 49)):                      # sun on each scallop
+        c.rect(x, y, x + 2, y, LEAF_HI)
+        c.dot(x - 1, y + 1, LEAF_HI)
     return c.img
 
 
 def cloud():
+    """Wide and flat-bottomed: three puffs over a long base, a lilac shade along the bottom.
+    About 3.5 units wide, so it frames the island without crowding it."""
     c = Canvas(S)
-    for cx, cy, rx, ry in ((22, 44, 11, 8), (34, 38, 13, 11), (46, 45, 10, 7), (32, 48, 20, 6)):
-        c.ellipse(cx, cy + 1, rx, ry, CLOUD_SH)
-    for cx, cy, rx, ry in ((22, 43, 10, 7), (34, 37, 12, 10), (46, 44, 9, 6)):
+    for cx, cy, rx, ry in ((18, 46, 10, 7), (32, 41, 13, 10), (46, 46, 10, 7)):
         c.ellipse(cx, cy, rx, ry, CLOUD)
+    c.rect(6, 46, 57, 52, CLOUD)
+    c.rect(6, 50, 57, 52, CLOUD_SH)
+    for x in (14, 30, 44):  # a few soft hollows between the puffs
+        c.rect(x, 49, x + 3, 49, CLOUD_SH)
     return c.img
 
 
@@ -99,7 +113,7 @@ if __name__ == "__main__":
             ("Tree", 1, True, [tree(f) for f in range(2)]),
             ("Fountain", 6, True, [fountain(f) for f in range(3)]),
             ("Bush", 1, False, [bush()]),
-            ("Cloud", 1, False, [cloud()]),
+            ("Cloud", 1, False, [cloud()], pal.rgba(pal.CLOUD_EDGE)),
         ],
         frame_size=S,
     )

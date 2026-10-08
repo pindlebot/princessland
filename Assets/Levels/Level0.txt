@@ -8,7 +8,7 @@ region: castle
 exit: Dungeon
 exit_needs: all_monsters
 open_hint: The stairs are open!
-minimap_floor: #467038
+minimap_floor: #7EA068
 minimap_wall: #C4BEAA
 ---
 HHHHHHHHHHHHHHHHHHHHHHHH

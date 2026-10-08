@@ -222,6 +222,63 @@ public class HudTests
         Assert.IsFalse(hearts.Skip(1).Any(h => h.ClassListContains("beat")), "only the last one");
     }
 
+    // Health never wraps onto a second row: hearts shrink past 8, and past 12 there's one heart
+    // and a count. The heart stands for the hero's state either way.
+    [UnityTest]
+    public IEnumerator HealthStaysOnOneRowAtAnySize()
+    {
+        yield return Load("Dungeon");
+        GameSession.Settings.gentle = false;
+        var health = player.GetComponent<Health>();
+        foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
+        var row = hud.Q("hearts");
+        var count = hud.Q<Label>("hearts-count");
+
+        foreach (int max in new[] { 5, 8, 10, 12 })
+        {
+            health.SetMax(max);
+            health.Revive();
+            yield return null;
+            yield return null; // a frame for layout
+            var hearts = row.Children().ToList();
+            Assert.AreEqual(max, hearts.Count);
+            Assert.AreEqual(max > 8, row.ClassListContains("compact"), $"{max} hearts: compact only past 8");
+            Assert.IsFalse(count.ClassListContains("visible"));
+            // layout, not worldBound: refilled hearts are mid-pop (scaled), which worldBound includes.
+            Assert.IsTrue(hearts.All(h => Mathf.Approximately(h.layout.y, hearts[0].layout.y)), $"{max} hearts on one row");
+            Assert.LessOrEqual(row.worldBound.xMin + hearts.Last().layout.xMax, hud.Q("status").worldBound.xMax,
+                $"{max} hearts fit the card");
+        }
+
+        health.SetMax(20);
+        health.Revive();
+        health.TakeDamage(13);
+        yield return null;
+        Assert.IsTrue(count.ClassListContains("visible"));
+        Assert.AreEqual("7 / 20", count.text);
+        Assert.AreEqual(1, row.Children().Count(h => h.resolvedStyle.display == DisplayStyle.Flex), "one heart and a count");
+        Assert.IsFalse(row.Children().First().ClassListContains("empty"), "still standing: the heart is full");
+
+        health.TakeDamage(7);
+        yield return null;
+        Assert.AreEqual("0 / 20", count.text);
+        Assert.IsTrue(row.Children().First().ClassListContains("empty"));
+    }
+
+    [UnityTest]
+    public IEnumerator CastingFlashesAStarOverTheSpellSlot()
+    {
+        yield return Load("Dungeon");
+        var spell = player.GetComponent<SpellAbility>();
+        spell.enabled = true;
+        Assert.IsTrue(spell.TryCast());
+        Assert.IsTrue(hud.Q("spell-flash").ClassListContains("visible"));
+        Assert.IsTrue(hud.Q("slot-spell").ClassListContains("cast"));
+        yield return new WaitForSeconds(0.3f);
+        Assert.IsFalse(hud.Q("spell-flash").ClassListContains("visible"), "just a flash");
+        Assert.IsFalse(hud.Q("slot-spell").ClassListContains("cast"));
+    }
+
     // The HUD at several screen sizes: everything stays on screen, and nothing important overlaps.
     [UnityTest]
     public IEnumerator HudFitsAtSeveralScreenSizes([Values(1280, 1920, 1024, 2560)] int width)
@@ -248,11 +305,14 @@ public class HudTests
         }
         void NoOverlap(string a, string b) =>
             Assert.IsFalse(hud.Q(a).worldBound.Overlaps(hud.Q(b).worldBound), $"{a} and {b} overlap at {width}x{height}");
+        NoOverlap("status", "boss-bar");
         NoOverlap("status", "slot-spell");
         NoOverlap("slot-spell", "help-pill");
         NoOverlap("objective", "boss-bar");
         NoOverlap("boss-bar", "minimap-frame");
         NoOverlap("objective", "minimap-frame");
+        Assert.Less(hud.Q("status").worldBound.yMax, screen.height / 3f, "the status card is at the top");
+        Assert.Greater(hud.Q("objective").worldBound.yMin, hud.Q("minimap-frame").worldBound.yMax, "the quest card is under the minimap");
     }
 
     private static void Teleport(GameObject go, Vector3 pos)

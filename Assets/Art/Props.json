@@ -76,8 +76,8 @@
     {
       "name": "Butterfly",
       "row": 10,
-      "frames": 2,
-      "fps": 6,
+      "frames": 4,
+      "fps": 10,
       "loop": true
     },
     {

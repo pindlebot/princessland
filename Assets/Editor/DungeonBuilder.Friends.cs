@@ -118,7 +118,7 @@ public static partial class DungeonBuilder
         assets.Door = CreateDoorPrefab(props, locked: false);
         assets.LockedDoor = CreateDoorPrefab(props, locked: true);
         assets.Key = CreateKeyPrefab(props, shadow);
-        assets.Ripple = CreateFlatDecal("Ripple", water, "Ripple", 1.2f);
+        assets.Ripple = CreateFlatDecal("Ripple", water, "Ripple", 1f);
         assets.Lily = CreateFlatDecal("Lily", water, "Lily", 1f);
     }
 

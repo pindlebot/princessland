@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -49,12 +50,11 @@ public static partial class DungeonBuilder
         return SavePrefab(go, "Chest");
     }
 
-    // Purely decorative: a flickering flame sprite and a flickering light. The root is
-    // scaled down; the sprite is a child so Billboard (which sets its own scale) doesn't undo it.
+    // Purely decorative: a flickering flame sprite and a flickering light. The art is drawn at
+    // its in-game size, so like every sprite it's placed at scale 1.
     private static GameObject CreateTorchPrefab(SpriteSheetImporter.SpriteSheet props)
     {
         var go = new GameObject("WallTorch");
-        go.transform.localScale = Vector3.one * 0.75f;
 
         var sprite = new GameObject("Sprite");
         sprite.transform.SetParent(go.transform, false);
@@ -62,7 +62,7 @@ public static partial class DungeonBuilder
 
         var light = new GameObject("Light").AddComponent<Light>();
         light.transform.SetParent(go.transform, false);
-        light.transform.localPosition = new Vector3(0f, 1.5f, 0f); // at the flame
+        light.transform.localPosition = new Vector3(0f, 0.75f, 0f); // at the flame
         light.type = LightType.Point;
         light.color = new Color(1f, 0.62f, 0.25f);
         light.range = 6f;
@@ -107,15 +107,29 @@ public static partial class DungeonBuilder
         go.AddComponent<Billboard>();
     }
 
-    private static void AddShadow(GameObject go, Sprite shadowSprite, float size)
+    // A flat pixel shadow about `size` units across. Shadows are never scaled (that would make
+    // their pixels bigger than everyone else's): the nearest size from Shadows.png is used.
+    // shadowSprite is the 1-unit one, used when nothing closer fits.
+    private static void AddShadow(GameObject go, Sprite shadowSprite, float size, float lift = 0.02f)
     {
         var shadow = new GameObject("Shadow").AddComponent<SpriteRenderer>();
         shadow.transform.SetParent(go.transform, false);
-        shadow.transform.localPosition = new Vector3(0f, 0.02f, 0f);
+        shadow.transform.localPosition = new Vector3(0f, lift, 0f) + ArtStyle.ShadowOffset(ArtStyle.OutdoorSun);
         shadow.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-        shadow.transform.localScale = Vector3.one * size;
-        shadow.sprite = shadowSprite;
+        shadow.sprite = ShadowSprite(size) ?? shadowSprite;
         shadow.sortingOrder = -1;
+        SetFloat(shadow.gameObject.AddComponent<GroundShadow>(), "lift", lift);
+    }
+
+    private static SpriteSheetImporter.SpriteSheet shadowSheet; // Shadows.png, loaded by CreateAssets
+
+    private static Sprite ShadowSprite(float size)
+    {
+        if (shadowSheet == null) return null;
+        var best = shadowSheet.Layout.animations
+            .OrderBy(a => Mathf.Abs(int.Parse(a.name.Substring("Shadow_".Length)) / (float)ArtStyle.PixelsPerUnit - size))
+            .First();
+        return shadowSheet.Frames(best.name)[0];
     }
 
     // ---------- Items ----------

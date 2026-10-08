@@ -9,7 +9,8 @@ A tiny isometric dungeon crawler for learning Unity (6000.6.4f1, Built-in Render
 Level 0's exit only appears once its 4 skeletons are defeated. Esc / Start opens the pause menu. M mutes the music.
 
 **Saving:** three slots, each a JSON file in `Application.persistentDataPath` (`save1.json` ...). Every door, the
-stairs and starting a new adventure autosave; the pause menu's "Save and go to title" saves at the door you came in by.
+stairs and starting a new adventure autosave; the pause menu's "Save and go to title" and "Save and quit game" save at
+the door you came in by. The title screen has a "Quit game" button too.
 "Continue" (or just Enter / A) on the title screen picks up the most recent save.
 
 **Modes** (pause menu, saved per slot): **Gentle** (the default) has no Game Over: monsters hit for half damage,
@@ -46,14 +47,21 @@ at half health he splits off 3 slimelings. A boss health bar appears once he not
 |---|---|---|---|---|
 | Aldric the Wizard | Fireball | 5 | 50 (+8/s) | every 0.6s, 10 mana |
 | Princess Marina (aquamarine) | Tidal Orb | 6 | 40 (+9/s) | every 0.45s, 8 mana |
+
+Any controller the Input System knows works (Xbox, PlayStation, Switch Pro...), and the on-screen prompts switch
+to its buttons as soon as you touch it.
+
 | Action | Keyboard / mouse | Gamepad |
 |---|---|---|
 | Walk | WASD / arrows | left stick / d-pad |
 | Magic (auto-aims) | Space / click | X / right trigger |
 | Talk, open, pick up | E | A |
 | Bag · skills | I · K | Y · View |
-| Pause menu | Esc | Start |
-| Help · music · restart | H · M · R | |
+| Pause menu · back | Esc | Start · B |
+| Menus | arrows · Enter | d-pad / stick · A |
+| Help | H | RB |
+| Try again | R | A (after a Game Over) |
+| Music on/off | M | (pause menu volume) |
 
 ## Where things live
 | Path | What it teaches |
@@ -212,14 +220,14 @@ Regenerate with `Tools/.venv/bin/python Tools/make_environment_textures.py`, the
 Built with **UI Toolkit** (`Assets/UI/Hud.uxml` + `Hud.uss`, driven by `HudController.cs`), designed for a young
 player: cream panels with honey-gold borders and plum text (one 9-sliced `PanelCream.png` for every box).
 
-- **Status card** (bottom left): portrait, **one heart per health point**, a turquoise **magic bar**, and a
+- **Status card** (top left): portrait, **one heart per health point**, a turquoise **magic bar**, and a
   smaller row for level, XP and coins (the coin pops when gold comes in). A heart you lose jumps and tilts before
   it empties, a healed one pops, and when only one is left it beats. In Gentle Mode a hit that costs half a
   heart shows as a **half heart**; healing mends it.
 - **Hurt flash**: any hit makes the screen's edges glow red for a moment, even a bump that costs no heart.
-- **Objective card** (top left): location, a monster icon with "6 monsters left", and **progress pips** that turn
-  into gold stars; when the exit unlocks it shows "The stairs are open!" with a little bounce.
-- **One big spell slot** with its key ("Space", or "Click" if you cast with the mouse) and a recharge shade;
+- **Objective card** (top right, under the minimap): location, a monster icon with "6 monsters left", and
+  **progress pips** that turn into gold stars; when the exit unlocks it shows "The stairs are open!" with a little bounce.
+- **One spell slot** (bottom middle, compact) with its key ("Space", or "Click" if you cast with the mouse) and a recharge shade;
   unused slots stay hidden until abilities exist for them.
 - **One hint at a time**: "E: Open chest", "W A S D: Walk" (until you've moved), "Space: Magic!" (monster nearby,
   not cast lately). The full controls list lives in a **help panel (H)**.
@@ -228,7 +236,8 @@ player: cream panels with honey-gold borders and plum text (one 9-sliced `PanelC
 - Panels for inventory (I), skills (K), dialogue, the boss bar and the win/lose banner share the same style.
 HUD art comes from `Tools/make_hud_sprites.py`. The storybook pieces (panel, hearts, icons, pips) are drawn as smooth
 shapes at 4× their on-screen size and imported with mipmaps, so they stay sharp from 720p to 4K; portraits, spell icons
-and minimap markers stay pixel art.
+and minimap markers stay pixel art. The same script draws the app icon (`Assets/Art/AppIcon.png`, a gold crown on a
+plum tile); `CommandLineBuild.ApplyAppIcon` makes it the default icon in Player Settings, and every build reapplies it.
 
 ## Castle grounds atmosphere
 Quiet, low-contrast grass laid in large patches (Perlin noise), fewer tufts, flowers only at points of interest

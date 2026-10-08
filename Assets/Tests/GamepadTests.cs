@@ -158,4 +158,68 @@ public class GamepadTests : InputTestFixture
         }
         Assert.IsFalse(DialogueController.BlocksInput, "A carried the whole conversation to its end");
     }
+
+    [UnityTest]
+    public IEnumerator RbOpensHelpAndAFromTheBannerTriesAgain()
+    {
+        yield return Load("Dungeon");
+        foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
+        var hud = Object.FindAnyObjectByType<HudController>();
+        Tap(pad.rightShoulder);
+        yield return null;
+        yield return null;
+        Assert.IsTrue(hud.IsHelpOpen, "RB opens the help panel");
+        Assert.AreEqual("RB: Help", Hud().Q<Label>("help-pill").text, "and the pill names the pad's button");
+        Tap(pad.rightShoulder);
+        yield return null;
+        Assert.IsFalse(hud.IsHelpOpen);
+
+        GameSession.Settings.gentle = false; // Adventurer Mode, so there's a Game Over
+        var health = LevelBootstrap.Current.Player.GetComponent<Health>();
+        health.TakeDamage(health.Max);
+        yield return null;
+        yield return null;
+        Assert.IsTrue(GameManager.Instance.IsGameOver);
+        Assert.AreEqual("A: try again      Start: menu", Hud().Q<Label>("banner-subtitle").text);
+        var before = GameManager.Instance;
+        Tap(pad.buttonSouth);
+        for (int i = 0; i < 10 && GameManager.Instance == before; i++) yield return null;
+        yield return null;
+        Assert.AreNotEqual(before, GameManager.Instance, "the level started again");
+        Assert.IsFalse(GameManager.Instance.IsGameOver);
+    }
+
+    [UnityTest]
+    public IEnumerator DownOnTheTitleReachesQuit()
+    {
+        int quits = 0;
+        AppQuit.Override = () => quits++;
+        string folder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "IsoDungeonPad_" + System.Guid.NewGuid().ToString("N"));
+        SaveSystem.FolderOverride = folder; // no saves, so the highlight starts on slot 1
+        try
+        {
+            yield return Load("Title");
+            var title = Object.FindAnyObjectByType<TitleController>();
+            Assert.AreEqual(0, title.Highlighted);
+            Tap(pad.dpad.right);
+            yield return null;
+            Tap(pad.dpad.down);
+            yield return null;
+            Assert.IsTrue(title.QuitHighlighted, "down from the slots lands on Quit");
+            Tap(pad.dpad.up);
+            yield return null;
+            Assert.AreEqual(1, title.Highlighted, "up goes back to the slot you came from");
+            Tap(pad.dpad.down);
+            yield return null;
+            Tap(pad.buttonSouth);
+            yield return null;
+            Assert.AreEqual(1, quits, "A on Quit closes the game");
+        }
+        finally
+        {
+            AppQuit.Override = null;
+            SaveSystem.FolderOverride = null;
+            if (System.IO.Directory.Exists(folder)) System.IO.Directory.Delete(folder, true);
+        }
+    }
 }

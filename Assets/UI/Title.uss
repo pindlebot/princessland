@@ -69,3 +69,21 @@
 .slot-erase:hover {
     color: rgb(190, 50, 70);
 }
+
+/* A quiet text button under the slots: there if you want it, not competing with Continue. */
+.quit-button {
+    margin-top: 28px;
+    padding: 6px 18px;
+    font-size: 15px;
+    color: rgb(150, 140, 170);
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 1px;
+    border-color: rgba(150, 140, 170, 0.4);
+    border-radius: 3px;
+}
+
+.quit-button:hover,
+.quit-button.selected {
+    color: rgb(232, 196, 104);
+    border-color: rgb(232, 196, 104);
+}

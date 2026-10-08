@@ -884,6 +884,50 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Butterfly_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e04822715ec804828b38beffdd2de795
+      internalID: 1863574430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Butterfly_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 64
+        width: 32
+        height: 32
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67af161b227654e0fb90c1a0d8c5c732
+      internalID: -1694655366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -900,6 +944,8 @@ TextureImporter:
     nameFileIdTable:
       Butterfly_0: 536865937
       Butterfly_1: 721844707
+      Butterfly_2: 1863574430
+      Butterfly_3: -1694655366
       Chest_Closed_0: 1433973877
       Chest_Open_0: 1713519929
       Chest_Open_1: -123284615

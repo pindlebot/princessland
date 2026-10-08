@@ -1,5 +1,6 @@
 <!--
-  The title screen. TitleController fills in the three save slot cards from the save files.
+  The title screen. TitleController fills in the three save slot cards from the save files;
+  "Quit game" closes the game (your adventures are already saved).
 -->
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <Style src="project://database/Assets/UI/Hud.uss" />
@@ -38,5 +39,7 @@
                 <ui:Button name="slot-erase" class="slot-erase" text="Erase" />
             </ui:VisualElement>
         </ui:VisualElement>
+
+        <ui:Button name="quit" class="quit-button" text="Quit game" />
     </ui:VisualElement>
 </ui:UXML>

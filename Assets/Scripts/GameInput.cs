@@ -11,9 +11,11 @@ using UnityEngine.InputSystem.Controls;
 //   Cast            Space / left click        X (west) / right trigger
 //   Inventory       I                         Y (north)
 //   Skill tree      K                         View / Select
+//   Help            H                         RB (right shoulder)
 //   Pause menu      Esc                       Start
 //   Back            Esc                       B (east)
 //   Confirm         Enter                     A
+//   Try again       R                         A, once the game is over (GameManager)
 //
 // Built on the Input System package's device API (Keyboard.current, Gamepad.current), which
 // works for any controller the Input System knows (Xbox, PlayStation, Switch Pro, ...).
@@ -47,6 +49,7 @@ public static class GameInput
     }
 
     public static string InteractKey => UsingGamepad ? "A" : "E";
+    public static string HelpKey => UsingGamepad ? "RB" : "H";
 
     // ---------- Movement ----------
 
@@ -86,7 +89,7 @@ public static class GameInput
 
     public static bool InventoryPressed => Down(Keyboard.current?.iKey) || Down(Gamepad.current?.buttonNorth);
     public static bool SkillTreePressed => Down(Keyboard.current?.kKey) || Down(Gamepad.current?.selectButton);
-    public static bool HelpPressed => Down(Keyboard.current?.hKey);
+    public static bool HelpPressed => Down(Keyboard.current?.hKey) || Down(Gamepad.current?.rightShoulder);
     public static bool MenuPressed => Down(Keyboard.current?.escapeKey) || Down(Gamepad.current?.startButton);
     public static bool BackPressed => Down(Keyboard.current?.escapeKey) || Down(Gamepad.current?.buttonEast);
     public static bool RestartPressed => Down(Keyboard.current?.rKey);

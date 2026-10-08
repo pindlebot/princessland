@@ -1,5 +1,5 @@
 {
-  "frameSize": 32,
+  "frameSize": 96,
   "pixelsPerUnit": 16,
   "pivot": "center",
   "animations": [

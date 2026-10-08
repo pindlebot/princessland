@@ -110,7 +110,9 @@ MonoBehaviour:
   frames:
   - {fileID: 536865937, guid: 43b611b62e3574b799931d52a4891505, type: 3}
   - {fileID: 721844707, guid: 43b611b62e3574b799931d52a4891505, type: 3}
-  fps: 6
+  - {fileID: 1863574430, guid: 43b611b62e3574b799931d52a4891505, type: 3}
+  - {fileID: -1694655366, guid: 43b611b62e3574b799931d52a4891505, type: 3}
+  fps: 10
   loop: 1
   destroyWhenDone: 0
   randomStart: 1

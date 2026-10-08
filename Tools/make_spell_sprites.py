@@ -48,10 +48,10 @@ GOO_SPLATS = [(0.5, (170, 110, 210, 210)), (0.2, (120, 70, 170, 150))]
 EMBER_OUTLINE = (96, 24, 16, 255)
 
 
-def paint(heat_at, palette=FIRE):
-    c = Canvas()
-    for y in range(32):
-        for x in range(32):
+def paint(heat_at, palette=FIRE, size=32):
+    c = Canvas(size)
+    for y in range(size):
+        for x in range(size):
             h = heat_at(x, y)
             for threshold, color in palette:
                 if h >= threshold:
@@ -83,22 +83,33 @@ def fly_frame(i, palette=FIRE):
     return paint(heat, palette)
 
 
-def impact_frame(i, palette=FIRE, last=SMOKE):
+def four_point_star(px, x, y, color, size, arm=2):
+    """The signature motif in its tiniest form: a 1px centre with four arms."""
+    for d in range(-arm, arm + 1):
+        for sx, sy in ((x + d, y), (x, y + d)):
+            if 0 <= sx < size and 0 <= sy < size:
+                px[sx, sy] = color
+
+
+def impact_frame(i, palette=FIRE, last=SMOKE, size=32):
+    """The burst where a spell lands. `size` lets the same burst be drawn bigger *in pixels*
+    (the Slime King's 96px shockwave) instead of being scaled up in game."""
+    k = size / 32
     rng = random.Random(200 + i)
-    noise = {(x, y): rng.uniform(-0.15, 0.15) for x in range(32) for y in range(32)}
-    cx, cy = 15.5, 15.5
+    noise = {(x, y): rng.uniform(-0.15, 0.15) for x in range(size) for y in range(size)}
+    cx = cy = (size - 1) / 2
 
     if i == 4:  # last frame: drifting smoke
         def smoke(x, y):
-            d = math.dist((x, y), (cx, cy))
+            d = math.dist((x, y), (cx, cy)) / k
             return (1 - abs(d - 10) / 3) * 0.8 + noise[x, y] * 3 - 0.2 if d < 14 else 0.0
-        return paint(smoke, last)
+        return paint(smoke, last, size)
 
     def heat(x, y):
-        d = math.dist((x, y), (cx, cy))
+        d = math.dist((x, y), (cx, cy)) / k
         if i == 0:  # bright flash
             return 1.1 - d / 4
-        if i == 1:  # fireball expands
+        if i == 1:  # the burst expands
             base = 1.05 - d / 7
         elif i == 2:  # becomes a ring, center cooling
             base = (1 - abs(d - 7) / 4) * 0.95
@@ -106,15 +117,20 @@ def impact_frame(i, palette=FIRE, last=SMOKE):
             return (1 - abs(d - 10) / 3) * 0.55 + noise[x, y] * 2.2 if d < 14 else 0.0
         return base + noise[x, y] if base > 0.05 else 0.0
 
-    img = paint(heat, palette)
+    img = paint(heat, palette, size)
+    c_px = img.load()
     if i in (1, 2):  # eight sparks flying outward
-        c_px = img.load()
         for a in range(0, 360, 45):
-            r = 9 + i * 2
+            r = (9 + i * 2) * k
             x = round(cx + r * math.cos(math.radians(a + 22 * i)))
             y = round(cy + r * math.sin(math.radians(a + 22 * i)))
-            if 0 <= x < 32 and 0 <= y < 32:
+            if 0 <= x < size and 0 <= y < size:
                 c_px[x, y] = palette[1][1]
+    if i == 3:  # as it fades, a few four-point glints (the game's star motif)
+        for a in (45, 165, 285):
+            r = 11 * k
+            four_point_star(c_px, round(cx + r * math.cos(math.radians(a))),
+                            round(cy + r * math.sin(math.radians(a))), palette[0][1], size)
     return img
 
 
@@ -135,5 +151,6 @@ if __name__ == "__main__":
     write_spell("Fireball", FIRE, SMOKE)
     write_spell("TidalOrb", WATER, MIST)
     # Not a spell, but the same expanding-ring burst suits the King's landing.
-    write_sheet("Shockwave", None, [("Impact", 14, False, [impact_frame(i, GOO, GOO_SPLATS) for i in range(5)])],
-                pivot="center", outline_color=None)
+    # Drawn at 96px (three tiles across) rather than scaled up in game, so its pixels match.
+    write_sheet("Shockwave", None, [("Impact", 14, False, [impact_frame(i, GOO, GOO_SPLATS, 96) for i in range(5)])],
+                pivot="center", outline_color=None, frame_size=96)

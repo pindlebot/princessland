@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 // The pause menu (Esc or Start): keep playing, music and sound volume, Gentle/Adventurer
-// mode, and "save and go to the title screen". Time stops while it's open.
+// mode, "save and go to the title screen" and "save and quit". Time stops while it's open.
 //
 // Every row can be clicked, and the whole menu also works from the keyboard or a gamepad:
 // up/down picks a row, left/right changes a setting, Enter/A presses a button, and Esc,
@@ -14,8 +14,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private string titleScene = "Title";
     [SerializeField] private AudioClip clickSound;
 
-    private enum Row { Resume, Music, Sounds, Mode, Quit }
-    private static readonly Row[] Rows = { Row.Resume, Row.Music, Row.Sounds, Row.Mode, Row.Quit };
+    private enum Row { Resume, Music, Sounds, Mode, Quit, Exit }
+    private static readonly Row[] Rows = { Row.Resume, Row.Music, Row.Sounds, Row.Mode, Row.Quit, Row.Exit };
 
     public static bool IsOpen { get; private set; }
     public int Highlighted { get; private set; }
@@ -46,6 +46,7 @@ public class PauseMenu : MonoBehaviour
 
         root.Q<Button>("pause-resume").clicked += Close;
         root.Q<Button>("pause-quit").clicked += QuitToTitle;
+        root.Q<Button>("pause-exit").clicked += QuitGame;
         foreach (var row in new[] { Row.Music, Row.Sounds, Row.Mode })
         {
             var r = row;
@@ -82,6 +83,7 @@ public class PauseMenu : MonoBehaviour
         {
             if (row == Row.Resume) Close();
             else if (row == Row.Quit) QuitToTitle();
+            else if (row == Row.Exit) QuitGame();
             else if (row == Row.Mode) Change(row, +1); // A flips the mode too
         }
     }
@@ -166,5 +168,13 @@ public class PauseMenu : MonoBehaviour
         SaveSystem.Autosave(SceneManager.GetActiveScene().name, GameSession.EnteredBy);
         SetOpen(false);
         SceneManager.LoadScene(titleScene);
+    }
+
+    // Save the same way, then close the game.
+    public void QuitGame()
+    {
+        SaveSystem.Autosave(SceneManager.GetActiveScene().name, GameSession.EnteredBy);
+        SetOpen(false);
+        AppQuit.Quit();
     }
 }

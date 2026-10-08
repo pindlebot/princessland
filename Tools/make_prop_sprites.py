@@ -5,18 +5,21 @@ Out:  Assets/Art/Props.png / Props.json   (32x32 frames, bottom pivot)
         Chest_Closed   1 frame
         Chest_Open     4 frames, once     lid lifts, gold glints inside
         Sparkle        5 frames, once     gold stars rising out of the chest
-        Torch          4 frames, looping  flickering flame on an iron wall bracket
-        Grass_A/B/C    2 frames, looping  tufts swaying (C has little flowers)
+        Torch          4 frames, looping  flickering flame on an iron wall bracket (drawn at its
+                                          in-game size: placed at scale 1 like everything else)
+        Grass_A/B/C    2 frames, looping  small sage tufts swaying, no outline so they stay part of
+                                          the ground (C has little butter-yellow flowers)
         Ring           2 frames, looping  the Ember Ring lying on the floor, glinting
         Flag           3 frames, looping  aquamarine banner waving on a pole (castle keep)
         Coin           4 frames, looping  a spinning gold coin (enemies drop these)
-        Butterfly      2 frames, looping  wings open/closed, for ambient life
+        Butterfly      4 frames, looping  a small flutter (open, half, closed, half), coral pink
         Mote           3 frames, looping  a tiny drifting magical sparkle
         Stairs         1 frame            stone steps leading down (flat on the floor, under the exit)
 """
 import math
 import random
 
+import palette as pal
 from make_spell_sprites import paint
 from sprite_common import Canvas, write_sheet
 
@@ -24,9 +27,9 @@ WOOD, WOOD_SH, WOOD_HI = (128, 80, 42, 255), (86, 50, 26, 255), (160, 106, 58, 2
 IRON, IRON_HI = (84, 84, 96, 255), (140, 140, 156, 255)
 GOLD, GOLD_HI, GOLD_SH = (236, 192, 70, 255), (255, 244, 170, 255), (170, 120, 36, 255)
 INSIDE = (34, 20, 14, 255)
-# Tufts are only a shade off the ground (78, 132, 58), so they add texture without noise.
-GRASS = [(62, 112, 50, 255), (70, 122, 54, 255), (88, 142, 64, 255)]
-FLOWER = (240, 214, 90, 255)
+# Tufts are only a shade or two off the sage ground, so they add texture without noise.
+GRASS = [pal.rgba(pal.SAGE_DARK), pal.rgba(pal.SAGE_DEEP), pal.rgba((106, 140, 90))]
+FLOWER = pal.rgba(pal.BUTTER)
 
 # Flame colors, hottest first (same idea as the fireball, a little more orange)
 FLAME = [
@@ -129,29 +132,29 @@ def torch(frame):
     sway = math.sin(frame * math.pi / 2) * 0.8
 
     def heat(x, y):
-        # A teardrop: round at the bottom (y ~ 15), pointed and swaying at the top
-        up = max(0.0, 15 - y)
+        # A teardrop: round at the bottom (y ~ 21), pointed and swaying at the top
+        up = max(0.0, 21 - y)
         cx = 15.5 + sway * up / 8
-        width = 3.4 * (1 - up / 11) if up < 11 else 0
-        if y > 15:
-            d = math.dist((x, y), (15.5, 15)) / 3.4
+        width = 2.8 * (1 - up / 8) if up < 8 else 0
+        if y > 21:
+            d = math.dist((x, y), (15.5, 21)) / 2.8
         elif width > 0:
             d = abs(x - cx) / width
         else:
             return 0.0
-        base = (1 - d) * (1.1 - up / 14)
+        base = (1 - d) * (1.1 - up / 10)
         return base + noise[x, y] if base > 0.05 else 0.0
 
     img = paint(heat, FLAME)
     c = Canvas()
     c.img.alpha_composite(img)
     c.px = c.img.load()
-    c.rect(14, 17, 17, 18, IRON)  # cup holding the flame
-    c.rect(14, 17, 17, 17, IRON_HI)
-    c.rect(15, 19, 16, 26, WOOD)  # handle
-    c.rect(15, 19, 15, 26, WOOD_HI)
-    c.rect(12, 24, 19, 25, IRON)  # wall bracket
-    c.rect(12, 24, 19, 24, IRON_HI)
+    c.rect(14, 23, 17, 24, IRON)  # cup holding the flame
+    c.rect(14, 23, 17, 23, IRON_HI)
+    c.rect(15, 25, 16, 30, WOOD)  # handle
+    c.rect(15, 25, 15, 30, WOOD_HI)
+    c.rect(13, 29, 18, 30, IRON)  # wall bracket
+    c.rect(13, 29, 18, 29, IRON_HI)
     return c.img
 
 
@@ -224,19 +227,21 @@ def coin(frame):
 # ---------- Ambient life and the stairs ----------
 
 def butterfly(frame):
+    """A small coral butterfly. Frames: open, half, closed, half, so it flutters rather than blinks."""
     c = Canvas()
-    wing, spot = (250, 200, 230, 255), (240, 140, 190, 255)
-    body = (74, 37, 69, 255)
+    wing, spot = pal.rgba(pal.CORAL_LIGHT), pal.rgba(pal.CORAL)
+    body = pal.rgba(pal.PLUM)
     c.rect(15, 14, 16, 18, body)
-    if frame == 0:  # wings open
+    span = (3, 2, 0, 2)[frame]
+    if span:
         for side in (-1, 1):
-            x0 = 15 + (2 if side > 0 else -6)
-            c.ellipse(x0 + 2, 14, 2.5, 2.5, wing)
-            c.ellipse(x0 + 2, 18, 2, 1.8, wing)
-            c.dot(x0 + 2, 14, spot)
+            x = 15.5 + side * (span + 0.5)
+            c.ellipse(x, 14, span * 0.8 + 0.3, 2.4, wing)
+            c.ellipse(x, 18, span * 0.6 + 0.3, 1.7, wing)
+            c.dot(round(x), 14, spot)
     else:  # wings folded up
-        c.rect(13, 11, 14, 15, wing)
-        c.rect(17, 11, 18, 15, wing)
+        c.rect(14, 11, 14, 15, wing)
+        c.rect(17, 11, 17, 15, wing)
     return c.img
 
 
@@ -270,9 +275,9 @@ def stairs():
 def grass(seed, frame, flowers=False):
     rng = random.Random(seed)
     c = Canvas()
-    for _ in range(rng.randint(6, 9)):
-        x = rng.randint(11, 20)
-        height = rng.randint(4, 9)
+    for _ in range(rng.randint(4, 5)):
+        x = rng.randint(13, 18)
+        height = rng.randint(3, 6)
         lean = rng.choice((-1, 0, 0, 1))
         color = rng.choice(GRASS)
         for i in range(height):
@@ -294,13 +299,13 @@ if __name__ == "__main__":
             ("Chest_Open", 12, False, [chest_open(s) for s in range(4)]),
             ("Sparkle", 10, False, [sparkle(f) for f in range(5)]),
             ("Torch", 8, True, [torch(f) for f in range(4)]),
-            ("Grass_A", 2, True, [grass(1, f) for f in range(2)]),
-            ("Grass_B", 2, True, [grass(2, f) for f in range(2)]),
-            ("Grass_C", 2, True, [grass(3, f, flowers=True) for f in range(2)]),
+            ("Grass_A", 2, True, [grass(1, f) for f in range(2)], None),
+            ("Grass_B", 2, True, [grass(2, f) for f in range(2)], None),
+            ("Grass_C", 2, True, [grass(3, f, flowers=True) for f in range(2)], None),
             ("Ring", 3, True, [ring(f) for f in range(2)]),
             ("Flag", 6, True, [flag(f) for f in range(3)]),
             ("Coin", 10, True, [coin(f) for f in range(4)]),
-            ("Butterfly", 6, True, [butterfly(f) for f in range(2)]),
+            ("Butterfly", 10, True, [butterfly(f) for f in range(4)]),
             ("Mote", 5, True, [mote(f) for f in range(3)]),
             ("Stairs", 1, False, [stairs()]),
         ],

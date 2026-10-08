@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 // An empty slot starts a new adventure (character select) that will save into it.
 // Keys: 1/2/3 open that slot. Left/Right (d-pad, stick) move the highlight, which starts on
 // the most recent save, and Enter (A) opens the highlighted slot, so Enter alone continues.
+// "Quit game" at the bottom closes the game; Down (d-pad, stick) moves the highlight onto it.
 [RequireComponent(typeof(UIDocument))]
 public class TitleController : MonoBehaviour
 {
@@ -20,16 +21,23 @@ public class TitleController : MonoBehaviour
     public CharacterDefinition[] Heroes => heroes;
 
     private VisualElement root;
-    private Button continueButton;
+    private Button continueButton, quitButton;
     private readonly int[] eraseArmed = { 0, 0, 0 }; // erasing takes two clicks
     private bool leaving;
     public int Highlighted { get; private set; }
+
+    // The highlight goes 0-2 over the slots, then QuitIndex for the Quit button below them.
+    public const int QuitIndex = SaveSystem.SlotCount;
+    public bool QuitHighlighted => Highlighted == QuitIndex;
+    private int lastSlot; // where Up from the Quit button goes back to
 
     private void Start()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
         continueButton = root.Q<Button>("continue");
         continueButton.clicked += Continue;
+        quitButton = root.Q<Button>("quit");
+        quitButton.clicked += AppQuit.Quit;
         for (int i = 0; i < SaveSystem.SlotCount; i++)
         {
             int slot = i;
@@ -46,20 +54,34 @@ public class TitleController : MonoBehaviour
 
     private void Update()
     {
-        if (GameInput.ConfirmPressed) OpenSlot(Highlighted);
-        if (GameInput.LeftPressed) Highlight(Highlighted - 1, sound: true);
-        if (GameInput.RightPressed) Highlight(Highlighted + 1, sound: true);
+        if (GameInput.ConfirmPressed)
+        {
+            if (QuitHighlighted) AppQuit.Quit();
+            else OpenSlot(Highlighted);
+        }
+        if (QuitHighlighted)
+        {
+            if (GameInput.UpPressed) Highlight(lastSlot, sound: true);
+        }
+        else
+        {
+            if (GameInput.LeftPressed) Highlight(Highlighted - 1, sound: true);
+            if (GameInput.RightPressed) Highlight(Highlighted + 1, sound: true);
+            if (GameInput.DownPressed) Highlight(QuitIndex, sound: true);
+        }
         for (int i = 0; i < SaveSystem.SlotCount; i++)
             if (GameInput.NumberPressed(i + 1)) OpenSlot(i);
     }
 
-    public void Highlight(int slot, bool sound = false)
+    public void Highlight(int index, bool sound = false)
     {
-        slot = Mathf.Clamp(slot, 0, SaveSystem.SlotCount - 1);
-        if (sound && slot != Highlighted) AudioManager.Play(selectSound);
-        Highlighted = slot;
+        index = Mathf.Clamp(index, 0, QuitIndex);
+        if (sound && index != Highlighted) AudioManager.Play(selectSound);
+        Highlighted = index;
+        if (!QuitHighlighted) lastSlot = index;
         for (int i = 0; i < SaveSystem.SlotCount; i++)
             root.Q($"slot-{i}").EnableInClassList("selected", i == Highlighted);
+        quitButton.EnableInClassList("selected", QuitHighlighted);
     }
 
     // Redraw the cards from the save files.

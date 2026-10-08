@@ -1,19 +1,46 @@
 /*
   HUD styles: a warm storybook look. USS is CSS for UI Toolkit: selectors, classes, flexbox.
 
-  Palette
-    cream panels     rgb(248, 239, 216)      honey-gold borders  rgb(222, 168, 70)
-    plum text        rgb(74, 37, 69)         soft plum           rgb(128, 88, 118)
-    hearts           rgb(232, 70, 92)        magic (turquoise)   rgb(64, 206, 210)
-    experience       rgb(170, 130, 210)      coins               rgb(196, 140, 30)
+  The visual rules live in :root below (they mirror Tools/palette.py and Scripts/ArtStyle.cs):
+  one panel image, one border and shadow treatment, one type scale, one screen margin.
 
-  Every box uses the same 9-sliced PanelCream.png (cream paper, plum outline, honey border,
-  little gold corner studs). The storybook art (panel, hearts, icons) is drawn smooth at 4x
-  its on-screen size (Tools/make_hud_sprites.py), so it stays sharp on big screens:
-  -unity-slice-* marks the panel's 40px (texture) border so it doesn't stretch, and
-  -unity-slice-scale: 0.25px draws that border 10px wide. Text sits on these panels
-  rather than straight over the scenery, so it stays readable anywhere.
+  Every box uses the same 9-sliced PanelCream.png (cream paper, plum outline, honey frame, a
+  fine embroidered thread, a soft plum shadow baked in below). The main cards (status,
+  objective, dialogue, pause) use PanelStar.png instead: the same, with two little four-point
+  stars on the top corners. That's the only place the stars go on panels, so they stay special.
+  The storybook art (panel, hearts, icons) is drawn smooth at 4x its on-screen size
+  (Tools/make_hud_sprites.py), so it stays sharp on big screens: -unity-slice-* marks the panel's
+  40px (texture) border so it doesn't stretch, and -unity-slice-scale: 0.25px draws that border
+  10px wide (12px along the bottom, where the shadow is). Text sits on these panels rather than
+  straight over the scenery, so it stays readable anywhere.
 */
+
+:root {
+    /* Ink */
+    --ink: rgb(74, 37, 69);            /* text and outlines */
+    --ink-soft: rgb(128, 88, 118);     /* labels, secondary text */
+    /* Paper and trim */
+    --cream: rgb(248, 239, 216);
+    --cream-shade: rgb(232, 218, 188);
+    --honey: rgb(222, 168, 70);
+    --honey-light: rgb(250, 214, 120);
+    --honey-shade: rgb(164, 112, 40);
+    /* Resources: health is coral-red, magic turquoise, experience lavender, coins gold */
+    --heart: rgb(232, 70, 92);
+    --magic: rgb(64, 206, 210);
+    --magic-light: rgb(196, 250, 246);
+    --xp: rgb(170, 130, 210);
+    --xp-light: rgb(214, 190, 240);
+    --coin-text: rgb(150, 100, 20);
+    --good: rgb(46, 140, 70);          /* "you can do this now": skill points, the open stairs */
+    /* Type scale: four sizes, used everywhere */
+    --text-title: 18px;
+    --text-body: 15px;
+    --text-label: 13px;
+    --text-small: 11px;
+    /* Spacing */
+    --margin: 14px;                    /* from the screen edges */
+}
 
 .hud {
     position: absolute;
@@ -43,7 +70,7 @@
 }
 
 Label {
-    color: rgb(74, 37, 69);
+    color: var(--ink);
     -unity-font-style: bold;
     margin: 0;
     padding: 0;
@@ -57,9 +84,23 @@ Label {
     -unity-slice-left: 40;
     -unity-slice-right: 40;
     -unity-slice-top: 40;
-    -unity-slice-bottom: 40;
+    -unity-slice-bottom: 48; /* the 10px frame plus its 2px shadow */
     -unity-slice-scale: 0.25px;
-    padding: 10px 14px 10px 14px;
+    padding: 10px 14px 12px 14px;
+}
+
+/* The main cards: the same panel with a four-point star on each top corner */
+.panel-star {
+    background-image: url("project://database/Assets/Art/UI/PanelStar.png");
+}
+
+/* The embroidered running stitch, as a divider: one 6x2 stitch, repeated across */
+.stitch {
+    height: 2px;
+    margin: 7px 2px 6px 2px;
+    background-image: url("project://database/Assets/Art/UI/StitchRule.png");
+    background-repeat: repeat-x;
+    background-size: 6px 2px;
 }
 
 /* Rows that center their child across the screen (a positioned label would stretch) */
@@ -70,14 +111,14 @@ Label {
     align-items: center;
 }
 
-/* ---------- Objective (top left) ---------- */
+/* ---------- Objective (top right, under the minimap) ---------- */
 
 .objective {
     position: absolute;
-    left: 14px;
-    top: 14px;
+    right: var(--margin);
+    top: 166px; /* under the minimap */
     min-width: 210px;
-    padding: 10px 16px 12px 14px;
+    padding: 10px 16px 14px 14px;
     transition-property: scale;
     transition-duration: 0.15s;
 }
@@ -88,8 +129,8 @@ Label {
 }
 
 .objective-title {
-    font-size: 15px;
-    color: rgb(128, 88, 118);
+    font-size: var(--text-label);
+    color: var(--ink-soft);
     margin-bottom: 4px;
 }
 
@@ -99,14 +140,14 @@ Label {
 }
 
 .monster-icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
+    width: 22px;
+    height: 22px;
+    margin-right: 6px;
     background-image: url("project://database/Assets/Art/UI/IconMonster.png");
 }
 
 .enemies-left {
-    font-size: 20px;
+    font-size: var(--text-title);
 }
 
 /* Progress markers: a grey monster each, turning into a gold star as it's defeated */
@@ -129,23 +170,23 @@ Label {
 }
 
 .objective-hint {
-    font-size: 18px;
+    font-size: var(--text-body);
     margin-top: 4px;
 }
 
 .objective-hint.open {
-    color: rgb(46, 140, 70);
-    font-size: 20px;
+    color: var(--good);
+    font-size: var(--text-title);
 }
 
 /* ---------- Boss health bar (top middle) ---------- */
 
 .boss-row {
-    top: 14px;
+    top: var(--margin);
 }
 
 .boss-bar {
-    width: 420px;
+    width: 320px; /* narrow enough to fit between the status card and the minimap at 1024 wide */
     padding: 8px 18px 10px 18px;
     align-items: center;
     display: none;
@@ -156,12 +197,12 @@ Label {
 }
 
 .boss-name {
-    font-size: 16px;
+    font-size: var(--text-body);
     margin-bottom: 4px;
 }
 
 .boss-health {
-    width: 380px;
+    width: 280px;
     height: 16px;
 }
 
@@ -170,19 +211,37 @@ Label {
     border-top-color: rgb(210, 160, 240);
 }
 
-/* ---------- Minimap (top right): small, round, framed like the rest ---------- */
+/* ---------- Minimap (top right): small and round, framed like the rest ---------- */
 
+.minimap-box {
+    position: absolute;
+    right: var(--margin);
+    top: var(--margin);
+    width: 140px;
+    height: 144px; /* the ring's shadow hangs a little below */
+}
+
+/* The round window onto the map. Its background is set by Minimap.cs to the scene's own
+   backdrop (sky around the island, darkness in the dungeon), so the shape reads the same. */
 .minimap-frame {
     position: absolute;
-    right: 14px;
-    top: 14px;
-    width: 132px;
-    height: 132px;
-    border-radius: 66px;
-    border-width: 4px;
-    border-color: rgb(222, 168, 70);
-    background-color: rgba(74, 37, 69, 0.82);
+    left: 10px;
+    top: 10px;
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    background-color: rgb(176, 212, 228);
     overflow: hidden; /* clips the map to the circle */
+}
+
+/* Honey ring with the running stitch and a star at the top, over the window's edge */
+.minimap-ring {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 140px;
+    height: 140px;
+    background-image: url("project://database/Assets/Art/UI/MinimapRing.png");
 }
 
 .minimap {
@@ -214,9 +273,9 @@ Label {
 /* ---------- Bars (magic, experience, boss) ---------- */
 
 .bar {
-    background-color: rgb(232, 218, 188);
+    background-color: var(--cream-shade);
     border-width: 2px;
-    border-color: rgb(74, 37, 69);
+    border-color: var(--ink);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -233,85 +292,115 @@ Label {
 }
 
 .bar-fill.mana {
-    background-color: rgb(64, 206, 210);
-    border-top-color: rgb(190, 250, 248);
+    background-color: var(--magic);
+    border-top-color: var(--magic-light);
 }
 
 .bar-fill.xp {
-    background-color: rgb(170, 130, 210);
+    background-color: var(--xp);
     border-top-width: 1px;
-    border-top-color: rgb(214, 190, 240);
+    border-top-color: var(--xp-light);
 }
 
 /* ---------- Bottom row ---------- */
 
 .bottom-row {
     position: absolute;
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
+    left: var(--margin);
+    right: var(--margin);
+    bottom: var(--margin);
     flex-direction: row;
     align-items: flex-end;
-    justify-content: space-between;
-}
-
-.status,
-.bottom-right {
-    width: 330px; /* equal sides keep the spell slot centered */
+    justify-content: center; /* the spell slot */
 }
 
 .bottom-right {
-    align-items: flex-end;
+    position: absolute;
+    right: 0;
+    bottom: 0;
 }
 
-/* The player's status card: portrait, hearts, magic, then the quieter extras */
+/* ---------- Status card (top left) ----------
+   Portrait and name together, hearts, then magic beneath; level, experience, coins and skill
+   points in a quieter footer under a running stitch. */
+
 .status {
+    position: absolute;
+    left: var(--margin);
+    top: var(--margin);
+    width: 300px;
+    padding: 10px 14px 12px 10px;
+}
+
+.status-main {
     flex-direction: row;
     align-items: center;
-    padding: 10px 14px 10px 10px;
 }
 
 .portrait-frame {
-    width: 76px;
-    height: 76px;
+    width: 56px; /* the 24px portrait at exactly 2x (48px), inside a 2px plum mat and honey line, */
+    height: 56px; /* so its pixels stay whole at 720p, 1080p (3x) and 1440p (4x) */
     padding: 2px;
     border-width: 2px;
-    border-color: rgb(222, 168, 70);
+    border-color: var(--honey);
     border-radius: 6px;
-    background-color: rgb(74, 37, 69);
+    background-color: var(--ink);
     overflow: hidden;
 }
 
 .portrait {
-    flex-grow: 1; /* 24px portrait at 3x; the hero's own, set by HudController */
+    flex-grow: 1; /* the hero's own, set by HudController */
 }
 
 .status-body {
     margin-left: 10px;
     flex-grow: 1;
+    flex-shrink: 1;
 }
 
 .player-name {
-    font-size: 13px;
-    color: rgb(128, 88, 118);
-    margin-bottom: 2px;
+    font-size: var(--text-label);
+    color: var(--ink);
+    margin-bottom: 3px;
 }
 
-/* Hearts: one per point of health */
+/* Hearts: one per point of health, in one row. Up to 8 at full size; 9-12 a little smaller;
+   past 12 a single heart and "7 / 14" (HudController adds .compact / .counted). */
+.hearts-row {
+    flex-direction: row;
+    align-items: center;
+    height: 24px;
+}
+
 .hearts {
     flex-direction: row;
-    flex-wrap: wrap;
-    max-width: 230px;
+    flex-wrap: nowrap;
 }
 
 .heart {
-    width: 30px; /* drawn at 120x112, shown at 30x28 */
-    height: 28px;
-    margin: 0 2px 2px 0;
+    width: 24px; /* drawn at 120x112, shown at 24x22 */
+    height: 22px;
+    margin: 0 2px 0 0;
     background-image: url("project://database/Assets/Art/UI/Heart.png");
     transition-property: scale, rotate, translate;
     transition-duration: 0.12s;
     transition-timing-function: ease-out-back; /* a little overshoot, like a squishy toy */
+}
+
+.hearts.compact .heart {
+    width: 17px;
+    height: 16px;
+    margin-right: 1px;
+}
+
+.hearts-count {
+    display: none;
+    font-size: var(--text-body);
+    margin-left: 4px;
+}
+
+.hearts-count.visible {
+    display: flex;
 }
 
 .heart.empty {
@@ -325,67 +414,71 @@ Label {
 
 /* Healing: refilled hearts pop for a moment */
 .heart.pop {
-    scale: 1.35 1.35;
+    scale: 1.3 1.3;
 }
 
 /* Hurt: the heart just lost jumps up and tilts, then settles as an empty one */
 .heart.hurt {
-    scale: 1.3 1.3;
-    rotate: -16deg;
-    translate: 0 -5px;
+    scale: 1.25 1.25;
+    rotate: -14deg;
+    translate: 0 -4px;
 }
 
 /* The last heart left beats */
 .heart.beat {
-    scale: 1.18 1.18;
+    scale: 1.15 1.15;
 }
 
 .magic-row {
     flex-direction: row;
     align-items: center;
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
 .magic-icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 6px;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
     background-image: url("project://database/Assets/Art/UI/IconMagic.png");
 }
 
 .magic-bar {
-    width: 150px;
-    height: 16px;
+    flex-grow: 1;
+    height: 14px;
+    margin-right: 2px;
 }
 
-/* Level, experience and coins: deliberately smaller and quieter than hearts and magic */
+/* The footer: level, experience and coins on the left, skill points on the right. Deliberately
+   smaller and quieter than hearts and magic: soft ink, one small size, aligned on one line. */
 .secondary-row {
     flex-direction: row;
     align-items: center;
-    margin-top: 6px;
+    height: 18px;
 }
 
 .level-badge {
     min-width: 22px;
-    padding: 1px 5px;
-    font-size: 11px;
+    height: 18px;
+    padding: 0 6px;
+    font-size: var(--text-small);
     -unity-text-align: middle-center;
-    background-color: rgb(250, 214, 120);
-    border-width: 2px;
-    border-color: rgb(164, 112, 40);
+    color: var(--ink);
+    background-color: var(--honey-light);
+    border-width: 1px;
+    border-color: var(--honey-shade);
     border-radius: 9px;
 }
 
 .xp-bar {
-    width: 60px;
+    width: 64px;
     height: 8px;
-    margin: 0 8px 0 6px;
+    margin: 0 12px 0 6px;
     border-width: 1px;
 }
 
 .gold-icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     background-image: url("project://database/Assets/Art/UI/IconCoin.png");
     transition-property: scale;
     transition-duration: 0.1s;
@@ -397,15 +490,28 @@ Label {
 }
 
 .gold-text {
-    font-size: 13px;
-    color: rgb(150, 100, 20);
-    margin-left: 3px;
-    margin-right: 8px;
+    font-size: var(--text-small);
+    color: var(--coin-text);
+    margin-left: 4px;
+    flex-grow: 1;
 }
 
+/* Unspent skill points: a little green-trimmed chip on the right */
 .points-hint {
-    font-size: 10px;
-    color: rgb(46, 140, 70);
+    font-size: var(--text-small);
+    color: var(--good);
+    padding: 0 7px;
+    height: 18px;
+    -unity-text-align: middle-center;
+    border-width: 1px;
+    border-color: rgba(46, 140, 70, 0.5);
+    border-radius: 9px;
+    background-color: rgba(46, 140, 70, 0.08);
+    display: none;
+}
+
+.points-hint.visible {
+    display: flex;
 }
 
 /* ---------- The spell slot ---------- */
@@ -426,18 +532,44 @@ Label {
     -unity-slice-scale: 0.25px;
 }
 
-/* The hero's one spell: big and clear */
+/* The hero's one spell */
 .spell-slot {
-    width: 96px;
-    height: 96px;
+    width: 72px;
+    height: 72px;
     transition-property: scale;
     transition-duration: 0.12s;
 }
 
-/* Ready to cast: the slot glows a little bigger */
+/* Ready to cast: the slot's paper warms a little (no size change: calm) */
 .spell-slot.ready {
-    scale: 1.06 1.06;
     -unity-background-image-tint-color: rgb(255, 236, 170);
+}
+
+/* Cast! The slot dips for a moment and a four-point star flashes over it */
+.spell-slot.cast {
+    scale: 0.92 0.92;
+}
+
+.spell-flash {
+    position: absolute;
+    left: 12px;
+    top: 10px;
+    width: 48px;
+    height: 48px;
+    background-image: url("project://database/Assets/Art/UI/StarBurst.png");
+    opacity: 0;
+    scale: 0.6 0.6;
+    rotate: 0deg;
+    transition-property: opacity, scale, rotate;
+    transition-duration: 0.35s;
+    transition-timing-function: ease-out;
+}
+
+.spell-flash.visible {
+    opacity: 1;
+    scale: 1.1 1.1;
+    rotate: 45deg;
+    transition-duration: 0.06s;
 }
 
 .slot-icon {
@@ -451,8 +583,8 @@ Label {
 .spell-slot .slot-icon {
     left: 12px;
     top: 12px;
-    width: 72px; /* 24px icon at 3x */
-    height: 72px;
+    width: 48px; /* 24px icon at 2x */
+    height: 48px;
 }
 
 /* Not enough magic: the icon goes faded and grey-blue */
@@ -466,27 +598,30 @@ Label {
     position: absolute;
     left: 12px;
     top: 12px;
-    width: 72px;
+    width: 48px;
     height: 0;
     background-color: rgba(74, 37, 69, 0.55);
 }
 
 .slot-cost {
     position: absolute;
-    right: 9px;
+    right: 8px;
     bottom: 7px;
-    font-size: 10px;
+    font-size: var(--text-small);
     color: rgb(30, 130, 150);
 }
 
+/* A button prompt: the same little key cap wherever a key is named on its own */
 .spell-key {
-    margin-top: 6px;
-    padding: 2px 10px;
-    font-size: 14px;
-    background-color: rgb(250, 214, 120);
-    border-width: 2px;
-    border-color: rgb(74, 37, 69);
-    border-radius: 6px;
+    margin-top: 4px;
+    padding: 1px 8px;
+    font-size: var(--text-small);
+    color: var(--ink);
+    background-color: var(--honey-light);
+    border-width: 1px;
+    border-bottom-width: 2px; /* a key cap, a little raised */
+    border-color: var(--ink);
+    border-radius: 5px;
 }
 
 /* Slots for abilities that don't exist yet stay hidden until unlocked */
@@ -501,8 +636,9 @@ Label {
 /* ---------- Help ---------- */
 
 .help-pill {
-    font-size: 13px;
-    padding: 6px 12px 6px 12px;
+    font-size: var(--text-label);
+    color: var(--ink-soft);
+    padding: 6px 12px 8px 12px;
 }
 
 .help-row {
@@ -520,19 +656,19 @@ Label {
 }
 
 .help-line {
-    font-size: 16px;
+    font-size: var(--text-body);
     margin-top: 6px;
 }
 
 /* ---------- Hints and messages ---------- */
 
 .prompt-row {
-    bottom: 152px; /* above the spell slot and its key */
+    bottom: 124px; /* above the spell slot and its key */
 }
 
 .interact-prompt {
-    font-size: 18px;
-    padding: 6px 16px 6px 16px;
+    font-size: var(--text-body);
+    padding: 6px 16px 8px 16px;
     display: none;
 }
 
@@ -545,8 +681,8 @@ Label {
 }
 
 .toast {
-    font-size: 18px;
-    padding: 8px 18px 8px 18px;
+    font-size: var(--text-body);
+    padding: 8px 18px 10px 18px;
     opacity: 0;
     transition-property: opacity;
     transition-duration: 0.3s;
@@ -560,9 +696,9 @@ Label {
 
 .inventory {
     position: absolute;
-    right: 14px;
-    top: 160px; /* under the minimap */
-    width: 330px;
+    left: var(--margin);
+    top: 150px; /* under the status card */
+    width: 300px;
     padding: 12px 16px 14px 16px;
     display: none;
 }
@@ -579,12 +715,12 @@ Label {
 }
 
 .inventory-title {
-    font-size: 18px;
+    font-size: var(--text-title);
 }
 
 .inventory-close {
-    font-size: 11px;
-    color: rgb(128, 88, 118);
+    font-size: var(--text-small);
+    color: var(--ink-soft);
 }
 
 .equip-row {
@@ -598,13 +734,13 @@ Label {
 }
 
 .section-label {
-    font-size: 12px;
-    color: rgb(128, 88, 118);
+    font-size: var(--text-small);
+    color: var(--ink-soft);
     margin-bottom: 4px;
 }
 
 .stat-line {
-    font-size: 14px;
+    font-size: var(--text-label);
     color: rgb(190, 90, 40);
 }
 
@@ -622,7 +758,7 @@ Label {
 }
 
 .item-details {
-    font-size: 12px;
+    font-size: var(--text-small);
     white-space: normal;
     min-height: 34px;
 }
@@ -644,7 +780,7 @@ Label {
 }
 
 .skill-points {
-    font-size: 14px;
+    font-size: var(--text-label);
     color: rgb(46, 140, 70);
 }
 
@@ -660,7 +796,7 @@ Label {
 }
 
 .skill-branch-title {
-    font-size: 15px;
+    font-size: var(--text-body);
     margin-bottom: 8px;
 }
 
@@ -677,7 +813,7 @@ Label {
 }
 
 .skill-node:hover {
-    border-color: rgb(74, 37, 69);
+    border-color: var(--ink);
 }
 
 .skill-node.available {
@@ -692,12 +828,12 @@ Label {
 }
 
 .skill-name {
-    font-size: 13px;
+    font-size: var(--text-label);
 }
 
 .skill-tag {
-    font-size: 10px;
-    color: rgb(128, 88, 118);
+    font-size: var(--text-small);
+    color: var(--ink-soft);
 }
 
 .skill-node.coming-soon .skill-tag {
@@ -757,21 +893,21 @@ Label {
 }
 
 .dialogue-speaker {
-    font-size: 16px;
+    font-size: var(--text-body);
     color: rgb(164, 112, 40);
     margin-bottom: 6px;
 }
 
 .dialogue-text {
-    font-size: 17px;
+    font-size: var(--text-body);
     white-space: normal;
     flex-grow: 1;
 }
 
 .dialogue-hint {
-    font-size: 11px;
+    font-size: var(--text-small);
     -unity-text-align: lower-right;
-    color: rgb(128, 88, 118);
+    color: var(--ink-soft);
 }
 
 /* ---------- Win / lose banner ---------- */
@@ -803,9 +939,9 @@ Label {
 }
 
 .banner-subtitle {
-    font-size: 16px;
+    font-size: var(--text-body);
     margin-top: 6px;
-    color: rgb(128, 88, 118);
+    color: var(--ink-soft);
 }
 
 /* ---------- Pause menu ---------- */
@@ -859,19 +995,19 @@ Label {
 
 .pause-button {
     justify-content: center;
-    font-size: 18px;
+    font-size: var(--text-title);
     -unity-font-style: bold;
-    color: rgb(74, 37, 69);
+    color: var(--ink);
 }
 
 .pause-name {
-    font-size: 17px;
+    font-size: var(--text-body);
     flex-grow: 1;
 }
 
 .pause-value {
     width: 120px;
-    font-size: 17px;
+    font-size: var(--text-body);
     -unity-text-align: middle-center;
     color: rgb(164, 112, 40);
 }
@@ -899,9 +1035,9 @@ Label {
 .pause-more {
     width: 30px;
     height: 30px;
-    font-size: 16px;
+    font-size: var(--text-body);
     -unity-font-style: bold;
-    color: rgb(74, 37, 69);
+    color: var(--ink);
     background-color: rgba(222, 168, 70, 0.35);
     border-width: 0;
     border-radius: 15px;
@@ -915,8 +1051,8 @@ Label {
 }
 
 .pause-description {
-    font-size: 13px;
-    color: rgb(128, 88, 118);
+    font-size: var(--text-label);
+    color: var(--ink-soft);
     -unity-text-align: middle-center;
     margin: 0 0 6px 0;
 }
@@ -941,7 +1077,7 @@ Label {
 }
 
 .sleep-subtext {
-    font-size: 18px;
+    font-size: var(--text-title);
     color: rgb(220, 206, 240);
     margin-top: 8px;
 }

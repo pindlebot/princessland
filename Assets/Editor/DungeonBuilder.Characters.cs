@@ -168,7 +168,7 @@ public static partial class DungeonBuilder
         body.radius = 1.3f;
         body.height = 2.6f;
         body.center = new Vector3(0f, 0.3f, 0f);
-        go.transform.Find("Shadow").localScale = Vector3.one * 3f;
+        go.transform.Find("Shadow").GetComponent<SpriteRenderer>().sprite = ShadowSprite(3f);
 
         // The slam's telegraph: a flat red circle on the floor.
         var warning = new GameObject("SlamWarning").AddComponent<SpriteRenderer>();
@@ -176,15 +176,14 @@ public static partial class DungeonBuilder
         var warningPrefab = SavePrefab(warning.gameObject, "SlamWarning");
 
         // The landing: a purple goo ring spreading across the floor, with a flash.
-        var shockwave = new GameObject("SlamShockwave");
-        shockwave.transform.localScale = Vector3.one * 3f;
+        var shockwave = new GameObject("SlamShockwave"); // drawn 96px across, so placed at scale 1 like every sprite
         shockwave.AddComponent<SpriteRenderer>();
         SetFlipbook(shockwave.AddComponent<SpriteFlipbook>(), SpriteSheetImporter.Import("Shockwave"), "Impact", destroyWhenDone: true);
         var flash = new GameObject("Flash").AddComponent<Light>();
         flash.transform.SetParent(shockwave.transform, false);
         flash.type = LightType.Point;
         flash.color = new Color(0.7f, 0.4f, 1f);
-        flash.range = 4f; // scaled by the root's 3x
+        flash.range = 4f;
         flash.intensity = 4f;
         flash.gameObject.AddComponent<FadeOutLight>();
         var shockwavePrefab = SavePrefab(shockwave, "SlamShockwave");
@@ -226,13 +225,8 @@ public static partial class DungeonBuilder
         sprite.AddComponent<Animator>().runtimeAnimatorController = art.Controller;
         sprite.AddComponent<Billboard>();
 
-        // Blob shadow lying flat on the floor, just above it to avoid z-fighting.
-        var shadow = new GameObject("Shadow").AddComponent<SpriteRenderer>();
-        shadow.transform.SetParent(go.transform, false);
-        shadow.transform.localPosition = new Vector3(0f, -0.98f, 0f);
-        shadow.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-        shadow.sprite = art.Shadow;
-        shadow.sortingOrder = -1;
+        // Blob shadow lying flat on the floor (the root is 1m up), just above it to avoid z-fighting.
+        AddShadow(go, art.Shadow, 1f, lift: -0.98f);
 
         var animator = go.AddComponent<CharacterAnimator>();
         SetRef(animator, "animator", sprite.GetComponent<Animator>());

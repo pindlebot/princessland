@@ -19,8 +19,13 @@ public class Minimap : MonoBehaviour
     [SerializeField] private float revealRadius = 4.5f; // in tiles
     [SerializeField] private float enemySenseRadius = 7f; // in tiles
 
+    // Terrain colours follow the world's palette (Tools/palette.py), a little stronger so
+    // they read at 8 screen pixels a tile: what you walk on, what you walk along, what blocks you.
     private static readonly Color32 Hidden = new Color32(0, 0, 0, 0);
     private static readonly Color32 Water = new Color32(96, 170, 220, 255);
+    private static readonly Color32 Path = new Color32(226, 196, 144, 255);  // sand
+    private static readonly Color32 Hedge = new Color32(74, 108, 70, 255);   // the island's dark rim
+    private static readonly Color32 Castle = new Color32(196, 188, 208, 255); // lavender-grey stone
     private static readonly Color32 Lava = new Color32(240, 110, 40, 255);
     private static readonly Color32 Spikes = new Color32(150, 96, 104, 255); // a warning red-grey
 
@@ -58,6 +63,10 @@ public class Minimap : MonoBehaviour
         image.style.width = w * displayScale;
         image.style.height = h * displayScale;
 
+        // Behind the map: the scene's own backdrop (sky around the island, dark in the dungeon),
+        // a touch deeper, so the shape on the minimap reads like the shape on screen.
+        frame.style.backgroundColor = Color.Lerp(cam.backgroundColor, new Color32(74, 37, 69, 255), 0.18f);
+
         markers = new VisualElement { name = "minimap-markers", pickingMode = PickingMode.Ignore };
         markers.AddToClassList("minimap-markers");
         frame.Add(markers);
@@ -91,6 +100,9 @@ public class Minimap : MonoBehaviour
             {
                 char c = map.At(col, row);
                 Color32 color = !explored[col, row] || c == ' ' ? Hidden
+                              : c == 'H' ? Hedge
+                              : c == 'K' ? Castle
+                              : c == '=' || c == 'X' ? Path
                               : LevelMap.IsWall(c) ? (Color32)map.WallColor
                               : LevelMap.IsWater(c) ? Water
                               : LevelMap.IsLava(c) ? Lava

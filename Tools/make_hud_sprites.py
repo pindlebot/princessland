@@ -14,14 +14,24 @@ Out:  Assets/Art/UI/
       The storybook style (cream panels, honey-gold borders, plum ink). These are drawn
       smooth rather than as pixel art, at 4x the size they're shown at (1280x720), so they
       stay sharp on big and high-DPI screens. Sizes below are on-screen sizes:
-        PanelCream.png        32x32  the panel every HUD box uses (9-sliced: 10px borders)
+        PanelCream.png        32x34  the panel every HUD box uses: plum outline, honey frame, an
+                                     embroidered running stitch around the paper, and a soft plum
+                                     shadow baked in below (9-sliced: 10px borders, 12px at the bottom)
+        PanelStar.png         32x34  the same with two little four-point stars on its top corners,
+                                     only for the main cards (status, objective, dialogue, pause)
+        StitchRule.png        6x2    one stitch of the dashed divider (tiled by USS)
+        StarBurst.png         32x32  a four-point star flashed over the spell slot when it's cast
+        MinimapRing.png       140x140 the minimap's frame: honey ring, stitch, a star at the top
+                                     (the way the camera looks), and a soft shadow
         Heart.png / HeartHalf.png / HeartEmpty.png   30x28  health, one heart per point
                                      (Gentle Mode's half hits show as a half heart)
         IconMagic.png         24x24  a turquoise sparkle beside the magic bar
         IconCoin.png          18x18  the coin counter
         IconMonster.png       24x24  "monsters left" in the objective card
-        PipMonster.png / PipStar.png 18x18  progress markers: a monster, then a star once defeated
+        PipMonster.png / PipStar.png 18x18  progress markers: a monster, then a four-point star once defeated
         HurtVignette.png      a soft red glow around the screen's edges, flashed when the hero is hit
+      The app icon (Assets/Art/AppIcon.png, 1024x1024): a gold crown on a plum tile, shaped like
+      a macOS icon. Player Settings uses it as the default icon (CommandLineBuild.ApplyAppIcon).
       Still pixel art:
         Map*.png              tiny minimap markers: crown (hero), stairs (open/locked), monster,
                               chest and dragon, each with a plum outline so they read when small
@@ -191,13 +201,17 @@ PLUM, SOFT_PLUM = (74, 37, 69, 255), (128, 88, 118, 255)
 HEART, HEART_HI, HEART_SH = (232, 70, 92, 255), (255, 170, 180, 255), (176, 36, 64, 255)
 MAGIC, MAGIC_HI = (64, 206, 210, 255), (210, 255, 250, 255)
 GOLD, GOLD_HI, GOLD_SH = (246, 196, 64, 255), (255, 240, 170, 255), (196, 132, 30, 255)
+BUTTER_HI = (255, 246, 200, 255)
 WHITE = (255, 255, 255, 255)
 
 
-def cream_panel():
-    """Cream paper in a honey-gold frame with a plum outline and rounded corners, plus a little
-    gold stud in each corner. 32x32, 9-sliced at 10px (everything but the paper is in the border)."""
-    c = Smooth(32, 32)
+def cream_panel(stars=False):
+    """Cream paper in a honey-gold frame with a plum outline and rounded corners, an embroidered
+    running stitch around the paper, and a soft plum shadow underneath. 32x34: the shadow takes
+    the bottom 2px, so it's 9-sliced at 10px (12px at the bottom; everything but the paper is in
+    the border). `stars` adds a four-point star on each top corner (the main cards only)."""
+    c = Smooth(32, 34)
+    c.fill(c.rounded(0.5, 2, 31.5, 34, 8), (52, 28, 54, 70))           # the shadow, 2px down
     c.fill(c.rounded(0, 0, 32, 32, 8), PLUM)
     frame = c.rounded(1.5, 1.5, 30.5, 30.5, 6.5)
     c.gradient(frame, HONEY_HI, HONEY_SH, 2, 30)
@@ -206,9 +220,57 @@ def cream_panel():
     paper = c.rounded(5.5, 5.5, 26.5, 26.5, 3)
     c.fill(paper, CREAM)
     c.fill(minus(paper, c.shift(paper, 1.2, 1.2)), CREAM_SH)          # the paper sits a little sunk in
-    for x, y in ((4.4, 4.4), (27.6, 4.4), (4.4, 27.6), (27.6, 27.6)):  # on the gold, where the frame curves
-        c.fill(c.ellipse(x, y, 1.1, 1.1), PLUM)
-        c.fill(c.ellipse(x - 0.3, y - 0.3, 0.4, 0.4), HONEY_HI)
+    # A fine embroidered thread 2px in from the paper's edge. Continuous rather than dashed, so it
+    # survives 9-slicing; the dashed running stitch is StitchRule.png, which tiles instead.
+    thread = c.rounded(7.2, 7.2, 24.8, 24.8, 1.6)
+    c.fill(minus(thread, c.rounded(7.9, 7.9, 24.1, 24.1, 1.0)), (222, 186, 128, 255))
+    if stars:
+        for x, y in ((4.4, 4.4), (27.6, 4.4)):
+            c.fill(c.poly(star_points(x, y, 3.6, 1.1, 4), grow=0.9), PLUM)
+            c.gradient(c.poly(star_points(x, y, 3.6, 1.1, 4)), BUTTER_HI, HONEY_HI, y - 3, y + 3)
+    else:
+        for x, y in ((4.4, 4.4), (27.6, 4.4), (4.4, 27.6), (27.6, 27.6)):  # small studs where the frame curves
+            c.fill(c.ellipse(x, y, 1.0, 1.0), PLUM)
+            c.fill(c.ellipse(x - 0.3, y - 0.3, 0.35, 0.35), HONEY_HI)
+    return c.done()
+
+
+def stitch_rule():
+    """One stitch of the running-stitch divider: 6x2 on screen (a 4px dash, a 2px gap). USS tiles it
+    along a row with background-repeat, so it's the same at any width."""
+    c = Smooth(6, 2)
+    c.fill(c.rounded(0, 0.4, 4, 1.6, 0.6), (210, 160, 92, 255))
+    return c.done()
+
+
+def star_burst():
+    """A four-point star with a soft glow, flashed over the spell slot as the spell goes off."""
+    c = Smooth(32, 32)
+    c.fill(c.ellipse(16, 16, 9, 9), (255, 246, 200, 90))
+    c.fill(c.poly(star_points(16, 16, 15, 3.6, 4), grow=1.2), PLUM)
+    c.gradient(c.poly(star_points(16, 16, 15, 3.6, 4)), WHITE, BUTTER_HI, 2, 30)
+    c.fill(c.ellipse(16, 16, 2.6, 2.6), WHITE)
+    return c.done()
+
+
+def minimap_ring():
+    """The minimap's round frame, laid over the map: a plum-outlined honey ring with the running
+    stitch, a soft shadow, and a four-point star at the top for "this way is up the screen".
+    140x140 on screen; the map shows through the 120px hole."""
+    c = Smooth(140, 140)
+    cx = cy = 69
+    ring = minus(c.ellipse(cx, cy, 67, 67), c.ellipse(cx, cy, 60, 60))
+    c.fill(minus(c.ellipse(cx, cy + 2, 68, 68), c.ellipse(cx, cy, 60, 60)), (52, 28, 54, 70))  # shadow
+    c.fill(minus(c.ellipse(cx, cy, 68.5, 68.5), c.ellipse(cx, cy, 58.8, 58.8)), PLUM)
+    c.gradient(ring, HONEY_HI, HONEY_SH, 2, 136)
+    c.fill(minus(c.ellipse(cx, cy, 61.4, 61.4), c.ellipse(cx, cy, 60, 60)), HONEY_SH)  # inner line
+    for i in range(48):  # the stitch, every 7.5 degrees
+        a = math.radians(i * 7.5 + 3.75)
+        x, y = cx + 64 * math.cos(a), cy + 64 * math.sin(a)
+        c.fill(c.ellipse(x, y, 0.8, 0.8), (255, 240, 196, 220))
+    top = star_points(cx, 3.5, 7, 2.2, 4)
+    c.fill(c.poly(top, grow=1.4), PLUM)
+    c.gradient(c.poly(top), WHITE, BUTTER_HI, -3, 10)
     return c.done()
 
 
@@ -299,13 +361,13 @@ def slime_icon(size, colors):
 
 
 def pip_star():
-    """A chubby gold star: one monster defeated. 18x18."""
+    """A chubby four-point star (the signature motif): one monster defeated. 18x18."""
     c = Smooth(18, 18)
-    pts = star_points(9, 9.8, 8, 3.9, 5)
+    pts = star_points(9, 9, 8.2, 3.2, 4)
     c.fill(c.poly(pts, grow=1.4), PLUM)
     star = c.poly(pts)
     c.gradient(star, (255, 236, 150, 255), HONEY, 3, 16)
-    c.fill(c.ellipse(7.2, 7.4, 1.6, 1.1), (255, 255, 236, 230))
+    c.fill(c.ellipse(9, 9, 1.6, 1.6), (255, 255, 236, 230))
     return c.done()
 
 
@@ -322,6 +384,42 @@ def hurt_vignette():
             t = min(1.0, max(0.0, (d - 0.75) / 0.5))  # clear over most of the screen
             px[x, y] = (214, 36, 64, round(170 * t * t * (3 - 2 * t)))
     return img
+
+
+def app_icon():
+    """A gold crown with a heart gem on a plum rounded square, on Apple's 1024 icon grid (the
+    tile is 824px with a margin, so it lines up with other Mac icons). Drawn at 256 units."""
+    c = Smooth(256, 256)
+    c.fill(c.rounded(25, 28, 231, 234, 46), (40, 18, 38, 110))           # a soft drop shadow
+    tile = c.rounded(25, 25, 231, 231, 46)
+    c.gradient(tile, (150, 82, 150, 255), (62, 28, 66, 255), 25, 231)
+    c.fill(minus(tile, c.shift(tile, 0, 3)), (255, 220, 250, 90))         # a lit top edge
+    c.fill(minus(c.rounded(33, 33, 223, 223, 39), c.rounded(37, 37, 219, 219, 35)), HONEY)
+
+    crown = [(76, 160), (68, 96), (104, 126), (128, 72), (152, 126), (188, 96), (180, 160)]
+    band = c.rounded(70, 152, 186, 182, 6)
+    c.fill(c.poly(crown, grow=5), PLUM)
+    c.fill(c.rounded(65, 147, 191, 187, 10), PLUM)
+    for x, y in ((68, 96), (128, 72), (188, 96)):
+        c.fill(c.ellipse(x, y, 13, 13), PLUM)
+    body = c.poly(crown)
+    c.gradient(body, GOLD_HI, GOLD, 70, 160)
+    c.fill(minus(body, c.shift(body, -3, -3)), GOLD_SH)                   # shade along the right
+    c.gradient(band, GOLD, GOLD_SH, 152, 184)
+    c.fill(minus(band, c.shift(band, 0, 3)), GOLD_HI)
+    for x, y in ((68, 96), (128, 72), (188, 96)):
+        c.gradient(c.ellipse(x, y, 8, 8), GOLD_HI, GOLD, y - 8, y + 8)
+        c.fill(c.ellipse(x - 2.5, y - 2.5, 2.5, 2.5), WHITE)
+
+    gem = heart_points(114, 134, 28, 25)
+    c.fill(c.poly(heart_points(109, 129.5, 38, 34)), PLUM)  # (a bigger heart: grow= frays on tiny curves)
+    c.gradient(c.poly(gem), (255, 128, 146, 255), (212, 44, 76, 255), 136, 158)
+    c.fill(c.ellipse(122, 141, 3.5, 2.5), (255, 232, 236, 220))
+    for x in (90, 166):
+        c.fill(c.ellipse(x, 167, 6.5, 6.5), PLUM)
+        c.fill(c.ellipse(x, 167, 4.5, 4.5), MAGIC)
+        c.fill(c.ellipse(x - 1.2, 165.8, 1.6, 1.6), MAGIC_HI)
+    return c.done()
 
 
 def pad(img, by=1):
@@ -371,6 +469,10 @@ def main():
     ring_icon().save(UI / "IconEmberRing.png")
     coin_icon().save(UI / "IconCoin.png")
     cream_panel().save(UI / "PanelCream.png")
+    cream_panel(stars=True).save(UI / "PanelStar.png")
+    star_burst().save(UI / "StarBurst.png")
+    stitch_rule().save(UI / "StitchRule.png")
+    minimap_ring().save(UI / "MinimapRing.png")
     heart("full").save(UI / "Heart.png")
     heart("half").save(UI / "HeartHalf.png")
     heart("empty").save(UI / "HeartEmpty.png")
@@ -379,6 +481,7 @@ def main():
     slime_icon(18, MONSTER_GREY).save(UI / "PipMonster.png")
     pip_star().save(UI / "PipStar.png")
     hurt_vignette().save(UI / "HurtVignette.png")
+    app_icon().save(ART / "AppIcon.png")
     for name, img in map_markers().items():
         img.save(UI / f"{name}.png")
     print("Wrote", ", ".join(sorted(p.name for p in UI.glob("*.png"))))

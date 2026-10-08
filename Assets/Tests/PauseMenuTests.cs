@@ -127,7 +127,7 @@ public class PauseMenuTests : InputTestFixture
         Tap(pad.dpad.up); // up from the top row stays on it...
         yield return Frames();
         for (int i = 0; i < 4; i++) { Tap(pad.dpad.down); yield return Frames(); }
-        Assert.AreEqual(4, Object.FindAnyObjectByType<PauseMenu>().Highlighted, "...and down four reaches the last row");
+        Assert.AreEqual(4, Object.FindAnyObjectByType<PauseMenu>().Highlighted, "...and down four reaches Save and go to title");
         Tap(pad.buttonSouth);
         yield return WaitFor("Title");
 
@@ -139,5 +139,62 @@ public class PauseMenuTests : InputTestFixture
         Assert.AreEqual(9, save.gold);
         Assert.AreEqual(2, save.settings.musicVolume, "the settings are saved with the slot");
         Assert.IsTrue(save.settings.gentle);
+    }
+
+    [UnityTest]
+    public IEnumerator SaveAndQuitSavesThenClosesTheGame()
+    {
+        int quits = 0;
+        AppQuit.Override = () => quits++;
+        try
+        {
+            GameSession.Slot = 1;
+            yield return Load("Dungeon");
+            foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
+            GameSession.Progress.AddGold(5);
+
+            Tap(keyboard.escapeKey);
+            yield return Frames();
+            for (int i = 0; i < 6; i++) { Tap(keyboard.downArrowKey); yield return Frames(); }
+            Assert.AreEqual(5, Object.FindAnyObjectByType<PauseMenu>().Highlighted, "the last row, past the end stays put");
+            Tap(keyboard.enterKey);
+            yield return Frames();
+
+            Assert.AreEqual(1, quits, "asked to close the game");
+            Assert.IsFalse(PauseMenu.IsOpen);
+            Assert.AreEqual(1f, Time.timeScale);
+            var save = SaveSystem.Peek(1);
+            Assert.AreEqual("Dungeon", save.scene, "saved first");
+            Assert.AreEqual(5, save.gold);
+        }
+        finally
+        {
+            AppQuit.Override = null;
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator TheTitleScreenHasAQuitButton()
+    {
+        int quits = 0;
+        AppQuit.Override = () => quits++;
+        try
+        {
+            yield return Load("Title");
+            var root = Object.FindAnyObjectByType<TitleController>().GetComponent<UIDocument>().rootVisualElement;
+            var quit = root.Q<Button>("quit");
+            Assert.AreEqual(DisplayStyle.Flex, quit.resolvedStyle.display);
+            using (var click = NavigationSubmitEvent.GetPooled())
+            {
+                click.target = quit;
+                quit.SendEvent(click);
+            }
+            yield return Frames();
+            Assert.AreEqual(1, quits);
+        }
+        finally
+        {
+            AppQuit.Override = null;
+        }
     }
 }

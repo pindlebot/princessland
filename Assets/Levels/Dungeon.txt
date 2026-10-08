@@ -14,7 +14,7 @@ music: music_dungeon
 region: castle
 locked_hint: Beat the Slime King!
 open_hint: The stairs are open!
-minimap_floor: #4E463E
+minimap_floor: #7A6E62
 minimap_wall: #AAA4B8
 ---
 ####T#####     #####T#####       ####T####

@@ -5,11 +5,13 @@ Out:  Assets/Art/Environment/
         Floor_0.png .. Floor_2.png   32x32  one 2x2m floor tile (plain, cracked, mossy)
         WallSide.png                 32x20  one 2m x 1.2m wall face (bricks)
         WallTop.png                  32x32  the cap stone on top of a wall block
-        Grass_0.png .. Grass_2.png   32x32  outdoor ground: three *quiet* tones (base, cool, warm),
-                                            laid in large patches so characters stand out
-        EarthSide.png                32x32  layered earth for the floating island's cliff edges
-        Path.png                     32x32  dirt path
-        HedgeSide.png / HedgeTop.png 32x13 / 32x32  the low hedge around the castle grounds
+        Grass_0.png .. Grass_2.png   32x32  outdoor ground: three closely related sage tones (base, cool,
+                                            warm), laid in large patches so characters stand out
+        EarthSide.png                32x64  the floating island's exposed side (4m): a scalloped grassy
+                                            lip, then three broad layers of soil fading to rock
+        Path.png / Path_1.png        32x32  sandy path: broad colour, and now and then a stone
+        Bank.png                     32x4   the pond's bank (0.25m): a grassy lip over damp earth
+        HedgeSide.png / HedgeTop.png 32x13 / 32x32  the low hedge around the castle grounds, scalloped
         Roof.png                     32x32  aquamarine roof shingles for the castle towers
         Gate.png                     32x32  the castle's wooden gate
         WoodFloor.png                32x32  floorboards for the hero's home
@@ -21,12 +23,18 @@ Out:  Assets/Art/Environment/
 
 Every texture is seamless: mortar lines sit on the left/top edge only, so two
 tiles placed side by side share a single 1px joint.
+
+Outdoors follows the storybook-diorama rules in palette.py: broad, quiet colour shapes
+and hardly any per-pixel noise, so the chunky characters are the most detailed thing on
+screen. Texels are always 1/16 m on the surface they cover (a 4m cliff face is 64px tall).
 """
 import math
 import random
 from pathlib import Path
 
 from PIL import Image
+
+import palette as pal
 
 OUT = Path(__file__).resolve().parent.parent / "Assets" / "Art" / "Environment"
 
@@ -81,7 +89,7 @@ def floor_tile(seed, crack=False, moss=False):
 
 # ---------- Walls ----------
 
-BRICK = (104, 98, 116)
+BRICK = (112, 104, 124)
 WALL_MORTAR = (46, 42, 54)
 CAP = (128, 122, 138)
 
@@ -97,11 +105,11 @@ def wall_side():
         for i in range(2):
             x0 = offset + i * 16 + 1
             # Bricks that cross the right edge wrap to the left, so the face tiles seamlessly.
-            tone = rng.randint(-10, 10)
+            tone = rng.randint(-6, 6)
             for y in range(y0, y0 + 5):
                 for xx in range(15):
                     x = (x0 + xx) % 32
-                    c = shade(BRICK, tone + rng.choice((-6, -3, 0, 0, 3)))
+                    c = shade(BRICK, tone + rng.choice((-2, 0, 0, 0, 2)))
                     if y == y0:
                         c = shade(c, 14)
                     elif y == y0 + 4:
@@ -128,11 +136,7 @@ def wall_top():
 
 # ---------- Outdoors ----------
 
-GRASS = (78, 132, 58)
-GRASS_DARK = (56, 104, 46)
-GRASS_LIGHT = (108, 160, 74)
-DIRT = (132, 104, 72)
-LEAF, LEAF_DARK, LEAF_LIGHT = (52, 108, 50), (34, 76, 38), (82, 144, 66)
+LEAF, LEAF_DARK, LEAF_LIGHT = pal.SAGE_DARK, pal.SAGE_DEEP, pal.SAGE
 
 
 def noisy(size, base, rng, spread=(-6, -3, 0, 0, 3, 6)):
@@ -144,62 +148,105 @@ def noisy(size, base, rng, spread=(-6, -3, 0, 0, 3, 6)):
     return img, px
 
 
-def grass_tile(seed, tone=(0, 0, 0)):
-    """Quiet, low-contrast grass so characters, enemies and paths stand out against it.
-    A handful of soft blades only (no flowers: those are saved for points of interest).
-    Seamless: every stroke wraps around the edges (x % 32, y % 32)."""
+def grass_tile(seed, base):
+    """Flat sage with just three or four tiny two-pixel blades, a shade darker. No noise:
+    the ground should read as calm areas of colour. Seamless (strokes wrap at the edges)."""
     rng = random.Random(seed)
-    base = tuple(c + t for c, t in zip(GRASS, tone))
-    img, px = noisy((32, 32), base, rng, (-3, -2, 0, 0, 0, 2, 3))
-    for _ in range(18):  # a few soft blades, just a shade off the ground
+    img = Image.new("RGB", (32, 32), base)
+    px = img.load()
+    for _ in range(rng.randint(3, 4)):
         x, y = rng.randrange(32), rng.randrange(32)
-        color = shade(base, rng.choice((-12, -9, 8)))
-        for i in range(rng.randint(1, 2)):
-            px[x % 32, (y - i) % 32] = color
+        px[x % 32, y % 32] = shade(base, -10)
+        px[(x + 1) % 32, (y - 1) % 32] = shade(base, -10)
     return img
+
+
+def scallops(px, width, y0, depth, color, period=8):
+    """The garden motif: a row of little round scallops hanging down from row y0."""
+    for x in range(width):
+        t = (x % period + 0.5) / period * 2 - 1           # -1..1 across one scallop
+        hang = round(depth * (1 - t * t) ** 0.5)           # deepest in the middle
+        for y in range(y0, y0 + hang):
+            px[x, y] = color
 
 
 def earth_side():
-    """Layers of soil and stone, for the cliff edge under the floating island."""
+    """The island's exposed side, 32x64 for a 2m x 4m face: a scalloped grassy lip, then three
+    broad layers (warm soil, deeper soil, lavender-grey rock) with gently wavy joins, and only a
+    few stones. Seamless across: every wave repeats every 32px."""
     rng = random.Random(81)
-    bands = [(122, 88, 58), (104, 74, 50), (132, 98, 66), (92, 66, 46)]
-    img = Image.new("RGB", (32, 32))
+    img = Image.new("RGB", (32, 64), pal.EARTH_TOP)
     px = img.load()
-    for y in range(32):
-        band = bands[(y // 6) % len(bands)]
-        for x in range(32):
-            px[x, y] = shade(band, rng.choice((-6, -3, 0, 0, 3)))
-    for _ in range(10):  # pebbles
-        x, y = rng.randrange(31), rng.randrange(31)
-        px[x, y] = (150, 142, 132)
-        px[x + 1, y] = (110, 104, 98)
-    for x in range(32):  # a grassy lip along the top
-        for y in range(rng.randint(1, 3)):
-            px[x, y] = shade(GRASS, rng.choice((-10, -5, 0)))
+    for x in range(32):
+        wave = math.sin(x / 32 * 2 * math.pi)
+        mid = 20 + round(1.5 * wave)
+        low = 40 + round(1.5 * math.sin(x / 32 * 4 * math.pi + 1))
+        for y in range(64):
+            if y >= low:
+                c = pal.EARTH_LOW if y < 54 else pal.ROCK
+            elif y >= mid:
+                c = pal.EARTH_MID
+            else:
+                c = pal.EARTH_TOP
+            if y in (mid, low):
+                c = shade(c, -12)  # a thin dark seam where layers meet
+            px[x, y] = c
+    for x, y in ((21, 47),):  # one stone, not a scatter (it repeats every 2m)
+        px[x, y] = pal.PEBBLE
+        px[x + 1, y] = pal.PEBBLE_SHADE
+    for x in range(32):
+        for y in range(2):
+            px[x, y] = pal.SAGE_DARK
+    scallops(px, 32, 2, 3, pal.SAGE_DARK)
     return img
 
 
-def path_tile():
-    rng = random.Random(21)
-    img, px = noisy((32, 32), DIRT, rng, (-10, -5, 0, 0, 4, 8))
-    for _ in range(14):  # pebbles
-        x, y = rng.randrange(32), rng.randrange(32)
-        px[x, y] = (150, 144, 136)
-        px[(x + 1) % 32, y] = (112, 106, 100)
+def path_tile(seed, stone):
+    """Broad warm sand with a few slightly darker grains; `stone` adds one small pebble."""
+    rng = random.Random(seed)
+    img = Image.new("RGB", (32, 32), pal.SAND)
+    px = img.load()
+    for _ in range(5):
+        px[rng.randrange(32), rng.randrange(32)] = pal.SAND_SHADE
+    if stone:
+        x, y = rng.randrange(6, 24), rng.randrange(6, 24)
+        for dx, dy, c in ((0, 0, pal.PEBBLE), (1, 0, pal.PEBBLE), (0, 1, pal.PEBBLE_SHADE), (1, 1, pal.PEBBLE_SHADE)):
+            px[x + dx, y + dy] = c
+        px[x + 2, y + 1] = pal.SAND_SHADE  # its little shadow, away from the sun
+    return img
+
+
+def bank():
+    """32x4: the pond's bank, the 0.25m of ground you see above the water. A grassy lip, then
+    damp earth that darkens toward the waterline, so the pond reads as set into the ground."""
+    img = Image.new("RGB", (32, 4))
+    px = img.load()
+    for x in range(32):
+        px[x, 0] = pal.SAGE_DARK
+        px[x, 1] = pal.EARTH_TOP
+        px[x, 2] = pal.EARTH_MID
+        px[x, 3] = shade(pal.EARTH_MID, -18)
     return img
 
 
 def hedge(size, top=False):
+    """Clipped hedge in broad sage. The top has soft scalloped leaf clusters; the side has a
+    scalloped highlight under its top edge and a shadow along the ground."""
     rng = random.Random(31 if top else 32)
-    img, px = noisy(size, LEAF, rng, (-8, -4, 0, 4, 8))
     w, h = size
-    for _ in range(40 if top else 22):  # leaf clusters: light on top-left, dark below-right
-        x, y = rng.randrange(w), rng.randrange(h)
-        px[x, y] = LEAF_LIGHT
-        px[(x + 1) % w, (y + 1) % h] = LEAF_DARK
-    if not top:
-        for x in range(w):  # shadow where the hedge meets the ground
+    img = Image.new("RGB", size, LEAF)
+    px = img.load()
+    if top:
+        for cx, cy in ((5, 6), (20, 3), (13, 18), (28, 21), (6, 27)):
+            for dx in range(-3, 4):
+                for dy in range(-2, 1):
+                    if dx * dx / 9 + dy * dy / 4 <= 1:
+                        px[(cx + dx) % w, (cy + dy) % h] = shade(LEAF, 10)
+    else:
+        scallops(px, w, 0, 2, shade(LEAF, 10))
+        for x in range(w):
             px[x, h - 1] = LEAF_DARK
+            px[x, h - 2] = shade(LEAF, -8)
     return img
 
 
@@ -279,15 +326,16 @@ def bath_tile():
 
 
 def water_tile():
-    """Soft blue with a few wavy highlight dashes; seamless because nothing crosses the edges."""
-    rng = random.Random(81)
-    img, px = noisy((32, 32), (78, 156, 206), rng, (-4, -2, 0, 2, 4))
-    for _ in range(9):
-        x, y = rng.randrange(2, 26), rng.randrange(1, 31)
-        for i in range(rng.randint(3, 5)):
-            px[x + i, y] = (196, 236, 250)
-            if i == 0:
-                px[x + i, y] = (140, 200, 236)
+    """Flat, calm water with just two short glints, one pixel tall like every other highlight.
+    Seamless because nothing crosses the edges. WaterScroll slides it very slowly."""
+    img = Image.new("RGB", (32, 32), pal.WATER)
+    px = img.load()
+    for x0, y, n in ((5, 9, 3), (19, 23, 2)):
+        for i in range(n):
+            px[x0 + i, y] = pal.WATER_GLINT
+        px[x0 + n, y] = shade(pal.WATER, 18)
+    for x in range(10, 18):  # one faint deeper ripple
+        px[x, 16] = pal.WATER_DEEP
     return img
 
 
@@ -372,11 +420,13 @@ def main():
     floor_tile(3, moss=True).save(OUT / "Floor_2.png")
     wall_side().save(OUT / "WallSide.png")
     wall_top().save(OUT / "WallTop.png")
-    grass_tile(61).save(OUT / "Grass_0.png")
-    grass_tile(62, tone=(-6, -4, 0)).save(OUT / "Grass_1.png")   # a touch cooler and darker
-    grass_tile(63, tone=(6, 6, -2)).save(OUT / "Grass_2.png")    # a touch warmer and lighter
+    grass_tile(61, pal.SAGE).save(OUT / "Grass_0.png")
+    grass_tile(62, pal.SAGE_COOL).save(OUT / "Grass_1.png")
+    grass_tile(63, pal.SAGE_WARM).save(OUT / "Grass_2.png")
     earth_side().save(OUT / "EarthSide.png")
-    path_tile().save(OUT / "Path.png")
+    path_tile(21, stone=False).save(OUT / "Path.png")
+    path_tile(22, stone=True).save(OUT / "Path_1.png")
+    bank().save(OUT / "Bank.png")
     hedge((32, 13)).save(OUT / "HedgeSide.png")
     hedge((32, 32), top=True).save(OUT / "HedgeTop.png")
     roof().save(OUT / "Roof.png")

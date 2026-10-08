@@ -11,13 +11,15 @@ from pathlib import Path
 
 from PIL import Image
 
+import palette
+
 ROOT = Path(__file__).resolve().parent.parent
 ART = ROOT / "Assets" / "Art"
 F = 32  # frame size in pixels
 PPU = 16  # pixels per Unity unit -> a full-height character is ~2 units tall
 
 CLEAR = (0, 0, 0, 0)
-OUTLINE = (22, 16, 30, 255)
+OUTLINE = palette.rgba(palette.PLUM_DEEP)  # deep plum rather than black (see palette.py)
 
 
 class Canvas:
@@ -97,22 +99,24 @@ def outline(img, color=OUTLINE):
 
 
 def write_sheet(name, action, anims, pivot="bottom", outline_color=OUTLINE, frame_size=F):
-    """anims: list of (animation name, fps, loop, [frame images]). Writes <name>.png and <name>.json.
+    """anims: list of (animation name, fps, loop, [frame images]) and optionally a fifth item, that
+    animation's own outline colour (None = no outline). Writes <name>.png and <name>.json.
     action: the character's Cast/Attack state (None for effects).
     pivot: "bottom" for characters standing on the floor, "center" for effects.
     outline_color: None to skip the outline.
     frame_size: 32 for people; bigger for big creatures (same pixels-per-unit, so they're bigger in game)."""
     ART.mkdir(parents=True, exist_ok=True)
     f = frame_size
-    cols = max(len(frames) for *_, frames in anims)
+    cols = max(len(a[3]) for a in anims)
     sheet = Image.new("RGBA", (cols * f, len(anims) * f), CLEAR)
     layout = {"frameSize": f, "pixelsPerUnit": PPU, "pivot": pivot, "animations": []}
     if action:
         layout["action"] = action
 
-    for row, (anim, fps, loop, frames) in enumerate(anims):
+    for row, (anim, fps, loop, frames, *own) in enumerate(anims):
+        color = own[0] if own else outline_color
         for i, frame in enumerate(frames):
-            sheet.paste(outline(frame, outline_color) if outline_color else frame, (i * f, row * f))
+            sheet.paste(outline(frame, color) if color else frame, (i * f, row * f))
         layout["animations"].append({"name": anim, "row": row, "frames": len(frames), "fps": fps, "loop": loop})
 
     sheet.save(ART / f"{name}.png")
@@ -120,14 +124,33 @@ def write_sheet(name, action, anims, pivot="bottom", outline_color=OUTLINE, fram
     print(f"{name}: {len(anims)} animations, sheet {sheet.size[0]}x{sheet.size[1]}")
 
 
+def shadow_disc(diameter):
+    """A flat pixel shadow: a solid plum disc with a 1px lighter rim, no soft gradient, so its
+    pixels are as crisp as the sprites'. Round, because it lies on the floor (the iso camera
+    squashes it into an ellipse)."""
+    img = Image.new("RGBA", (diameter, diameter), CLEAR)
+    px = img.load()
+    r = diameter / 2
+    for y in range(diameter):
+        for x in range(diameter):
+            d = ((x + 0.5 - r) ** 2 + (y + 0.5 - r) ** 2) ** 0.5
+            if d <= r - 1:
+                px[x, y] = palette.SHADOW
+            elif d <= r:
+                px[x, y] = palette.SHADOW_EDGE
+    return img
+
+
 def write_shadow():
-    """Soft blob shadow shared by every character. Round, because it lies flat on the
-    floor (the iso camera squashes it into an ellipse)."""
-    shadow = Image.new("RGBA", (16, 16), CLEAR)
-    sp = shadow.load()
-    for y in range(16):
-        for x in range(16):
-            d = ((x - 7.5) / 8) ** 2 + ((y - 7.5) / 8) ** 2
-            if d < 1:
-                sp[x, y] = (0, 0, 0, round(130 * (1 - d) ** 0.5))
-    shadow.save(ART / "Shadow.png")
+    """The shared blob shadows. Shadow.png is the 1-unit one every character stands on;
+    Shadows.png has one frame per size in palette.SHADOW_SIZES (64px frames, centred), so
+    bigger things get a bigger shadow without scaling its pixels."""
+    shadow_disc(16).save(ART / "Shadow.png")
+    f = 64
+    sheet = Image.new("RGBA", (f, f * len(palette.SHADOW_SIZES)), CLEAR)
+    layout = {"frameSize": f, "pixelsPerUnit": PPU, "pivot": "center", "animations": []}
+    for row, d in enumerate(palette.SHADOW_SIZES):
+        sheet.alpha_composite(shadow_disc(d), ((f - d) // 2, row * f + (f - d) // 2))
+        layout["animations"].append({"name": f"Shadow_{d}", "row": row, "frames": 1, "fps": 1, "loop": False})
+    sheet.save(ART / "Shadows.png")
+    (ART / "Shadows.json").write_text(json.dumps(layout, indent=2) + "\n")

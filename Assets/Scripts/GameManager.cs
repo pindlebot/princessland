@@ -118,7 +118,8 @@ public class GameManager : MonoBehaviour
     {
         if (playerHealth != null) playerHealth.PlayDeathSound = !GameSession.Settings.gentle; // no sad tune for a nap
         if (GameInput.GameplayBlocked) return;
-        if (GameInput.RestartPressed)
+        // R any time; on a controller, A once the "try again?" banner is up.
+        if (GameInput.RestartPressed || (IsGameOver && GameInput.ConfirmPressed))
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
