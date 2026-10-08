@@ -60,8 +60,15 @@
       "loop": false
     },
     {
-      "name": "Die",
+      "name": "Sit",
       "row": 8,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Die",
+      "row": 9,
       "frames": 4,
       "fps": 8,
       "loop": false

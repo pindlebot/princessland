@@ -37,6 +37,41 @@
       "frames": 1,
       "fps": 1,
       "loop": false
+    },
+    {
+      "name": "Wardrobe",
+      "row": 5,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Nightstand",
+      "row": 6,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Bookshelf",
+      "row": 7,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "ToyChest",
+      "row": 8,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Plant",
+      "row": 9,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
     }
   ]
 }

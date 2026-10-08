@@ -32,6 +32,7 @@ public static partial class DungeonBuilder
         public Dictionary<string, Material> Materials;
         public GameObject Skeleton, Slime, SlimeKing, Chest, Torch, RingPickup, Flag, Dragon;
         public GameObject Bed, Toilet, Sink, PaperTowel, HouseDoor;
+        public GameObject Wardrobe, Nightstand, Bookshelf, ToyChest, Plant, Rug;
         public GameObject Tree, Fountain, Bush, Butterfly, Mote, Cloud, Stairs;
         public GameObject Mermaid, Bonesy, Frog, FrogBush;
         public GameObject Campfire, Barrel, Crate, Bones, Mushrooms, Door, LockedDoor, Key, Ripple, Lily;

@@ -35,10 +35,10 @@ public class HomeTests
 
         Assert.AreEqual("Aldric's Home", Hud().Q<Label>("objective-title").text);
         Assert.AreEqual(DisplayStyle.None, Hud().Q("objective-monsters").style.display.value, "no monster count indoors");
-        var kinds = Object.FindObjectsByType<HouseFixture>().Select(f => f.Kind).ToList();
+        var names = Object.FindObjectsByType<HouseFixture>().Select(f => f.name).ToList();
         CollectionAssert.AreEquivalent(
-            new[] { HouseFixture.Effect.Rest, HouseFixture.Effect.None, HouseFixture.Effect.WashHands, HouseFixture.Effect.DryHands },
-            kinds, "a bed, a toilet, a sink and a paper towel");
+            new[] { "Bed", "Toilet", "Sink", "PaperTowel", "Wardrobe", "Nightstand", "Bookshelf", "ToyChest", "Plant" },
+            names, "the bedroom and bathroom furniture");
 
         // Out through the front door...
         player = LevelBootstrap.Current.Player;
@@ -74,7 +74,9 @@ public class HomeTests
         Assert.AreEqual(health.Max, health.Current);
         Assert.AreEqual(mana.Max, mana.Current, 0.01f);
 
-        StringAssert.Contains("Flush", Fixture(HouseFixture.Effect.None).Interact(player));
+        var toilet = Fixture(HouseFixture.Effect.Sit);
+        StringAssert.Contains("sit down", toilet.Interact(player));
+        StringAssert.Contains("Flush", toilet.Interact(player));
         Assert.AreEqual("flush", AudioManager.Instance.LastPlayed.name);
 
         var towel = Fixture(HouseFixture.Effect.DryHands);
@@ -82,6 +84,101 @@ public class HomeTests
         Fixture(HouseFixture.Effect.WashHands).Interact(player);
         StringAssert.Contains("Lovely and clean", towel.Interact(player));
     }
+
+    [UnityTest]
+    public IEnumerator YouCanSitOnTheToiletAndFlushToGetUp()
+    {
+        SceneManager.LoadScene("House");
+        yield return null;
+        yield return null;
+        var player = LevelBootstrap.Current.Player;
+        var hero = player.GetComponent<PlayerController>();
+        var toilet = Object.FindObjectsByType<HouseFixture>().First(f => f.Kind == HouseFixture.Effect.Sit);
+        Vector3 nextToIt = toilet.transform.position + new Vector3(0f, 1f, -1.4f);
+        Teleport(player, nextToIt);
+        yield return null;
+        Assert.AreEqual("E: Sit on the toilet", Hud().Q<Label>("interact-prompt").text);
+
+        var sprite = player.GetComponent<CharacterAnimator>().SpriteRenderer.transform;
+        float spriteHeight = sprite.localPosition.y;
+        Assert.IsTrue(player.GetComponent<PlayerInteractor>().TryInteract());
+        yield return null;
+        yield return null;
+        Assert.IsTrue(hero.IsSeated);
+        Assert.AreSame(toilet.transform, hero.Seat);
+        Vector3 offset = player.transform.position - toilet.transform.position;
+        Assert.Less(new Vector2(offset.x, offset.z).magnitude, 0.6f, "on the toilet, not beside it");
+        Assert.Greater(sprite.localPosition.y, spriteHeight + 0.5f, "up on the seat, feet dangling");
+        Assert.IsTrue(player.GetComponent<CharacterAnimator>().Animator.GetCurrentAnimatorStateInfo(0).IsName("Sit"));
+        Assert.AreEqual("E: Flush and stand up", Hud().Q<Label>("interact-prompt").text);
+
+        Assert.IsTrue(player.GetComponent<PlayerInteractor>().TryInteract());
+        yield return null;
+        yield return null;
+        Assert.IsFalse(hero.IsSeated);
+        Assert.AreEqual("flush", AudioManager.Instance.LastPlayed.name);
+        Assert.AreEqual(spriteHeight, sprite.localPosition.y, 0.001f);
+        Assert.Less(Vector3.Distance(player.transform.position, nextToIt), 0.1f, "back where you stood");
+        Assert.IsTrue(player.GetComponent<CharacterController>().enabled);
+        Assert.IsFalse(player.GetComponent<CharacterAnimator>().Animator.GetCurrentAnimatorStateInfo(0).IsName("Sit"));
+    }
+
+    [UnityTest]
+    public IEnumerator TheBedroomLampAndToysWork()
+    {
+        SceneManager.LoadScene("House");
+        yield return null;
+        yield return null;
+        var player = LevelBootstrap.Current.Player;
+        var fixtures = Object.FindObjectsByType<HouseFixture>();
+
+        var lamp = fixtures.First(f => f.Kind == HouseFixture.Effect.Lamp);
+        var light = lamp.GetComponentInChildren<Light>();
+        Assert.IsTrue(light.enabled, "the lamp starts on");
+        Assert.AreEqual("Turn the lamp off", lamp.Prompt);
+        StringAssert.Contains("off", lamp.Interact(player));
+        Assert.IsFalse(light.enabled);
+        Assert.AreEqual("Turn the lamp on", lamp.Prompt);
+        lamp.Interact(player);
+        Assert.IsTrue(light.enabled);
+
+        // The toy chest has a different toy each time, then starts over.
+        var toys = fixtures.First(f => f.name == "ToyChest");
+        var said = Enumerable.Range(0, 4).Select(_ => toys.Interact(player)).ToList();
+        Assert.AreEqual(3, said.Take(3).Distinct().Count());
+        Assert.AreEqual(said[0], said[3]);
+        Assert.IsFalse(said.Any(s => s.Contains("|")));
+    }
+
+    [UnityTest]
+    public IEnumerator TheBedStandsClearOfTheWalls()
+    {
+        SceneManager.LoadScene("House");
+        yield return null;
+        yield return null;
+        var map = Object.FindAnyObjectByType<LevelMap>();
+        var bed = Object.FindObjectsByType<HouseFixture>().First(f => f.Kind == HouseFixture.Effect.Rest);
+
+        // The bed is drawn upright, facing the camera, so it reaches out sideways across the
+        // screen: check both ends of the drawing (the art is ~3.3 units wide), and the
+        // collider's corners, all land on floor tiles.
+        Vector3 across = Camera.main.transform.right;
+        across.y = 0f;
+        var points = new[] { bed.transform.position + across.normalized * 1.65f, bed.transform.position - across.normalized * 1.65f }
+            .Concat(Corners(bed.GetComponent<BoxCollider>().bounds));
+        foreach (var p in points)
+        {
+            Vector2 tile = map.WorldToMap(p);
+            char c = map.At(Mathf.RoundToInt(tile.x), Mathf.RoundToInt(tile.y));
+            Assert.IsFalse(LevelMap.IsWall(c), $"the bed reaches into a wall at {p}");
+        }
+    }
+
+    private static Vector3[] Corners(Bounds b) => new[]
+    {
+        new Vector3(b.min.x, 0f, b.min.z), new Vector3(b.min.x, 0f, b.max.z),
+        new Vector3(b.max.x, 0f, b.min.z), new Vector3(b.max.x, 0f, b.max.z),
+    };
 
     [UnityTest]
     public IEnumerator ClearedGroundsStayClearedAfterAVisitHome()

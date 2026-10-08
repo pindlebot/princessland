@@ -17,7 +17,7 @@ public class LevelMap : MonoBehaviour
 
     // Walls: '#' stone ('T' with a torch), 'H' hedge, 'K' castle. Anything else except
     // ' ' (nothing) is walkable ground: '.', ',' grass, '=' path, '_' bathroom tiles,
-    // and the markers P/E/C/I/D/X/B/W/S/R/O.
+    // and the markers P/E/C/I/D/X/B/W/S/R/O (and the bedroom's A/N/U/G/v/r).
     public static bool IsWall(char c) => c == '#' || c == 'T' || c == 'H' || c == 'K';
 
     // Pond water ('w', and 'm' where the mermaid sits): not walkable, drawn blue on the minimap.

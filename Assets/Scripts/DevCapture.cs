@@ -37,6 +37,8 @@ public class DevCapture : MonoBehaviour
         yield return Visit("Level0", 'f', -2, 0, "level0_edge", max: 12, hearts: 1, manaFraction: 0f);
         yield return Visit("Dungeon", 'P', 0, 0, "dungeon_spawn", max: 20, hearts: 7, manaFraction: 0.7f);
         yield return Visit("House", 'B', 1, 2, "house", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("House", 'W', 0, 1, "house_bathroom", max: 0, hearts: 0, manaFraction: 1f);
+        yield return SitOnTheToilet("house_toilet");
         yield return Visit("Level0", 'P', 0, -2, "walk_start", max: 0, hearts: 0, manaFraction: 1f);
         yield return Walk("walk", new Vector3(1f, 0f, 0.35f), 3);
         Application.Quit();
@@ -48,6 +50,18 @@ public class DevCapture : MonoBehaviour
         yield return new WaitForSecondsRealtime(1.5f);
         ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + ".png"));
         yield return new WaitForSecondsRealtime(0.5f);
+    }
+
+    // Sits the hero on the toilet (they're next to it) and saves a picture.
+    private IEnumerator SitOnTheToilet(string shot)
+    {
+        foreach (var fixture in FindObjectsByType<HouseFixture>())
+            if (fixture.Kind == HouseFixture.Effect.Sit)
+                fixture.Interact(LevelBootstrap.Current.Player);
+        yield return new WaitForSecondsRealtime(1f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + ".png"));
+        yield return new WaitForSecondsRealtime(0.5f);
+        LevelBootstrap.Current.Player.GetComponent<PlayerController>().StandUp();
     }
 
     // Walks the hero for a while (the camera following), saving a few frames on the way, to

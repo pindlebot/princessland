@@ -26,36 +26,41 @@ STAFF = (136, 88, 48, 255)
 GEM, GEM_HI = (255, 150, 40, 255), (255, 240, 160, 255)
 
 
-def draw_wizard(back=False, bob=0, legs=(0, 0), staff_up=0, glow=0, hurt=False):
+def draw_wizard(back=False, bob=0, legs=(0, 0), staff_up=0, glow=0, hurt=False, sit=False, kick=0):
     """Draws one pose. bob lowers the upper body, legs lifts each boot,
-    staff_up raises the staff, glow (0-2) brightens the gem."""
+    staff_up raises the staff, glow (0-2) brightens the gem. sit draws him sitting down
+    (facing front) with his boots dangling; kick swings one boot up."""
     c = Canvas()
-    b = bob
+    b = bob + (SIT_DROP if sit else 0)
     # While a boot is lifted, the other one steps out and the robe hem swings with it.
     sway = -1 if legs[1] > legs[0] else (1 if legs[0] > legs[1] else 0)
 
-    # Boots
-    c.rect(11 - (sway < 0), 28 - legs[0], 13 - (sway < 0), 30 - legs[0], BOOT)
-    c.rect(17 + (sway > 0), 28 - legs[1], 19 + (sway > 0), 30 - legs[1], BOOT)
-
-    # Robe: a trapezoid that widens toward the floor
-    top = 17 + b
-    for y in range(top, 29):
-        hw = 4 + (y - top) // 3
-        cx = 15 + (sway if y >= 26 else 0)
-        c.rect(cx - hw, y, cx + hw, y, ROBE_SH if back else ROBE)
-        c.dot(cx - hw, y, ROBE_HI)
-        c.dot(cx + hw, y, ROBE_SH)
-    if back:  # a darker cape seam down the back
-        c.rect(15, top + 1, 15, 28, ROBE_SH)
-        c.rect(14, top + 1, 14, 27, ROBE)
+    if sit:
+        draw_lap(c, kick)
     else:
-        c.rect(11, 22 + b, 19, 22 + b, BAND)  # belt
+        # Boots
+        c.rect(11 - (sway < 0), 28 - legs[0], 13 - (sway < 0), 30 - legs[0], BOOT)
+        c.rect(17 + (sway > 0), 28 - legs[1], 19 + (sway > 0), 30 - legs[1], BOOT)
 
-    # Left sleeve and hand
-    c.rect(9, 18 + b, 10, 22 + b, ROBE_SH)
-    c.dot(9, 23 + b, SKIN)
-    c.dot(10, 23 + b, SKIN)
+        # Robe: a trapezoid that widens toward the floor
+        top = 17 + b
+        for y in range(top, 29):
+            hw = 4 + (y - top) // 3
+            cx = 15 + (sway if y >= 26 else 0)
+            c.rect(cx - hw, y, cx + hw, y, ROBE_SH if back else ROBE)
+            c.dot(cx - hw, y, ROBE_HI)
+            c.dot(cx + hw, y, ROBE_SH)
+        if back:  # a darker cape seam down the back
+            c.rect(15, top + 1, 15, 28, ROBE_SH)
+            c.rect(14, top + 1, 14, 27, ROBE)
+        else:
+            c.rect(11, 22 + b, 19, 22 + b, BAND)  # belt
+
+    # Left sleeve and hand (resting on his knee when he sits)
+    arm = 3 if sit else 0
+    c.rect(9, 18 + b - arm, 10, 22 + b - arm, ROBE_SH)
+    c.dot(9, 23 + b - arm, SKIN)
+    c.dot(10, 23 + b - arm, SKIN)
 
     # Head
     if back:
@@ -86,7 +91,7 @@ def draw_wizard(back=False, bob=0, legs=(0, 0), staff_up=0, glow=0, hurt=False):
 
     # Staff in the right hand, raised by staff_up while casting
     s = staff_up
-    c.rect(22, 8 - s + b, 22, 29 - s, STAFF)
+    c.rect(22, 8 - s + b, 22, 29 - s - (2 if sit else 0), STAFF)
     c.rect(20, 18 + b, 21, 21 + b - min(s, 2), ROBE_SH)  # right sleeve reaches up
     c.rect(21, 20 - s + b, 23, 21 - s + b, SKIN)  # hand on staff
     gy = 5 - s + b
@@ -104,6 +109,24 @@ def draw_wizard(back=False, bob=0, legs=(0, 0), staff_up=0, glow=0, hurt=False):
     if hurt:
         img = tint(img, (255, 70, 70), 0.45)
     return img
+
+
+# Sitting, everything above the waist drops this many pixels.
+SIT_DROP = 5
+
+
+def draw_lap(c, kick):
+    """Sitting, seen from the front: a short robe over his knees (belt and all) and his
+    boots dangling below, one swinging up when kick is set."""
+    c.rect(11, 22, 19, 22, ROBE)  # a little body between beard and belt
+    c.rect(10, 23, 20, 23, BAND)
+    for y, hw in ((24, 6), (25, 7), (26, 7)):
+        c.rect(15 - hw, y, 15 + hw, y, ROBE)
+        c.dot(15 - hw, y, ROBE_HI)
+        c.dot(15 + hw, y, ROBE_SH)
+    c.rect(8, 27, 22, 27, ROBE_SH)  # the hem over his knees
+    for x, lift in ((11, kick), (17, 0)):
+        c.rect(x, 28 - lift, x + 2, 30 - lift, BOOT)
 
 
 def fallen(angle, darken=0.0):
@@ -137,6 +160,8 @@ def build_animations():
             ]),
             (f"Hurt_{facing}", 8, False, [draw_wizard(back, bob=1, hurt=True)]),
         ]
+    # Sitting on something (the toilet at home): front only, swinging his boots.
+    anims.append(("Sit", 3, True, [draw_wizard(sit=True), draw_wizard(sit=True, kick=1)]))
     anims.append(("Die", 8, False, [fallen(0), fallen(30), fallen(60), fallen(90, darken=0.35)]))
     return anims
 

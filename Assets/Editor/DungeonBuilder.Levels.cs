@@ -182,6 +182,13 @@ public static partial class DungeonBuilder
                     case 'W': Place(assets.Toilet, decor, pos); break;
                     case 'S': Place(assets.Sink, decor, pos); break;
                     case 'R': Place(assets.PaperTowel, decor, pos); break;
+                    case 'A': Place(assets.Wardrobe, decor, pos); break;
+                    case 'N': Place(assets.Nightstand, decor, pos); break;
+                    case 'U': Place(assets.Bookshelf, decor, pos); break;
+                    case 'G': Place(assets.ToyChest, decor, pos); break;
+                    case 'v': Place(assets.Plant, decor, pos); break;
+                    // Half a tile north, so a rug on the tile in front of the bed lines up with it.
+                    case 'r': Place(assets.Rug, decor, pos + new Vector3(0f, 0.01f, Tile / 2f)); break;
                     case ',': PlaceGrass(assets.Grass, decor, rng, pos, flowers: false); break;
                     case ';': PlaceGrass(assets.Grass, decor, rng, pos, flowers: true); break;
                     case 'Y': Place(assets.Tree, decor, pos); break;

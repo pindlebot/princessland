@@ -49,6 +49,7 @@ public class SpellAbility : MonoBehaviour
     {
         if (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) return;
         if (GameInput.GameplayBlocked) return; // the buttons are for the conversation or menu
+        if (movement != null && movement.IsSeated) return; // no spells from the toilet
 
         // Clicks on the HUD (e.g. the inventory) are for the UI, not for casting.
         bool click = GameInput.ClickHeld && !HudController.PointerOverUi;
