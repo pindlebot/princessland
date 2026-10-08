@@ -193,3 +193,14 @@ layered earth edges and clouds drifting beneath, warm sunlight and cooler shadow
 3. Fill hotbar slot 2 with a new ability, e.g. a mana potion on key `2` with a charge count label.
 4. Swap enemy chasing for a `NavMeshAgent` (AI Navigation package) so they path around walls.
 5. Add a second ability (dash on Shift) — then switch input to the new Input System package.
+
+## Version control
+The project is a git repository. `.gitattributes` routes Unity's YAML files (scenes, prefabs, assets,
+materials, animations, `.meta`) through Unity's **Smart Merge**. Register the merge driver once per clone:
+
+```bash
+git config merge.unityyamlmerge.name "Unity Smart Merge"
+git config merge.unityyamlmerge.driver "'/Applications/Unity/Hub/Editor/6000.6.4f1/Unity.app/Contents/Helpers/UnityYAMLMerge' merge -p %O %B %A %A"
+git config merge.unityyamlmerge.recursive binary
+```
+

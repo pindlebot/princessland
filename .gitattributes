@@ -1,0 +1,14 @@
+# Unity scenes, prefabs and other YAML assets: merge them with Unity's Smart Merge, which
+# understands the file structure (plain text merges of these often corrupt them).
+# The "unityyamlmerge" driver must be registered once per clone; see "Version control" in README.md.
+*.unity       merge=unityyamlmerge
+*.prefab      merge=unityyamlmerge
+*.asset       merge=unityyamlmerge
+*.mat         merge=unityyamlmerge
+*.anim        merge=unityyamlmerge
+*.controller  merge=unityyamlmerge
+*.meta        merge=unityyamlmerge
+
+# Binary assets: never try to diff or merge these as text.
+*.png  binary
+*.wav  binary
