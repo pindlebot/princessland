@@ -1,0 +1,30 @@
+<!--
+  The character select screen. Two fixed cards: CharacterSelectController fills in each
+  card's portrait, name and description from the CharacterDefinition assets.
+-->
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="project://database/Assets/UI/Hud.uss" />
+    <Style src="project://database/Assets/UI/CharacterSelect.uss" />
+
+    <ui:VisualElement class="select-screen">
+        <ui:Label class="select-title" text="Choose your hero" />
+        <ui:Label class="select-subtitle" text="Click a hero or press 1 / 2" />
+
+        <ui:VisualElement class="cards">
+            <ui:VisualElement name="card-0" class="frame card">
+                <ui:Label class="card-key" text="1" />
+                <ui:VisualElement name="card-portrait" class="card-portrait" />
+                <ui:Label name="card-name" class="card-name" text="Hero" />
+                <ui:Label name="card-description" class="card-description" text="" />
+            </ui:VisualElement>
+            <ui:VisualElement name="card-1" class="frame card">
+                <ui:Label class="card-key" text="2" />
+                <ui:VisualElement name="card-portrait" class="card-portrait" />
+                <ui:Label name="card-name" class="card-name" text="Hero" />
+                <ui:Label name="card-description" class="card-description" text="" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Button name="start" class="start-button" text="Start  [Enter]" />
+    </ui:VisualElement>
+</ui:UXML>

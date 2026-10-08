@@ -1,0 +1,42 @@
+{
+  "frameSize": 64,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Bed",
+      "row": 0,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Toilet",
+      "row": 1,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Sink",
+      "row": 2,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "PaperTowel",
+      "row": 3,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Door",
+      "row": 4,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    }
+  ]
+}

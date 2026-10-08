@@ -1,0 +1,763 @@
+/*
+  HUD styles: a warm storybook look. USS is CSS for UI Toolkit: selectors, classes, flexbox.
+
+  Palette
+    cream panels     rgb(248, 239, 216)      honey-gold borders  rgb(222, 168, 70)
+    plum text        rgb(74, 37, 69)         soft plum           rgb(128, 88, 118)
+    hearts           rgb(232, 70, 92)        magic (turquoise)   rgb(64, 206, 210)
+    experience       rgb(170, 130, 210)      coins               rgb(196, 140, 30)
+
+  Every box uses the same 9-sliced PanelCream.png (cream paper, plum outline, honey border,
+  little gold corner studs). -unity-slice-* marks its 5px border so it doesn't stretch, and
+  -unity-slice-scale draws that border at 2x to stay pixel-crisp. Text sits on these panels
+  rather than straight over the scenery, so it stays readable anywhere.
+*/
+
+.hud {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+Label {
+    color: rgb(74, 37, 69);
+    -unity-font-style: bold;
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------- The one panel style ---------- */
+
+.panel,
+.frame {
+    background-image: url("project://database/Assets/Art/UI/PanelCream.png");
+    -unity-slice-left: 5;
+    -unity-slice-right: 5;
+    -unity-slice-top: 5;
+    -unity-slice-bottom: 5;
+    -unity-slice-scale: 2px;
+    padding: 10px 14px 10px 14px;
+}
+
+/* Rows that center their child across the screen (a positioned label would stretch) */
+.centered-row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    align-items: center;
+}
+
+/* ---------- Objective (top left) ---------- */
+
+.objective {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    min-width: 210px;
+    padding: 10px 16px 12px 14px;
+    transition-property: scale;
+    transition-duration: 0.15s;
+}
+
+/* A little bounce when the stairs open (HudController toggles .celebrate a few times) */
+.objective.celebrate {
+    scale: 1.08 1.08;
+}
+
+.objective-title {
+    font-size: 15px;
+    color: rgb(128, 88, 118);
+    margin-bottom: 4px;
+}
+
+.objective-monsters {
+    flex-direction: row;
+    align-items: center;
+}
+
+.monster-icon {
+    width: 24px; /* 12px at 2x */
+    height: 24px;
+    margin-right: 8px;
+    background-image: url("project://database/Assets/Art/UI/IconMonster.png");
+}
+
+.enemies-left {
+    font-size: 20px;
+}
+
+/* Progress markers: a grey monster each, turning into a gold star as it's defeated */
+.objective-pips {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 6px;
+    max-width: 230px;
+}
+
+.pip {
+    width: 18px; /* 9px at 2x */
+    height: 18px;
+    margin: 0 3px 3px 0;
+    background-image: url("project://database/Assets/Art/UI/PipMonster.png");
+}
+
+.pip.defeated {
+    background-image: url("project://database/Assets/Art/UI/PipStar.png");
+}
+
+.objective-hint {
+    font-size: 18px;
+    margin-top: 4px;
+}
+
+.objective-hint.open {
+    color: rgb(46, 140, 70);
+    font-size: 20px;
+}
+
+/* ---------- Boss health bar (top middle) ---------- */
+
+.boss-row {
+    top: 14px;
+}
+
+.boss-bar {
+    width: 420px;
+    padding: 8px 18px 10px 18px;
+    align-items: center;
+    display: none;
+}
+
+.boss-bar.visible {
+    display: flex;
+}
+
+.boss-name {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.boss-health {
+    width: 380px;
+    height: 16px;
+}
+
+.bar-fill.boss {
+    background-color: rgb(150, 70, 200);
+    border-top-color: rgb(210, 160, 240);
+}
+
+/* ---------- Minimap (top right): small, round, framed like the rest ---------- */
+
+.minimap-frame {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    width: 132px;
+    height: 132px;
+    border-radius: 66px;
+    border-width: 4px;
+    border-color: rgb(222, 168, 70);
+    background-color: rgba(74, 37, 69, 0.82);
+    overflow: hidden; /* clips the map to the circle */
+}
+
+.minimap {
+    position: absolute; /* size, position and rotation are set every frame by Minimap.cs */
+}
+
+/* Upright markers over the turning terrain (positions set by Minimap.cs) */
+.minimap-markers {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Each icon is 3x its pixel art and centred on its spot with whole-pixel margins
+   (a -50% translate would land odd sizes on half pixels and blur them). */
+.map-marker {
+    position: absolute;
+}
+
+.map-crown { width: 33px; height: 24px; margin-left: -16px; margin-top: -12px; background-image: url("project://database/Assets/Art/UI/MapCrown.png"); }
+.map-stairs { width: 21px; height: 18px; margin-left: -10px; margin-top: -9px; background-image: url("project://database/Assets/Art/UI/MapStairs.png"); }
+.map-stairs-locked { width: 21px; height: 18px; margin-left: -10px; margin-top: -9px; background-image: url("project://database/Assets/Art/UI/MapStairsLocked.png"); }
+.map-monster { width: 15px; height: 12px; margin-left: -7px; margin-top: -6px; background-image: url("project://database/Assets/Art/UI/MapMonster.png"); }
+.map-chest { width: 15px; height: 12px; margin-left: -7px; margin-top: -6px; background-image: url("project://database/Assets/Art/UI/MapChest.png"); }
+.map-dragon { width: 15px; height: 15px; margin-left: -7px; margin-top: -7px; background-image: url("project://database/Assets/Art/UI/MapDragon.png"); }
+
+/* ---------- Bars (magic, experience, boss) ---------- */
+
+.bar {
+    background-color: rgb(232, 218, 188);
+    border-width: 2px;
+    border-color: rgb(74, 37, 69);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    border-top-width: 3px;
+    transition-property: width; /* bars slide instead of jumping */
+    transition-duration: 0.2s;
+}
+
+.bar-fill.mana {
+    background-color: rgb(64, 206, 210);
+    border-top-color: rgb(190, 250, 248);
+}
+
+.bar-fill.xp {
+    background-color: rgb(170, 130, 210);
+    border-top-width: 1px;
+    border-top-color: rgb(214, 190, 240);
+}
+
+/* ---------- Bottom row ---------- */
+
+.bottom-row {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.status,
+.bottom-right {
+    width: 330px; /* equal sides keep the spell slot centered */
+}
+
+.bottom-right {
+    align-items: flex-end;
+}
+
+/* The player's status card: portrait, hearts, magic, then the quieter extras */
+.status {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 14px 10px 10px;
+}
+
+.portrait-frame {
+    width: 76px;
+    height: 76px;
+    padding: 2px;
+    border-width: 2px;
+    border-color: rgb(222, 168, 70);
+    border-radius: 6px;
+    background-color: rgb(74, 37, 69);
+    overflow: hidden;
+}
+
+.portrait {
+    flex-grow: 1; /* 24px portrait at 3x; the hero's own, set by HudController */
+}
+
+.status-body {
+    margin-left: 10px;
+    flex-grow: 1;
+}
+
+.player-name {
+    font-size: 12px;
+    color: rgb(128, 88, 118);
+    margin-bottom: 2px;
+}
+
+/* Hearts: one per point of health */
+.hearts {
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 230px;
+}
+
+.heart {
+    width: 26px; /* 13x12 at 2x */
+    height: 24px;
+    margin-right: 2px;
+    background-image: url("project://database/Assets/Art/UI/Heart.png");
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+.heart.empty {
+    background-image: url("project://database/Assets/Art/UI/HeartEmpty.png");
+}
+
+/* Healing: refilled hearts pop for a moment */
+.heart.pop {
+    scale: 1.35 1.35;
+}
+
+.magic-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.magic-icon {
+    width: 24px; /* 12px at 2x */
+    height: 24px;
+    margin-right: 6px;
+    background-image: url("project://database/Assets/Art/UI/IconMagic.png");
+}
+
+.magic-bar {
+    width: 150px;
+    height: 16px;
+}
+
+/* Level, experience and coins: deliberately smaller and quieter than hearts and magic */
+.secondary-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.level-badge {
+    min-width: 22px;
+    padding: 1px 5px;
+    font-size: 11px;
+    -unity-text-align: middle-center;
+    background-color: rgb(250, 214, 120);
+    border-width: 2px;
+    border-color: rgb(164, 112, 40);
+    border-radius: 9px;
+}
+
+.xp-bar {
+    width: 60px;
+    height: 8px;
+    margin: 0 8px 0 6px;
+    border-width: 1px;
+}
+
+.gold-icon {
+    width: 18px;
+    height: 18px;
+    background-image: url("project://database/Assets/Art/UI/IconCoin.png");
+}
+
+.gold-text {
+    font-size: 13px;
+    color: rgb(150, 100, 20);
+    margin-left: 3px;
+    margin-right: 8px;
+}
+
+.points-hint {
+    font-size: 10px;
+    color: rgb(46, 140, 70);
+}
+
+/* ---------- The spell slot ---------- */
+
+.hotbar {
+    flex-direction: column;
+    align-items: center;
+}
+
+.slot {
+    width: 66px;
+    height: 66px;
+    background-image: url("project://database/Assets/Art/UI/PanelCream.png");
+    -unity-slice-left: 5;
+    -unity-slice-right: 5;
+    -unity-slice-top: 5;
+    -unity-slice-bottom: 5;
+    -unity-slice-scale: 2px;
+}
+
+/* The hero's one spell: big and clear */
+.spell-slot {
+    width: 96px;
+    height: 96px;
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+/* Ready to cast: the slot glows a little bigger */
+.spell-slot.ready {
+    scale: 1.06 1.06;
+    -unity-background-image-tint-color: rgb(255, 236, 170);
+}
+
+.slot-icon {
+    position: absolute;
+    left: 9px;
+    top: 9px;
+    width: 48px;
+    height: 48px;
+}
+
+.spell-slot .slot-icon {
+    left: 12px;
+    top: 12px;
+    width: 72px; /* 24px icon at 3x */
+    height: 72px;
+}
+
+/* Not enough magic: the icon goes faded and grey-blue */
+.slot.no-mana .slot-icon {
+    -unity-background-image-tint-color: rgb(150, 150, 190);
+    opacity: 0.6;
+}
+
+/* A shade over the icon that shrinks away as the spell recharges (height set in code) */
+.slot-cooldown {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    width: 72px;
+    height: 0;
+    background-color: rgba(74, 37, 69, 0.55);
+}
+
+.slot-cost {
+    position: absolute;
+    right: 9px;
+    bottom: 7px;
+    font-size: 10px;
+    color: rgb(30, 130, 150);
+}
+
+.spell-key {
+    margin-top: 6px;
+    padding: 2px 10px;
+    font-size: 14px;
+    background-color: rgb(250, 214, 120);
+    border-width: 2px;
+    border-color: rgb(74, 37, 69);
+    border-radius: 6px;
+}
+
+/* Slots for abilities that don't exist yet stay hidden until unlocked */
+.future-slot {
+    display: none;
+}
+
+.future-slot.unlocked {
+    display: flex;
+}
+
+/* ---------- Help ---------- */
+
+.help-pill {
+    font-size: 13px;
+    padding: 6px 12px 6px 12px;
+}
+
+.help-row {
+    top: 120px;
+}
+
+.help {
+    width: 420px;
+    padding: 14px 20px 16px 20px;
+    display: none;
+}
+
+.help.open {
+    display: flex;
+}
+
+.help-line {
+    font-size: 16px;
+    margin-top: 6px;
+}
+
+/* ---------- Hints and messages ---------- */
+
+.prompt-row {
+    bottom: 152px; /* above the spell slot and its key */
+}
+
+.interact-prompt {
+    font-size: 18px;
+    padding: 6px 16px 6px 16px;
+    display: none;
+}
+
+.interact-prompt.visible {
+    display: flex;
+}
+
+.toast-row {
+    top: 88px; /* below the boss bar */
+}
+
+.toast {
+    font-size: 18px;
+    padding: 8px 18px 8px 18px;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.3s;
+}
+
+.toast.visible {
+    opacity: 1;
+}
+
+/* ---------- Inventory ---------- */
+
+.inventory {
+    position: absolute;
+    right: 14px;
+    top: 160px; /* under the minimap */
+    width: 330px;
+    padding: 12px 16px 14px 16px;
+    display: none;
+}
+
+.inventory.open {
+    display: flex;
+}
+
+.inventory-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.inventory-title {
+    font-size: 18px;
+}
+
+.inventory-close {
+    font-size: 11px;
+    color: rgb(128, 88, 118);
+}
+
+.equip-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.equip-info {
+    margin-left: 10px;
+}
+
+.section-label {
+    font-size: 12px;
+    color: rgb(128, 88, 118);
+    margin-bottom: 4px;
+}
+
+.stat-line {
+    font-size: 14px;
+    color: rgb(190, 90, 40);
+}
+
+.bag {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.inv-slot {
+    margin: 0 6px 6px 0;
+}
+
+.inv-slot:hover {
+    -unity-background-image-tint-color: rgb(255, 226, 160);
+}
+
+.item-details {
+    font-size: 12px;
+    white-space: normal;
+    min-height: 34px;
+}
+
+/* ---------- Skill tree ---------- */
+
+.skills-row {
+    top: 110px;
+}
+
+.skills {
+    width: 620px;
+    padding: 14px 20px 14px 20px;
+    display: none;
+}
+
+.skills.open {
+    display: flex;
+}
+
+.skill-points {
+    font-size: 14px;
+    color: rgb(46, 140, 70);
+}
+
+.skill-branches {
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 6px 0 10px 0;
+}
+
+.skill-branch {
+    width: 180px;
+    align-items: center;
+}
+
+.skill-branch-title {
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.skill-node {
+    width: 170px;
+    height: 52px;
+    padding: 6px 10px;
+    justify-content: center;
+    background-color: rgb(238, 226, 198);
+    border-width: 2px;
+    border-color: rgb(196, 176, 150);
+    border-radius: 6px;
+    opacity: 0.55; /* locked: needs the skill above, or a skill point */
+}
+
+.skill-node:hover {
+    border-color: rgb(74, 37, 69);
+}
+
+.skill-node.available {
+    opacity: 1;
+    border-color: rgb(46, 140, 70);
+}
+
+.skill-node.learned {
+    opacity: 1;
+    border-color: rgb(164, 112, 40);
+    background-color: rgb(250, 214, 120);
+}
+
+.skill-name {
+    font-size: 13px;
+}
+
+.skill-tag {
+    font-size: 10px;
+    color: rgb(128, 88, 118);
+}
+
+.skill-node.coming-soon .skill-tag {
+    color: rgb(140, 90, 190);
+}
+
+.skill-link {
+    width: 3px;
+    height: 12px;
+    background-color: rgb(196, 176, 150);
+}
+
+.skill-link.learned {
+    background-color: rgb(222, 168, 70);
+}
+
+.skill-details {
+    min-height: 34px;
+}
+
+/* ---------- Dialogue ---------- */
+
+.dialogue-row {
+    bottom: 140px; /* above the bottom row */
+}
+
+.dialogue {
+    flex-direction: row;
+    align-items: flex-end;
+    display: none;
+}
+
+.dialogue.open {
+    display: flex;
+}
+
+/* When the hero speaks, the portrait moves to the right, like a classic RPG */
+.dialogue.hero-speaking {
+    flex-direction: row-reverse;
+}
+
+.dialogue-portrait-frame {
+    width: 120px;
+    height: 120px;
+    padding: 12px;
+    margin: 0 10px;
+}
+
+.dialogue-portrait {
+    flex-grow: 1; /* 96px: the dragon's 32px portrait at 3x, heroes' 24px at 4x */
+}
+
+.dialogue-box {
+    width: 560px;
+    min-height: 120px;
+    padding: 14px 22px 10px 20px;
+}
+
+.dialogue-speaker {
+    font-size: 16px;
+    color: rgb(164, 112, 40);
+    margin-bottom: 6px;
+}
+
+.dialogue-text {
+    font-size: 17px;
+    white-space: normal;
+    flex-grow: 1;
+}
+
+.dialogue-hint {
+    font-size: 11px;
+    -unity-text-align: lower-right;
+    color: rgb(128, 88, 118);
+}
+
+/* ---------- Win / lose banner ---------- */
+
+.banner-row {
+    top: 34%;
+}
+
+.banner {
+    align-items: center;
+    padding: 18px 40px 18px 40px;
+    display: none;
+}
+
+.banner.visible {
+    display: flex;
+}
+
+.banner-title {
+    font-size: 40px;
+}
+
+.banner.won .banner-title {
+    color: rgb(46, 140, 70);
+}
+
+.banner.lost .banner-title {
+    color: rgb(190, 50, 70);
+}
+
+.banner-subtitle {
+    font-size: 16px;
+    margin-top: 6px;
+    color: rgb(128, 88, 118);
+}

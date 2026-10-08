@@ -1,0 +1,98 @@
+{
+  "frameSize": 32,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Chest_Closed",
+      "row": 0,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Chest_Open",
+      "row": 1,
+      "frames": 4,
+      "fps": 12,
+      "loop": false
+    },
+    {
+      "name": "Sparkle",
+      "row": 2,
+      "frames": 5,
+      "fps": 10,
+      "loop": false
+    },
+    {
+      "name": "Torch",
+      "row": 3,
+      "frames": 4,
+      "fps": 8,
+      "loop": true
+    },
+    {
+      "name": "Grass_A",
+      "row": 4,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Grass_B",
+      "row": 5,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Grass_C",
+      "row": 6,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Ring",
+      "row": 7,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Flag",
+      "row": 8,
+      "frames": 3,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "name": "Coin",
+      "row": 9,
+      "frames": 4,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "name": "Butterfly",
+      "row": 10,
+      "frames": 2,
+      "fps": 6,
+      "loop": true
+    },
+    {
+      "name": "Mote",
+      "row": 11,
+      "frames": 3,
+      "fps": 5,
+      "loop": true
+    },
+    {
+      "name": "Stairs",
+      "row": 12,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    }
+  ]
+}

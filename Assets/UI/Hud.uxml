@@ -1,0 +1,173 @@
+<!--
+  The HUD layout. UXML is to UI Toolkit what HTML is to a web page: it only says
+  what elements exist and how they nest. Hud.uss styles them (storybook style: cream
+  panels, honey-gold borders, plum text); HudController.cs finds them by name and
+  updates them every frame. Most of the HUD uses picking-mode="Ignore" so clicks pass
+  through to the game; panels you click (inventory, skills) don't.
+-->
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="project://database/Assets/UI/Hud.uss" />
+
+    <ui:VisualElement name="hud" class="hud" picking-mode="Ignore">
+
+        <!-- Top left: where you are and what to do, in as few words as possible -->
+        <ui:VisualElement name="objective" class="panel objective" picking-mode="Ignore">
+            <ui:Label name="objective-title" class="objective-title" text="The Castle Grounds" />
+            <ui:VisualElement name="objective-monsters" class="objective-monsters" picking-mode="Ignore">
+                <ui:VisualElement class="monster-icon" picking-mode="Ignore" />
+                <ui:Label name="enemies-left" class="enemies-left" text="6 monsters left" />
+            </ui:VisualElement>
+            <ui:VisualElement name="objective-pips" class="objective-pips" picking-mode="Ignore" />
+            <ui:Label name="objective-hint" class="objective-hint" text="" />
+        </ui:VisualElement>
+
+        <!-- Top middle: the boss's health bar, shown once it notices you -->
+        <ui:VisualElement class="centered-row boss-row" picking-mode="Ignore">
+            <ui:VisualElement name="boss-bar" class="panel boss-bar" picking-mode="Ignore">
+                <ui:Label name="boss-name" class="boss-name" text="Boss" picking-mode="Ignore" />
+                <ui:VisualElement class="bar boss-health" picking-mode="Ignore">
+                    <ui:VisualElement name="boss-fill" class="bar-fill boss" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Top right: a small minimap. The map image is rotated to match the camera; the round frame clips it. -->
+        <ui:VisualElement name="minimap-frame" class="minimap-frame" picking-mode="Ignore">
+            <ui:VisualElement name="minimap" class="minimap" picking-mode="Ignore" />
+        </ui:VisualElement>
+
+        <!-- Inventory (press I) -->
+        <ui:VisualElement name="inventory" class="panel inventory">
+            <ui:VisualElement class="inventory-header" picking-mode="Ignore">
+                <ui:Label class="inventory-title" text="Inventory" />
+                <ui:Label class="inventory-close" text="I: close" />
+            </ui:VisualElement>
+            <ui:VisualElement class="equip-row" picking-mode="Ignore">
+                <ui:VisualElement name="equip-ring" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement class="equip-info" picking-mode="Ignore">
+                    <ui:Label class="section-label" text="Ring" />
+                    <ui:Label name="stat-damage" class="stat-line" text="Fireball damage: 1" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label class="section-label" text="Bag" />
+            <ui:VisualElement class="bag" picking-mode="Ignore">
+                <ui:VisualElement name="bag-0" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="bag-1" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="bag-2" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="bag-3" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="bag-4" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="bag-5" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="bag-6" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="bag-7" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label name="item-details" class="item-details" text="" />
+        </ui:VisualElement>
+
+        <!-- Skill tree (press K). SkillTreeView builds the branches and nodes from SkillCatalog. -->
+        <ui:VisualElement class="centered-row skills-row" picking-mode="Ignore">
+            <ui:VisualElement name="skills" class="panel skills">
+                <ui:VisualElement class="inventory-header" picking-mode="Ignore">
+                    <ui:Label class="inventory-title" text="Skills" />
+                    <ui:Label name="skill-points" class="skill-points" text="Points: 0" />
+                    <ui:Label class="inventory-close" text="K: close" />
+                </ui:VisualElement>
+                <ui:VisualElement name="skill-branches" class="skill-branches" picking-mode="Ignore" />
+                <ui:Label name="skill-details" class="item-details skill-details" text="" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Help (press H): the full controls list, out of the way until asked for -->
+        <ui:VisualElement class="centered-row help-row" picking-mode="Ignore">
+            <ui:VisualElement name="help" class="panel help" picking-mode="Ignore">
+                <ui:VisualElement class="inventory-header" picking-mode="Ignore">
+                    <ui:Label class="inventory-title" text="How to play" />
+                    <ui:Label class="inventory-close" text="H: close" />
+                </ui:VisualElement>
+                <ui:Label class="help-line" text="W A S D:  walk" />
+                <ui:Label class="help-line" text="Space or Click:  magic! (it aims by itself)" />
+                <ui:Label class="help-line" text="E:  open, talk, pick up" />
+                <ui:Label class="help-line" text="I:  bag      K:  skills      M:  music on/off" />
+                <ui:Label class="help-line" text="R:  try again      Esc:  choose a hero" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Bottom: the player's status card on the left, the spell in the middle, help on the right -->
+        <ui:VisualElement class="bottom-row" picking-mode="Ignore">
+            <ui:VisualElement name="status" class="panel status" picking-mode="Ignore">
+                <ui:VisualElement class="portrait-frame" picking-mode="Ignore">
+                    <ui:VisualElement name="portrait" class="portrait" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="status-body" picking-mode="Ignore">
+                    <ui:Label name="player-name" class="player-name" text="Hero" />
+                    <!-- One heart per point of health; HudController builds them -->
+                    <ui:VisualElement name="hearts" class="hearts" picking-mode="Ignore" />
+                    <ui:VisualElement class="magic-row" picking-mode="Ignore">
+                        <ui:VisualElement class="magic-icon" picking-mode="Ignore" />
+                        <ui:VisualElement class="bar magic-bar" picking-mode="Ignore">
+                            <ui:VisualElement name="mana-fill" class="bar-fill mana" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <!-- Secondary: level, experience and coins, smaller and quieter -->
+                    <ui:VisualElement class="secondary-row" picking-mode="Ignore">
+                        <ui:Label name="level-badge" class="level-badge" text="1" />
+                        <ui:VisualElement class="bar xp-bar" picking-mode="Ignore">
+                            <ui:VisualElement name="xp-fill" class="bar-fill xp" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="gold-icon" picking-mode="Ignore" />
+                        <ui:Label name="gold-text" class="gold-text" text="0" />
+                        <ui:Label name="points-hint" class="points-hint" text="" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="hotbar" class="hotbar" picking-mode="Ignore">
+                <!-- The hero's spell: one big, clear slot -->
+                <ui:VisualElement name="slot-spell" class="slot spell-slot">
+                    <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
+                    <ui:VisualElement name="spell-cooldown" class="slot-cooldown" picking-mode="Ignore" />
+                    <ui:Label name="spell-cost" class="slot-cost" text="10" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="spell-key" class="spell-key" text="Space" picking-mode="Ignore" />
+                <!-- Future abilities: hidden until there's something to put in them -->
+                <ui:VisualElement name="slot-2" class="slot future-slot" />
+                <ui:VisualElement name="slot-3" class="slot future-slot" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="bottom-right" picking-mode="Ignore">
+                <ui:Label name="help-pill" class="panel help-pill" text="H: Help" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- One short hint at a time: "E: Open chest", "Space: Magic!", "W A S D: Walk" -->
+        <ui:VisualElement class="centered-row prompt-row" picking-mode="Ignore">
+            <ui:Label name="interact-prompt" class="panel interact-prompt" text="E: Open chest" picking-mode="Ignore" />
+        </ui:VisualElement>
+
+        <!-- Short messages like "Level up!" that fade in and out -->
+        <ui:VisualElement class="centered-row toast-row" picking-mode="Ignore">
+            <ui:Label name="toast" class="panel toast" text="" picking-mode="Ignore" />
+        </ui:VisualElement>
+
+        <!-- Conversations (DialogueController). The portrait swaps sides when the hero speaks. -->
+        <ui:VisualElement class="centered-row dialogue-row" picking-mode="Ignore">
+            <ui:VisualElement name="dialogue" class="dialogue" picking-mode="Ignore">
+                <ui:VisualElement class="panel dialogue-portrait-frame" picking-mode="Ignore">
+                    <ui:VisualElement name="dialogue-portrait" class="dialogue-portrait" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel dialogue-box" picking-mode="Ignore">
+                    <ui:Label name="dialogue-speaker" class="dialogue-speaker" picking-mode="Ignore" />
+                    <ui:Label name="dialogue-text" class="dialogue-text" picking-mode="Ignore" />
+                    <ui:Label name="dialogue-hint" class="dialogue-hint" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Win/lose banner, hidden until the game ends (HudController toggles .visible) -->
+        <ui:VisualElement class="centered-row banner-row" picking-mode="Ignore">
+            <ui:VisualElement name="banner" class="panel banner" picking-mode="Ignore">
+                <ui:Label name="banner-title" class="banner-title" text="You died" />
+                <ui:Label class="banner-subtitle" text="R: try again      Esc: choose a hero" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,21 @@
+{
+  "frameSize": 64,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Idle",
+      "row": 0,
+      "frames": 4,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Talk",
+      "row": 1,
+      "frames": 2,
+      "fps": 8,
+      "loop": true
+    }
+  ]
+}
