@@ -61,7 +61,7 @@ at half health he splits off 3 slimelings. A boss health bar appears once he not
 | `Scripts/BossAbilities.cs` | A boss as "normal enemy + extra component"; telegraphed attacks as coroutine phases |
 | `Scripts/SceneDoor.cs`, `GameSession.cs` | Doors between scenes, named arrival points, flags that survive scene loads |
 | `Scripts/HouseFixture.cs` | One data-driven component for several simple interactables (an enum picks the effect) |
-| `Scripts/DialogueController.cs`, `DragonNpc.cs` | Conversations: typewriter text, pausing with `Time.timeScale`, unscaled time, serialized structs |
+| `Scripts/DialogueController.cs`, `Npc.cs` | Conversations: typewriter text, pausing with `Time.timeScale`, unscaled time, serialized structs |
 | `Scripts/AudioManager.cs` | Music loop + a pool of `AudioSource`s for overlapping effects, random pitch variation |
 | `Scripts/LevelBootstrap.cs` | Spawning the chosen hero and wiring scene objects to it at runtime; `DefaultExecutionOrder` |
 | `Scripts/CharacterSelectController.cs` | A menu scene in UI Toolkit; `SceneManager.LoadScene` |
