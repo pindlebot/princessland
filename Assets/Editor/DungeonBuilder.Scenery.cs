@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-// Storybook scenery for the castle grounds: a small, coherent set of props (trees, a fountain,
-// bushes, banners), gentle ambient life (butterflies, magic motes, drifting clouds), the
+// Storybook scenery for the castle grounds: a small, coherent set of props (round trees, pines,
+// birches and autumn trees, a fountain, bushes, boulders, stumps, a camp with a tent and logs,
+// banners), the rocky hill around Amethyra's cave, gentle ambient life (butterflies, magic motes, drifting clouds), the
 // floating island's earthy edges, and the stairs under each level's exit.
 //
 // Solid props (tree trunks, the fountain) get colliders and are placed off the walking
@@ -16,6 +19,17 @@ public static partial class DungeonBuilder
         assets.Fountain = Scenic("Fountain", scenery, "Fountain", new Vector3(2.6f, 1f, 2f), shadow, 3f);
         AddWakeSpot(assets.Fountain);
         assets.Bush = Scenic("Bush", scenery, "Bush", null, shadow, 1.8f);
+
+        // More variety for the woods and the camp (all from the same Scenery sheet).
+        assets.Pine = Scenic("Pine", scenery, "Pine", new Vector3(0.8f, 2f, 0.8f), shadow, 2.6f);
+        assets.Birch = Scenic("Birch", scenery, "Birch", new Vector3(0.5f, 2f, 0.5f), shadow, 2.2f);
+        assets.AutumnTree = Scenic("AutumnTree", scenery, "Autumn", new Vector3(0.8f, 2f, 0.8f), shadow, 3f);
+        assets.Boulder = Scenic("Boulder", scenery, "Boulder", new Vector3(1.8f, 1.2f, 1.4f), shadow, 2.6f);
+        assets.Stump = Scenic("Stump", scenery, "Stump", new Vector3(1f, 0.6f, 1f), shadow, 1.4f);
+        assets.Log = Scenic("Log", scenery, "Log", new Vector3(2.2f, 0.7f, 0.8f), shadow, 2.2f);
+        assets.Tent = Scenic("Tent", scenery, "Tent", new Vector3(3f, 2f, 2.4f), shadow, 3.6f);
+        assets.Stones = Scenic("Stones", scenery, "Stones", null, null, 0f);
+        assets.Fern = Scenic("Fern", scenery, "Fern", null, null, 0f);
 
         var butterfly = new GameObject("Butterfly");
         AddLoopingSprite(butterfly, props, "Butterfly");
@@ -68,7 +82,7 @@ public static partial class DungeonBuilder
         {
             AddStaticSprite(go, sheet.Frames(anim)[0]);
         }
-        AddShadow(go, shadow, shadowSize);
+        if (shadow != null) AddShadow(go, shadow, shadowSize); // pebbles and ferns lie flat: no shadow
         return SavePrefab(go, name);
     }
 
@@ -83,6 +97,23 @@ public static partial class DungeonBuilder
         SetRef(root.AddComponent<WakeFountain>(), "wakeSpot", spot);
         PrefabUtility.SaveAsPrefabAsset(root, AssetDatabase.GetAssetPath(fountainPrefab));
         PrefabUtility.UnloadPrefabContents(root);
+    }
+
+    // The rocky hill around Amethyra's cave ('%'). Rocks are tall crags, except where a crag
+    // would hide walkable ground behind it (north or east of it, away from the camera): those
+    // stay low like a dungeon wall, so you can always see into the cave.
+    private const float CragHeight = 2.5f; // RockSide.png is 40 texels tall: 16 per metre, never stretched
+
+    // tall: always a crag (a waterfall pours down its front).
+    private static void BuildRock(Transform parent, string[] map, int col, int row, Vector3 pos, Dictionary<string, Material> mats,
+                                  bool tall = false)
+    {
+        bool low = !tall && new[] { (0, -1), (1, 0), (1, -1), (0, -2), (2, 0), (1, -2), (2, -1) }
+            .Any(d => IsFloor(MapAt(map, col + d.Item1, row + d.Item2)));
+        float height = low ? WallHeight : CragHeight;
+        var rock = Block("Rock", parent, pos + Vector3.up * height * 0.5f, new Vector3(Tile, height, Tile),
+                         mats[low ? "RockSideLow" : "RockSide"]);
+        AddCap(rock, mats["RockTop"]);
     }
 
     // Layered earth under the island's edge (the hedge tiles), so it reads as deliberate. 4m deep

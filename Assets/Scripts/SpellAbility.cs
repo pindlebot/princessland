@@ -129,7 +129,7 @@ public class SpellAbility : MonoBehaviour
         from.y = castPoint.position.y;
         Vector3 to = enemy.transform.position;
         to.y = from.y;
-        if (!Physics.Linecast(from, to, out RaycastHit hit, ~0, QueryTriggerInteraction.Ignore))
+        if (!Physics.Linecast(from, to, out RaycastHit hit, ~(1 << LevelMap.WaterLayer), QueryTriggerInteraction.Ignore))
             return true;
         return hit.collider.GetComponentInParent<EnemyAI>() == enemy;
     }

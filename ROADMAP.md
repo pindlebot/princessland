@@ -1,6 +1,6 @@
-# IsoDungeon Roadmap
+# Tidecrown Roadmap
 
-The plan for growing IsoDungeon from a three-scene demo into a small, complete metroidvania that a
+The plan for growing Tidecrown from a three-scene demo into a small, complete metroidvania that a
 5-year-old can play on her own, and that's still fun for a grown-up.
 
 ---

@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3637699580820401712}
   - component: {fileID: 7883768916248574320}
-  - component: {fileID: 2805889744279886112}
-  - component: {fileID: 2534307532761372072}
+  - component: {fileID: 8365485904010156045}
+  - component: {fileID: 8651000640034915666}
   m_Layer: 0
   m_Name: Fountain
   m_TagString: Untagged
@@ -34,7 +34,7 @@ Transform:
   m_Children:
   - {fileID: 4566333459827508788}
   - {fileID: 6334935368767616292}
-  - {fileID: 6296027285354465127}
+  - {fileID: 6855114268118935938}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &7883768916248574320
@@ -58,7 +58,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.6, y: 1, z: 2}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &2805889744279886112
+--- !u!114 &8365485904010156045
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,8 +71,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::WakeFountain
   reach: 4
-  wakeSpot: {fileID: 6296027285354465127}
---- !u!114 &2534307532761372072
+  wakeSpot: {fileID: 6855114268118935938}
+--- !u!114 &8651000640034915666
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -87,6 +87,37 @@ MonoBehaviour:
   plinkSound: {fileID: 8300000, guid: 461491437aa714f4e8bb63d3b5494b62, type: 3}
   wishSound: {fileID: 8300000, guid: ce5e238217d2744edb86bf6ed967cff0, type: 3}
   sparkle: {fileID: 397231879088370502, guid: a902f4d8f13304ebab7e30de3775a73a, type: 3}
+--- !u!1 &4765766159480375993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6855114268118935938}
+  m_Layer: 0
+  m_Name: WakeSpot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6855114268118935938
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4765766159480375993}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
+  m_LocalPosition: {x: 0, y: 0, z: -2.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3637699580820401712}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6914330834269705250
 GameObject:
   m_ObjectHideFlags: 0
@@ -214,37 +245,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502420a4bf9fa47588f60892af5832e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Billboard
---- !u!1 &7080223434455873111
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6296027285354465127}
-  m_Layer: 0
-  m_Name: WakeSpot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6296027285354465127
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7080223434455873111}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
-  m_LocalPosition: {x: 0, y: 0, z: -2.2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3637699580820401712}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8697583405705929916
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,14 @@
+{
+  "frameSize": 96,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Bob",
+      "row": 0,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    }
+  ]
+}

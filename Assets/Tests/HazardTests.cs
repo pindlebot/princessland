@@ -129,6 +129,10 @@ public class HazardTests
         // The treasure corridor's three traps share a row; each is two tiles east of the last.
         var corridor = All(Hazard.Kind.Spikes).Where(h => h.transform.position.x > 40f).ToArray();
         Assert.AreEqual(3, corridor.Length);
+        // Measure just as the westmost one comes up: SecondsUntil(Up) is 0 for a trap that's already
+        // up, so measuring while an eastern one is mid-way up would read the wrong gap.
+        yield return new WaitForSeconds(corridor[0].SecondsUntil(Hazard.SpikeState.Hidden) + 0.05f);
+        yield return new WaitForSeconds(corridor[0].SecondsUntil(Hazard.SpikeState.Up) + 0.01f);
         for (int i = 1; i < corridor.Length; i++)
         {
             float west = corridor[i - 1].SecondsUntil(Hazard.SpikeState.Up);

@@ -11,7 +11,7 @@ using UnityEngine;
 // In batch mode an exception or EditorApplication.Exit(1) makes Unity exit non-zero.
 public static class CommandLineBuild
 {
-    private const string PlayerPath = "Builds/IsoDungeon.app";
+    private const string PlayerPath = "Builds/Tidecrown.app";
     private const string AppIconPath = "Assets/Art/AppIcon.png"; // drawn by Tools/make_hud_sprites.py
 
     // Same as Dungeon > Rebuild All Scenes.

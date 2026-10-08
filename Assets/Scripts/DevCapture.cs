@@ -4,12 +4,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // A developer tool for checking the look of the game: launch the player with
-//   IsoDungeon.app/Contents/MacOS/IsoDungeon -devcapture <folder> -screen-width 1280 -screen-height 720 -screen-fullscreen 0
+//   Tidecrown.app/Contents/MacOS/Tidecrown -devcapture <folder> -screen-width 1280 -screen-height 720 -screen-fullscreen 0
 // and it skips the title, visits a few spots in each level with different health values on
 // the HUD, saves a screenshot of each into <folder>, and quits. Without -devcapture it does nothing.
+// Add -capturescene <Scene> to visit just that level (e.g. -capturescene Cove).
 public class DevCapture : MonoBehaviour
 {
     private string folder;
+    private string only; // -capturescene: just this level's shots
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Launch()
@@ -20,27 +22,47 @@ public class DevCapture : MonoBehaviour
         Application.runInBackground = true; // keep going even if the window isn't in front
         var go = new GameObject("DevCapture");
         DontDestroyOnLoad(go);
-        go.AddComponent<DevCapture>().folder = args[i + 1];
+        var capture = go.AddComponent<DevCapture>();
+        capture.folder = args[i + 1];
+        int j = System.Array.IndexOf(args, "-capturescene");
+        if (j >= 0 && j + 1 < args.Length) capture.only = args[j + 1];
     }
 
     private IEnumerator Start()
     {
         Directory.CreateDirectory(folder);
-        yield return Menu("Title", "title");
-        yield return Menu("CharacterSelect", "character_select");
+        if (only == null)
+        {
+            yield return Menu("Title", "title");
+            yield return Menu("CharacterSelect", "character_select");
+        }
         GameSession.Progress.AddGold(37);
         GameSession.Progress.AddXp(Progression.FirstLevelXp + 20); // level 2, with a skill point to spend
 
         yield return Visit("Level0", 'P', 0, 0, "level0_spawn", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("Level0", 'm', 1, 1, "level0_pond", max: 6, hearts: 3, manaFraction: 0.5f);
         yield return Visit("Level0", 'F', 0, 2, "level0_fountain", max: 9, hearts: 4, manaFraction: 0.2f);
-        yield return Visit("Level0", 'f', -2, 0, "level0_edge", max: 12, hearts: 1, manaFraction: 0f);
+        yield return Visit("Level0", 'f', 2, 1, "level0_edge", max: 12, hearts: 1, manaFraction: 0f);
+        yield return Visit("Level0", 'D', -1, 1, "level0_cave", max: 12, hearts: 12, manaFraction: 1f);
+        yield return Visit("Level0", 'V', 1, 2, "level0_camp", max: 12, hearts: 12, manaFraction: 1f);
         yield return Visit("Dungeon", 'P', 0, 0, "dungeon_spawn", max: 20, hearts: 7, manaFraction: 0.7f);
+        yield return Visit("Dungeon", 'M', -4, 1, "dungeon_king_hall", max: 20, hearts: 7, manaFraction: 0.7f);
         yield return Visit("House", 'B', 1, 2, "house", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("House", 'W', 0, 1, "house_bathroom", max: 0, hearts: 0, manaFraction: 1f);
         yield return SitOnTheToilet("house_toilet");
-        yield return Visit("Level0", 'P', 0, -2, "walk_start", max: 0, hearts: 0, manaFraction: 1f);
-        yield return Walk("walk", new Vector3(1f, 0f, 0.35f), 3);
+        yield return Visit("Level0", '1', 0, 1, "level0_rowboat", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Cove", 'P', 0, 0, "cove_spawn", max: 8, hearts: 6, manaFraction: 0.8f);
+        yield return Visit("Cove", '1', 0, -2, "cove_jetty", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Cove", '|', 8, 2, "cove_waterfalls", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Cove", '&', 5, 4, "cove_dark_mermaid", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Cove", '@', 10, 0, "cove_ship", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Cove", 'X', 0, 3, "cove_sea_cave", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Cove", 'J', 0, 2, "cove_pirates", max: 0, hearts: 0, manaFraction: 1f);
+        if (only == null)
+        {
+            yield return Visit("Level0", 'P', 0, -2, "walk_start", max: 0, hearts: 0, manaFraction: 1f);
+            yield return Walk("walk", new Vector3(1f, 0f, 0.35f), 3);
+        }
         Application.Quit();
     }
 
@@ -55,6 +77,7 @@ public class DevCapture : MonoBehaviour
     // Sits the hero on the toilet (they're next to it) and saves a picture.
     private IEnumerator SitOnTheToilet(string shot)
     {
+        if (only != null && only != "House") yield break;
         foreach (var fixture in FindObjectsByType<HouseFixture>())
             if (fixture.Kind == HouseFixture.Effect.Sit)
                 fixture.Interact(LevelBootstrap.Current.Player);
@@ -86,6 +109,7 @@ public class DevCapture : MonoBehaviour
     // sets her health and magic, waits for things to settle, and saves a screenshot.
     private IEnumerator Visit(string scene, char symbol, int dc, int dr, string shot, int max, int hearts, float manaFraction)
     {
+        if (only != null && only != scene) yield break;
         if (SceneManager.GetActiveScene().name != scene)
         {
             SceneManager.LoadScene(scene);

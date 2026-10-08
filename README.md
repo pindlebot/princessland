@@ -1,4 +1,4 @@
-# IsoDungeon
+# Tidecrown
 
 A tiny isometric dungeon crawler for learning Unity (6000.6.4f1, Built-in Render Pipeline).
 
@@ -6,7 +6,8 @@ A tiny isometric dungeon crawler for learning Unity (6000.6.4f1, Built-in Render
 (Pressing ▶ in a level scene directly also works; you play as the wizard.)
 
 **Flow:** Title (3 save slots) → Character Select (for a new slot) → **Level 0** (the castle grounds) → **Level 1** (the dungeon).
-Level 0's exit only appears once its 4 skeletons are defeated. Esc / Start opens the pause menu. M mutes the music.
+Level 0's exit only appears once its 4 skeletons are defeated. A rowboat on Level 0's pond goes to **Mermaid Cove**, a
+seaside side-quest whose sea cave has a secret stair down into the dungeon too (see below). Esc / Start opens the pause menu. M mutes the music.
 
 **Saving:** three slots, each a JSON file in `Application.persistentDataPath` (`save1.json` ...). Every door, the
 stairs and starting a new adventure autosave; the pause menu's "Save and go to title" and "Save and quit game" save at
@@ -16,7 +17,8 @@ the door you came in by. The title screen has a "Quit game" button too.
 **Modes** (pause menu, saved per slot): **Gentle** (the default) has no Game Over: monsters hit for half damage,
 and at 0 hearts the hero naps and wakes by the last fountain she passed (or where she came in) with everything kept;
 the boss's warning circle lasts 1.6× longer. **Adventurer** is the classic rules, with slightly faster monsters.
-In Level 0, walk up to **Amethyra the dragon** and press **E** to talk (E / Space / Enter / click to continue).
+Level 0 is a big island to explore: a pine wood, birches and autumn trees, a camp with a tent and a campfire
+(warm up there), and a rocky hill in the far corner. **Amethyra the dragon** hides in the cave inside it; walk up and press **E** to talk (E / Space / Enter / click to continue).
 **Coralie the mermaid** sits in the pond and has lost her frog. Easter eggs: one bush hides **Sir Hopsalot** (find him
 and tell Coralie), the fountain takes wishes (1 coin each; the third comes true), and Amethyra tells jokes.
 Press **E** at the **castle gate** to go inside to the hero's home. The bedroom has a bed (a nap restores health
@@ -42,9 +44,9 @@ Abilities aim like the spell (the nearest monster on screen) and scale with its 
 Ember Ring help them too. Level, XP, gold and skills carry across scenes and reset when you pick a hero; loading an
 older save refunds any skill that isn't on the hero's path.
 
-**The dungeon** is a labyrinth: wooden doors (E to open), a storeroom of barrels and crates, **Bonesy** the friendly
-skeleton at his campfire (warm up there for full health), a great puddle hall full of slimes, twisty tunnels hiding
-the **Rusty Key**, and a locked treasure room it opens.
+**The dungeon** is a labyrinth: wooden doors (E to open), a long hall to a storeroom of barrels and crates, **Bonesy** the friendly
+skeleton at his campfire (warm up there for full health), a great puddle hall full of slimes with a mushroom grotto off it,
+long twisty tunnels hiding the **Rusty Key**, and a locked treasure room it opens.
 
 **Hazards** (Level 1): **spike traps** (`^`) shoot up on a loop: hidden, then a warning peek, then up for a
 second, which hurts. A row of traps ripples from west to east, so follow the wave across. **Lava** (`~`) glows and
@@ -100,7 +102,8 @@ to its buttons as soon as you touch it.
 | `Scripts/PauseMenu.cs`, `GameSettings.cs` | A menu that stops time (`Time.timeScale = 0`) and works with mouse, keys and pad |
 | `Scripts/ItemDefinition.cs` | ScriptableObjects: items as data assets (`Create > Dungeon > Item`) |
 | `Scripts/Inventory.cs`, `ItemPickup.cs` | A bag + equipment slots; pickups reuse the `IInteractable` system |
-| `Scripts/EnemyAI.cs` | A small state machine, `Physics.Linecast` line-of-sight, gizmos |
+| `Scripts/EnemyAI.cs` | A small state machine, `Physics.Linecast` line-of-sight, gizmos; optional ranged and stationary modes |
+| `Scripts/EnemyBolt.cs` | A monster's projectile (the dark mermaids' bolt); physics layers (it ignores the Water layer) |
 | `Scripts/Health.cs` | Reusable components + C# events (`Damaged`, `Died`, `Healed`) |
 | `Scripts/Hazard.cs` | Lava and spike traps: a timed loop (`Mathf.Repeat`), per-tile phase offsets, a shared damage cooldown |
 | `Scripts/IsoCameraFollow.cs` | Orthographic iso camera, `LateUpdate`, `SmoothDamp` |
@@ -140,6 +143,7 @@ to its buttons as soon as you touch it.
 | `DungeonBuilder.Castle.cs` | The castle from stacked wall blocks + a hand-built pyramid mesh for roofs |
 | `DungeonBuilder.CharacterSelect.cs` | The select screen scene |
 | `DungeonBuilder.Title.cs` | The title screen scene |
+| `DungeonBuilder.Cove.cs` | Mermaid Cove: pirate and dark mermaid stats, Pearl's lines, the rowboat, waterfalls |
 
 **Levels are text files** in `Assets/Levels/<Scene>.txt`: a header (`title`, `theme`: Outdoor/Dungeon/Home, `music`,
 `exit`, `exit_needs: all_monsters`, hints, minimap colors), `---`, the map, `---`, and a legend for doors
@@ -153,7 +157,12 @@ Built-in tiles: `.` ground · `,` grass tufts · `=` path · `#` stone wall · `
 `_` bathroom tiles · `Y` tree · `F` fountain · `b` bush · `Q` banner · `*` butterflies · `;` flowers · `B` bed · `W` toilet · `S` sink · `R` paper towel ·
 `A` wardrobe · `N` nightstand and lamp · `U` bookshelf · `G` toy chest · `v` plant · `r` rug ·
 `w` pond · `m` mermaid · `f` frog bush · `c` campfire · `n` Bonesy · `o` barrel · `x` crate · `j` bones · `u` mushrooms · `p` puddle · `d` door · `k` locked door · `y` key ·
-`~` lava · `^` spike trap.
+`~` lava · `^` spike trap ·
+`t` pine · `i` birch · `a` autumn tree · `O` boulder · `z` stump · `l` log · `V` tent · `s` pebbles · `e` fern · `%` rock · `:` cave floor ·
+`J` pirate · `&` dark mermaid (in the water) · `Z` Pearl (in the water) · `q` palm · `@` pirate ship (on the water) · `$` treasure heap ·
+`h` wooden planks · `|` rock with a waterfall (water below it).
+Header extras: `water: sea` (the sea instead of the pond), `ground: sand` (`.` and the markers are beach sand). On an
+Outdoor level, a door is a **rowboat** at the end of a jetty, and water on the map's edge spills off the island.
 
 ## Character sprites
 Each character is a sprite sheet (one animation per row) plus a JSON layout, drawn by a script in `Tools/`:
@@ -167,6 +176,9 @@ Each character is a sprite sheet (one animation per row) plus a JSON layout, dra
 | `Assets/Art/SlimeKing.png` (boss, 64×64) | `make_slime_sprites.py` (same code at 2.6× scale) | `Attack` |
 | `Assets/Art/Furniture.png` (64×64 frames) | `make_furniture_sprites.py` | (static: bed, toilet, sink, paper towel, door, wardrobe, nightstand, bookshelf, toy chest, plant; the rug is `Rug.png`) |
 | `Assets/Art/Dragon.png` (NPC, 64×64 frames) | `make_dragon_sprites.py` | (Idle/Talk via `SpriteFlipbook`) |
+| `Assets/Art/Pirate.png` (enemy) | `make_cove_sprites.py` | `Attack` (a cutlass swing) |
+| `Assets/Art/DarkMermaid.png` (enemy) | `make_cove_sprites.py` | `Attack` (raises an orb, throws it; Walk = Idle, she never moves) |
+| `Assets/Art/Pearl.png` (NPC, 48×48) | `make_cove_sprites.py` | (Coralie's drawing in Pearl's colours) |
 
 Shared drawing helpers live in `Tools/sprite_common.py`. Regenerate with e.g.
 `Tools/.venv/bin/python Tools/make_skeleton_sprites.py`, then **Dungeon → Rebuild All Scenes**.
@@ -220,7 +232,7 @@ by hand. (Hand-placed objects are lost on **Rebuild All Scenes**, which regenera
 triangle/saw/noise waves, envelopes and simple filters). Regenerate, then **Dungeon → Rebuild All Scenes**.
 
 - **Music**: `music_castle` (cheerful C major, 120 bpm, select screen + Level 0), `music_dungeon` (brooding
-  A minor, 84 bpm, with dripping water) and `music_home` (a cozy F major waltz). Each is 8 bars, written as note names in the script, and loops seamlessly.
+  A minor, 84 bpm, with dripping water), `music_home` (a cozy F major waltz) and `music_cove` (a D minor sea shanty in 6/8, with waves). Each is 8 bars, written as note names in the script, and loops seamlessly.
 - **Effects**: casts and impacts per spell, spike traps and lava, skeleton clack/swish/death rattle, player hurt/death, chest, pickup,
   the "way down opened" fanfare, UI blips, victory/defeat jingles.
 - Each component has its own sound field (e.g. `SpellAbility.castSound`, `Health.hurtSound`), so you can swap a
@@ -259,10 +271,33 @@ plum tile); `CommandLineBuild.ApplyAppIcon` makes it the default icon in Player 
 
 ## Castle grounds atmosphere
 Quiet, low-contrast grass laid in large patches (Perlin noise), fewer tufts, flowers only at points of interest
-(`;`). A small set of props from `Tools/make_scenery_sprites.py`: swaying **trees** (`Y`), a **fountain** with
-magic motes (`F`), **bushes** (`b`), **banners** by the gate (`Q`), **butterflies** (`*`). The floating island has
+(`;`). A small set of props from `Tools/make_scenery_sprites.py`: swaying **trees** (`Y`), **pines** (`t`),
+**birches** (`i`) and **autumn trees** (`a`), a **fountain** with magic motes (`F`), **bushes** (`b`), **boulders** (`O`),
+**stumps** (`z`), **logs** (`l`), a **tent** (`V`), pebbles (`s`) and ferns (`e`), **banners** by the gate (`Q`),
+**butterflies** (`*`). The **cave** is a hill of rock blocks (`%`, textures `RockSide`/`RockSideLow`/`RockTop`) around a
+dark floor (`:`, `CaveFloor`): rocks are 2.5m crags, except where a crag would hide walkable ground behind it (north or
+east, away from the camera), where they stay low so you can always see into the cave. The floating island has
 layered earth edges and clouds drifting beneath, warm sunlight and cooler shadows. Defeated monsters vanish in a
 **puff of stars**, coins fly to the hero, and the exit's **stairs** glow, sparkle and chime when they open.
+
+## Mermaid Cove
+Row there from the boat at the south-west corner of Level 0's pond (Coralie asks you to check on her sister). The cove
+(`Levels/Cove.txt`) is a beach split by a stream, with a lagoon where the pirates' ship is anchored, waterfalls pouring
+off the northern cliffs, and the sea spilling over the island's south and west edges.
+
+- **Pirates** (`J`, 3 HP, 20 XP): skeleton-style melee with a cutlass, a little tougher.
+- **Dark mermaids** (`&`, 3 HP, 25 XP): under the pirates' sea-spell. They stay in the water, rise up, raise a dark orb
+  (0.3s wind-up) and throw a slow bolt from up to 8m away whenever they can see you: step aside. Bolts are blocked by
+  the Bubble Shield and halved in Gentle Mode like any hit. Pushes (Flame Wave, Meteor, Whirlpool) don't move them.
+- **Fighting across water**: the invisible walls that keep everyone out of water are on Unity's built-in *Water*
+  layer, which spells, bolts and line-of-sight checks ignore, so you can hit a dark mermaid from the shore. (This also
+  means spells now fly over Level 0's pond rather than splashing at its edge.)
+- **Pearl** (`Z`), Coralie's big sister, explains the trouble, and thanks you with 30 coins once the cove is clear.
+- **The sea cave** (north-east) holds a chest, the pirates' gold and a secret stair down into the dungeon that opens
+  when all 12 monsters are beaten (`exit: Dungeon`, `exit_needs: all_monsters`).
+- Art: `Tools/make_cove_sprites.py` (pirate, dark mermaid, Pearl, palms, rowboat, ship, splash, shells), the bolt in
+  `make_spell_sprites.py`, sand/sea/planks/waterfall textures in `make_environment_textures.py`, and a 6/8 sea
+  shanty (`music_cove`) plus pirate, siren, bolt and oar sounds in `make_sounds.py`.
 
 ## Exercises to try
 1. Select an Enemy prefab and tweak `Move Speed`/`Aggro Range` in the Inspector while playing.

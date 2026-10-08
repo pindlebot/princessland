@@ -18,6 +18,7 @@ using UnityEngine;
 //   DungeonBuilder.Friends.cs          Coralie, Bonesy, the frog, the wishing fountain, dungeon props
 //   DungeonBuilder.Home.cs             the furniture and front door of the hero's home
 //   DungeonBuilder.Hazards.cs          lava and spike traps
+//   DungeonBuilder.Cove.cs             Mermaid Cove: pirates, dark mermaids, Pearl, waterfalls, the rowboat
 //   DungeonBuilder.CharacterSelect.cs  the character select screen
 //   DungeonBuilder.Title.cs            the title screen and its save slots
 public static partial class DungeonBuilder
@@ -34,9 +35,11 @@ public static partial class DungeonBuilder
         public GameObject Bed, Toilet, Sink, PaperTowel, HouseDoor;
         public GameObject Wardrobe, Nightstand, Bookshelf, ToyChest, Plant, Rug;
         public GameObject Tree, Fountain, Bush, Butterfly, Mote, Cloud, Stairs;
+        public GameObject Pine, Birch, AutumnTree, Boulder, Stones, Stump, Log, Tent, Fern;
         public GameObject Mermaid, Bonesy, Frog, FrogBush;
         public GameObject Campfire, Barrel, Crate, Bones, Mushrooms, Door, LockedDoor, Key, Ripple, Lily;
         public GameObject SpikeTrap, LavaBubble, Ember;
+        public GameObject Pirate, DarkMermaid, Pearl, Palm, Treasure, Rowboat, Ship, Splash, Shell, Starfish, Foam;
         public SpriteSheetImporter.SpriteSheet Props;
         public GameObject[] Grass;
 
@@ -105,6 +108,7 @@ public static partial class DungeonBuilder
         CreateSceneryPrefabs(assets, props, wizardArt.Shadow);
         CreateFriendsAndDungeonProps(assets, wizardArt.Shadow, sparkle);
         CreateHazardPrefabs(assets, props);
+        CreateCovePrefabs(assets, coin, sparkle, wizardArt.Shadow);
         assets.Props = props;
         return assets;
     }
@@ -191,7 +195,8 @@ public static partial class DungeonBuilder
                  {
                      "Floor_0", "Floor_1", "Floor_2", "WallSide", "WallTop",
                      "Grass_0", "Grass_1", "Grass_2", "Path", "Path_1", "Bank", "HedgeSide", "HedgeTop", "Roof", "Gate", "EarthSide",
-                     "WoodFloor", "BathTile", "Water", "Puddle", "SpikePlate",
+                     "WoodFloor", "BathTile", "Water", "Puddle", "SpikePlate", "RockSide", "RockSideLow", "RockTop", "CaveFloor",
+                     "Sand_0", "Sand_1", "Sea", "SandBank", "Planks", "Waterfall",
                  })
             mats[name] = Mat(name, Color.white, texture: PixelTexture(name));
         mats["Exit"] = Mat("Exit", new Color(0.2f, 0.9f, 0.3f), new Color(0.2f, 1.2f, 0.3f));

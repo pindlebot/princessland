@@ -26,6 +26,8 @@ public class Minimap : MonoBehaviour
     private static readonly Color32 Path = new Color32(226, 196, 144, 255);  // sand
     private static readonly Color32 Hedge = new Color32(74, 108, 70, 255);   // the island's dark rim
     private static readonly Color32 Castle = new Color32(196, 188, 208, 255); // lavender-grey stone
+    private static readonly Color32 Sand = new Color32(238, 216, 170, 255);  // the cove's beaches
+    private static readonly Color32 Planks = new Color32(186, 146, 106, 255); // its jetties
     private static readonly Color32 Lava = new Color32(240, 110, 40, 255);
     private static readonly Color32 Spikes = new Color32(150, 96, 104, 255); // a warning red-grey
 
@@ -105,6 +107,8 @@ public class Minimap : MonoBehaviour
                               : c == '=' || c == 'X' ? Path
                               : LevelMap.IsWall(c) ? (Color32)map.WallColor
                               : LevelMap.IsWater(c) ? Water
+                              : LevelMap.IsSand(c) ? Sand
+                              : LevelMap.IsPlanks(c) ? Planks
                               : LevelMap.IsLava(c) ? Lava
                               : LevelMap.IsSpikes(c) ? Spikes
                               : (Color32)map.FloorColor;

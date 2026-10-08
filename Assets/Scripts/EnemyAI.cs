@@ -4,6 +4,9 @@ using UnityEngine;
 
 // A simple state machine: Idle until the player is close and visible,
 // then Chase, then Attack when in melee range.
+// Optional extras: a bolt prefab makes it a ranged monster (it throws bolts from up to
+// attackRange away, when it can see the hero), and "stationary" keeps it on its spot: it turns
+// to watch, but never chases and can't be shoved (the dark mermaids, in the water).
 [RequireComponent(typeof(CharacterController), typeof(Health))]
 public class EnemyAI : MonoBehaviour
 {
@@ -26,6 +29,12 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private GameObject defeatEffect;     // a friendly puff of stars as it vanishes
     [SerializeField] private AudioClip defeatSound;
     [SerializeField] private AudioClip attackSound;
+    [SerializeField] private EnemyBolt boltPrefab;   // set = throws these instead of a melee hit
+    [SerializeField] private Transform throwPoint;   // where bolts leave from (default: the middle)
+    [SerializeField] private float throwDelay = 0.3f; // the wind-up: arms raised, so you can see it coming
+    [SerializeField] private bool stationary;
+
+    public bool Stationary => stationary;
 
     // Raised each time this enemy swings. CharacterAnimator listens to play the attack.
     public event Action Attacked;
@@ -83,36 +92,55 @@ public class EnemyAI : MonoBehaviour
         toPlayer.y = 0f;
         float dist = toPlayer.magnitude;
 
-        state = dist <= attackRange ? State.Attack
-              : (state != State.Idle || (dist <= aggroRange && CanSeePlayer())) ? State.Chase
+        // A thrower needs a clear shot too (no bolts through walls).
+        bool inReach = dist <= attackRange && (boltPrefab == null || CanSeePlayer());
+        state = inReach ? State.Attack
+              // Chasers keep chasing once roused; a stationary one only watches while you're near.
+              : ((state != State.Idle && !stationary) || (dist <= aggroRange && CanSeePlayer())) ? State.Chase
               : State.Idle;
 
         if (state == State.Idle) return;
 
         transform.rotation = Quaternion.LookRotation(toPlayer);
 
-        if (state == State.Chase)
+        if (state == State.Chase && !stationary)
         {
             // Adventurer Mode's monsters are a little quicker.
             float speed = moveSpeed * (GameSession.Settings.gentle ? 1f : AdventurerSpeedBoost);
             Vector3 move = toPlayer.normalized * speed + Vector3.down;
             controller.Move(move * Time.deltaTime);
         }
-        else if (Time.time >= nextAttackTime)
+        else if (state == State.Attack && Time.time >= nextAttackTime)
         {
-            playerHealth.TakeDamage(attackDamage);
+            if (boltPrefab != null) StartCoroutine(Throw());
+            else playerHealth.TakeDamage(attackDamage);
             nextAttackTime = Time.time + attackCooldown;
             Attacked?.Invoke();
             AudioManager.Play(attackSound, 0.7f);
         }
     }
 
-    // Line-of-sight check so enemies don't aggro through walls.
+    // The wind-up, then the bolt flies at where the hero is now (flat, at throwing height).
+    private System.Collections.IEnumerator Throw()
+    {
+        yield return new WaitForSeconds(throwDelay);
+        if (!enabled || player == null || playerHealth.IsDead) yield break; // defeated mid-throw
+        Vector3 from = throwPoint != null ? throwPoint.position : transform.position;
+        Vector3 aim = player.position - from;
+        aim.y = 0f;
+        if (aim.sqrMagnitude < 0.01f) yield break;
+        var bolt = Instantiate(boltPrefab, from, Quaternion.LookRotation(aim));
+        bolt.Launch(attackDamage);
+    }
+
+    // Line-of-sight check so enemies don't aggro through walls. Water isn't in the way: you
+    // can see (and throw) across the sea.
     private bool CanSeePlayer()
     {
         Vector3 eye = transform.position + Vector3.up * 0.5f;
         Vector3 target = player.position + Vector3.up * 0.5f;
-        if (Physics.Linecast(eye, target, out RaycastHit hit, sightBlockers, QueryTriggerInteraction.Ignore))
+        int blockers = sightBlockers & ~(1 << LevelMap.WaterLayer);
+        if (Physics.Linecast(eye, target, out RaycastHit hit, blockers, QueryTriggerInteraction.Ignore))
             return hit.transform == player;
         return true;
     }

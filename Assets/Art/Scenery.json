@@ -30,6 +30,69 @@
       "frames": 1,
       "fps": 1,
       "loop": false
+    },
+    {
+      "name": "Pine",
+      "row": 4,
+      "frames": 2,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "name": "Birch",
+      "row": 5,
+      "frames": 2,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "name": "Autumn",
+      "row": 6,
+      "frames": 2,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "name": "Boulder",
+      "row": 7,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Stones",
+      "row": 8,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Stump",
+      "row": 9,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Log",
+      "row": 10,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Tent",
+      "row": 11,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Fern",
+      "row": 12,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
     }
   ]
 }

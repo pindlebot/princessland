@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/CharacterSelect.unity
     guid: 29d49c8dd6a58441a862ebd14ec0c68c
   - enabled: 1
+    path: Assets/Scenes/Cove.unity
+    guid: 62b742fb0e11e452386e0b1bcbdc73db
+  - enabled: 1
     path: Assets/Scenes/Dungeon.unity
     guid: 77bad4e4ef6a54cac8fea3dde0fa3332
   - enabled: 1

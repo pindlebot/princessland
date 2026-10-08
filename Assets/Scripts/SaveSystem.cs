@@ -16,9 +16,43 @@ public static class SaveSystem
 
     // Tests point this at a temporary folder so they never touch real saves.
     public static string FolderOverride;
-    public static string Folder => FolderOverride ?? Application.persistentDataPath;
+    public static string Folder => FolderOverride ?? DataFolder();
 
-    private static string PathFor(int slot) => Path.Combine(Folder, $"save{slot + 1}.json");
+    private static string FileName(int slot) => $"save{slot + 1}.json";
+
+    // The game used to be called IsoDungeon, and Unity names the data folder after the game,
+    // so saves from before the rename are in .../DefaultCompany/IsoDungeon. The first time the
+    // game looks for saves, it copies them across if there are none here yet. The old files stay.
+    private const string OldFolderName = "IsoDungeon";
+    private static bool checkedOldSaves;
+
+    private static string DataFolder()
+    {
+        string folder = Application.persistentDataPath;
+        if (checkedOldSaves) return folder;
+        checkedOldSaves = true;
+        try
+        {
+            string old = Path.Combine(Path.GetDirectoryName(folder), OldFolderName);
+            bool haveSaves = Enumerable.Range(0, SlotCount).Any(s => File.Exists(Path.Combine(folder, FileName(s))));
+            if (old != folder && Directory.Exists(old) && !haveSaves)
+            {
+                Directory.CreateDirectory(folder);
+                for (int s = 0; s < SlotCount; s++)
+                {
+                    string from = Path.Combine(old, FileName(s));
+                    if (File.Exists(from)) File.Copy(from, Path.Combine(folder, FileName(s)));
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[SaveSystem] Couldn't bring over saves from {OldFolderName}: {e.Message}");
+        }
+        return folder;
+    }
+
+    private static string PathFor(int slot) => Path.Combine(Folder, FileName(slot));
 
     // Friendly names for the slot cards.
     private static readonly Dictionary<string, string> PlaceNames = new Dictionary<string, string>
@@ -26,6 +60,7 @@ public static class SaveSystem
         ["Level0"] = "Castle Grounds",
         ["Dungeon"] = "The Dungeon",
         ["House"] = "Home",
+        ["Cove"] = "Mermaid Cove",
     };
 
     public static string PlaceName(string scene) =>

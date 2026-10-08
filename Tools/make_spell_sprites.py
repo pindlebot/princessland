@@ -1,7 +1,8 @@
 """Generates the spell effects: the wizard's Fireball and the princess's Tidal Orb.
 
 Run:  Tools/.venv/bin/python Tools/make_spell_sprites.py
-Out:  Assets/Art/Fireball.png / Fireball.json, Assets/Art/TidalOrb.png / TidalOrb.json
+Out:  Assets/Art/Fireball.png / Fireball.json, Assets/Art/TidalOrb.png / TidalOrb.json,
+      Assets/Art/DarkBolt.png / DarkBolt.json (the dark mermaids' bolt, thrown at the hero)
         Fly     4 frames, looping   the projectile, drawn pointing RIGHT (the game rotates it)
         Impact  5 frames, once      the burst where it hits something
 
@@ -35,6 +36,17 @@ WATER = [
     (0.10, (28, 84, 132, 255)),
 ]
 MIST = [(0.5, (184, 236, 240, 210)), (0.2, (120, 190, 214, 150))]
+
+# The dark mermaids' sea-spell: deep violet ink with a pink heart (a monster's attack, so it
+# reads clearly apart from both heroes' spells)
+INK = [
+    (0.80, (255, 214, 240, 255)),
+    (0.62, (240, 140, 210, 255)),
+    (0.42, (164, 86, 206, 255)),
+    (0.24, (104, 52, 150, 255)),
+    (0.10, (64, 32, 96, 255)),
+]
+INK_MIST = [(0.5, (150, 110, 180, 200)), (0.2, (104, 78, 136, 140))]
 
 # Royal slime goo, for the Slime King's ground-slam shockwave
 GOO = [
@@ -150,6 +162,7 @@ def write_spell(name, palette, last):
 if __name__ == "__main__":
     write_spell("Fireball", FIRE, SMOKE)
     write_spell("TidalOrb", WATER, MIST)
+    write_spell("DarkBolt", INK, INK_MIST)
     # Not a spell, but the same expanding-ring burst suits the King's landing.
     # Drawn at 96px (three tiles across) rather than scaled up in game, so its pixels match.
     write_sheet("Shockwave", None, [("Impact", 14, False, [impact_frame(i, GOO, GOO_SPLATS, 96) for i in range(5)])],

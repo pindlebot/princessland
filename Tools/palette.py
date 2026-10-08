@@ -49,6 +49,18 @@ WATER = (112, 182, 206)       # the pond: calm, a little quieter than the turquo
 WATER_DEEP = (92, 160, 192)
 WATER_GLINT = (214, 240, 244)
 
+# Mermaid Cove: pale beach sand (a little lighter and cooler than the paths), the open sea a
+# step deeper than the pond, sun-bleached driftwood planks, and the white of falling water.
+BEACH = (228, 208, 164)
+BEACH_SHADE = (208, 186, 142)
+WET_SAND = (192, 174, 146)
+SEA = (98, 170, 200)
+SEA_DEEP = (80, 148, 186)
+FOAM = (236, 246, 246)
+PLANK = (170, 132, 96)
+PLANK_SHADE = (132, 98, 78)
+PLANK_LIGHT = (198, 164, 124)
+
 SKY = (176, 212, 228)         # around the floating island
 CLOUD = (250, 247, 252)
 CLOUD_SHADE = (222, 220, 240)

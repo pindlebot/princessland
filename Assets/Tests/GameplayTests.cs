@@ -175,7 +175,7 @@ public class GameplayTests
     {
         yield return null;
         var lights = Object.FindObjectsByType<FlickerLight>();
-        Assert.AreEqual(10, lights.Count(l => l.name != "LavaGlow"), "one light per T on the map, plus Bonesy's campfire");
+        Assert.AreEqual(16, lights.Count(l => l.name != "LavaGlow"), "one light per T on the map (15), plus Bonesy's campfire");
         Assert.AreEqual(6, lights.Count(l => l.name == "LavaGlow"), "and a glow on every third lava tile");
         Assert.Greater(GameObject.Find("Decor").transform.childCount, 20, "grass tufts, torches and the chest");
     }

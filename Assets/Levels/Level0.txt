@@ -1,6 +1,12 @@
-// The castle grounds: the first level. The stairs (X) open once every skeleton and slime is beaten.
-// Coralie the mermaid (m) sits in the pond (w). Easter eggs: one bush (f) hides Sir Hopsalot
-// the frog, and the fountain (F) grants a wish if you toss in enough coins.
+// The castle grounds: the first level. The stairs (X), east of the fountain, open once every
+// skeleton and slime is beaten. You start in the south-west corner.
+// Coralie the mermaid (m) sits in the pond (w), west of the castle. A rowboat (1) at the pond's
+// south-west corner rows down the river to Mermaid Cove. Easter eggs: one bush (f), in
+// the corner of the pine wood, hides Sir Hopsalot the frog, and the fountain (F) grants a wish
+// if you toss in enough coins.
+// Amethyra the dragon (D) is tucked away in her cave in the rocky hill (%) in the north-east
+// corner; its way in is on the south side, behind the pines. Someone has pitched a tent (V) by a
+// campfire (c) in the birch wood to the south-east: warm up there for full health.
 title: The Castle Grounds
 theme: Outdoor
 music: music_castle
@@ -11,21 +17,40 @@ open_hint: The stairs are open!
 minimap_floor: #7EA068
 minimap_wall: #C4BEAA
 ---
-HHHHHHHHHHHHHHHHHHHHHHHH
-HY;Y....KKKKKKK.....Y.YH
-Hb......KKKKKKK......*.H
-H.......KKKKKKK........H
-H.......KKKKKKK....X...H
-H.;.......Q=Q..L...=...H
-H.www......=......=....H
-H.wwwm.....=======.....H
-Hb.ww..E...=.......E...H
-H...;.L....=...........H
-H...========...F.;.....H
-H...=.........;...E....H
-H.*.=....E.............H
-H...=.........D.......fH
-H.P.=.b...........b....H
-HHHHHHHHHHHHHHHHHHHHHHHH
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+Hf...t..t...e..KKKKKKK.........tt%%%%%%%%%%%%H
+H.t...t.t..e...KKKKKKK.........t%%%%%%%%%%%%%H
+Ht.e.t...t.....KKKKKKK.........t%%%%u::::u%%%H
+H.t..tt....s...KKKKKKK..........t%%%:::::::%%H
+H..t..,e.t.......Q=Q.....E.......%%%:::::D:%%H
+Ht...t............=......a...s.t.%%%:::::::%%H
+H.t.....e..t......=..............%%%%::%%%%%%H
+H..e.t............=............t.t%%%::%%%t.bH
+H..........Y......=.,......O....t.Ot.e..t.t..H
+H.................=...,...........t.t.t..e...H
+H...www......L....=.....a.....a.i...e...t....H
+H.wwwww..;........=...........,..............H
+H.wwwwwwm.........=....................a.....H
+H.wwwww...........=..........z......E......s.H
+H..1ww...;........=..;..;..Y.................H
+H............b....=......*..............;....H
+H.....*...........=====F.....................H
+H.b...............=...===================X...H
+H.................=..;.......................H
+H...===============...................,...;..H
+H...=........................s...............H
+H...=...,.....E....................a.........H
+H...=.....,.........b........L............O..H
+H...=....Y...i...i..............i....i...i...H
+H...=...................i........e.V.........H
+H...=......i..s..i...e..............*........H
+H...=..s..............E..........l.c.l....t..H
+H...=..........O...i................z........H
+H...=........;............i.s...............tH
+H...P.......i...e...i..........i..s...i..i...H
+H.b.....................................,.t..H
+H........e......,............................H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 ---
 K = castle House
+1 = door Cove

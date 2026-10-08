@@ -8,7 +8,7 @@
     <Style src="project://database/Assets/UI/Title.uss" />
 
     <ui:VisualElement class="select-screen">
-        <ui:Label class="select-title title-name" text="IsoDungeon" />
+        <ui:Label class="select-title title-name" text="Tidecrown" />
         <ui:Label class="select-subtitle" text="Pick your adventure" />
 
         <ui:Button name="continue" class="start-button continue-button" text="Continue  [Enter]" />

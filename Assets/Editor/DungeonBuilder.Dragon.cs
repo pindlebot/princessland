@@ -26,19 +26,19 @@ public static partial class DungeonBuilder
             NotIf = "met:Amethyra", Sets = "met:Amethyra",
             Lines = new[]
             {
-                N("Well now, a visitor! Don't be frightened, {hero}. I don't bite... often."),
-                H("A dragon?! Here, at the castle?"),
+                N("Well now, a visitor! You found my cave! Don't be frightened, {hero}. I don't bite... often."),
+                H("A dragon?! Hiding up here, by the castle?"),
                 N("I am Amethyra, last of the amethyst dragons. I've watched over this castle for three hundred years."),
                 N("Those rattling skeletons crawled up from the dungeon below. Clear them away, and the way down will open."),
                 H("Won't you come and help?"),
-                N("My fighting days are long behind me, little one. But I'll be right here, cheering you on. Go on, {hero}!"),
+                N("My fighting days are long behind me, little one. But I'll be right here in my cave, cheering you on. Go on, {hero}!"),
             },
         },
         // After that she takes turns between these, one per visit. (Dragon jokes: an easter egg.)
         new Talk
         {
             SmallTalk = true,
-            Lines = new[] { N("Back again, {hero}? The way down lies past my castle. Mind those skeletons: all bones and bad manners.") },
+            Lines = new[] { N("Back again, {hero}? The way down lies east of the fountain. Mind those skeletons: all bones and bad manners.") },
         },
         new Talk
         {

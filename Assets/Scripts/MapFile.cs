@@ -28,7 +28,7 @@ public class MapFile
 {
     // Every symbol that means something without a legend entry. Keep in sync with
     // DungeonBuilder.BuildLevel's switch.
-    public const string BuiltInTiles = " .,=_#THKPELMCIDBWSRYFbQ*;Xwmfcoxjupdkyn~^ANUGvr";
+    public const string BuiltInTiles = " .,=_#THKPELMCIDBWSRYFbQ*;Xwmfcoxjupdkyn~^ANUGvrtiaOszlVe%:hqJ&|@Z$";
 
     public class LegendEntry
     {
