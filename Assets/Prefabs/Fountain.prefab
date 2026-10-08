@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3637699580820401712}
   - component: {fileID: 7883768916248574320}
-  - component: {fileID: 4377273751464940747}
+  - component: {fileID: 1897209087658717083}
   m_Layer: 0
   m_Name: Fountain
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   m_Children:
   - {fileID: 4566333459827508788}
   - {fileID: 6334935368767616292}
-  - {fileID: 867657738077164699}
+  - {fileID: 9147055238292930740}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &7883768916248574320
@@ -57,7 +57,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.6, y: 1, z: 2}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &4377273751464940747
+--- !u!114 &1897209087658717083
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -70,8 +70,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::WakeFountain
   reach: 4
-  wakeSpot: {fileID: 867657738077164699}
---- !u!1 &2891488898203704578
+  wakeSpot: {fileID: 9147055238292930740}
+--- !u!1 &6698766566105004976
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -79,7 +79,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 867657738077164699}
+  - component: {fileID: 9147055238292930740}
   m_Layer: 0
   m_Name: WakeSpot
   m_TagString: Untagged
@@ -87,13 +87,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &867657738077164699
+--- !u!4 &9147055238292930740
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2891488898203704578}
+  m_GameObject: {fileID: 6698766566105004976}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
   m_LocalPosition: {x: 0, y: 0, z: -2.2}

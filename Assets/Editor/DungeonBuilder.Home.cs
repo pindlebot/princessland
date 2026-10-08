@@ -37,7 +37,7 @@ public static partial class DungeonBuilder
         return SavePrefab(go, name);
     }
 
-    // The front door, back out to the castle grounds (arriving just outside the gate).
+    // The front door. Where it leads is set per door from the map's legend (BuildLevel).
     private static GameObject CreateHouseDoor(SpriteSheetImporter.SpriteSheet sheet)
     {
         var go = new GameObject("HouseDoor");
@@ -48,8 +48,6 @@ public static partial class DungeonBuilder
 
         var door = go.AddComponent<SceneDoor>();
         SetString(door, "prompt", "Go back outside");
-        SetString(door, "targetScene", "Level0");
-        SetString(door, "targetSpawn", "FromHouse");
         SetRef(door, "openSound", Sound("door_open"));
         return SavePrefab(go, "HouseDoor");
     }

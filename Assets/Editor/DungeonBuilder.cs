@@ -12,7 +12,7 @@ using UnityEngine;
 //   DungeonBuilder.cs                  this file: entry point + shared helpers
 //   DungeonBuilder.Characters.cs       players, enemies, spells
 //   DungeonBuilder.Props.cs            chest, torch, grass, item pickup, flag
-//   DungeonBuilder.Levels.cs           the level maps and how a level scene is assembled
+//   DungeonBuilder.Levels.cs           how a level scene is assembled from Assets/Levels/<Scene>.txt
 //   DungeonBuilder.Castle.cs           the decorative castle in Level 0
 //   DungeonBuilder.Dragon.cs           Amethyra the dragon and her dialogue
 //   DungeonBuilder.Home.cs             the furniture and front door of the hero's home
@@ -23,9 +23,6 @@ public static partial class DungeonBuilder
     private const float Tile = 2f;
     private const string TitleScenePath = "Assets/Scenes/Title.unity";
     private const string CharacterSelectScenePath = "Assets/Scenes/CharacterSelect.unity";
-    private const string Level0ScenePath = "Assets/Scenes/Level0.unity";
-    private const string DungeonScenePath = "Assets/Scenes/Dungeon.unity";
-    private const string HouseScenePath = "Assets/Scenes/House.unity";
 
     // Everything the scenes are assembled from, created once per rebuild.
     private class SharedAssets
@@ -48,27 +45,23 @@ public static partial class DungeonBuilder
     [MenuItem("Dungeon/Rebuild All Scenes")]
     public static void BuildAll()
     {
+        var maps = LoadMaps(); // first, so a mistake in a level file stops the build before anything changes
         var assets = CreateAssets();
         AssetDatabase.SaveAssets(); // write everything to disk before scenes start changing
 
-        BuildLevel(Level0(), assets);
-        BuildLevel(Dungeon(), assets);
-        BuildLevel(House(), assets);
+        var specs = maps.Select(SpecFor).ToList();
+        foreach (var spec in specs) BuildLevel(spec, assets);
         BuildCharacterSelect(assets);
         BuildTitle(assets);
 
         // The order here is the order scenes have in a build: index 0 is what the game starts with.
-        EditorBuildSettings.scenes = new[]
-        {
-            new EditorBuildSettingsScene(TitleScenePath, true),
-            new EditorBuildSettingsScene(CharacterSelectScenePath, true),
-            new EditorBuildSettingsScene(Level0ScenePath, true),
-            new EditorBuildSettingsScene(DungeonScenePath, true),
-            new EditorBuildSettingsScene(HouseScenePath, true),
-        };
+        EditorBuildSettings.scenes = new[] { TitleScenePath, CharacterSelectScenePath }
+            .Concat(specs.Select(s => s.ScenePath))
+            .Select(path => new EditorBuildSettingsScene(path, true))
+            .ToArray();
         AssetDatabase.SaveAssets();
         EditorSceneManager.OpenScene(TitleScenePath);
-        Debug.Log("[DungeonBuilder] Built Title, CharacterSelect, Level0, Dungeon and House");
+        Debug.Log($"[DungeonBuilder] Built Title, CharacterSelect, {string.Join(", ", maps.Select(m => m.Name))}");
     }
 
     private static SharedAssets CreateAssets()

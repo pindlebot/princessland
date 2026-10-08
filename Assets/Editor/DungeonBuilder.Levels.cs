@@ -1,10 +1,13 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
-// The level maps, and how a level scene is assembled from one.
+// How a level scene is assembled from its map file (Assets/Levels/<Scene>.txt).
 public static partial class DungeonBuilder
 {
     // Map legend (one character per 2x2m tile; row 0 is the north/top edge):
@@ -13,7 +16,8 @@ public static partial class DungeonBuilder
     //   Walls    #  stone wall      T  stone wall + torch   H  hedge         K  castle (Level 0)
     //   Markers  P  player start    E  skeleton    L  slime    M  the Slime King (boss)
     //            C  chest    I  Ember Ring    D  dragon    X  exit (sealed until the boss, if any, is dead)
-    //   Home     B  bed    W  toilet    S  sink    R  paper towel    O  front door (back outside)
+    //   Home     B  bed    W  toilet    S  sink    R  paper towel
+    //   Legend   doors, the castle gate and named arrival spots are defined per file (MapFile.cs)
     //   Scenery  Y  tree    F  fountain    b  bush    Q  banner    *  butterflies    ;  flowers
     //            (trees and the fountain are solid, so keep them off the walking routes)
     // Torches go on the side of the wall that faces the camera (south or west), so put
@@ -21,12 +25,14 @@ public static partial class DungeonBuilder
 
     private enum Theme { Dungeon, Outdoor, Home } // floors, lighting and music
 
-    // Everything that differs between levels.
+    // Everything that differs between levels, read from the level's text file (see MapFile.cs).
     private class LevelSpec
     {
+        public MapFile File;
         public string ScenePath;
         public string[] Map;
         public Theme Theme;
+        public string Music;
         public bool ShowEnemyCount = true;
         public string Title, LockedHint, OpenHint;
         public string NextScene;         // where the exit leads ("" = final exit, wins the game)
@@ -34,94 +40,43 @@ public static partial class DungeonBuilder
         public Color MinimapFloor, MinimapWall;
     }
 
-    private static LevelSpec Level0() => new LevelSpec
-    {
-        ScenePath = Level0ScenePath,
-        Theme = Theme.Outdoor,
-        Title = "The Castle Grounds",
-        LockedHint = "",
-        OpenHint = "The stairs are open!",
-        NextScene = "Dungeon",
-        ExitNeedsAllEnemiesDefeated = true,
-        MinimapFloor = new Color32(70, 112, 56, 255),
-        MinimapWall = new Color32(196, 190, 170, 255),
-        Map = new[]
-        {
-            "HHHHHHHHHHHHHHHHHHHHHHHH",
-            "HY;Y....KKKKKKK.....Y.YH",
-            "Hb......KKKKKKK......*.H",
-            "H.......KKKKKKK........H",
-            "H.......KKKKKKK....X...H",
-            "H.........Q=Q..L...=...H",
-            "H...E......=......=....H",
-            "H..........=======.....H",
-            "Hb.........=.......E...H",
-            "H.....L....=...........H",
-            "H...========...F.;.....H",
-            "H...=.........;...E....H",
-            "H.*.=....E.............H",
-            "H...=.........D.......bH",
-            "H.P.=.b...........b....H",
-            "HHHHHHHHHHHHHHHHHHHHHHHH",
-        },
-    };
+    private const string LevelsFolder = "Assets/Levels";
 
-    private static LevelSpec Dungeon() => new LevelSpec
+    // Every Assets/Levels/*.txt file, parsed and checked. Throws (building nothing) if any has a mistake.
+    private static List<MapFile> LoadMaps()
     {
-        ScenePath = DungeonScenePath,
-        Theme = Theme.Dungeon,
-        Title = "Escape the dungeon",
-        LockedHint = "Beat the Slime King!",
-        OpenHint = "The stairs are open!",
-        NextScene = "",
-        ExitNeedsAllEnemiesDefeated = false,
-        MinimapFloor = new Color32(78, 70, 62, 255),
-        MinimapWall = new Color32(170, 164, 184, 255),
-        Map = new[]
-        {
-            "####T################T####",
-            "#P......#        #......C#",
-            "#....I..#        #.L.E...T",
-            "#.......####T#####.......#",
-            "#.....E.....L.....E...E..#",
-            "#,,.....##########.....,,#",
-            "#########        ####.####",
-            "                    #.#   ",
-            "           ###T###T##.####",
-            "           #,,...........#",
-            "           #.............T",
-            "           #......M......#",
-            "           #.............#",
-            "           #.............#",
-            "           #....,#X#,....#",
-            "           ###############",
-        },
-    };
+        var maps = Directory.GetFiles(LevelsFolder, "*.txt").OrderBy(p => p)
+            .Select(p => MapFile.Parse(Path.GetFileNameWithoutExtension(p), File.ReadAllText(p)))
+            .ToList();
+        var errors = MapValidator.Validate(maps);
+        if (errors.Count > 0)
+            throw new System.Exception("[DungeonBuilder] The level files have problems:\n  " + string.Join("\n  ", errors));
+        return maps;
+    }
 
-    // Inside the castle: a bedroom on the left, a tiled bathroom on the right.
-    private static LevelSpec House() => new LevelSpec
+    private static LevelSpec SpecFor(MapFile file)
     {
-        ScenePath = HouseScenePath,
-        Theme = Theme.Home,
-        Title = "{hero}'s Home",
-        LockedHint = "Rest and get cozy",
-        OpenHint = "Rest and get cozy",
-        NextScene = "",
-        ShowEnemyCount = false,
-        MinimapFloor = new Color32(150, 104, 62, 255),
-        MinimapWall = new Color32(170, 164, 184, 255),
-        Map = new[]
+        var theme = (Theme)System.Enum.Parse(typeof(Theme), file.Get("theme"));
+        return new LevelSpec
         {
-            "###T###T###T##",
-            "#B.......#W_S#",
-            "#........#___#",
-            "#........#_R_#",
-            "#........____#",
-            "#........#####",
-            "#.....P......#",
-            "######O#######",
-        },
-    };
+            File = file,
+            ScenePath = $"Assets/Scenes/{file.Name}.unity",
+            Map = file.Rows,
+            Theme = theme,
+            Music = file.Get("music", theme == Theme.Outdoor ? "music_castle" : theme == Theme.Home ? "music_home" : "music_dungeon"),
+            Title = file.Get("title"),
+            LockedHint = file.Get("locked_hint"),
+            OpenHint = file.Get("open_hint", "The stairs are open!"),
+            NextScene = file.Get("exit"),
+            ExitNeedsAllEnemiesDefeated = file.Get("exit_needs") == "all_monsters",
+            ShowEnemyCount = file.Get("enemy_count", "show") != "hide",
+            MinimapFloor = HexColor(file.Get("minimap_floor", "#4E463E")),
+            MinimapWall = HexColor(file.Get("minimap_wall", "#AAA4B8")),
+        };
+    }
+
+    private static Color HexColor(string hex) =>
+        ColorUtility.TryParseHtmlString(hex, out var color) ? color : Color.magenta;
 
     private const float WallHeight = 1.2f;  // low, so walls nearest the camera don't hide the player
     private const float HedgeHeight = 0.8f;
@@ -146,6 +101,7 @@ public static partial class DungeonBuilder
         var spawn = new GameObject("PlayerSpawn").transform;
         Health boss = null;
         ExitZone exit = null;
+        var namedSpawns = new List<Transform>();
 
         for (int row = 0; row < map.Length; row++)
         {
@@ -206,7 +162,6 @@ public static partial class DungeonBuilder
                     case 'W': Place(assets.Toilet, decor, pos); break;
                     case 'S': Place(assets.Sink, decor, pos); break;
                     case 'R': Place(assets.PaperTowel, decor, pos); break;
-                    case 'O': Place(assets.HouseDoor, decor, pos); break;
                     case ',': PlaceGrass(assets.Grass, decor, rng, pos, flowers: false); break;
                     case ';': PlaceGrass(assets.Grass, decor, rng, pos, flowers: true); break;
                     case 'Y': Place(assets.Tree, decor, pos); break;
@@ -217,6 +172,15 @@ public static partial class DungeonBuilder
                     case 'b': Place(assets.Bush, decor, pos); break;
                     case 'Q': Place(assets.Flag, decor, pos); break; // a banner on a pole
                     case '*': Place(assets.Butterfly, decor, pos); break;
+                }
+
+                // Symbols from the file's legend: doors to other scenes and named arrival spots.
+                if (spec.File.Legend.TryGetValue(c, out var entry))
+                {
+                    if (entry.Kind == "spawn")
+                        namedSpawns.Add(SpawnPoint(entry.Args[0], pos + Vector3.up, Quaternion.identity));
+                    else if (entry.Kind == "door")
+                        PlaceDoor(spec.File, assets.HouseDoor, decor, namedSpawns, col, row, pos);
                 }
             }
         }
@@ -229,21 +193,23 @@ public static partial class DungeonBuilder
             AddClouds(decor, map, assets.Cloud);
 
         // The castle (only on maps with 'K' tiles) also gives us a spawn point outside its gate.
-        var fromHouse = BuildCastle(map, level, assets);
+        var castleDoor = spec.File.Doors().FirstOrDefault(d => d.IsCastle);
+        var outsideGate = BuildCastle(map, level, assets, castleDoor);
+        if (outsideGate != null) namedSpawns.Add(outsideGate);
         var camera = CreateCamera(spec.Theme);
         var gameManager = new GameObject("GameManager").AddComponent<GameManager>();
         SetRef(gameManager, "winSound", Sound("victory"));
         SetRef(gameManager, "loseSound", Sound("defeat"));
         SetRef(gameManager, "sleepSound", Sound("rest"));
         SetRef(gameManager, "wakeSound", Sound("pickup"));
-        AddAudio(spec.Theme == Theme.Outdoor ? "music_castle" : spec.Theme == Theme.Home ? "music_home" : "music_dungeon");
+        AddAudio(spec.Music);
         var (hud, minimap) = CreateHud(levelMap);
 
         // The player isn't in the scene: LevelBootstrap spawns whichever hero was chosen.
         var bootstrap = new GameObject("LevelBootstrap").AddComponent<LevelBootstrap>();
         SetRef(bootstrap, "defaultCharacter", assets.Wizard);
         SetRef(bootstrap, "spawnPoint", spawn);
-        SetRefs(bootstrap, "namedSpawns", fromHouse != null ? new Object[] { fromHouse } : new Object[0]);
+        SetRefs(bootstrap, "namedSpawns", namedSpawns.Cast<Object>().ToArray());
         SetBool(bootstrap, "playerTorch", spec.Theme == Theme.Dungeon);
         SetBool(bootstrap, "showEnemyCount", spec.ShowEnemyCount);
         SetString(bootstrap, "title", spec.Title);
@@ -258,6 +224,29 @@ public static partial class DungeonBuilder
         camera.transform.position = spawn.position - camera.transform.forward * 20f;
 
         EditorSceneManager.SaveScene(scene, spec.ScenePath);
+    }
+
+    private static Transform SpawnPoint(string name, Vector3 position, Quaternion rotation)
+    {
+        var spawn = new GameObject(name).transform;
+        spawn.SetPositionAndRotation(position, rotation);
+        return spawn;
+    }
+
+    // A door from the legend: it leads to its target scene, and the floor tile beside it
+    // becomes this scene's arrival spot for people coming back the other way ("From<Target>").
+    private static void PlaceDoor(MapFile file, GameObject prefab, Transform parent, List<Transform> spawns,
+                                  int col, int row, Vector3 pos)
+    {
+        var info = file.Doors().First(d => d.Col == col && d.Row == row);
+        var door = Place(prefab, parent, pos).GetComponent<SceneDoor>();
+        SetString(door, "targetScene", info.TargetScene);
+        SetString(door, "targetSpawn", info.TargetSpawn);
+
+        var (fc, fr) = MapValidator.FloorBeside(file, col, row).Value; // the validator made sure there is one
+        var arrive = new Vector3(fc * Tile, 1f, (file.Rows.Length - 1 - fr) * Tile);
+        var awayFromDoor = new Vector3(arrive.x - pos.x, 0f, arrive.z - pos.z);
+        spawns.Add(SpawnPoint(MapFile.SpawnNameFor(info.TargetScene), arrive, Quaternion.LookRotation(awayFromDoor)));
     }
 
     private static string FloorMaterial(Theme theme, char c, int col, int row, int roll)

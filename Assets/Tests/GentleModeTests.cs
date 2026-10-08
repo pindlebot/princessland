@@ -72,7 +72,10 @@ public class GentleModeTests
         var skeletons = Object.FindObjectsByType<EnemyAI>();
         int monsters = skeletons.Length;
         skeletons[0].GetComponent<Health>().TakeDamage(99);
-        yield return new WaitForSeconds(2f); // its star-puff finishes and the coins arrive
+        yield return new WaitForSeconds(1f); // its star-puff finishes
+        for (float t = 0f; t < 8f && Object.FindObjectsByType<CoinPickup>().Length > 0; t += Time.deltaTime)
+            yield return null; // its coins fly over to her
+        Assert.AreEqual(0, Object.FindObjectsByType<CoinPickup>().Length, "all its coins were collected");
         GameSession.Progress.AddGold(17);
         int gold = GameSession.Progress.Gold;
         Teleport(player, fountain.transform.position + new Vector3(-10f, 0f, -6f));

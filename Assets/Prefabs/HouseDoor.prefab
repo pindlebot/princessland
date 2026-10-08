@@ -68,8 +68,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::SceneDoor
   prompt: Go back outside
-  targetScene: Level0
-  targetSpawn: FromHouse
+  targetScene: 
+  targetSpawn: 
   openSound: {fileID: 8300000, guid: 3a3e8963e78fc428bac2414168a7f6c1, type: 3}
 --- !u!1 &5275631714897806557
 GameObject:

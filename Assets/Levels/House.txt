@@ -1,0 +1,22 @@
+// Inside the castle: a bedroom on the left, a tiled bathroom on the right.
+// "{hero}" in the title becomes the hero's name.
+title: {hero}'s Home
+theme: Home
+music: music_home
+region: castle
+enemy_count: hide
+locked_hint: Rest and get cozy
+open_hint: Rest and get cozy
+minimap_floor: #96683E
+minimap_wall: #AAA4B8
+---
+###T###T###T##
+#B.......#W_S#
+#........#___#
+#........#_R_#
+#........____#
+#........#####
+#.....P......#
+######1#######
+---
+1 = door Level0

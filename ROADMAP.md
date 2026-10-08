@@ -355,7 +355,7 @@ Watch where she gets stuck without saying anything, and fix that before moving o
 - [x] Input System + gamepad
 - [x] Pause menu (resume, options, mode, quit to title)
 - [x] Gentle Mode (wake at the fountain instead of Game Over)
-- [ ] Map text files + parser + door validator; port Level 0, Dungeon and House to the new format
+- [x] Map text files + parser + door validator; port Level 0, Dungeon and House to the new format
 
 ### Phase 1: The systems content needs
 - [ ] Generic `Npc` + condition/effect dialogue + choices; port Amethyra to it

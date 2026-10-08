@@ -13,10 +13,11 @@ public static partial class DungeonBuilder
 {
     private const float BlockHeight = WallHeight; // one course of castle wall
 
-    // Returns the "FromHouse" spawn point just outside the gate (null if the map has no castle).
-    private static Transform BuildCastle(string[] map, Transform parent, SharedAssets assets)
+    // gateDoor (from the map's legend, "K = castle House") says where the gate leads.
+    // Returns the arrival spot just outside the gate, e.g. "FromHouse" (null if the map has no castle).
+    private static Transform BuildCastle(string[] map, Transform parent, SharedAssets assets, MapFile.Door gateDoor)
     {
-        Transform fromHouse = null;
+        Transform outside = null;
         // Find the 'K' rectangle.
         int minC = int.MaxValue, maxC = -1, minR = int.MaxValue, maxR = -1;
         for (int r = 0; r < map.Length; r++)
@@ -55,11 +56,11 @@ public static partial class DungeonBuilder
                     Merlons(castle, basePos + Vector3.up * 3 * BlockHeight, mats);
                     if (j == h - 1 && i == middle)
                     {
-                        Gate(castle, basePos, mats);
-                        // Arriving back from the house: one tile south of the gate, facing away from it.
-                        fromHouse = new GameObject("FromHouse").transform;
-                        fromHouse.position = basePos + new Vector3(0f, 1f, -Tile);
-                        fromHouse.rotation = Quaternion.LookRotation(Vector3.back);
+                        Gate(castle, basePos, mats, gateDoor);
+                        // Arriving back through the gate: one tile south of it, facing away from it.
+                        if (gateDoor != null)
+                            outside = SpawnPoint(MapFile.SpawnNameFor(gateDoor.TargetScene),
+                                                 basePos + new Vector3(0f, 1f, -Tile), Quaternion.LookRotation(Vector3.back));
                     }
                 }
                 else if (j == 1 && Mathf.Abs(i - middle) <= 1) // keep
@@ -75,7 +76,7 @@ public static partial class DungeonBuilder
                 // Anything else is open courtyard (paved floor, laid by BuildLevel).
             }
         }
-        return fromHouse;
+        return outside;
     }
 
     // A column of wall blocks, capped on top.
@@ -97,13 +98,16 @@ public static partial class DungeonBuilder
     }
 
     // A wooden gate standing just proud of the wall's south (camera-facing) face.
-    // Press E at it to go inside: a SceneDoor into the House scene.
-    private static void Gate(Transform parent, Vector3 basePos, System.Collections.Generic.Dictionary<string, Material> mats)
+    // Press E at it to go inside: a SceneDoor to wherever the map's legend says (the House).
+    private static void Gate(Transform parent, Vector3 basePos, System.Collections.Generic.Dictionary<string, Material> mats,
+                             MapFile.Door gateDoor)
     {
         var gate = Block("Gate", parent, basePos + new Vector3(0f, 1f, -Tile / 2f - 0.08f), new Vector3(1.3f, 2f, 0.2f), mats["Gate"]);
+        if (gateDoor == null) return; // a castle without a legend entry is just scenery
         var door = gate.AddComponent<SceneDoor>();
         SetString(door, "prompt", "Enter the castle");
-        SetString(door, "targetScene", "House");
+        SetString(door, "targetScene", gateDoor.TargetScene);
+        SetString(door, "targetSpawn", gateDoor.TargetSpawn);
         SetRef(door, "openSound", Sound("door_open"));
     }
 

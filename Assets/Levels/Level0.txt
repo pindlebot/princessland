@@ -1,0 +1,29 @@
+// The castle grounds: the first level. The stairs (X) open once every skeleton and slime is beaten.
+title: The Castle Grounds
+theme: Outdoor
+music: music_castle
+region: castle
+exit: Dungeon
+exit_needs: all_monsters
+open_hint: The stairs are open!
+minimap_floor: #467038
+minimap_wall: #C4BEAA
+---
+HHHHHHHHHHHHHHHHHHHHHHHH
+HY;Y....KKKKKKK.....Y.YH
+Hb......KKKKKKK......*.H
+H.......KKKKKKK........H
+H.......KKKKKKK....X...H
+H.........Q=Q..L...=...H
+H...E......=......=....H
+H..........=======.....H
+Hb.........=.......E...H
+H.....L....=...........H
+H...========...F.;.....H
+H...=.........;...E....H
+H.*.=....E.............H
+H...=.........D.......bH
+H.P.=.b...........b....H
+HHHHHHHHHHHHHHHHHHHHHHHH
+---
+K = castle House

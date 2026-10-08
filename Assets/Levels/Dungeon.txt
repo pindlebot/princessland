@@ -1,0 +1,28 @@
+// The dungeon under the castle. The Slime King (M) guards the stairs: they open when he falls.
+// No "exit:" here, so the stairs are the end of the adventure (for now).
+title: Escape the dungeon
+theme: Dungeon
+music: music_dungeon
+region: castle
+locked_hint: Beat the Slime King!
+open_hint: The stairs are open!
+minimap_floor: #4E463E
+minimap_wall: #AAA4B8
+---
+####T################T####
+#P......#        #......C#
+#....I..#        #.L.E...T
+#.......####T#####.......#
+#.....E.....L.....E...E..#
+#,,.....##########.....,,#
+#########        ####.####
+                    #.#
+           ###T###T##.####
+           #,,...........#
+           #.............T
+           #......M......#
+           #.............#
+           #.............#
+           #....,#X#,....#
+           ###############
+---

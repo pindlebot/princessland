@@ -93,16 +93,24 @@ at half health he splits off 3 slimelings. A boss health bar appears once he not
 | `DungeonBuilder.cs` | Entry point, materials, shared helpers |
 | `DungeonBuilder.Characters.cs` | Both heroes (stats live here), the skeleton, spell prefabs |
 | `DungeonBuilder.Props.cs` | Chest, torch, grass, Ember Ring pickup, flag |
-| `DungeonBuilder.Levels.cs` | **The maps** + `LevelSpec` (outdoor/indoor, HUD text, where the exit leads) |
+| `Levels/*.txt`, `Scripts/MapFile.cs`, `MapValidator.cs` | **The maps** as text files, their parser and the door checker |
+| `DungeonBuilder.Levels.cs` | How a scene is assembled from a map file (`LevelSpec`, the tile switch) |
 | `DungeonBuilder.Dragon.cs` | Amethyra's prefab **and her dialogue lines** (edit them here) |
 | `DungeonBuilder.Home.cs` | The home's furniture and front door (prompts and messages live here) |
 | `DungeonBuilder.Castle.cs` | The castle from stacked wall blocks + a hand-built pyramid mesh for roofs |
 | `DungeonBuilder.CharacterSelect.cs` | The select screen scene |
 | `DungeonBuilder.Title.cs` | The title screen scene |
 
-Map legend: `.` ground · `,` grass tufts · `=` path · `#` stone wall · `T` wall + torch · `H` hedge ·
+**Levels are text files** in `Assets/Levels/<Scene>.txt`: a header (`title`, `theme`: Outdoor/Dungeon/Home, `music`,
+`exit`, `exit_needs: all_monsters`, hints, minimap colors), `---`, the map, `---`, and a legend for doors
+(`1 = door Level0`), the castle gate (`K = castle House`) and named arrival spots (`s = spawn ByTheTree`). Each door
+also makes an arrival spot beside itself called `From<OtherScene>`, so two doors that lead to each other need nothing
+else. `MapValidator` checks every door's target and arrival spot (the builder refuses to build if anything's wrong,
+and `MapFileTests` runs it too). Adding a room = writing a file and running **Dungeon > Rebuild All Scenes**.
+
+Built-in tiles: `.` ground · `,` grass tufts · `=` path · `#` stone wall · `T` wall + torch · `H` hedge ·
 `K` castle (a rectangle) · `P` start · `E` skeleton · `L` slime · `M` Slime King (boss) · `C` chest · `I` Ember Ring · `D` dragon · `X` exit ·
-`_` bathroom tiles · `Y` tree · `F` fountain · `b` bush · `Q` banner · `*` butterflies · `;` flowers · `B` bed · `W` toilet · `S` sink · `R` paper towel · `O` front door.
+`_` bathroom tiles · `Y` tree · `F` fountain · `b` bush · `Q` banner · `*` butterflies · `;` flowers · `B` bed · `W` toilet · `S` sink · `R` paper towel.
 
 ## Character sprites
 Each character is a sprite sheet (one animation per row) plus a JSON layout, drawn by a script in `Tools/`:
