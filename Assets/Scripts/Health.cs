@@ -16,6 +16,7 @@ public class Health : MonoBehaviour
     public event Action<Health> Damaged;
     public event Action<Health> Died;
     public event Action<Health> Revived;
+    public event Action<Health> Healed;
 
     // Optional: changes incoming damage (Gentle Mode halves the hero's). Returns the new amount.
     public Func<int, int> AdjustDamage;
@@ -67,6 +68,7 @@ public class Health : MonoBehaviour
     {
         if (IsDead) return;
         Current = Mathf.Min(maxHealth, Current + amount);
+        Healed?.Invoke(this);
     }
 
     private void Update()

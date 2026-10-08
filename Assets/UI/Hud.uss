@@ -8,8 +8,10 @@
     experience       rgb(170, 130, 210)      coins               rgb(196, 140, 30)
 
   Every box uses the same 9-sliced PanelCream.png (cream paper, plum outline, honey border,
-  little gold corner studs). -unity-slice-* marks its 5px border so it doesn't stretch, and
-  -unity-slice-scale draws that border at 2x to stay pixel-crisp. Text sits on these panels
+  little gold corner studs). The storybook art (panel, hearts, icons) is drawn smooth at 4x
+  its on-screen size (Tools/make_hud_sprites.py), so it stays sharp on big screens:
+  -unity-slice-* marks the panel's 40px (texture) border so it doesn't stretch, and
+  -unity-slice-scale: 0.25px draws that border 10px wide. Text sits on these panels
   rather than straight over the scenery, so it stays readable anywhere.
 */
 
@@ -19,6 +21,25 @@
     top: 0;
     right: 0;
     bottom: 0;
+}
+
+/* Hit! The edges glow red for a moment (HudController adds .visible briefly).
+   A transition uses the timing of the state it's going *to*: quick in, slow fade out. */
+.hurt-flash {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("project://database/Assets/Art/UI/HurtVignette.png");
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.45s;
+}
+
+.hurt-flash.visible {
+    opacity: 1;
+    transition-duration: 0.05s;
 }
 
 Label {
@@ -33,11 +54,11 @@ Label {
 .panel,
 .frame {
     background-image: url("project://database/Assets/Art/UI/PanelCream.png");
-    -unity-slice-left: 5;
-    -unity-slice-right: 5;
-    -unity-slice-top: 5;
-    -unity-slice-bottom: 5;
-    -unity-slice-scale: 2px;
+    -unity-slice-left: 40;
+    -unity-slice-right: 40;
+    -unity-slice-top: 40;
+    -unity-slice-bottom: 40;
+    -unity-slice-scale: 0.25px;
     padding: 10px 14px 10px 14px;
 }
 
@@ -78,7 +99,7 @@ Label {
 }
 
 .monster-icon {
-    width: 24px; /* 12px at 2x */
+    width: 24px;
     height: 24px;
     margin-right: 8px;
     background-image: url("project://database/Assets/Art/UI/IconMonster.png");
@@ -97,7 +118,7 @@ Label {
 }
 
 .pip {
-    width: 18px; /* 9px at 2x */
+    width: 18px;
     height: 18px;
     margin: 0 3px 3px 0;
     background-image: url("project://database/Assets/Art/UI/PipMonster.png");
@@ -196,7 +217,7 @@ Label {
     background-color: rgb(232, 218, 188);
     border-width: 2px;
     border-color: rgb(74, 37, 69);
-    border-radius: 4px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -271,7 +292,7 @@ Label {
 }
 
 .player-name {
-    font-size: 12px;
+    font-size: 13px;
     color: rgb(128, 88, 118);
     margin-bottom: 2px;
 }
@@ -284,21 +305,39 @@ Label {
 }
 
 .heart {
-    width: 26px; /* 13x12 at 2x */
-    height: 24px;
-    margin-right: 2px;
+    width: 30px; /* drawn at 120x112, shown at 30x28 */
+    height: 28px;
+    margin: 0 2px 2px 0;
     background-image: url("project://database/Assets/Art/UI/Heart.png");
-    transition-property: scale;
+    transition-property: scale, rotate, translate;
     transition-duration: 0.12s;
+    transition-timing-function: ease-out-back; /* a little overshoot, like a squishy toy */
 }
 
 .heart.empty {
     background-image: url("project://database/Assets/Art/UI/HeartEmpty.png");
 }
 
+/* Gentle Mode: half a hit taken, so the next heart is broken in half */
+.heart.half {
+    background-image: url("project://database/Assets/Art/UI/HeartHalf.png");
+}
+
 /* Healing: refilled hearts pop for a moment */
 .heart.pop {
     scale: 1.35 1.35;
+}
+
+/* Hurt: the heart just lost jumps up and tilts, then settles as an empty one */
+.heart.hurt {
+    scale: 1.3 1.3;
+    rotate: -16deg;
+    translate: 0 -5px;
+}
+
+/* The last heart left beats */
+.heart.beat {
+    scale: 1.18 1.18;
 }
 
 .magic-row {
@@ -308,7 +347,7 @@ Label {
 }
 
 .magic-icon {
-    width: 24px; /* 12px at 2x */
+    width: 24px;
     height: 24px;
     margin-right: 6px;
     background-image: url("project://database/Assets/Art/UI/IconMagic.png");
@@ -348,6 +387,13 @@ Label {
     width: 18px;
     height: 18px;
     background-image: url("project://database/Assets/Art/UI/IconCoin.png");
+    transition-property: scale;
+    transition-duration: 0.1s;
+}
+
+/* A coin came in */
+.gold-icon.pop {
+    scale: 1.4 1.4;
 }
 
 .gold-text {
@@ -373,11 +419,11 @@ Label {
     width: 66px;
     height: 66px;
     background-image: url("project://database/Assets/Art/UI/PanelCream.png");
-    -unity-slice-left: 5;
-    -unity-slice-right: 5;
-    -unity-slice-top: 5;
-    -unity-slice-bottom: 5;
-    -unity-slice-scale: 2px;
+    -unity-slice-left: 40;
+    -unity-slice-right: 40;
+    -unity-slice-top: 40;
+    -unity-slice-bottom: 40;
+    -unity-slice-scale: 0.25px;
 }
 
 /* The hero's one spell: big and clear */

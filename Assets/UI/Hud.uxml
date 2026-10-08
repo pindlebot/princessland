@@ -10,6 +10,9 @@
 
     <ui:VisualElement name="hud" class="hud" picking-mode="Ignore">
 
+        <!-- A red glow around the screen's edges, flashed when the hero is hit (under everything else) -->
+        <ui:VisualElement name="hurt-flash" class="hurt-flash" picking-mode="Ignore" />
+
         <!-- Top left: where you are and what to do, in as few words as possible -->
         <ui:VisualElement name="objective" class="panel objective" picking-mode="Ignore">
             <ui:Label name="objective-title" class="objective-title" text="The Castle Grounds" />

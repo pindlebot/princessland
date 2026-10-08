@@ -10,20 +10,27 @@ Out:  Assets/Art/UI/
         IconFireball.png      24x24  hotbar icons, one per spell
         IconTidalOrb.png      24x24
         IconEmberRing.png     24x24  inventory icon
-        IconCoin.png          12x12  gold counter in the HUD
 
-      The storybook style (cream panels, honey-gold borders, plum ink):
-        PanelCream.png        16x16  the panel every HUD box uses (9-sliced: 5px borders)
-        Heart.png / HeartEmpty.png   13x12  health, one heart per point
-        IconMagic.png         12x12  a turquoise sparkle beside the magic bar
-        IconMonster.png       12x12  "monsters left" in the objective card
-        PipMonster.png / PipStar.png 9x9   progress markers: a monster, then a star once defeated
+      The storybook style (cream panels, honey-gold borders, plum ink). These are drawn
+      smooth rather than as pixel art, at 4x the size they're shown at (1280x720), so they
+      stay sharp on big and high-DPI screens. Sizes below are on-screen sizes:
+        PanelCream.png        32x32  the panel every HUD box uses (9-sliced: 10px borders)
+        Heart.png / HeartHalf.png / HeartEmpty.png   30x28  health, one heart per point
+                                     (Gentle Mode's half hits show as a half heart)
+        IconMagic.png         24x24  a turquoise sparkle beside the magic bar
+        IconCoin.png          18x18  the coin counter
+        IconMonster.png       24x24  "monsters left" in the objective card
+        PipMonster.png / PipStar.png 18x18  progress markers: a monster, then a star once defeated
+        HurtVignette.png      a soft red glow around the screen's edges, flashed when the hero is hit
+      Still pixel art:
         Map*.png              tiny minimap markers: crown (hero), stairs (open/locked), monster,
                               chest and dragon, each with a plum outline so they read when small
 
 The portrait and icon are cut from the actual game sprites, so they always match.
 """
-from PIL import Image
+import math
+
+from PIL import Image, ImageChops, ImageDraw
 
 import make_prop_sprites as props
 import make_spell_sprites as spell
@@ -76,15 +83,6 @@ def spell_icon(palette, outline_color):
     return outline(img, outline_color)
 
 
-def coin_icon():
-    c = Canvas()
-    c.ellipse(5.5, 5.5, 5.5, 5.5, props.GOLD_SH)
-    c.ellipse(5.5, 5.5, 4.2, 4.2, props.GOLD)
-    c.rect(5, 3, 6, 8, props.GOLD_SH)  # a stamped bar across the middle
-    c.dot(3, 3, props.GOLD_HI)
-    return outline(c.img.crop((0, 0, 12, 12)))
-
-
 # ---------- Storybook style ----------
 
 CREAM, CREAM_SH = (248, 239, 216, 255), (232, 218, 188, 255)
@@ -105,113 +103,225 @@ def pattern(rows, palette):
     return img
 
 
+# ---------- Smooth drawing ----------
+# The storybook pieces are drawn as shapes rather than pixel by pixel. Coordinates are in
+# on-screen pixels (at 1280x720); the canvas is SCALE x that for the texture, and SS x more
+# again while drawing. Shrinking by SS at the end averages each SS x SS block, which gives
+# soft, anti-aliased edges.
+
+SCALE = 4  # texture pixels per on-screen pixel: sharp up to 4K
+SS = 4     # supersampling while drawing
+
+
+class Smooth:
+    def __init__(self, w, h):
+        self.k = SCALE * SS
+        self.size = (round(w * self.k), round(h * self.k))
+        self.img = Image.new("RGBA", self.size, CLEAR)
+
+    def _pts(self, points):
+        return [(x * self.k, y * self.k) for x, y in points]
+
+    def poly(self, points, grow=0.0):
+        """A closed shape's coverage mask, grown (grow > 0) or shrunk (grow < 0) by `grow` pixels."""
+        mask = Image.new("L", self.size, 0)
+        d = ImageDraw.Draw(mask)
+        p = self._pts(points)
+        d.polygon(p, fill=255)
+        if grow:
+            d.line(p + [p[0]], fill=255 if grow > 0 else 0, width=round(abs(grow) * 2 * self.k), joint="curve")
+        return mask
+
+    def rounded(self, x0, y0, x1, y1, radius):
+        mask = Image.new("L", self.size, 0)
+        ImageDraw.Draw(mask).rounded_rectangle(
+            [x0 * self.k, y0 * self.k, x1 * self.k - 1, y1 * self.k - 1], radius=radius * self.k, fill=255)
+        return mask
+
+    def ellipse(self, cx, cy, rx, ry):
+        mask = Image.new("L", self.size, 0)
+        ImageDraw.Draw(mask).ellipse([(cx - rx) * self.k, (cy - ry) * self.k, (cx + rx) * self.k, (cy + ry) * self.k], fill=255)
+        return mask
+
+    def shift(self, mask, dx, dy):
+        return ImageChops.offset(mask, round(dx * self.k), round(dy * self.k))
+
+    def fill(self, mask, color):
+        layer = Image.new("RGBA", self.size, color[:3] + (0,))
+        layer.putalpha(mask if color[3] == 255 else mask.point(lambda v: v * color[3] // 255))
+        self.img.alpha_composite(layer)
+
+    def gradient(self, mask, top, bottom, y0, y1):
+        """Fills `mask` with a vertical blend from `top` (at y0) to `bottom` (at y1)."""
+        column = Image.new("RGBA", (1, self.size[1]))
+        for y in range(self.size[1]):
+            t = min(1.0, max(0.0, (y / self.k - y0) / max(1e-6, y1 - y0)))
+            column.putpixel((0, y), tuple(round(a + (b - a) * t) for a, b in zip(top, bottom)))
+        layer = column.resize(self.size)
+        layer.putalpha(ImageChops.multiply(layer.getchannel("A"), mask))
+        self.img.alpha_composite(layer)
+
+    def done(self):
+        # Average in premultiplied alpha, so transparent pixels don't darken the edges.
+        return self.img.convert("RGBa").reduce(SS).convert("RGBA")
+
+
+def both(a, b):
+    return ImageChops.multiply(a, b)
+
+
+def minus(a, b):
+    return ImageChops.subtract(a, b)
+
+
+def star_points(cx, cy, outer, inner, points, turn=-90):
+    pts = []
+    for i in range(points * 2):
+        r = outer if i % 2 == 0 else inner
+        a = math.radians(turn + i * 180 / points)
+        pts.append((cx + r * math.cos(a), cy + r * math.sin(a)))
+    return pts
+
+
+# ---------- Storybook style ----------
+
+CREAM, CREAM_SH = (248, 239, 216, 255), (232, 218, 188, 255)
+HONEY, HONEY_HI, HONEY_SH = (222, 168, 70, 255), (250, 214, 120, 255), (164, 112, 40, 255)
+PLUM, SOFT_PLUM = (74, 37, 69, 255), (128, 88, 118, 255)
+HEART, HEART_HI, HEART_SH = (232, 70, 92, 255), (255, 170, 180, 255), (176, 36, 64, 255)
+MAGIC, MAGIC_HI = (64, 206, 210, 255), (210, 255, 250, 255)
+GOLD, GOLD_HI, GOLD_SH = (246, 196, 64, 255), (255, 240, 170, 255), (196, 132, 30, 255)
+WHITE = (255, 255, 255, 255)
+
+
 def cream_panel():
-    """Cream paper with a plum outline, a honey-gold border (light top-left, darker
-    bottom-right) and a little gold stud in each corner. 9-sliced at 5px."""
-    img = Image.new("RGBA", (16, 16), CREAM)
-    px = img.load()
-    for i in range(16):
-        for a, b in ((i, 0), (i, 15), (0, i), (15, i)):
-            px[a, b] = PLUM
-    for i in range(1, 15):
-        px[i, 1] = px[1, i] = HONEY_HI
-        px[i, 14] = px[14, i] = HONEY_SH
-        px[i, 2] = px[2, i] = HONEY
-        px[i, 13] = px[13, i] = HONEY
-    for i in range(3, 13):
-        px[i, 3] = px[3, i] = CREAM_SH  # a soft inner shadow
-    for cx, cy in ((2, 2), (13, 2), (2, 13), (13, 13)):  # corner studs
-        px[cx, cy] = PLUM
-    # Transparent outside the rounded corners
-    for x, y in ((0, 0), (15, 0), (0, 15), (15, 15)):
-        px[x, y] = CLEAR
-    return img
+    """Cream paper in a honey-gold frame with a plum outline and rounded corners, plus a little
+    gold stud in each corner. 32x32, 9-sliced at 10px (everything but the paper is in the border)."""
+    c = Smooth(32, 32)
+    c.fill(c.rounded(0, 0, 32, 32, 8), PLUM)
+    frame = c.rounded(1.5, 1.5, 30.5, 30.5, 6.5)
+    c.gradient(frame, HONEY_HI, HONEY_SH, 2, 30)
+    c.fill(minus(frame, c.shift(frame, 0, 1)), (255, 244, 200, 200))  # a lit top edge
+    c.fill(c.rounded(4.5, 4.5, 27.5, 27.5, 4), HONEY_SH)                # a fine line around the paper
+    paper = c.rounded(5.5, 5.5, 26.5, 26.5, 3)
+    c.fill(paper, CREAM)
+    c.fill(minus(paper, c.shift(paper, 1.2, 1.2)), CREAM_SH)          # the paper sits a little sunk in
+    for x, y in ((4.4, 4.4), (27.6, 4.4), (4.4, 27.6), (27.6, 27.6)):  # on the gold, where the frame curves
+        c.fill(c.ellipse(x, y, 1.1, 1.1), PLUM)
+        c.fill(c.ellipse(x - 0.3, y - 0.3, 0.4, 0.4), HONEY_HI)
+    return c.done()
 
 
-HEART_ROWS = [
-    ".OOO...OOO...",
-    "OHhRO.ORRRO..",
-    "OhRRROORRRRO.",
-    "ORRRRRRRRRRO.",
-    "ORRRRRRRRRRO.",
-    ".ORRRRRRRRO..",
-    "..ORRRRRRSO..",
-    "...ORRRRSO...",
-    "....ORRSO....",
-    ".....OSO.....",
-    "......O......",
-    ".............",
-]
+def heart_points(x0, y0, w, h, n=240):
+    """The classic heart curve, fitted into a box."""
+    raw = []
+    for i in range(n):
+        t = 2 * math.pi * i / n
+        raw.append((16 * math.sin(t) ** 3,
+                    -(13 * math.cos(t) - 5 * math.cos(2 * t) - 2 * math.cos(3 * t) - math.cos(4 * t))))
+    xs, ys = [p[0] for p in raw], [p[1] for p in raw]
+    sx, sy = w / (max(xs) - min(xs)), h / (max(ys) - min(ys))
+    return [(x0 + (x - min(xs)) * sx, y0 + (y - min(ys)) * sy) for x, y in raw]
 
 
-def heart(full):
-    if full:
-        pal = {"O": PLUM, "R": HEART, "H": HEART_HI, "h": HEART_HI, "S": HEART_SH}
-    else:  # an empty outline with a faint pale inside
-        pal = {"O": PLUM, "R": CREAM_SH, "H": CREAM_SH, "h": CREAM_SH, "S": CREAM_SH}
-    return pattern(HEART_ROWS, pal)
+def heart(kind):
+    """kind: "full", "empty" or "half" (the left half full). 30x28 with a 2px plum outline."""
+    c = Smooth(30, 28)
+    shape = heart_points(3, 3, 24, 22)
+    body = c.poly(shape)
+    c.fill(c.poly(shape, grow=2), PLUM)
+
+    # Empty: pale and a little sunken (shadow along the top-left inside edge).
+    c.fill(body, (236, 222, 196, 255))
+    c.fill(minus(body, c.shift(body, 1.4, 1.6)), (212, 192, 166, 255))
+    if kind == "empty":
+        return c.done()
+
+    full = body if kind == "full" else both(body, c.rounded(0, 0, 15, 28, 0))
+    c.gradient(full, (255, 128, 146, 255), (212, 44, 76, 255), 4, 24)
+    c.fill(both(full, minus(body, c.shift(body, -1.6, -1.8))), HEART_SH)    # shade along the bottom right
+    c.fill(both(full, c.ellipse(9.5, 8.6, 3.4, 2.3)), (255, 232, 236, 220))  # a glossy highlight
+    c.fill(both(full, c.ellipse(6.6, 12.2, 1.0, 1.0)), (255, 232, 236, 200))
+    if kind == "half":
+        c.fill(both(body, c.rounded(14.4, 0, 15.6, 28, 0)), SOFT_PLUM)        # where it broke
+    return c.done()
 
 
 def magic_icon():
-    return pattern([
-        ".....O......",
-        "....OMO.....",
-        "....OMO.....",
-        "..OOMHMOO...",
-        ".OMMHHHMMO..",
-        "..OOMHMOO...",
-        "....OMO..O..",
-        "....OMO.OHO.",
-        ".....O...O..",
-        "..O.........",
-        ".OHO........",
-        "..O.........",
-    ], {"O": PLUM, "M": MAGIC, "H": MAGIC_HI})
+    """A four-pointed turquoise sparkle with a little one beside it. 24x24."""
+    c = Smooth(24, 24)
+    big = star_points(10.5, 11, 9.5, 3.2, 4)
+    c.fill(c.poly(big, grow=1.5), PLUM)
+    star = c.poly(big)
+    c.gradient(star, MAGIC_HI, MAGIC, 3, 16)
+    c.fill(both(star, c.ellipse(10.5, 11, 2.3, 2.3)), WHITE)
+    small = star_points(19.5, 19, 4, 1.4, 4)
+    c.fill(c.poly(small, grow=1.2), PLUM)
+    c.fill(c.poly(small), MAGIC_HI)
+    return c.done()
 
 
-def monster_icon():  # a little slime face
-    return pattern([
-        "............",
-        "....OOOO....",
-        "..OOGGGGOO..",
-        ".OGGHGGGGGO.",
-        ".OGHGGGGGGO.",
-        "OGGOGGGGOGGO",
-        "OGGOGGGGOGGO",
-        "OGGGGOOGGGGO",
-        "OGGGGGGGGGGO",
-        "OSSSSSSSSSSO",
-        ".OOOOOOOOOO.",
-        "............",
-    ], {"O": PLUM, "G": (110, 200, 110, 255), "H": (200, 245, 190, 255), "S": (70, 150, 80, 255)})
+def coin_icon():
+    """A gold coin with a stamped rim and a shine. 18x18."""
+    c = Smooth(18, 18)
+    c.fill(c.ellipse(9, 9, 8.2, 8.2), PLUM)
+    face = c.ellipse(9, 9, 6.8, 6.8)
+    c.gradient(face, GOLD_HI, GOLD_SH, 3, 16)
+    c.fill(minus(c.ellipse(9, 9, 5.2, 5.2), c.ellipse(9, 9, 4.2, 4.2)), GOLD_SH)  # the stamped rim
+    c.fill(c.rounded(8, 5.5, 10, 12.5, 1), GOLD_SH)                                # a bar across the middle
+    c.fill(c.ellipse(6, 5.8, 1.5, 1.1), (255, 252, 230, 230))
+    return c.done()
 
 
-def pip_monster():
-    return pattern([
-        "..OOOOO..",
-        ".OGGGGGO.",
-        "OGGGGGGGO",
-        "OGOGGGOGO",
-        "OGGGGGGGO",
-        "OGGOOOGGO",
-        "OSSSSSSSO",
-        ".OOOOOOO.",
-        ".........",
-    ], {"O": PLUM, "G": (150, 140, 150, 255), "S": (120, 110, 120, 255)})
+MONSTER_GREEN = ((150, 226, 140, 255), (84, 170, 92, 255), (214, 250, 200, 255))
+MONSTER_GREY = ((176, 166, 180, 255), (124, 114, 128, 255), (220, 214, 224, 255))
+
+
+def slime_icon(size, colors):
+    """A little slime face (top-left "monsters left" icon, and the grey progress pips)."""
+    light, dark, shine = colors
+    c = Smooth(size, size)
+    u = size / 24  # drawn at 24x24, scaled to fit
+    # A dome with a flat, slightly wavy bottom.
+    dome = [(12 * u + 10 * u * math.cos(math.radians(a)), 14 * u - 10 * u * math.sin(math.radians(a))) for a in range(0, 181, 3)]
+    bottom = [(2 * u + 20 * u * i / 8, 20 * u + (0.8 * u if i % 2 else 0)) for i in range(9)]
+    shape = dome + [(2 * u, 20 * u)] + bottom[1:-1] + [(22 * u, 20 * u)]
+    c.fill(c.poly(shape, grow=1.6 * u), PLUM)
+    body = c.poly(shape)
+    c.gradient(body, light, dark, 5 * u, 20 * u)
+    c.fill(c.ellipse(7.5 * u, 8 * u, 2.6 * u, 1.7 * u), shine)
+    for x in (8.5 * u, 15.5 * u):  # eyes, with a glint
+        c.fill(c.ellipse(x, 12.5 * u, 1.6 * u, 2.2 * u), PLUM)
+        c.fill(c.ellipse(x - 0.5 * u, 11.7 * u, 0.6 * u, 0.6 * u), WHITE)
+    smile = [(10 * u + 4 * u * i / 10, 16.2 * u + 1.2 * u * math.sin(math.pi * i / 10)) for i in range(11)]
+    c.fill(c.poly(smile + [(14 * u, 16.2 * u)], grow=0.6 * u), PLUM)
+    return c.done()
 
 
 def pip_star():
-    return pattern([
-        "....O....",
-        "...OYO...",
-        "OOOOYOOOO",
-        "OYYYHYYYO",
-        ".OYYYYYO.",
-        "..OYYYO..",
-        ".OYYOYYO.",
-        ".OYO.OYO.",
-        ".OO...OO.",
-    ], {"O": PLUM, "Y": HONEY_HI, "H": (255, 255, 230, 255)})
+    """A chubby gold star: one monster defeated. 18x18."""
+    c = Smooth(18, 18)
+    pts = star_points(9, 9.8, 8, 3.9, 5)
+    c.fill(c.poly(pts, grow=1.4), PLUM)
+    star = c.poly(pts)
+    c.gradient(star, (255, 236, 150, 255), HONEY, 3, 16)
+    c.fill(c.ellipse(7.2, 7.4, 1.6, 1.1), (255, 255, 236, 230))
+    return c.done()
+
+
+def hurt_vignette():
+    """Transparent in the middle, warm red toward the edges. Stretched over the whole screen,
+    so it's small and soft (no detail to lose)."""
+    w, h = 256, 144
+    img = Image.new("RGBA", (w, h))
+    px = img.load()
+    for y in range(h):
+        for x in range(w):
+            dx, dy = (x + 0.5) / w * 2 - 1, (y + 0.5) / h * 2 - 1
+            d = math.sqrt(dx * dx * 0.85 + dy * dy)  # a slightly wide oval
+            t = min(1.0, max(0.0, (d - 0.75) / 0.5))  # clear over most of the screen
+            px[x, y] = (214, 36, 64, round(170 * t * t * (3 - 2 * t)))
+    return img
 
 
 def pad(img, by=1):
@@ -261,12 +371,14 @@ def main():
     ring_icon().save(UI / "IconEmberRing.png")
     coin_icon().save(UI / "IconCoin.png")
     cream_panel().save(UI / "PanelCream.png")
-    heart(True).save(UI / "Heart.png")
-    heart(False).save(UI / "HeartEmpty.png")
+    heart("full").save(UI / "Heart.png")
+    heart("half").save(UI / "HeartHalf.png")
+    heart("empty").save(UI / "HeartEmpty.png")
     magic_icon().save(UI / "IconMagic.png")
-    monster_icon().save(UI / "IconMonster.png")
-    pip_monster().save(UI / "PipMonster.png")
+    slime_icon(24, MONSTER_GREEN).save(UI / "IconMonster.png")
+    slime_icon(18, MONSTER_GREY).save(UI / "PipMonster.png")
     pip_star().save(UI / "PipStar.png")
+    hurt_vignette().save(UI / "HurtVignette.png")
     for name, img in map_markers().items():
         img.save(UI / f"{name}.png")
     print("Wrote", ", ".join(sorted(p.name for p in UI.glob("*.png"))))

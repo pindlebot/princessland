@@ -17,6 +17,7 @@ using UnityEngine;
 //   DungeonBuilder.Dragon.cs           the NPC recipe, Amethyra the dragon and her dialogue
 //   DungeonBuilder.Friends.cs          Coralie, Bonesy, the frog, the wishing fountain, dungeon props
 //   DungeonBuilder.Home.cs             the furniture and front door of the hero's home
+//   DungeonBuilder.Hazards.cs          lava and spike traps
 //   DungeonBuilder.CharacterSelect.cs  the character select screen
 //   DungeonBuilder.Title.cs            the title screen and its save slots
 public static partial class DungeonBuilder
@@ -34,6 +35,7 @@ public static partial class DungeonBuilder
         public GameObject Tree, Fountain, Bush, Butterfly, Mote, Cloud, Stairs;
         public GameObject Mermaid, Bonesy, Frog, FrogBush;
         public GameObject Campfire, Barrel, Crate, Bones, Mushrooms, Door, LockedDoor, Key, Ripple, Lily;
+        public GameObject SpikeTrap, LavaBubble, Ember;
         public SpriteSheetImporter.SpriteSheet Props;
         public GameObject[] Grass;
 
@@ -100,6 +102,7 @@ public static partial class DungeonBuilder
         CreateHomePrefabs(assets, furniture, wizardArt.Shadow);
         CreateSceneryPrefabs(assets, props, wizardArt.Shadow);
         CreateFriendsAndDungeonProps(assets, wizardArt.Shadow, sparkle);
+        CreateHazardPrefabs(assets, props);
         assets.Props = props;
         return assets;
     }
@@ -186,14 +189,22 @@ public static partial class DungeonBuilder
                  {
                      "Floor_0", "Floor_1", "Floor_2", "WallSide", "WallTop",
                      "Grass_0", "Grass_1", "Grass_2", "Path", "HedgeSide", "HedgeTop", "Roof", "Gate", "EarthSide",
-                     "WoodFloor", "BathTile", "Water", "Puddle",
+                     "WoodFloor", "BathTile", "Water", "Puddle", "SpikePlate",
                  })
             mats[name] = Mat(name, Color.white, texture: PixelTexture(name));
         mats["Exit"] = Mat("Exit", new Color(0.2f, 0.9f, 0.3f), new Color(0.2f, 1.2f, 0.3f));
+        // Lava lights itself: the texture is also its emission map, so the cracks glow and the crust stays dark.
+        var lava = PixelTexture("Lava");
+        mats["Lava"] = Mat("Lava", Color.white, new Color(1.3f, 1.1f, 1f), lava, emissionMap: lava);
+        var spike = Mat("Spike", new Color(0.78f, 0.78f, 0.86f)); // shiny steel
+        spike.SetFloat("_Metallic", 0.6f);
+        spike.SetFloat("_Glossiness", 0.6f);
+        mats["Spike"] = spike;
         return mats;
     }
 
-    private static Material Mat(string name, Color color, Color? emission = null, Texture2D texture = null)
+    private static Material Mat(string name, Color color, Color? emission = null, Texture2D texture = null,
+                                Texture2D emissionMap = null)
     {
         string path = $"Assets/Materials/{name}.mat";
         var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
@@ -209,6 +220,7 @@ public static partial class DungeonBuilder
         {
             mat.EnableKeyword("_EMISSION");
             mat.SetColor("_EmissionColor", emission.Value);
+            mat.SetTexture("_EmissionMap", emissionMap); // null = glow evenly
         }
         EditorUtility.SetDirty(mat);
         return mat;
@@ -224,6 +236,22 @@ public static partial class DungeonBuilder
         importer.filterMode = FilterMode.Point;         // crisp pixels, no blur
         importer.wrapMode = TextureWrapMode.Repeat;
         importer.mipmapEnabled = false;                 // the camera never zooms out far enough to need them
+        importer.textureCompression = TextureImporterCompression.Uncompressed;
+        importer.SaveAndReimport();
+        return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+    }
+
+    // For art drawn smooth at a higher resolution than it's shown (the HUD's hearts, panel and
+    // icons): smooth filtering and mipmaps, so it shrinks cleanly to any screen size.
+    private static Texture2D SmoothTexture(string name, string folder = "UI")
+    {
+        string path = $"Assets/Art/{folder}/{name}.png";
+        var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+        importer.textureType = TextureImporterType.Default;
+        importer.filterMode = FilterMode.Trilinear;
+        importer.wrapMode = TextureWrapMode.Clamp;
+        importer.mipmapEnabled = true;
+        importer.alphaIsTransparency = true;            // no dark fringes around the shapes
         importer.textureCompression = TextureImporterCompression.Uncompressed;
         importer.SaveAndReimport();
         return AssetDatabase.LoadAssetAtPath<Texture2D>(path);

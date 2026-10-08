@@ -23,6 +23,11 @@ public class LevelMap : MonoBehaviour
     // Pond water ('w', and 'm' where the mermaid sits): not walkable, drawn blue on the minimap.
     public static bool IsWater(char c) => c == 'w' || c == 'm';
 
+    // Hazards: walkable, but they hurt. '~' lava, '^' a spike trap (see Hazard.cs).
+    public static bool IsLava(char c) => c == '~';
+    public static bool IsSpikes(char c) => c == '^';
+    public static bool IsHazard(char c) => IsLava(c) || IsSpikes(c);
+
     public char At(int col, int row) =>
         row >= 0 && row < Height && col >= 0 && col < rows[row].Length ? rows[row][col] : ' ';
 

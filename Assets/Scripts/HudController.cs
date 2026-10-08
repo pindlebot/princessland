@@ -7,7 +7,9 @@ using UnityEngine.UIElements;
 // only change values: text, widths, and CSS-style classes that Hud.uss reacts to.
 //
 // It's built for a young player: hearts instead of numbers, "6 monsters left" with
-// progress markers, one big spell slot, and one short hint at a time.
+// progress markers, one big spell slot, and one short hint at a time. Getting hurt is
+// easy to read: the lost heart jumps, the screen's edges flash red, and the last heart
+// left beats.
 [RequireComponent(typeof(UIDocument))]
 public class HudController : MonoBehaviour
 {
@@ -38,7 +40,7 @@ public class HudController : MonoBehaviour
 
     private VisualElement root, manaFill, spellSlot, spellCooldown, banner, objectiveCard, monstersRow, sleepFade;
     private Label enemiesLeft, objectiveHint, bannerTitle, prompt, contextHint, toast, spellKey;
-    private VisualElement heartsRow, pipsRow, xpFill, helpPanel;
+    private VisualElement heartsRow, pipsRow, xpFill, helpPanel, hurtFlash, goldIcon;
     private Label levelBadge, goldText, pointsHint;
     private readonly List<VisualElement> hearts = new List<VisualElement>();
     private readonly List<VisualElement> pips = new List<VisualElement>();
@@ -51,7 +53,9 @@ public class HudController : MonoBehaviour
     private Label itemDetails, statDamage;
 
     // Remembered between frames, to spot changes worth reacting to.
-    private int lastHealth = -1, lastAlive, defeated;
+    private int lastHealth = -1, lastAlive, defeated, lastGold = -1;
+    private bool lastHalf;
+    private float nextHeartbeat;
     private bool usedMouseLast, hasWalked;
     private Vector3 startPosition;
     private float startTime;
@@ -93,6 +97,8 @@ public class HudController : MonoBehaviour
         levelBadge = root.Q<Label>("level-badge");
         goldText = root.Q<Label>("gold-text");
         pointsHint = root.Q<Label>("points-hint");
+        goldIcon = root.Q(className: "gold-icon");
+        hurtFlash = root.Q("hurt-flash");
 
         // Contextual hints ("Space: Magic!") share the prompt's spot but are their own label,
         // so they never get mixed up with "E: Open chest".
@@ -102,6 +108,7 @@ public class HudController : MonoBehaviour
         prompt.parent.Add(contextHint);
 
         interactor.Interacted += ShowToast;
+        playerHealth.Damaged += OnPlayerHurt;
         progress = GameSession.Progress;
         progress.LeveledUp += OnLevelUp;
 
@@ -185,6 +192,8 @@ public class HudController : MonoBehaviour
     private void UpdateHearts()
     {
         int max = playerHealth.Max, current = playerHealth.Current;
+        // Gentle Mode: a half hit shows as the last full heart broken in half.
+        bool half = current > 0 && GameManager.Instance != null && GameManager.Instance.HalfHeartLost;
         if (hearts.Count != max) // first frame, or a level-up added a heart
         {
             heartsRow.Clear();
@@ -198,14 +207,35 @@ public class HudController : MonoBehaviour
             }
         }
         for (int i = 0; i < hearts.Count; i++)
+        {
             hearts[i].EnableInClassList("empty", i >= current);
+            hearts[i].EnableInClassList("half", half && i == current - 1);
+        }
 
-        // Healing: the hearts that just refilled pop for a moment.
-        if (lastHealth >= 0 && current > lastHealth)
+        if (lastHealth >= 0)
+        {
+            // Healing: the hearts that just refilled pop for a moment.
             for (int i = lastHealth; i < current && i < hearts.Count; i++)
                 Pop(hearts[i]);
+            // Hurt: the hearts just lost (or just broken in half) jump and tilt.
+            for (int i = current; i < lastHealth && i < hearts.Count; i++)
+                Pop(hearts[i], "hurt", 220);
+            if (half && !lastHalf && current == lastHealth)
+                Pop(hearts[current - 1], "hurt", 220);
+        }
         lastHealth = current;
+        lastHalf = half;
+
+        // Down to the last heart: it beats, to say "careful!"
+        if (current == 1 && max > 1 && Time.time >= nextHeartbeat)
+        {
+            nextHeartbeat = Time.time + 0.9f;
+            Pop(hearts[0], "beat", 150);
+        }
     }
+
+    // Any hit, even a Gentle Mode bump that costs no heart: the screen's edges flash red.
+    private void OnPlayerHurt(Health _) => Pop(hurtFlash, "visible", 140);
 
     // Add a class, then remove it a moment later: USS transitions animate both ways.
     // (element.schedule is UI Toolkit's own timer, like setTimeout in a browser.)
@@ -289,6 +319,8 @@ public class HudController : MonoBehaviour
         bool maxed = progress.Level >= Progression.MaxLevel;
         xpFill.style.width = Length.Percent(maxed ? 100f : 100f * progress.Xp / progress.XpForNextLevel);
         goldText.text = progress.Gold.ToString();
+        if (lastGold >= 0 && progress.Gold > lastGold) Pop(goldIcon, "pop", 140); // a coin came in
+        lastGold = progress.Gold;
         pointsHint.text = progress.SkillPoints > 0
             ? $"{progress.SkillPoints} skill point{(progress.SkillPoints > 1 ? "s" : "")} · K"
             : "";
@@ -322,6 +354,7 @@ public class HudController : MonoBehaviour
     private void OnDestroy()
     {
         if (progress != null) progress.LeveledUp -= OnLevelUp;
+        if (playerHealth != null) playerHealth.Damaged -= OnPlayerHurt;
     }
 
     private void OnLevelUp(int level) => ShowToast($"Level up! You're level {level}!");

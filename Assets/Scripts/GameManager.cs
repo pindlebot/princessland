@@ -34,6 +34,9 @@ public class GameManager : MonoBehaviour
 
     private float halfHitCarry;
 
+    // Gentle Mode: a half hit is waiting to cost a heart (the HUD shows a half heart).
+    public bool HalfHeartLost => GameSession.Settings.gentle && halfHitCarry > 0f;
+
     private void Awake()
     {
         Instance = this;
@@ -43,6 +46,7 @@ public class GameManager : MonoBehaviour
     {
         playerHealth = health;
         playerHealth.AdjustDamage = SoftenHit;
+        playerHealth.Healed += _ => halfHitCarry = 0f; // healing mends a half-broken heart too
     }
 
     private void Start()

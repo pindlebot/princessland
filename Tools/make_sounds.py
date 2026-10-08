@@ -358,6 +358,18 @@ def door_locked():  # a rattle against a heavy lock
     return place(out, envelope(lowpass(tone(110, 0.15, "square"), 600), curve=2), 0.2)
 
 
+def spikes():  # a quick metallic "shing" as a spike trap shoots up
+    scrape = envelope(highpass(noise(0.14, seed=90), 3000), attack=0.004, curve=2.5)
+    ring = mix(envelope(tone(2350, 0.3), curve=2.2), [x * 0.6 for x in envelope(tone(3170, 0.22), curve=2.6)])
+    return mix([x * 0.7 for x in scrape], [x * 0.35 for x in ring])
+
+
+def sizzle():  # stepping in lava: a hot hiss with a low pop
+    hiss = envelope(highpass(lowpass(noise(0.45, seed=91), 7000, 2500), 1200), attack=0.01, curve=1.6)
+    pop = envelope(tone(180, 0.12, freq_end=90), curve=3)
+    return mix([x * 0.8 for x in hiss], [x * 0.5 for x in pop])
+
+
 def victory():
     out = arpeggio(["C5", "E5", "G5"], 0.12, 0.25, "square")
     return place(out, [s * 0.6 for s in envelope(tone(midi(n("C6")), 1.0, "triangle"), curve=1.2)], 0.36)
@@ -477,7 +489,7 @@ SOUNDS = {
     "coin": coin, "level_up": level_up, "skill_learn": skill_learn,
     "slime_hit": slime_hit, "slime_attack": slime_attack, "slime_death": slime_death,
     "boss_roar": boss_roar, "slam_windup": slam_windup, "slam_land": slam_land, "summon": summon,
-    "stairs_open": stairs_open, "poof": poof,
+    "stairs_open": stairs_open, "poof": poof, "spikes": spikes, "sizzle": sizzle,
 }
 
 if __name__ == "__main__":

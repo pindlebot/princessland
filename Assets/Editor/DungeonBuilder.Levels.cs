@@ -23,6 +23,7 @@ public static partial class DungeonBuilder
     //   Dungeon  c  campfire (warm up: full health)    n  Bonesy, the friendly skeleton    o  barrel    x  crate
     //            j  bones    u  glowing mushrooms    p  puddle    d  wooden door    k  locked door    y  the Rusty Key
     //            (trees and the fountain are solid, so keep them off the walking routes)
+    //   Hazards  ~  lava (hurts while you stand in it)    ^  spike trap (hurts while its spikes are up)
     // Torches go on the side of the wall that faces the camera (south or west), so put
     // them on walls with floor directly below (south) or to the left (west).
 
@@ -138,6 +139,16 @@ public static partial class DungeonBuilder
                 if (LevelMap.IsWater(c))
                 {
                     BuildWater(level, decor, assets, map, col, row, pos, rng, c == 'm');
+                    continue;
+                }
+                if (LevelMap.IsLava(c))
+                {
+                    BuildLava(level, decor, assets, col, row, pos, rng);
+                    continue;
+                }
+                if (LevelMap.IsSpikes(c))
+                {
+                    PlaceSpikeTrap(level, assets, col, pos);
                     continue;
                 }
 
@@ -449,11 +460,16 @@ public static partial class DungeonBuilder
     {
         foreach (var image in new[]
                  {
-                     "Frame", "Panel", "Slot", "IconCoin", "PanelCream", "Heart", "HeartEmpty", "IconMagic",
-                     "IconMonster", "PipMonster", "PipStar", "MapCrown", "MapStairs", "MapStairsLocked",
+                     "Frame", "Panel", "Slot", "MapCrown", "MapStairs", "MapStairsLocked",
                      "MapMonster", "MapChest", "MapDragon",
                  })
             PixelTexture(image, "UI"); // point filtering keeps the pixel art crisp when scaled
+        foreach (var image in new[]
+                 {
+                     "PanelCream", "Heart", "HeartHalf", "HeartEmpty", "IconMagic", "IconCoin",
+                     "IconMonster", "PipMonster", "PipStar", "HurtVignette",
+                 })
+            SmoothTexture(image); // drawn at 4x, shrunk smoothly
 
         var panel = LoadOrCreateAsset<PanelSettings>("Assets/UI/HudPanelSettings.asset");
         panel.themeStyleSheet = AssetDatabase.LoadAssetAtPath<ThemeStyleSheet>("Assets/UI/HudTheme.tss");

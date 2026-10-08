@@ -156,6 +156,72 @@ public class HudTests
             "green stairs once open");
     }
 
+    [UnityTest]
+    public IEnumerator GentleBumpsShowAsHalfHeartsAndHealingMendsThem()
+    {
+        yield return Load("Dungeon");
+        Assert.IsTrue(GameSession.Settings.gentle, "Gentle Mode is the default");
+        var health = player.GetComponent<Health>();
+        foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
+        var hearts = hud.Q("hearts").Children().ToList();
+
+        health.TakeDamage(1); // half a heart
+        yield return null;
+        Assert.AreEqual(0, hearts.Count(h => h.ClassListContains("empty")));
+        Assert.AreEqual(1, hearts.Count(h => h.ClassListContains("half")));
+        Assert.IsTrue(hearts[health.Current - 1].ClassListContains("half"), "the last full heart is the broken one");
+
+        health.TakeDamage(1); // the other half
+        yield return null;
+        Assert.AreEqual(1, hearts.Count(h => h.ClassListContains("empty")));
+        Assert.AreEqual(0, hearts.Count(h => h.ClassListContains("half")));
+
+        health.TakeDamage(1);
+        health.Heal(1);
+        yield return null;
+        Assert.AreEqual(0, hearts.Count(h => h.ClassListContains("empty") || h.ClassListContains("half")),
+            "healing mends the broken heart too");
+    }
+
+    [UnityTest]
+    public IEnumerator LosingAHeartMakesItJumpAndTheScreenFlashRed()
+    {
+        yield return Load("Dungeon");
+        GameSession.Settings.gentle = false;
+        var health = player.GetComponent<Health>();
+        foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
+        var hearts = hud.Q("hearts").Children().ToList();
+        var flash = hud.Q("hurt-flash");
+
+        health.TakeDamage(1);
+        Assert.IsTrue(flash.ClassListContains("visible"), "the edges flash right away");
+        yield return null;
+        Assert.IsTrue(hearts[health.Current].ClassListContains("hurt"), "the lost heart jumps");
+        yield return new WaitForSeconds(0.4f);
+        Assert.IsFalse(hearts[health.Current].ClassListContains("hurt"));
+        Assert.IsFalse(flash.ClassListContains("visible"), "...both just for a moment");
+    }
+
+    [UnityTest]
+    public IEnumerator TheLastHeartLeftBeats()
+    {
+        yield return Load("Dungeon");
+        GameSession.Settings.gentle = false;
+        var health = player.GetComponent<Health>();
+        foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
+        var hearts = hud.Q("hearts").Children().ToList();
+
+        health.TakeDamage(health.Max - 1);
+        bool beat = false;
+        for (float t = 0f; t < 1.5f && !beat; t += Time.deltaTime)
+        {
+            yield return null;
+            beat = hearts[0].ClassListContains("beat");
+        }
+        Assert.IsTrue(beat);
+        Assert.IsFalse(hearts.Skip(1).Any(h => h.ClassListContains("beat")), "only the last one");
+    }
+
     // The HUD at several screen sizes: everything stays on screen, and nothing important overlaps.
     [UnityTest]
     public IEnumerator HudFitsAtSeveralScreenSizes([Values(1280, 1920, 1024, 2560)] int width)

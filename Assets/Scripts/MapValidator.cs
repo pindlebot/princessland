@@ -83,6 +83,7 @@ public static class MapValidator
     }
 
     // Is one of the four neighbours walkable ground (where the arrival spot goes)?
+    // Lava and spikes don't count: nobody should arrive standing in them.
     public static bool HasFloorBeside(MapFile map, int col, int row) => FloorBeside(map, col, row).HasValue;
 
     // The first walkable neighbour, looking north, south, west, then east. Null if none.
@@ -91,7 +92,7 @@ public static class MapValidator
         foreach (var (dc, dr) in new[] { (0, -1), (0, 1), (-1, 0), (1, 0) })
         {
             char c = map.At(col + dc, row + dr);
-            bool walkable = c != ' ' && !LevelMap.IsWall(c) && !IsDoor(map, c);
+            bool walkable = c != ' ' && !LevelMap.IsWall(c) && !LevelMap.IsHazard(c) && !IsDoor(map, c);
             if (walkable) return (col + dc, row + dr);
         }
         return null;

@@ -16,10 +16,13 @@ Out:  Assets/Art/Environment/
         BathTile.png                 32x32  blue-and-white bathroom tiles
         Water.png                    32x32  the castle-grounds pond (scrolls slowly in game)
         Puddle.png                   32x32  dungeon flagstones under a shallow sheet of water
+        Lava.png                     32x32  crusted lava with glowing cracks (hurts; glows and drifts in game)
+        SpikePlate.png               32x32  an iron plate with nine holes for a spike trap's spikes
 
 Every texture is seamless: mortar lines sit on the left/top edge only, so two
 tiles placed side by side share a single 1px joint.
 """
+import math
 import random
 from pathlib import Path
 
@@ -304,6 +307,64 @@ def puddle_tile():
     return img
 
 
+# ---------- Hazards ----------
+
+def lava_tile():
+    """Dark crust plates floating on glowing lava. The plates are a Voronoi pattern measured
+    around the wrapped tile (so it's seamless); the thin gaps between plates are the hot cracks,
+    and a few plates have melted into bright pools."""
+    rng = random.Random(101)
+    seeds = [(rng.uniform(0, 32), rng.uniform(0, 32)) for _ in range(8)]
+    molten = {i for i in range(len(seeds)) if rng.random() < 0.25}
+    img = Image.new("RGB", (32, 32))
+    px = img.load()
+    for y in range(32):
+        for x in range(32):
+            dists = []
+            for i, (sx, sy) in enumerate(seeds):
+                dx = min(abs(x + 0.5 - sx), 32 - abs(x + 0.5 - sx))
+                dy = min(abs(y + 0.5 - sy), 32 - abs(y + 0.5 - sy))
+                dists.append((math.hypot(dx, dy), i))
+            dists.sort()
+            gap = dists[1][0] - dists[0][0]  # 0 right on a crack
+            plate = dists[0][1]
+            if gap < 0.9:
+                c = (255, 214, 96)
+            elif gap < 2.0:
+                c = (246, 120, 34)
+            elif plate in molten:
+                c = shade((214, 74, 26), rng.choice((-12, -6, 0, 6, 12)))
+            else:
+                warm = max(0.0, 1 - (gap - 2.0) / 3)  # crust glows a little near the cracks
+                c = shade((64 + round(60 * warm), 24 + round(14 * warm), 20), rng.choice((-6, -3, 0, 3)))
+            px[x, y] = c
+    return img
+
+
+def spike_plate():
+    """An iron plate with nine holes (3x3, 9px apart) where the spikes come up. The holes are
+    symmetrical, so the plate looks the same however the floor block turns it."""
+    rng = random.Random(111)
+    img, px = noisy((32, 32), (78, 76, 90), rng, (-5, -3, 0, 0, 3, 5))
+    for i in range(32):
+        px[i, 0] = px[0, i] = (40, 38, 48)        # the joint with the next tile
+        px[i, 1] = px[1, i] = (116, 114, 130)     # lit top and left edges
+        px[i, 31] = px[31, i] = (52, 50, 62)      # shaded bottom and right edges
+    for x, y in ((3, 3), (28, 3), (3, 28), (28, 28)):  # rivets
+        px[x, y] = (150, 148, 164)
+        px[x + 1, y + 1] = (46, 44, 56)
+    for hx in (5, 14, 23):
+        for hy in (5, 14, 23):
+            for y in range(hy, hy + 4):
+                for x in range(hx, hx + 4):
+                    edge = x == hx or y == hy
+                    px[x, y] = (34, 30, 40) if edge else (16, 14, 20)
+            for k in range(4):  # a worn, shiny rim along the bottom and right of each hole
+                px[hx + k, hy + 4] = (124, 122, 138)
+                px[hx + 4, hy + k] = (124, 122, 138)
+    return img
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     floor_tile(1).save(OUT / "Floor_0.png")
@@ -324,6 +385,8 @@ def main():
     bath_tile().save(OUT / "BathTile.png")
     water_tile().save(OUT / "Water.png")
     puddle_tile().save(OUT / "Puddle.png")
+    lava_tile().save(OUT / "Lava.png")
+    spike_plate().save(OUT / "SpikePlate.png")
     print("Wrote", ", ".join(sorted(p.name for p in OUT.glob("*.png"))))
 
 

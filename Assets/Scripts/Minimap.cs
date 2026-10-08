@@ -21,6 +21,8 @@ public class Minimap : MonoBehaviour
 
     private static readonly Color32 Hidden = new Color32(0, 0, 0, 0);
     private static readonly Color32 Water = new Color32(96, 170, 220, 255);
+    private static readonly Color32 Lava = new Color32(240, 110, 40, 255);
+    private static readonly Color32 Spikes = new Color32(150, 96, 104, 255); // a warning red-grey
 
     private Texture2D texture;
     private Color32[] pixels;
@@ -91,6 +93,8 @@ public class Minimap : MonoBehaviour
                 Color32 color = !explored[col, row] || c == ' ' ? Hidden
                               : LevelMap.IsWall(c) ? (Color32)map.WallColor
                               : LevelMap.IsWater(c) ? Water
+                              : LevelMap.IsLava(c) ? Lava
+                              : LevelMap.IsSpikes(c) ? Spikes
                               : (Color32)map.FloorColor;
                 FillTile(col, row, color);
             }

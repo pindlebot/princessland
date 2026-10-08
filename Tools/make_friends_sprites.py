@@ -14,7 +14,7 @@ Out:  Assets/Art/Mermaid.png / .json    (48x48)  Coralie on her rock in the cast
         Campfire 4 (looping) · Barrel · Crate · Bones · Mushrooms 2 (glow pulse) ·
         Door_Closed · Door_Open · Door_Locked · Key 2 (glint)
       Assets/Art/WaterDecals.png / .json (32x32, centre pivot; laid flat on the floor)
-        Ripple 4 (looping) · Lily 1
+        Ripple 4 (looping) · Lily 1 · LavaBubble 6 (looping; a bubble swells and pops on the lava)
       Assets/Art/UI/PortraitMermaid.png, PortraitBonesy.png   32x32 dialogue portraits
 """
 import math
@@ -338,6 +338,22 @@ def ripple(frame):
     return c.img
 
 
+def lava_bubble(frame):
+    """Frames 0-1: nothing. 2-4: a bubble swelling up. 5: it pops into a ring of sparks."""
+    c = Canvas()
+    if frame in (2, 3, 4):
+        r = (1.6, 2.8, 3.8)[frame - 2]
+        c.ellipse(16, 16, r + 0.8, r + 0.8, (210, 80, 26, 255))
+        c.ellipse(16, 16, r, r, (255, 170, 56, 255))
+        c.dot(round(16 - r / 2), round(16 - r / 2), (255, 244, 180, 255))
+    elif frame == 5:
+        for a in range(0, 360, 45):
+            x = 16 + math.cos(math.radians(a)) * 4.5
+            y = 16 + math.sin(math.radians(a)) * 4.5
+            c.dot(round(x), round(y), (255, 210, 90, 255))
+    return c.img
+
+
 def lily():
     c = Canvas()
     c.ellipse(16, 16, 8, 8, (70, 150, 70, 255))
@@ -388,6 +404,7 @@ if __name__ == "__main__":
     write_sheet("WaterDecals", None, [
         ("Ripple", 5, True, [ripple(f) for f in range(4)]),
         ("Lily", 1, False, [lily()]),
+        ("LavaBubble", 6, True, [lava_bubble(f) for f in range(6)]),
     ], pivot="center", outline_color=None)
     portrait(draw_mermaid().crop((8, 0, 40, 32)), (40, 90, 120)).save(ART / "UI" / "PortraitMermaid.png")
     head = draw_bonesy().crop((8, 2, 24, 18)).resize((32, 32), Image.NEAREST)  # his skull, close up
