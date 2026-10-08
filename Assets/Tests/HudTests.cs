@@ -32,6 +32,7 @@ public class HudTests
     public IEnumerator HeartsEmptyWhenHurtAndPopWhenHealed()
     {
         yield return Load("Dungeon");
+        GameSession.Settings.gentle = false; // one point of damage = one heart
         var health = player.GetComponent<Health>();
         foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
 

@@ -39,6 +39,7 @@ public class CharacterAnimator : MonoBehaviour
         var health = GetComponent<Health>();
         health.Damaged += _ => animator.SetTrigger(HurtId);
         health.Died += _ => animator.SetBool(DeadId, true);
+        health.Revived += _ => animator.SetBool(DeadId, false);
 
         // Whichever action source this character has drives the Action state.
         if (TryGetComponent(out SpellAbility ability)) ability.Cast += PlayAction;

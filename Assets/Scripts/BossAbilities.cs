@@ -117,6 +117,10 @@ public class BossAbilities : MonoBehaviour
 
     // ---------- Ground Slam ----------
 
+    // Gentle Mode gives more time to see the warning circle and step out of it.
+    public const float GentleWindupFactor = 1.6f;
+    public float WindupSeconds => windupSeconds * (GameSession.Settings.gentle ? GentleWindupFactor : 1f);
+
     // Public so tests (or a scripted moment) can trigger it on demand.
     public void StartSlam()
     {
@@ -137,10 +141,11 @@ public class BossAbilities : MonoBehaviour
         var warning = Instantiate(warningPrefab, new Vector3(target.x, 0.03f, target.z), Quaternion.Euler(90f, 0f, 0f));
         AudioManager.Play(windupSound);
         if (animator != null) animator.PlayAction(); // the lunge animation reads as "rearing back"
-        for (float t = 0f; t < windupSeconds; t += Time.deltaTime)
+        float windup = WindupSeconds;
+        for (float t = 0f; t < windup; t += Time.deltaTime)
         {
             if (health.IsDead) { Destroy(warning); yield break; }
-            warning.transform.localScale = Vector3.one * slamRadius * Mathf.Lerp(0.3f, 1f, t / windupSeconds);
+            warning.transform.localScale = Vector3.one * slamRadius * Mathf.Lerp(0.3f, 1f, t / windup);
             yield return null;
         }
 

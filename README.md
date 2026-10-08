@@ -2,11 +2,19 @@
 
 A tiny isometric dungeon crawler for learning Unity (6000.6.4f1, Built-in Render Pipeline).
 
-**Play:** open in Unity Hub → open `Assets/Scenes/CharacterSelect.unity` → press ▶.
+**Play:** open in Unity Hub → open `Assets/Scenes/Title.unity` → press ▶.
 (Pressing ▶ in a level scene directly also works; you play as the wizard.)
 
-**Flow:** Character Select → **Level 0** (the castle grounds) → **Level 1** (the dungeon).
-Level 0's exit only appears once its 4 skeletons are defeated. Esc returns to character select. M mutes the music.
+**Flow:** Title (3 save slots) → Character Select (for a new slot) → **Level 0** (the castle grounds) → **Level 1** (the dungeon).
+Level 0's exit only appears once its 4 skeletons are defeated. Esc / Start opens the pause menu. M mutes the music.
+
+**Saving:** three slots, each a JSON file in `Application.persistentDataPath` (`save1.json` ...). Every door, the
+stairs and starting a new adventure autosave; the pause menu's "Save and go to title" saves at the door you came in by.
+"Continue" (or just Enter / A) on the title screen picks up the most recent save.
+
+**Modes** (pause menu, saved per slot): **Gentle** (the default) has no Game Over: monsters hit for half damage,
+and at 0 hearts the hero naps and wakes by the last fountain she passed (or where she came in) with everything kept;
+the boss's warning circle lasts 1.6× longer. **Adventurer** is the classic rules, with slightly faster monsters.
 In Level 0, walk up to **Amethyra the dragon** and press **E** to talk (E / Space / Enter / click to continue).
 Press **E** at the **castle gate** to go inside to the hero's home (bed, toilet, sink, paper towel); the front
 door brings you back out by the gate. Cleared levels and finished conversations are remembered between scenes.
@@ -26,7 +34,14 @@ at half health he splits off 3 slimelings. A boss health bar appears once he not
 |---|---|---|---|---|
 | Aldric the Wizard | Fireball | 5 | 50 (+8/s) | every 0.6s, 10 mana |
 | Princess Marina (aquamarine) | Tidal Orb | 6 | 40 (+9/s) | every 0.45s, 8 mana |
-WASD move · Click/Space fireball (auto-aims) · E pick up / open · I inventory · reach the green crystal · R restart.
+| Action | Keyboard / mouse | Gamepad |
+|---|---|---|
+| Walk | WASD / arrows | left stick / d-pad |
+| Magic (auto-aims) | Space / click | X / right trigger |
+| Talk, open, pick up | E | A |
+| Bag · skills | I · K | Y · View |
+| Pause menu | Esc | Start |
+| Help · music · restart | H · M · R | |
 
 ## Where things live
 | Path | What it teaches |
@@ -44,6 +59,9 @@ WASD move · Click/Space fireball (auto-aims) · E pick up / open · I inventory
 | `Scripts/AudioManager.cs` | Music loop + a pool of `AudioSource`s for overlapping effects, random pitch variation |
 | `Scripts/LevelBootstrap.cs` | Spawning the chosen hero and wiring scene objects to it at runtime; `DefaultExecutionOrder` |
 | `Scripts/CharacterSelectController.cs` | A menu scene in UI Toolkit; `SceneManager.LoadScene` |
+| `Scripts/GameInput.cs` | Every button in one place: the Input System's keyboard, mouse and gamepad devices |
+| `Scripts/SaveSystem.cs`, `SaveData.cs`, `TitleController.cs` | Save slots with `JsonUtility`, safe file writes, a title screen |
+| `Scripts/PauseMenu.cs`, `GameSettings.cs` | A menu that stops time (`Time.timeScale = 0`) and works with mouse, keys and pad |
 | `Scripts/ItemDefinition.cs` | ScriptableObjects: items as data assets (`Create > Dungeon > Item`) |
 | `Scripts/Inventory.cs`, `ItemPickup.cs` | A bag + equipment slots; pickups reuse the `IInteractable` system |
 | `Scripts/EnemyAI.cs` | A small state machine, `Physics.Linecast` line-of-sight, gizmos |
@@ -80,6 +98,7 @@ WASD move · Click/Space fireball (auto-aims) · E pick up / open · I inventory
 | `DungeonBuilder.Home.cs` | The home's furniture and front door (prompts and messages live here) |
 | `DungeonBuilder.Castle.cs` | The castle from stacked wall blocks + a hand-built pyramid mesh for roofs |
 | `DungeonBuilder.CharacterSelect.cs` | The select screen scene |
+| `DungeonBuilder.Title.cs` | The title screen scene |
 
 Map legend: `.` ground · `,` grass tufts · `=` path · `#` stone wall · `T` wall + torch · `H` hedge ·
 `K` castle (a rectangle) · `P` start · `E` skeleton · `L` slime · `M` Slime King (boss) · `C` chest · `I` Ember Ring · `D` dragon · `X` exit ·

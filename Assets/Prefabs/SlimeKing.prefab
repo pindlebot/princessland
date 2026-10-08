@@ -299,6 +299,8 @@ MonoBehaviour:
   maxHealth: 30
   hurtSound: {fileID: 8300000, guid: da6133efc1630484896852624ead42b3, type: 3}
   deathSound: {fileID: 8300000, guid: 4d6e174f276624401ac339d7422743cc, type: 3}
+  PlayDeathSound: 1
+  InvulnerableUntil: 0
 --- !u!114 &8411469684124628020
 MonoBehaviour:
   m_ObjectHideFlags: 0

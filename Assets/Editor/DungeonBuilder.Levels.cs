@@ -234,6 +234,8 @@ public static partial class DungeonBuilder
         var gameManager = new GameObject("GameManager").AddComponent<GameManager>();
         SetRef(gameManager, "winSound", Sound("victory"));
         SetRef(gameManager, "loseSound", Sound("defeat"));
+        SetRef(gameManager, "sleepSound", Sound("rest"));
+        SetRef(gameManager, "wakeSound", Sound("pickup"));
         AddAudio(spec.Theme == Theme.Outdoor ? "music_castle" : spec.Theme == Theme.Home ? "music_home" : "music_dungeon");
         var (hud, minimap) = CreateHud(levelMap);
 

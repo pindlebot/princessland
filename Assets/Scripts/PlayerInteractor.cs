@@ -11,7 +11,7 @@ public class PlayerInteractor : MonoBehaviour
     // Computed when asked rather than cached in Update, so readers like the HUD never see
     // last frame's answer (Unity doesn't guarantee which script's Update runs first).
     public IInteractable Current =>
-        (GameManager.Instance != null && GameManager.Instance.IsGameOver) || DialogueController.IsOpen
+        (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) || DialogueController.IsOpen
             ? null
             : FindNearest();
 

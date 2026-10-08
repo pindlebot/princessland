@@ -16,6 +16,7 @@ public class EnemyAI : MonoBehaviour
     public static IReadOnlyCollection<EnemyAI> Alive => alive; // read-only view, for the minimap
 
     [SerializeField] private float moveSpeed = 3.2f;
+    private const float AdventurerSpeedBoost = 1.15f;
     [SerializeField] private float aggroRange = 8f;
     [SerializeField] private float attackRange = 1.3f;
     [SerializeField] private float attackCooldown = 1f;
@@ -92,7 +93,9 @@ public class EnemyAI : MonoBehaviour
 
         if (state == State.Chase)
         {
-            Vector3 move = toPlayer.normalized * moveSpeed + Vector3.down;
+            // Adventurer Mode's monsters are a little quicker.
+            float speed = moveSpeed * (GameSession.Settings.gentle ? 1f : AdventurerSpeedBoost);
+            Vector3 move = toPlayer.normalized * speed + Vector3.down;
             controller.Move(move * Time.deltaTime);
         }
         else if (Time.time >= nextAttackTime)

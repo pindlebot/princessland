@@ -15,6 +15,15 @@ public class Health : MonoBehaviour
 
     public event Action<Health> Damaged;
     public event Action<Health> Died;
+    public event Action<Health> Revived;
+
+    // Optional: changes incoming damage (Gentle Mode halves the hero's). Returns the new amount.
+    public Func<int, int> AdjustDamage;
+    public bool PlayDeathSound = true;
+
+    // No damage at all until this time (e.g. just after waking up).
+    public float InvulnerableUntil;
+    public bool IsInvulnerable => Time.time < InvulnerableUntil;
 
     private Renderer[] renderers;
     private float flashTimer;
@@ -27,13 +36,15 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        if (IsDead) return;
+        if (IsDead || IsInvulnerable) return;
+        if (AdjustDamage != null) amount = AdjustDamage(amount);
 
+        // Even a hit that costs no heart still flashes and makes a sound: it was a "bump".
         Current = Mathf.Max(0, Current - amount);
         flashTimer = 0.1f;
         SetFlash(true);
         Damaged?.Invoke(this);
-        AudioManager.Play(IsDead ? deathSound : hurtSound);
+        AudioManager.Play(IsDead ? (PlayDeathSound ? deathSound : null) : hurtSound);
 
         if (IsDead) Died?.Invoke(this);
     }
@@ -43,6 +54,13 @@ public class Health : MonoBehaviour
     {
         maxHealth = Mathf.Max(1, newMax);
         Current = Mathf.Min(Current, maxHealth);
+    }
+
+    // Back to full health after being defeated (Gentle Mode's nap).
+    public void Revive()
+    {
+        Current = maxHealth;
+        Revived?.Invoke(this);
     }
 
     public void Heal(int amount)

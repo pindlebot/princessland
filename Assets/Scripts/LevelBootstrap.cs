@@ -31,6 +31,10 @@ public class LevelBootstrap : MonoBehaviour
     public static LevelBootstrap Current { get; private set; }
 
     public GameObject Player { get; private set; }
+
+    // Where the hero wakes after a nap in Gentle Mode: where she came in, until she passes
+    // a fountain (WakeFountain moves it there).
+    public Transform WakePoint { get; set; }
     public CharacterDefinition Character { get; private set; }
     public string Title => title.Replace("{hero}", Character.DisplayName.Split(" the ")[0]);
     public bool ShowEnemyCount => showEnemyCount;
@@ -57,6 +61,7 @@ public class LevelBootstrap : MonoBehaviour
                 spawn = named;
         GameSession.NextSpawn = null;
         GameSession.EnteredBy = spawn == spawnPoint ? "" : spawn.name;
+        WakePoint = spawn;
 
         Player = Instantiate(Character.Prefab, spawn.position, spawn.rotation);
         Player.name = Character.Prefab.name;

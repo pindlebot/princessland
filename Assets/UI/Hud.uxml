@@ -170,6 +170,12 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
+        <!-- Gentle Mode's nap: a dreamy fade over everything (HudController sets its opacity) -->
+        <ui:VisualElement name="sleep-fade" class="sleep-fade" picking-mode="Ignore">
+            <ui:Label class="sleep-text" text="Zzz..." />
+            <ui:Label class="sleep-subtext" text="So sleepy... time for a little nap." />
+        </ui:VisualElement>
+
         <!-- Drawn last so it covers everything else. -->
         <!-- Pause menu (Esc / Start): PauseMenu.cs. Each setting row is: name, <, value, > -->
         <ui:VisualElement name="pause-screen" class="pause-screen">

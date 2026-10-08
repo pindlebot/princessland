@@ -874,3 +874,28 @@ Label {
     -unity-text-align: middle-center;
     margin: 0 0 6px 0;
 }
+
+/* ---------- Gentle Mode nap ---------- */
+
+.sleep-fade {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(40, 30, 72); /* a soft night-time purple */
+    opacity: 0;
+}
+
+.sleep-text {
+    font-size: 48px;
+    color: rgb(255, 236, 170);
+}
+
+.sleep-subtext {
+    font-size: 18px;
+    color: rgb(220, 206, 240);
+    margin-top: 8px;
+}

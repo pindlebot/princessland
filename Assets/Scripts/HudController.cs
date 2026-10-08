@@ -36,7 +36,7 @@ public class HudController : MonoBehaviour
     public bool IsHelpOpen => helpPanel.ClassListContains("open");
     public string SpellKey => GameInput.UsingGamepad ? "X" : usedMouseLast ? "Click" : "Space";
 
-    private VisualElement root, manaFill, spellSlot, spellCooldown, banner, objectiveCard, monstersRow;
+    private VisualElement root, manaFill, spellSlot, spellCooldown, banner, objectiveCard, monstersRow, sleepFade;
     private Label enemiesLeft, objectiveHint, bannerTitle, prompt, contextHint, toast, spellKey;
     private VisualElement heartsRow, pipsRow, xpFill, helpPanel;
     private Label levelBadge, goldText, pointsHint;
@@ -84,6 +84,7 @@ public class HudController : MonoBehaviour
         pipsRow = root.Q("objective-pips");
         objectiveHint = root.Q<Label>("objective-hint");
         banner = root.Q("banner");
+        sleepFade = root.Q("sleep-fade");
         bannerTitle = root.Q<Label>("banner-title");
         prompt = root.Q<Label>("interact-prompt");
         toast = root.Q<Label>("toast");
@@ -150,6 +151,7 @@ public class HudController : MonoBehaviour
         toast.EnableInClassList("visible", Time.time < toastHideAt);
 
         var game = GameManager.Instance;
+        sleepFade.style.opacity = game != null ? game.SleepFade : 0f;
         bool over = game != null && game.IsGameOver;
         banner.EnableInClassList("visible", over);
         if (over)

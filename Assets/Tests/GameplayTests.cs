@@ -61,6 +61,7 @@ public class GameplayTests
     [UnityTest]
     public IEnumerator EnemyDamagesPlayerInMeleeRange()
     {
+        GameSession.Settings.gentle = false; // one hit = one heart
         var enemy = Object.FindAnyObjectByType<EnemyAI>();
         Teleport(player, enemy.transform.position + new Vector3(1f, 0f, 0f));
         yield return new WaitForSeconds(0.5f);
@@ -103,6 +104,7 @@ public class GameplayTests
     [UnityTest]
     public IEnumerator HudShowsHealthManaCooldownAndBanner()
     {
+        GameSession.Settings.gentle = false; // Adventurer Mode: full damage and a Game Over banner
         var root = Object.FindAnyObjectByType<UIDocument>().rootVisualElement;
         yield return null; // HudController looks its elements up in Start
 

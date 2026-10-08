@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 // Storybook scenery for the castle grounds: a small, coherent set of props (trees, a fountain,
@@ -13,6 +14,7 @@ public static partial class DungeonBuilder
         var scenery = SpriteSheetImporter.Import("Scenery");
         assets.Tree = Scenic("Tree", scenery, "Tree", new Vector3(0.8f, 2f, 0.8f), shadow, 3f);
         assets.Fountain = Scenic("Fountain", scenery, "Fountain", new Vector3(2.6f, 1f, 2f), shadow, 3.6f);
+        AddWakeSpot(assets.Fountain);
         assets.Bush = Scenic("Bush", scenery, "Bush", null, shadow, 1.8f);
 
         var butterfly = new GameObject("Butterfly");
@@ -69,6 +71,19 @@ public static partial class DungeonBuilder
         }
         AddShadow(go, shadow, shadowSize);
         return SavePrefab(go, name);
+    }
+
+    // Gentle Mode wakes the hero by the last fountain she passed: a spot just in front of it.
+    private static void AddWakeSpot(GameObject fountainPrefab)
+    {
+        var root = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(fountainPrefab));
+        var spot = new GameObject("WakeSpot").transform;
+        spot.SetParent(root.transform, false);
+        spot.localPosition = new Vector3(0f, 0f, -2.2f); // toward the camera, clear of the basin
+        spot.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        SetRef(root.AddComponent<WakeFountain>(), "wakeSpot", spot);
+        PrefabUtility.SaveAsPrefabAsset(root, AssetDatabase.GetAssetPath(fountainPrefab));
+        PrefabUtility.UnloadPrefabContents(root);
     }
 
     // Layered earth under the island's edge (the hedge tiles), so it reads as deliberate.

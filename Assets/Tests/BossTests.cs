@@ -59,6 +59,7 @@ public class BossTests
     [UnityTest]
     public IEnumerator GroundSlamHitsYouOnlyIfYouStayInTheCircle()
     {
+        GameSession.Settings.gentle = false; // full damage, so the hit is easy to count
         foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
         var health = player.GetComponent<Health>();
 
