@@ -30,18 +30,23 @@ public class Inventory : MonoBehaviour
     public ItemDefinition Equipped(EquipSlot slot) =>
         state.Equipped.TryGetValue(slot, out var id) ? database.Find(id) : null;
 
-    public int SpellDamageBonus
+    // Totals over everything equipped, read by the scripts each bonus affects.
+    public int SpellDamageBonus => Total(item => item.SpellDamageBonus);       // SpellAbility
+    public int MaxHealthBonus => Total(item => item.MaxHealthBonus);           // PlayerProgression
+    public int MaxManaBonus => Total(item => item.MaxManaBonus);               // PlayerProgression
+    public float MoveSpeedFactor => 1f + Total(item => item.MoveSpeedPercent) / 100f; // PlayerController
+    // Multiplies the spell's cooldown: 20% faster recharge = 0.8. Never below a fifth.
+    public float SpellCooldownFactor => Mathf.Max(0.2f, 1f - Total(item => item.SpellRechargePercent) / 100f);
+
+    private int Total(Func<ItemDefinition, int> bonus)
     {
-        get
+        int total = 0;
+        foreach (var id in state.Equipped.Values)
         {
-            int total = 0;
-            foreach (var id in state.Equipped.Values)
-            {
-                var item = database.Find(id);
-                if (item != null) total += item.SpellDamageBonus;
-            }
-            return total;
+            var item = database.Find(id);
+            if (item != null) total += bonus(item);
         }
+        return total;
     }
 
     public bool Add(ItemDefinition item)

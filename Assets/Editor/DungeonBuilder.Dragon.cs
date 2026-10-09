@@ -72,8 +72,10 @@ public static partial class DungeonBuilder
 
     // A talking character: a billboard sprite with Idle/Talk animations, an Npc component
     // with its conversations, and (optionally) a solid collider and a shadow.
+    // npcType: Npc, or a subclass such as Merchant; configure sets that subclass's own fields.
     private static GameObject CreateNpcPrefab(string prefabName, string sheetName, string npcName, string portraitPath,
-                                              string voice, Talk[] talks, Vector3? solidSize, Sprite shadowSprite, float shadowSize)
+                                              string voice, Talk[] talks, Vector3? solidSize, Sprite shadowSprite, float shadowSize,
+                                              System.Type npcType = null, System.Action<Npc> configure = null)
     {
         var sheet = SpriteSheetImporter.Import(sheetName);
         var go = new GameObject(prefabName);
@@ -93,7 +95,7 @@ public static partial class DungeonBuilder
         sprite.AddComponent<Billboard>();
         if (shadowSprite != null) AddShadow(go, shadowSprite, shadowSize);
 
-        var npc = go.AddComponent<Npc>();
+        var npc = (Npc)go.AddComponent(npcType ?? typeof(Npc));
         SetString(npc, "npcName", npcName);
         SetRef(npc, "portrait", SpriteSheetImporter.ImportSingle(portraitPath, 16));
         SetRef(npc, "voice", Sound(voice));
@@ -104,6 +106,7 @@ public static partial class DungeonBuilder
         SetFloat(npc, "idleFps", sheet.Anim("Idle").fps);
         SetFloat(npc, "talkFps", sheet.Anim("Talk").fps);
         SetConversations(npc, talks);
+        configure?.Invoke(npc);
         return SavePrefab(go, prefabName);
     }
 

@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public enum EquipSlot { None, Ring }
+// Where an item is worn. Saves store these as numbers, so add new slots at the end: never
+// reorder or remove one, or old saves would put their items in the wrong place.
+public enum EquipSlot { None, Ring, Helm, Armor, Weapon, Boots }
 
 // What an item *is*: name, art and stats, saved as an asset (Assets/Items/*.asset).
 // A ScriptableObject is a data container that lives in the project rather than in a
@@ -13,6 +16,7 @@ public class ItemDefinition : ScriptableObject
     [Tooltip("A stable, unique id (e.g. \"ember_ring\"). Saves and the inventory store this, not the asset.")]
     [SerializeField] private string id = "new_item";
     [SerializeField] private string displayName = "New Item";
+    [Tooltip("Flavour text. The bonuses are listed after it automatically.")]
     [TextArea] [SerializeField] private string description;
     [SerializeField] private Sprite icon;
     [SerializeField] private EquipSlot slot = EquipSlot.None;
@@ -22,6 +26,14 @@ public class ItemDefinition : ScriptableObject
     // tells Unity to load old saved values into the new name instead of losing them.
     [FormerlySerializedAs("fireballDamageBonus")]
     [SerializeField] private int spellDamageBonus;
+    [Tooltip("Extra hearts.")]
+    [SerializeField] private int maxHealthBonus;
+    [Tooltip("Extra magic (mana).")]
+    [SerializeField] private int maxManaBonus;
+    [Tooltip("Walk this much faster, in percent.")]
+    [SerializeField] private int moveSpeedPercent;
+    [Tooltip("The spell recharges this much faster, in percent.")]
+    [SerializeField] private int spellRechargePercent;
 
     public string Id => id;
     public string DisplayName => displayName;
@@ -30,4 +42,23 @@ public class ItemDefinition : ScriptableObject
     public EquipSlot Slot => slot;
     public bool IsEquippable => slot != EquipSlot.None;
     public int SpellDamageBonus => spellDamageBonus;
+    public int MaxHealthBonus => maxHealthBonus;
+    public int MaxManaBonus => maxManaBonus;
+    public int MoveSpeedPercent => moveSpeedPercent;
+    public int SpellRechargePercent => spellRechargePercent;
+
+    // "+1 spell damage, +2 hearts", for the inventory's details line.
+    public string BonusText
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (spellDamageBonus != 0) parts.Add($"{spellDamageBonus:+0;-0} spell damage");
+            if (maxHealthBonus != 0) parts.Add($"{maxHealthBonus:+0;-0} {(Mathf.Abs(maxHealthBonus) == 1 ? "heart" : "hearts")}");
+            if (maxManaBonus != 0) parts.Add($"{maxManaBonus:+0;-0} magic");
+            if (moveSpeedPercent != 0) parts.Add($"walk {Mathf.Abs(moveSpeedPercent)}% {(moveSpeedPercent > 0 ? "faster" : "slower")}");
+            if (spellRechargePercent != 0) parts.Add($"spells recharge {Mathf.Abs(spellRechargePercent)}% {(spellRechargePercent > 0 ? "faster" : "slower")}");
+            return string.Join(", ", parts);
+        }
+    }
 }

@@ -17,7 +17,7 @@ public static partial class DungeonBuilder
     //   Markers  P  player start    E  skeleton    L  slime    M  the Slime King (boss)
     //            C  chest    I  Ember Ring    D  dragon    X  exit (sealed until the boss, if any, is dead)
     //   Home     B  bed    W  toilet    S  sink    R  paper towel
-    //   Legend   doors, the castle gate and named arrival spots are defined per file (MapFile.cs)
+    //   Legend   doors, the castle gate, named arrival spots and items are defined per file (MapFile.cs)
     //   Scenery  Y  tree    F  fountain (make a wish!)    b  bush    Q  banner    *  butterflies    ;  flowers
     //   Pond     w  water (not walkable)    m  Coralie the mermaid, in the water    f  the bush hiding the frog
     //   Dungeon  c  campfire (warm up: full health)    n  Bonesy, the friendly skeleton    o  barrel    x  crate
@@ -30,6 +30,8 @@ public static partial class DungeonBuilder
     //   Cove     J  pirate    &  dark mermaid, in the water (throws bolts)    Z  Pearl, in the water
     //            q  palm    @  the pirates' ship, on the water    $  treasure heap    h  wooden planks (jetties, bridges)
     //            |  rock with a waterfall pouring down its front (put water below it)
+    //   Village  +  white picket fence (solid)    -  cobbles
+    //            (buildings, props and Barnaby come from the legend: see DungeonBuilder.Town.cs)
     //            (header "water: sea" makes 'w' the sea; "ground: sand" makes '.' and the markers beach sand.
     //             On outdoor levels, water on the map's edge spills off the island, and doors are rowboats.)
     // Torches go on the side of the wall that faces the camera (south or west), so put
@@ -61,7 +63,7 @@ public static partial class DungeonBuilder
         var maps = Directory.GetFiles(LevelsFolder, "*.txt").OrderBy(p => p)
             .Select(p => MapFile.Parse(Path.GetFileNameWithoutExtension(p), File.ReadAllText(p)))
             .ToList();
-        var errors = MapValidator.Validate(maps);
+        var errors = MapValidator.Validate(maps, ItemSpecs.Select(i => i.Id).ToList());
         if (errors.Count > 0)
             throw new System.Exception("[DungeonBuilder] The level files have problems:\n  " + string.Join("\n  ", errors));
         return maps;
@@ -110,6 +112,7 @@ public static partial class DungeonBuilder
         SetStrings(levelMap, "rows", map);
         SetColor(levelMap, "floorColor", spec.MinimapFloor);
         SetColor(levelMap, "wallColor", spec.MinimapWall);
+        SetString(levelMap, "buildings", spec.File.BuildingSymbols);
 
         var enemies = new GameObject("Enemies").transform;
         var decor = new GameObject("Decor").transform;
@@ -205,7 +208,7 @@ public static partial class DungeonBuilder
                         SetString(Place(assets.Chest, decor, pos).GetComponent<Chest>(), "persistentId", $"{sceneName}/{col},{row}");
                         break;
                     case 'I':
-                        SetString(Place(assets.RingPickup, decor, pos).GetComponent<ItemPickup>(), "persistentId", $"{sceneName}/{col},{row}");
+                        SetString(Place(assets.ItemPickups[EmberRingId], decor, pos).GetComponent<ItemPickup>(), "persistentId", $"{sceneName}/{col},{row}");
                         break;
                     case 'D': Place(assets.Dragon, decor, pos); break;
                     case 'B': Place(assets.Bed, decor, pos + Vector3.right); break; // the bed is ~1.5 tiles wide
@@ -260,6 +263,7 @@ public static partial class DungeonBuilder
                     case 'y':
                         SetString(Place(assets.Key, decor, pos).GetComponent<KeyPickup>(), "persistentId", $"{sceneName}/{col},{row}");
                         break;
+                    case '+': BuildFence(level, map, col, row, pos, mats["Picket"]); break;
                 }
 
                 // Now and then a shell or a starfish on the beach.
@@ -273,9 +277,14 @@ public static partial class DungeonBuilder
                 {
                     if (entry.Kind == "spawn")
                         namedSpawns.Add(SpawnPoint(entry.Args[0], pos + Vector3.up, Quaternion.identity));
+                    else if (entry.Kind == "item")
+                        SetString(Place(assets.ItemPickups[entry.Args[0]], decor, pos).GetComponent<ItemPickup>(),
+                                  "persistentId", $"{sceneName}/{col},{row}");
                     else if (entry.Kind == "door")
                         PlaceDoor(spec.File, spec.Theme == Theme.Outdoor ? assets.Rowboat : assets.HouseDoor,
                                   decor, namedSpawns, col, row, pos);
+                    else if (entry.Kind == "prop" || entry.Kind == "npc")
+                        PlaceTownThing(entry, assets, decor, pos, rng); // buildings are built below, whole
                 }
             }
         }
@@ -286,6 +295,7 @@ public static partial class DungeonBuilder
 
         if (spec.Theme == Theme.Outdoor)
             AddClouds(decor, map, assets.Cloud);
+        BuildBuildings(spec.File, level, assets); // the village's houses (legend "building" entries)
 
         // The castle (only on maps with 'K' tiles) also gives us a spawn point outside its gate.
         var castleDoor = spec.File.Doors().FirstOrDefault(d => d.IsCastle);
@@ -420,6 +430,11 @@ public static partial class DungeonBuilder
             return roll < 65 ? "Floor_0" : roll < 85 ? "Floor_1" : "Floor_2";
         if (c == '=' || c == 'X') return roll < 80 ? "Path" : "Path_1"; // now and then, a stone
         if (c == 'K') return "Floor_0"; // the castle courtyard is paved
+        // The village's cobbles, under its buildings, and under anything standing in the square
+        // (a prop with cobbles on two sides, like the well or a bench).
+        bool town = spec.File.Legend.TryGetValue(c, out var thing) && thing.Kind is "building" or "prop" or "npc";
+        if (LevelMap.IsCobbles(c) || (town && (thing.Kind == "building" || CountAround(map, col, row, '-') >= 2)))
+            return roll < 85 ? "Cobble_0" : "Cobble_1";
         if (spec.SandGround) return roll < 92 ? "Sand_0" : "Sand_1"; // the beach (now and then, a shell)
         // Large, quiet patches: smooth Perlin noise across the map rather than a random pick per
         // tile, so neighbouring tiles usually match and the ground reads as calm areas of green.

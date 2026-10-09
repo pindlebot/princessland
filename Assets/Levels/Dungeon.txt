@@ -1,3 +1,4 @@
+// 2: the Starlight Wand, the prize of the locked treasure room.
 // The dungeon under the castle: a labyrinth of rooms and winding tunnels.
 //   The storeroom (barrels and crates) is through the door and down the hall east of the start room.
 //   Bonesy, a friendly skeleton, keeps a campfire going south of the start (warm up there!).
@@ -26,7 +27,7 @@ minimap_wall: #AAA4B8
 #............#.j.....j...............###########...........#
 #............############......j.....#         #...........#
 #,,..........#          #............#         #...........#
-#,,,........o#          #............#         #u..u.....o.#
+#,,,........o#          #............#         #u..u.2...o.#
 ####..########          #ox.........o#         #############
    #..#                 ######..######
 ####..###T##T###             #..#
@@ -62,3 +63,4 @@ minimap_wall: #AAA4B8
  #.........L..#          #j............#,X,#..............u#
  ##############          ###################################
 ---
+2 = item starlight_wand

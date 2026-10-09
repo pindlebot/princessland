@@ -86,12 +86,33 @@
                 <ui:Label class="inventory-title" text="Inventory" />
                 <ui:Label class="inventory-close" text="I: close" />
             </ui:VisualElement>
+            <!-- What the hero is wearing. HudController finds each slot by name: equip-<slot>. -->
+            <ui:Label class="section-label" text="Wearing" />
             <ui:VisualElement class="equip-row" picking-mode="Ignore">
-                <ui:VisualElement name="equip-ring" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                <ui:VisualElement class="equip-info" picking-mode="Ignore">
-                    <ui:Label class="section-label" text="Ring" />
-                    <ui:Label name="stat-damage" class="stat-line" text="Fireball damage: 1" />
+                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
+                    <ui:VisualElement name="equip-weapon" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:Label class="equip-label" text="Weapon" picking-mode="Ignore" />
                 </ui:VisualElement>
+                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
+                    <ui:VisualElement name="equip-helm" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:Label class="equip-label" text="Helm" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
+                    <ui:VisualElement name="equip-armor" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:Label class="equip-label" text="Armor" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
+                    <ui:VisualElement name="equip-boots" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:Label class="equip-label" text="Boots" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
+                    <ui:VisualElement name="equip-ring" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:Label class="equip-label" text="Ring" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="equip-info" picking-mode="Ignore">
+                <ui:Label name="stat-damage" class="stat-line" text="Fireball damage: 1" />
+                <ui:Label name="stat-gear" class="stat-line gear" text="" />
             </ui:VisualElement>
             <ui:Label class="section-label" text="Bag" />
             <ui:VisualElement class="bag" picking-mode="Ignore">

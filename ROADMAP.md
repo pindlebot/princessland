@@ -363,6 +363,8 @@ Watch where she gets stuck without saying anything, and fix that before moving o
 - [ ] Counters, and the first easter eggs that use them (toilet frog, dragon jokes, washed hands)
 - [ ] Hat and Charm slots, consumables on hotbar slots 2–5, key-item tab
 - [ ] The Village (2 rooms off the castle grounds): Barnaby's shop and Pip the Baker
+  (started: Hollyhock is a fenced village beside the castle on Level 0, and Barnaby sells bubble bath at his stall;
+  still to come: a buy panel with several wares, Pip the Baker)
 - [ ] Fountains as save points / fast travel
 - [ ] Breakable pots
 

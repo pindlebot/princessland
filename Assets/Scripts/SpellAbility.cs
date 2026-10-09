@@ -28,21 +28,22 @@ public class SpellAbility : MonoBehaviour
 
     // 0 = just cast, 1 = ready. Read by the HUD.
     public float CooldownProgress => Cooldown <= 0f ? 1f : Mathf.Clamp01(1f - (readyAt - Time.time) / Cooldown);
-    // Skills can make it recharge faster (the princess's Swift Tides).
-    public float Cooldown => cooldown * GameSession.Progress.SpellCooldownFactor;
+    // Skills (the princess's Swift Tides) and equipment (the Starlight Wand) make it recharge faster.
+    public float Cooldown => cooldown * GameSession.Progress.SpellCooldownFactor
+                                     * (inventory != null ? inventory.SpellCooldownFactor : 1f);
     public string SpellName => spellName;
     public Sprite Icon => icon;
     public float ManaCost => manaCost;
     public float LastCastTime { get; private set; } = -999f; // the HUD hints "Space: Magic!" if it's been a while
     public bool CanAfford => mana.CanAfford(manaCost);
-    // Base damage, plus equipment (the Ember Ring) and skills (Empowered Spells).
+    // Base damage, plus equipment (the Ember Ring, the Starlight Wand) and skills (Empowered Spells).
     public int Damage => baseDamage + (inventory != null ? inventory.SpellDamageBonus : 0)
                                     + GameSession.Progress.BonusSpellDamage;
 
     private void Awake()
     {
         mana = GetComponent<Mana>();
-        inventory = GetComponent<Inventory>();       // optional: equipment can add damage
+        inventory = GetComponent<Inventory>();       // optional: equipment can add damage and speed
         movement = GetComponent<PlayerController>(); // optional: lets us turn to face the target
         cam = Camera.main;
     }

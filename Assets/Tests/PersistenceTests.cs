@@ -26,6 +26,10 @@ public class PersistenceTests
     private static Chest StoreroomChest() =>
         Object.FindObjectsByType<Chest>().OrderBy(c => c.transform.position.x).First();
 
+    // The dungeon has two items lying about; the Ember Ring is the one in the first room.
+    private static ItemPickup RingPickup() =>
+        Object.FindObjectsByType<ItemPickup>().FirstOrDefault(p => p.Item.Id == "ember_ring");
+
     [UnityTest]
     public IEnumerator InventoryAndUsedThingsSurviveSceneChanges()
     {
@@ -34,7 +38,7 @@ public class PersistenceTests
         var player = LevelBootstrap.Current.Player;
 
         // Pick up the ring, equip it, and open the chest.
-        var pickup = Object.FindAnyObjectByType<ItemPickup>();
+        var pickup = RingPickup();
         Assert.IsNotNull(pickup.Interact(player));
         var inventory = player.GetComponent<Inventory>();
         Assert.IsTrue(inventory.Equip(inventory.Bag[0]));
@@ -54,7 +58,7 @@ public class PersistenceTests
 
         // Back again: the ring isn't lying on the floor a second time, and the chest stays open and empty.
         yield return Load("Dungeon");
-        Assert.IsNull(Object.FindAnyObjectByType<ItemPickup>(), "no second ring on the floor");
+        Assert.IsNull(RingPickup(), "no second ring on the floor");
         chest = StoreroomChest();
         Assert.IsTrue(chest.IsOpen, "the chest is still open");
         Assert.IsFalse(chest.CanInteract);
@@ -63,7 +67,7 @@ public class PersistenceTests
         // A new game forgets all of it.
         GameSession.NewGame(null);
         yield return Load("Dungeon");
-        Assert.IsNotNull(Object.FindAnyObjectByType<ItemPickup>(), "a fresh game has the ring again");
+        Assert.IsNotNull(RingPickup(), "a fresh game has the ring again");
         Assert.IsFalse(StoreroomChest().IsOpen);
         Assert.AreEqual(0, LevelBootstrap.Current.Player.GetComponent<Inventory>().Bag.Count);
     }

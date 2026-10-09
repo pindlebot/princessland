@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game::ItemDefinition
   id: ember_ring
   displayName: Ember Ring
-  description: A gold band set with a smouldering gem. +1 spell damage.
+  description: A gold band set with a smouldering gem.
   icon: {fileID: 21300000, guid: 44297b8ce3e874edab0baa3790469290, type: 3}
   slot: 1
   spellDamageBonus: 1
+  maxHealthBonus: 0
+  maxManaBonus: 0
+  moveSpeedPercent: 0
+  spellRechargePercent: 0

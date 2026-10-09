@@ -1,3 +1,4 @@
+// 2: the Plumed Helm, on the floor by the wardrobe.
 // Inside the castle: a bedroom on the left, a tiled bathroom on the right.
 // Bedroom: B bed (a tile out from the walls, so it doesn't poke into them), r the rug at its
 // foot, N nightstand with a lamp, A wardrobe, U bookshelf, G toy chest, v a potted plant.
@@ -15,11 +16,12 @@ minimap_wall: #AAA4B8
 ---
 ###T###T###T##
 #N....A.U#W_S#
-#.B......#___#
+#.B...2..#___#
 #.r.....G#_R_#
 #........____#
 #........#####
 #v....P......#
 ######1#######
 ---
+2 = item plumed_helm
 1 = door Level0

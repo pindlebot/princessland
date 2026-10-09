@@ -1,0 +1,63 @@
+{
+  "frameSize": 64,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Well",
+      "row": 0,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Lamppost",
+      "row": 1,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Bench",
+      "row": 2,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Planter",
+      "row": 3,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "NoticeBoard",
+      "row": 4,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Stall",
+      "row": 5,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Coop",
+      "row": 6,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "GrainSack",
+      "row": 7,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    }
+  ]
+}

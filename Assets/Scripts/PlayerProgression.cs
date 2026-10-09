@@ -1,7 +1,7 @@
 using UnityEngine;
 
-// Applies GameSession.Progress (level and skills) to the spawned player: sets max health
-// and mana, and celebrates level-ups with a full heal, a fanfare and sparkles.
+// Applies GameSession.Progress (level and skills) and the equipment worn to the spawned player:
+// sets max health and mana, and celebrates level-ups with a full heal, a fanfare and sparkles.
 //
 // Progression is static data that outlives this scene, so we must unsubscribe from its
 // events in OnDestroy, or it would keep calling into this destroyed player forever.
@@ -13,6 +13,7 @@ public class PlayerProgression : MonoBehaviour
 
     private Health health;
     private Mana mana;
+    private Inventory inventory; // optional: armor and helms add hearts and magic
     private int baseHealth;
     private float baseMana;
     private Progression progress;
@@ -21,6 +22,7 @@ public class PlayerProgression : MonoBehaviour
     {
         health = GetComponent<Health>();
         mana = GetComponent<Mana>();
+        inventory = GetComponent<Inventory>();
         baseHealth = health.Max; // the hero's level-1 values, from the prefab
         baseMana = mana.Max;
     }
@@ -30,6 +32,7 @@ public class PlayerProgression : MonoBehaviour
         progress = GameSession.Progress;
         progress.LeveledUp += OnLevelUp;
         progress.Changed += ApplyStats;
+        if (inventory != null) inventory.Changed += ApplyStats;
         ApplyStats();
         health.Heal(health.Max); // arrive in each scene at full strength
         mana.Refill();
@@ -37,6 +40,7 @@ public class PlayerProgression : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (inventory != null) inventory.Changed -= ApplyStats;
         if (progress == null) return;
         progress.LeveledUp -= OnLevelUp;
         progress.Changed -= ApplyStats;
@@ -44,8 +48,12 @@ public class PlayerProgression : MonoBehaviour
 
     private void ApplyStats()
     {
-        health.SetMax(baseHealth + progress.BonusHealth);
-        mana.SetMax(baseMana + progress.BonusMana);
+        // Taking armor off can't leave you with more hearts than you can hold (SetMax clamps),
+        // and putting it on gives empty hearts rather than a free heal.
+        int gear = inventory != null ? inventory.MaxHealthBonus : 0;
+        float gearMana = inventory != null ? inventory.MaxManaBonus : 0;
+        health.SetMax(baseHealth + progress.BonusHealth + gear);
+        mana.SetMax(baseMana + progress.BonusMana + gearMana);
     }
 
     private void OnLevelUp(int level)

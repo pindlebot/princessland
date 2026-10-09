@@ -21,6 +21,11 @@ Level 0 is a big island to explore: a pine wood, birches and autumn trees, a cam
 (warm up there), and a rocky hill in the far corner. **Amethyra the dragon** hides in the cave inside it; walk up and press **E** to talk (E / Space / Enter / click to continue).
 **Coralie the mermaid** sits in the pond and has lost her frog. Easter eggs: one bush hides **Sir Hopsalot** (find him
 and tell Coralie), the fountain takes wishes (1 coin each; the third comes true), and Amethyra tells jokes.
+**Hollyhock**, a little fenced village, sits just east of the castle (follow the path from the gate): a cathedral
+with a stained-glass rose window and a spire, a thatched cottage, a cobbled square with a well, benches, lampposts
+and a notice board, and a pen of hens and chicks pecking at corn. **Barnaby Badger** keeps a stall in front of his
+shop: talk to him once, then press **E** to buy **Bubble Bath** (10 coins; it goes in your bag and, for now, does
+nothing but smell lovely). The doors, the well, the notice board, the benches and the hens all have something to say.
 Press **E** at the **castle gate** to go inside to the hero's home. The bedroom has a bed (a nap restores health
 and mana), a lamp to switch on and off, and a wardrobe, bookshelf, toy chest and plant that say something different
 each time. In the bathroom you can sit on the toilet (E again flushes and stands you up; so does walking away), then
@@ -94,6 +99,8 @@ to its buttons as soon as you touch it.
 | `Scripts/SceneDoor.cs`, `GameSession.cs` | Doors between scenes, named arrival points, flags that survive scene loads |
 | `Scripts/HouseFixture.cs` | One data-driven component for several simple interactables (an enum picks the effect) |
 | `Scripts/DialogueController.cs`, `Npc.cs` | Conversations: typewriter text, pausing with `Time.timeScale`, unscaled time, serialized structs |
+| `Scripts/Merchant.cs` | Inheritance: a shopkeeper is an `Npc` that overrides its prompt and what talking does (spend gold, add to the bag) |
+| `Scripts/Chicken.cs` | A tiny two-state machine (walk / peck) on timers, flipping a sprite to face its direction on screen |
 | `Scripts/AudioManager.cs` | Music loop + a pool of `AudioSource`s for overlapping effects, random pitch variation |
 | `Scripts/LevelBootstrap.cs` | Spawning the chosen hero and wiring scene objects to it at runtime; `DefaultExecutionOrder` |
 | `Scripts/CharacterSelectController.cs` | A menu scene in UI Toolkit; `SceneManager.LoadScene` |
@@ -101,7 +108,7 @@ to its buttons as soon as you touch it.
 | `Scripts/SaveSystem.cs`, `SaveData.cs`, `TitleController.cs` | Save slots with `JsonUtility`, safe file writes, a title screen |
 | `Scripts/PauseMenu.cs`, `GameSettings.cs` | A menu that stops time (`Time.timeScale = 0`) and works with mouse, keys and pad |
 | `Scripts/ItemDefinition.cs` | ScriptableObjects: items as data assets (`Create > Dungeon > Item`) |
-| `Scripts/Inventory.cs`, `ItemPickup.cs` | A bag + equipment slots; pickups reuse the `IInteractable` system |
+| `Scripts/Inventory.cs`, `ItemPickup.cs` | A bag + five equipment slots that add up bonuses; pickups reuse the `IInteractable` system |
 | `Scripts/EnemyAI.cs` | A small state machine, `Physics.Linecast` line-of-sight, gizmos; optional ranged and stationary modes |
 | `Scripts/EnemyBolt.cs` | A monster's projectile (the dark mermaids' bolt); physics layers (it ignores the Water layer) |
 | `Scripts/Health.cs` | Reusable components + C# events (`Damaged`, `Died`, `Healed`) |
@@ -133,10 +140,12 @@ to its buttons as soon as you touch it.
 | `DungeonBuilder.cs` | Entry point, materials, shared helpers |
 | `DungeonBuilder.Characters.cs` | Both heroes (stats live here), the skeleton, spell prefabs |
 | `DungeonBuilder.Abilities.cs` | The skill path abilities on each hero, and the meteor, whirlpool and bubble |
-| `DungeonBuilder.Props.cs` | Chest, torch, grass, Ember Ring pickup, flag |
+| `DungeonBuilder.Props.cs` | Chest, torch, grass, flag |
+| `DungeonBuilder.Items.cs` | **Every item's stats** and its floor pickup (edit bonuses here) |
 | `Levels/*.txt`, `Scripts/MapFile.cs`, `MapValidator.cs` | **The maps** as text files, their parser and the door checker |
 | `DungeonBuilder.Levels.cs` | How a scene is assembled from a map file (`LevelSpec`, the tile switch) |
 | `Scripts/Npc.cs` | Any friendly character: conversations picked by story flags, small talk that takes turns |
+| `DungeonBuilder.Town.cs` | Hollyhock: buildings with gable roofs (a mesh with UVs in metres), the picket fence, Barnaby, the props and chickens |
 | `DungeonBuilder.Dragon.cs` | The NPC recipe, Amethyra's prefab **and her dialogue lines** (edit them here) |
 | `DungeonBuilder.Friends.cs` | Coralie's and Bonesy's lines, the frog, the wishing fountain, the dungeon props |
 | `DungeonBuilder.Home.cs` | The home's furniture and front door (prompts and messages live here) |
@@ -147,7 +156,8 @@ to its buttons as soon as you touch it.
 
 **Levels are text files** in `Assets/Levels/<Scene>.txt`: a header (`title`, `theme`: Outdoor/Dungeon/Home, `music`,
 `exit`, `exit_needs: all_monsters`, hints, minimap colors), `---`, the map, `---`, and a legend for doors
-(`1 = door Level0`), the castle gate (`K = castle House`) and named arrival spots (`s = spawn ByTheTree`). Each door
+(`1 = door Level0`), the castle gate (`K = castle House`), named arrival spots (`s = spawn ByTheTree`) and items
+lying on the floor (`2 = item plumed_helm`; the builder refuses unknown ids). Each door
 also makes an arrival spot beside itself called `From<OtherScene>`, so two doors that lead to each other need nothing
 else. `MapValidator` checks every door's target and arrival spot (the builder refuses to build if anything's wrong,
 and `MapFileTests` runs it too). Adding a room = writing a file and running **Dungeon > Rebuild All Scenes**.
@@ -160,7 +170,10 @@ Built-in tiles: `.` ground · `,` grass tufts · `=` path · `#` stone wall · `
 `~` lava · `^` spike trap ·
 `t` pine · `i` birch · `a` autumn tree · `O` boulder · `z` stump · `l` log · `V` tent · `s` pebbles · `e` fern · `%` rock · `:` cave floor ·
 `J` pirate · `&` dark mermaid (in the water) · `Z` Pearl (in the water) · `q` palm · `@` pirate ship (on the water) · `$` treasure heap ·
-`h` wooden planks · `|` rock with a waterfall (water below it).
+`h` wooden planks · `|` rock with a waterfall (water below it) · `+` picket fence · `-` cobbles.
+Legend extras for villages: `3 = building cathedral|shop|cottage` (a filled rectangle of that symbol; its front
+door is in the middle of its south side), `6 = npc barnaby`, and `! = prop <kind>` for `stall`, `well`, `coop`,
+`grainsack`, `lamppost`, `noticeboard`, `bench`, `planter`, `hen`, `brownhen`, `chick` and `grain` (the lists live in `MapFile.cs`).
 Header extras: `water: sea` (the sea instead of the pond), `ground: sand` (`.` and the markers are beach sand). On an
 Outdoor level, a door is a **rowboat** at the end of a jetty, and water on the map's edge spills off the island.
 
@@ -179,6 +192,8 @@ Each character is a sprite sheet (one animation per row) plus a JSON layout, dra
 | `Assets/Art/Pirate.png` (enemy) | `make_cove_sprites.py` | `Attack` (a cutlass swing) |
 | `Assets/Art/DarkMermaid.png` (enemy) | `make_cove_sprites.py` | `Attack` (raises an orb, throws it; Walk = Idle, she never moves) |
 | `Assets/Art/Pearl.png` (NPC, 48×48) | `make_cove_sprites.py` | (Coralie's drawing in Pearl's colours) |
+| `Assets/Art/Items.png` + `Art/UI/Icon<Item>.png` | `make_item_sprites.py` | (equipment on the floor, glinting, and its 24×24 inventory icon) |
+| `Assets/Art/Barnaby.png` (NPC, 48×48) | `make_town_sprites.py` | (Idle/Talk; plus `Chicken.png`, `TownProps.png`, `TownDecals.png`) |
 
 Shared drawing helpers live in `Tools/sprite_common.py`. Regenerate with e.g.
 `Tools/.venv/bin/python Tools/make_skeleton_sprites.py`, then **Dungeon → Rebuild All Scenes**.
@@ -210,8 +225,24 @@ plays once with a fading flash of light (`FadeOutLight`) and then destroys itsel
 - **Auto-aim**: casting targets the nearest skeleton inside the camera's view, preferring ones with a clear line of
   fire; with none on screen it fires the way you're facing. The wizard faces his walking direction and turns to his
   target while casting. Clicks on pickable HUD elements (inventory slots, hotbar, bars) don't cast.
-- **Inventory** (**I**): one ring slot and an 8-slot bag. Hover a slot for details; click to equip/unequip. The
-  **Ember Ring** (+1 fireball damage) lies in the first room, so equipped, fireballs kill skeletons in one hit.
+- **Inventory** (**I**): five worn slots (weapon, helm, armor, boots, ring) and an 8-slot bag. Hover a slot for
+  details; click (or tap, on a touch screen) to put an item on or take it off. Putting on something for a slot
+  that's already filled swaps them. Extra hearts from gear arrive empty: a nap or a campfire fills them.
+
+  | Slot | Item | Bonus | Where it lies |
+  |---|---|---|---|
+  | Weapon | **Starlight Wand** | +1 spell damage, spells recharge 15% faster | the dungeon's locked treasure room |
+  | Helm | **Plumed Helm** | +1 heart, +10 magic | the bedroom at home, by the wardrobe |
+  | Armor | **Seashell Mail** | +2 hearts | Mermaid Cove's sea cave, by the pirates' treasure |
+  | Boots | **Trailblazer Boots** | walk 20% faster | the camp on the castle grounds, by the tent |
+  | Ring | **Ember Ring** | +1 spell damage | the dungeon's first room (with it, fireballs kill skeletons in one hit) |
+  | (none) | **Bubble Bath** | nothing yet: a novelty | Barnaby's stall in Hollyhock, 10 coins a bottle |
+
+  Items are `ItemDefinition` assets whose stats are set in `Editor/DungeonBuilder.Items.cs`; `Inventory` adds up
+  the bonuses, and `SpellAbility`, `PlayerController` and `PlayerProgression` read the totals. To add one: draw it
+  in `Tools/make_item_sprites.py`, add an `ItemSpec`, put it on a map with a legend line (`5 = item <id>`), and
+  **Rebuild All Scenes**. A new *slot* goes at the end of the `EquipSlot` enum (saves store slots as numbers), plus
+  an `equip-<slot>` element in `Hud.uxml` and an entry in `HudController.WornSlots`.
 
 ## Props and decoration
 `Tools/make_prop_sprites.py` draws `Assets/Art/Props.png`: chest (closed + 4-frame opening), gold sparkles,
@@ -220,7 +251,7 @@ a wall torch (4-frame flame) and three grass tufts that sway. They're placed fro
 | Map char | What | Notes |
 |---|---|---|
 | `T` | Wall with a torch | Goes on the wall's south face if there's floor below it, else its west face (the faces the camera sees) |
-| `I` | Item pickup | Currently always the Ember Ring (`Assets/Items/EmberRing.asset`) |
+| `I` | Item pickup | The Ember Ring (`Assets/Items/EmberRing.asset`); other items go in a map's legend (`2 = item <id>`) |
 | `C` | Chest | Press **E** nearby: opens, restores health + mana, shows a HUD message; gold dot on the minimap until opened |
 | `,` | Floor with grass | 3–5 tufts, seeded by tile so rebuilds are identical |
 
@@ -233,7 +264,7 @@ triangle/saw/noise waves, envelopes and simple filters). Regenerate, then **Dung
 
 - **Music**: `music_castle` (cheerful C major, 120 bpm, select screen + Level 0), `music_dungeon` (brooding
   A minor, 84 bpm, with dripping water), `music_home` (a cozy F major waltz) and `music_cove` (a D minor sea shanty in 6/8, with waves). Each is 8 bars, written as note names in the script, and loops seamlessly.
-- **Effects**: casts and impacts per spell, spike traps and lava, skeleton clack/swish/death rattle, player hurt/death, chest, pickup,
+- **Effects**: Barnaby's voice, a hen's cluck, the cathedral bell and a "ka-ching" for buying, casts and impacts per spell, spike traps and lava, skeleton clack/swish/death rattle, player hurt/death, chest, pickup,
   the "way down opened" fanfare, UI blips, victory/defeat jingles.
 - Each component has its own sound field (e.g. `SpellAbility.castSound`, `Health.hurtSound`), so you can swap a
   sound in the Inspector; they all call `AudioManager.Play(clip)`.
@@ -316,3 +347,17 @@ git config merge.unityyamlmerge.driver "'/Applications/Unity/Hub/Editor/6000.6.4
 git config merge.unityyamlmerge.recursive binary
 ```
 
+## Playing on a Steam Deck
+The Deck runs the **native Linux build** (no Proton). Unity needs Hub's *Linux Build Support (Mono)* module.
+
+1. On the Deck, once (Desktop Mode, Konsole): `passwd`, then `sudo systemctl enable --now sshd`. From the Mac,
+   `ssh-copy-id deck@steamdeck.local` so copying doesn't ask for a password.
+2. On the Mac, with the editor closed: `~/scripts/deploy-tidecrown-to-deck.sh`. It rebuilds the scenes, builds
+   `Builds/Linux/` (`CommandLineBuild.RebuildLinux`) and rsyncs it to `~/Games/Tidecrown` on the Deck. Use
+   `--no-scenes` to skip the scene rebuild, `--no-build` to only copy, `--host user@ip` (or `DECK_HOST`) for another address.
+3. On the Deck, once: Steam > Games > *Add a Non-Steam Game*, Browse (file type: All Files), pick
+   `~/Games/Tidecrown/Tidecrown.x86_64`. Leave Properties > Compatibility's Proton box **unchecked**.
+4. Game Mode > Library > Non-Steam > Tidecrown. Steam Input presents the Deck's controls as an Xbox pad, so
+   the gamepad bindings above apply; the touch screen works for the bag and skill panels.
+
+After that, every update is just step 2. The Deck's screen is 1280×800 (16:10).

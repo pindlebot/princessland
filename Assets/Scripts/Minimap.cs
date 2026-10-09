@@ -30,6 +30,9 @@ public class Minimap : MonoBehaviour
     private static readonly Color32 Planks = new Color32(186, 146, 106, 255); // its jetties
     private static readonly Color32 Lava = new Color32(240, 110, 40, 255);
     private static readonly Color32 Spikes = new Color32(150, 96, 104, 255); // a warning red-grey
+    private static readonly Color32 Roof = new Color32(204, 120, 98, 255);   // the village's terracotta roofs
+    private static readonly Color32 Fence = new Color32(240, 230, 210, 255); // its white picket fence
+    private static readonly Color32 Cobbles = new Color32(196, 184, 172, 255);
 
     private Texture2D texture;
     private Color32[] pixels;
@@ -105,6 +108,9 @@ public class Minimap : MonoBehaviour
                               : c == 'H' ? Hedge
                               : c == 'K' ? Castle
                               : c == '=' || c == 'X' ? Path
+                              : LevelMap.IsFence(c) ? Fence
+                              : LevelMap.IsCobbles(c) ? Cobbles
+                              : map.IsBuilding(c) ? Roof
                               : LevelMap.IsWall(c) ? (Color32)map.WallColor
                               : LevelMap.IsWater(c) ? Water
                               : LevelMap.IsSand(c) ? Sand

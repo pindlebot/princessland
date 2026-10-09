@@ -45,11 +45,18 @@ public class DevCapture : MonoBehaviour
         yield return Visit("Level0", 'f', 2, 1, "level0_edge", max: 12, hearts: 1, manaFraction: 0f);
         yield return Visit("Level0", 'D', -1, 1, "level0_cave", max: 12, hearts: 12, manaFraction: 1f);
         yield return Visit("Level0", 'V', 1, 2, "level0_camp", max: 12, hearts: 12, manaFraction: 1f);
+        yield return Visit("Level0", '3', 2, 4, "level0_village_cathedral", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Level0", '6', 0, 2, "level0_village_stall", max: 0, hearts: 0, manaFraction: 1f);
+        yield return BuyBubbleBath("level0_village_shop");
+        yield return Visit("Level0", '8', 0, 2, "level0_village_square", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Level0", '9', -2, 2, "level0_village_hens", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Level0", '+', -1, 6, "level0_village_gate", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("Dungeon", 'P', 0, 0, "dungeon_spawn", max: 20, hearts: 7, manaFraction: 0.7f);
         yield return Visit("Dungeon", 'M', -4, 1, "dungeon_king_hall", max: 20, hearts: 7, manaFraction: 0.7f);
         yield return Visit("House", 'B', 1, 2, "house", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("House", 'W', 0, 1, "house_bathroom", max: 0, hearts: 0, manaFraction: 1f);
         yield return SitOnTheToilet("house_toilet");
+        yield return InventoryShot("house_inventory");
         yield return Visit("Level0", '1', 0, 1, "level0_rowboat", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("Cove", 'P', 0, 0, "cove_spawn", max: 8, hearts: 6, manaFraction: 0.8f);
         yield return Visit("Cove", '1', 0, -2, "cove_jetty", max: 0, hearts: 0, manaFraction: 1f);
@@ -85,6 +92,60 @@ public class DevCapture : MonoBehaviour
         ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + ".png"));
         yield return new WaitForSecondsRealtime(0.5f);
         LevelBootstrap.Current.Player.GetComponent<PlayerController>().StandUp();
+    }
+
+    // Meets Barnaby Badger, buys a bottle of bubble bath (the hero is standing at his stall),
+    // and saves his thank-you, then the bag with the bottle in it.
+    private IEnumerator BuyBubbleBath(string shot)
+    {
+        if (only != null && only != "Level0") yield break;
+        var player = LevelBootstrap.Current.Player;
+        var barnaby = FindAnyObjectByType<Merchant>();
+        barnaby.Interact(player); // the introduction
+        for (int i = 0; i < 50 && DialogueController.IsOpen; i++)
+        {
+            yield return new WaitForSecondsRealtime(0.05f);
+            DialogueController.Instance.Advance();
+        }
+        yield return new WaitForSecondsRealtime(0.3f);
+        barnaby.Interact(player); // and a bottle, please
+        yield return new WaitForSecondsRealtime(2f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + ".png"));
+        yield return new WaitForSecondsRealtime(0.5f);
+        while (DialogueController.IsOpen)
+        {
+            DialogueController.Instance.Advance();
+            yield return null;
+        }
+        var hud = FindAnyObjectByType<HudController>();
+        hud.SetInventoryOpen(true);
+        yield return new WaitForSecondsRealtime(0.5f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + "_bag.png"));
+        yield return new WaitForSecondsRealtime(0.5f);
+        hud.SetInventoryOpen(false);
+        GameSession.Inventory.Bag.Clear();
+    }
+
+    // Opens the bag with most of the equipment worn: the helm picked up off the bedroom floor,
+    // the rest put straight into the save data, and the ring left in the bag. Then empties it again.
+    private IEnumerator InventoryShot(string shot)
+    {
+        if (only != null && only != "House") yield break;
+        var player = LevelBootstrap.Current.Player;
+        var inventory = player.GetComponent<Inventory>();
+        GameSession.Inventory.Equipped[EquipSlot.Weapon] = "starlight_wand";
+        GameSession.Inventory.Equipped[EquipSlot.Boots] = "trailblazer_boots";
+        GameSession.Inventory.Bag.Add("ember_ring");
+        foreach (var pickup in FindObjectsByType<ItemPickup>())
+            if (pickup.Interact(player) != null) inventory.Equip(pickup.Item); // the helm (this also redraws the HUD)
+        var hud = FindAnyObjectByType<HudController>();
+        hud.SetInventoryOpen(true);
+        yield return new WaitForSecondsRealtime(0.5f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + ".png"));
+        yield return new WaitForSecondsRealtime(0.5f);
+        hud.SetInventoryOpen(false);
+        GameSession.Inventory.Bag.Clear();
+        GameSession.Inventory.Equipped.Clear();
     }
 
     // Walks the hero for a while (the camera following), saving a few frames on the way, to

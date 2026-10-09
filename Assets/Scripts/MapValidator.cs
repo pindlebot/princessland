@@ -10,7 +10,8 @@ public static class MapValidator
     private static readonly string[] Themes = { "Dungeon", "Outdoor", "Home" };
 
     // Returns a list of problems (empty = all good). Each one names the file it's in.
-    public static List<string> Validate(IList<MapFile> maps)
+    // itemIds: every item id there is, to check "item" entries against (null skips that check).
+    public static List<string> Validate(IList<MapFile> maps, ICollection<string> itemIds = null)
     {
         var errors = new List<string>();
         var byName = maps.ToDictionary(m => m.Name);
@@ -52,8 +53,32 @@ public static class MapValidator
                         if (entry.Args.Length != 1) Error($"{where}: write 'spawn <Name>'");
                         if (!map.Find(entry.Symbol).Any()) Error($"{where}: the spawn isn't on the map");
                         break;
+                    case "item":
+                        if (MapFile.BuiltInTiles.IndexOf(entry.Symbol) >= 0)
+                            Error($"{where}: '{entry.Symbol}' is already a built-in tile; pick another symbol (digits are good)");
+                        else if (!map.Find(entry.Symbol).Any())
+                            Error($"{where}: the item isn't on the map");
+                        if (entry.Args.Length != 1) Error($"{where}: write 'item <id>'");
+                        else if (itemIds != null && !itemIds.Contains(entry.Args[0]))
+                            Error($"{where}: there's no item '{entry.Args[0]}' (known: {string.Join(", ", itemIds)})");
+                        break;
+                    case "building":
+                    case "prop":
+                    case "npc":
+                        var known = entry.Kind == "building" ? MapFile.BuildingKinds
+                                  : entry.Kind == "prop" ? MapFile.PropKinds : MapFile.NpcIds;
+                        if (MapFile.BuiltInTiles.IndexOf(entry.Symbol) >= 0)
+                            Error($"{where}: '{entry.Symbol}' is already a built-in tile; pick another symbol (digits are good)");
+                        else if (!map.Find(entry.Symbol).Any())
+                            Error($"{where}: the {entry.Kind} isn't on the map");
+                        if (entry.Args.Length != 1) Error($"{where}: write '{entry.Kind} <{(entry.Kind == "npc" ? "id" : "kind")}>'");
+                        else if (!known.Contains(entry.Args[0]))
+                            Error($"{where}: there's no {entry.Kind} '{entry.Args[0]}' (known: {string.Join(", ", known)})");
+                        else if (entry.Kind == "building" && !IsRectangle(map, entry.Symbol))
+                            Error($"{where}: a building's tiles must fill a rectangle");
+                        break;
                     default:
-                        Error($"{where}: unknown kind '{entry.Kind}' (door, castle or spawn)");
+                        Error($"{where}: unknown kind '{entry.Kind}' (door, castle, spawn, item, building, prop or npc)");
                         break;
                 }
             }
@@ -92,10 +117,20 @@ public static class MapValidator
         foreach (var (dc, dr) in new[] { (0, -1), (0, 1), (-1, 0), (1, 0) })
         {
             char c = map.At(col + dc, row + dr);
-            bool walkable = c != ' ' && !LevelMap.IsWall(c) && !LevelMap.IsWater(c) && !LevelMap.IsHazard(c) && !IsDoor(map, c);
+            bool walkable = c != ' ' && !LevelMap.IsWall(c) && !map.IsBuilding(c) && !LevelMap.IsWater(c) && !LevelMap.IsHazard(c) && !IsDoor(map, c);
             if (walkable) return (col + dc, row + dr);
         }
         return null;
+    }
+
+    // Does the symbol fill the box around its tiles, with no gaps?
+    private static bool IsRectangle(MapFile map, char symbol)
+    {
+        var tiles = map.Find(symbol).ToList();
+        if (tiles.Count == 0) return false;
+        int width = tiles.Max(t => t.col) - tiles.Min(t => t.col) + 1;
+        int height = tiles.Max(t => t.row) - tiles.Min(t => t.row) + 1;
+        return tiles.Count == width * height;
     }
 
     private static bool IsDoor(MapFile map, char c) => map.Legend.TryGetValue(c, out var e) && e.Kind == "door";

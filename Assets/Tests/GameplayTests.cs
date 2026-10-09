@@ -292,7 +292,7 @@ public class GameplayTests
     public IEnumerator RingCanBePickedUpEquippedAndBoostsDamage()
     {
         foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
-        var pickup = Object.FindAnyObjectByType<ItemPickup>();
+        var pickup = Object.FindObjectsByType<ItemPickup>().Single(p => p.Item.Id == "ember_ring");
         var inventory = player.GetComponent<Inventory>();
         var ability = player.GetComponent<SpellAbility>();
         var hud = Object.FindAnyObjectByType<HudController>();

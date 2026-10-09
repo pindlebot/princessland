@@ -351,6 +351,35 @@ def voice_bonesy():  # a woody, rattly clack
     return envelope(highpass(tone(420, 0.045, "square", duty=0.2, freq_end=380), 300), attack=0.002, curve=2)
 
 
+# ---------- The village ----------
+
+def voice_badger():  # Barnaby Badger: a warm, gruff little hum, between the dragon's and the hero's
+    return envelope(lowpass(tone(260, 0.06, "triangle", freq_end=230, vibrato=0.08), 1600), attack=0.004, curve=1.6)
+
+
+def cluck():  # a hen's "buk-buk-BAWK": two short nasal clucks and a longer squawk that rises
+    buk = lambda f, t: envelope(lowpass(tone(f, t, "square", duty=0.2, freq_end=f * 0.85), 2200), attack=0.003, curve=1.6)
+    out = list(buk(520, 0.05))
+    place(out, buk(500, 0.05), 0.09)
+    place(out, envelope(lowpass(tone(640, 0.2, "square", duty=0.25, freq_end=900, vibrato=0.12), 2600),
+                        attack=0.01, curve=1.3), 0.2)
+    return [x * 0.6 for x in out]
+
+
+def bell():  # the cathedral bell: a deep strike with its ringing overtones, fading slowly
+    partials = [(1.0, 0.6), (2.0, 0.35), (2.4, 0.25), (3.0, 0.15), (4.2, 0.08)]
+    out = mix(*[[x * volume for x in envelope(tone(196 * ratio, 2.2, "sine"), attack=0.004, curve=3)]
+                for ratio, volume in partials])
+    return place(out, [x * 0.2 for x in envelope(lowpass(noise(0.03, seed=91), 2500), curve=2)], 0)
+
+
+def purchase():  # buying something: a cheerful coin "ding" and three bubbles popping upward
+    out = list(coin())
+    for k, f in enumerate((900, 1200, 1500)):
+        place(out, [x * 0.35 for x in envelope(tone(f, 0.06, "sine", freq_end=f * 1.6), curve=2)], 0.18 + k * 0.07)
+    return out
+
+
 def door_locked():  # a rattle against a heavy lock
     out = []
     for k in range(3):
@@ -554,6 +583,7 @@ SOUNDS = {
     "stairs_open": stairs_open, "poof": poof, "spikes": spikes, "sizzle": sizzle,
     "pirate_hit": pirate_hit, "pirate_death": pirate_death, "siren_cast": siren_cast, "siren_hit": siren_hit,
     "bolt_impact": bolt_impact, "oars": oars,
+    "voice_badger": voice_badger, "cluck": cluck, "bell": bell, "purchase": purchase,
 }
 
 if __name__ == "__main__":

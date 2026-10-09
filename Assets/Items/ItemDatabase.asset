@@ -14,3 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game::ItemDatabase
   items:
   - {fileID: 11400000, guid: f8894dc7bfd9c406f8a35a7693875bdc, type: 2}
+  - {fileID: 11400000, guid: 381a0e36a0a39454a936f424ce60ce39, type: 2}
+  - {fileID: 11400000, guid: 8a8b6a49b1df8465398e1a4252dde806, type: 2}
+  - {fileID: 11400000, guid: 50c4f92dc339a4ec58c8814ee834fa8c, type: 2}
+  - {fileID: 11400000, guid: 7fb7572e8de0a4dedb9dae3e36fc86a7, type: 2}
+  - {fileID: 11400000, guid: 6b9f0a6ee2a9b4b53b297fc6a3490040, type: 2}

@@ -31,7 +31,9 @@ public class HudController : MonoBehaviour
     private const int MaxPips = 16;
     private const int FullSizeHearts = 8;  // more than this and they shrink to fit one row...
     private const int MaxHeartsShown = 12; // ...and past this, one heart and a count ("7 / 14")
-    private const string DetailsHint = "Hover an item to inspect it. Click to equip or unequip.";
+    private const string DetailsHint = "Hover an item to inspect it. Click to put it on or take it off.";
+    // The worn slots, in the order the inventory panel shows them.
+    private static readonly EquipSlot[] WornSlots = { EquipSlot.Weapon, EquipSlot.Helm, EquipSlot.Armor, EquipSlot.Boots, EquipSlot.Ring };
 
     // True while the mouse is over a clickable part of the HUD, so gameplay can ignore
     // that click (SpellAbility doesn't cast when you click an inventory slot).
@@ -51,9 +53,10 @@ public class HudController : MonoBehaviour
     private BossAbilities boss;
     private VisualElement bossBar, bossFill;
     private float toastHideAt;
-    private VisualElement inventoryPanel, equipRing;
+    private VisualElement inventoryPanel;
+    private readonly Dictionary<EquipSlot, VisualElement> equipSlots = new Dictionary<EquipSlot, VisualElement>();
     private VisualElement[] bagSlots;
-    private Label itemDetails, statDamage;
+    private Label itemDetails, statDamage, statGear;
     private readonly List<AbilitySlot> abilitySlots = new List<AbilitySlot>();
 
     // One learned-ability slot in the hotbar: its column (slot + key), the slot, and its parts.
@@ -458,9 +461,9 @@ public class HudController : MonoBehaviour
     private void SetUpInventory()
     {
         inventoryPanel = root.Q("inventory");
-        equipRing = root.Q("equip-ring");
         itemDetails = root.Q<Label>("item-details");
         statDamage = root.Q<Label>("stat-damage");
+        statGear = root.Q<Label>("stat-gear");
         bagSlots = new VisualElement[inventory.Capacity];
         itemDetails.text = DetailsHint;
 
@@ -473,12 +476,17 @@ public class HudController : MonoBehaviour
             bagSlots[i].RegisterCallback<PointerEnterEvent>(_ => ShowDetails(BagItem(index), equipped: false));
             bagSlots[i].RegisterCallback<PointerLeaveEvent>(_ => itemDetails.text = DetailsHint);
         }
-        equipRing.RegisterCallback<ClickEvent>(_ =>
+        foreach (var slot in WornSlots)
         {
-            if (inventory.Unequip(EquipSlot.Ring)) AudioManager.Play(clickSound);
-        });
-        equipRing.RegisterCallback<PointerEnterEvent>(_ => ShowDetails(inventory.Equipped(EquipSlot.Ring), equipped: true));
-        equipRing.RegisterCallback<PointerLeaveEvent>(_ => itemDetails.text = DetailsHint);
+            var element = root.Q($"equip-{slot.ToString().ToLowerInvariant()}");
+            equipSlots[slot] = element;
+            element.RegisterCallback<ClickEvent>(_ =>
+            {
+                if (inventory.Unequip(slot)) AudioManager.Play(clickSound);
+            });
+            element.RegisterCallback<PointerEnterEvent>(_ => ShowWornDetails(slot));
+            element.RegisterCallback<PointerLeaveEvent>(_ => itemDetails.text = DetailsHint);
+        }
 
         inventory.Changed += RefreshInventory;
         RefreshInventory();
@@ -500,7 +508,9 @@ public class HudController : MonoBehaviour
     {
         for (int i = 0; i < bagSlots.Length; i++)
             SetSlotItem(bagSlots[i], BagItem(i));
-        SetSlotItem(equipRing, inventory.Equipped(EquipSlot.Ring));
+        foreach (var pair in equipSlots)
+            SetSlotItem(pair.Value, inventory.Equipped(pair.Key));
+        statGear.text = GearSummary();
     }
 
     private static void SetSlotItem(VisualElement slot, ItemDefinition item)
@@ -514,8 +524,30 @@ public class HudController : MonoBehaviour
     private void ShowDetails(ItemDefinition item, bool equipped)
     {
         if (item == null) { itemDetails.text = DetailsHint; return; }
-        string action = equipped ? "Click to unequip." : item.IsEquippable ? "Click to equip." : "";
-        itemDetails.text = $"{item.DisplayName}: {item.Description} {action}";
+        string action = equipped ? "Click to take it off."
+                      : item.IsEquippable ? $"Click to wear it ({item.Slot.ToString().ToLowerInvariant()})." : "";
+        string bonus = item.BonusText.Length > 0 ? $" ({item.BonusText})" : "";
+        itemDetails.text = $"{item.DisplayName}: {item.Description}{bonus} {action}";
+    }
+
+    private void ShowWornDetails(EquipSlot slot)
+    {
+        var item = inventory.Equipped(slot);
+        if (item != null) ShowDetails(item, equipped: true);
+        else itemDetails.text = $"{slot}: nothing yet. Maybe there's one out there somewhere...";
+    }
+
+    // Everything the worn equipment adds besides spell damage (that's on the line above).
+    private string GearSummary()
+    {
+        var parts = new List<string>();
+        if (inventory.MaxHealthBonus != 0) parts.Add($"+{inventory.MaxHealthBonus} {(inventory.MaxHealthBonus == 1 ? "heart" : "hearts")}");
+        if (inventory.MaxManaBonus != 0) parts.Add($"+{inventory.MaxManaBonus} magic");
+        int walk = Mathf.RoundToInt((inventory.MoveSpeedFactor - 1f) * 100f);
+        if (walk != 0) parts.Add($"walk {walk}% faster");
+        int recharge = Mathf.RoundToInt((1f - inventory.SpellCooldownFactor) * 100f);
+        if (recharge != 0) parts.Add($"spells recharge {recharge}% faster");
+        return parts.Count > 0 ? "Gear: " + string.Join(", ", parts) : "";
     }
 
     private bool IsPointerOverUi()

@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float turnSpeed = 900f; // degrees per second
 
     private CharacterController controller;
+    private Inventory inventory; // optional: boots make you faster
     private Camera cam;
     private float verticalVelocity;
     private float holdFacingUntil;
@@ -25,6 +26,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        inventory = GetComponent<Inventory>();
         cam = Camera.main;
     }
 
@@ -101,7 +103,7 @@ public class PlayerController : MonoBehaviour
         // forward/right vectors onto the ground so W moves toward the top of the screen.
         Vector3 forward = Vector3.ProjectOnPlane(cam.transform.forward, Vector3.up).normalized;
         Vector3 right = Vector3.ProjectOnPlane(cam.transform.right, Vector3.up).normalized;
-        Vector3 move = (forward * input.y + right * input.x) * moveSpeed;
+        Vector3 move = (forward * input.y + right * input.x) * moveSpeed * (inventory != null ? inventory.MoveSpeedFactor : 1f);
 
         verticalVelocity = controller.isGrounded ? -1f : verticalVelocity + gravity * Time.deltaTime;
         controller.Move((move + Vector3.up * verticalVelocity) * Time.deltaTime);

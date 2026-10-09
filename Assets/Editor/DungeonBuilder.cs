@@ -19,6 +19,7 @@ using UnityEngine;
 //   DungeonBuilder.Home.cs             the furniture and front door of the hero's home
 //   DungeonBuilder.Hazards.cs          lava and spike traps
 //   DungeonBuilder.Cove.cs             Mermaid Cove: pirates, dark mermaids, Pearl, waterfalls, the rowboat
+//   DungeonBuilder.Town.cs             Hollyhock, the village: buildings, the picket fence, Barnaby, chickens
 //   DungeonBuilder.CharacterSelect.cs  the character select screen
 //   DungeonBuilder.Title.cs            the title screen and its save slots
 public static partial class DungeonBuilder
@@ -31,7 +32,8 @@ public static partial class DungeonBuilder
     private class SharedAssets
     {
         public Dictionary<string, Material> Materials;
-        public GameObject Skeleton, Slime, SlimeKing, Chest, Torch, RingPickup, Flag, Dragon;
+        public GameObject Skeleton, Slime, SlimeKing, Chest, Torch, Flag, Dragon;
+        public Dictionary<string, GameObject> ItemPickups; // by item id (DungeonBuilder.Items.cs)
         public GameObject Bed, Toilet, Sink, PaperTowel, HouseDoor;
         public GameObject Wardrobe, Nightstand, Bookshelf, ToyChest, Plant, Rug;
         public GameObject Tree, Fountain, Bush, Butterfly, Mote, Cloud, Stairs;
@@ -40,6 +42,8 @@ public static partial class DungeonBuilder
         public GameObject Campfire, Barrel, Crate, Bones, Mushrooms, Door, LockedDoor, Key, Ripple, Lily;
         public GameObject SpikeTrap, LavaBubble, Ember;
         public GameObject Pirate, DarkMermaid, Pearl, Palm, Treasure, Rowboat, Ship, Splash, Shell, Starfish, Foam;
+        public GameObject Barnaby;
+        public Dictionary<string, GameObject> TownProps; // by prop kind (MapFile.PropKinds)
         public SpriteSheetImporter.SpriteSheet Props;
         public GameObject[] Grass;
 
@@ -87,8 +91,9 @@ public static partial class DungeonBuilder
         var coin = CreateCoinPrefab(props);
 
         var slimePrefab = CreateEnemyPrefab(slime, SlimeStats, coin, sparkle);
-        var emberRing = CreateEmberRing();
-        var itemDatabase = CreateItemDatabase(emberRing);
+        var items = SpriteSheetImporter.Import("Items");
+        var itemDefinitions = ItemSpecs.Select(CreateItem).ToList();
+        var itemDatabase = CreateItemDatabase(itemDefinitions.ToArray());
         var assets = new SharedAssets
         {
             Materials = CreateMaterials(),
@@ -97,7 +102,8 @@ public static partial class DungeonBuilder
             SlimeKing = CreateSlimeKingPrefab(slimeKing, coin, slimePrefab, sparkle),
             Chest = CreateChestPrefab(props, wizardArt.Shadow, sparkle),
             Torch = CreateTorchPrefab(props),
-            RingPickup = CreateItemPickupPrefab(props, emberRing, wizardArt.Shadow),
+            ItemPickups = itemDefinitions.Zip(ItemSpecs, (item, spec) => (item, spec))
+                .ToDictionary(p => p.item.Id, p => CreateItemPickupPrefab(p.spec.FloorSheet == "Props" ? props : items, p.spec, p.item, wizardArt.Shadow)),
             Flag = CreateFlagPrefab(props),
             Dragon = CreateDragonPrefab(wizardArt.Shadow),
             Grass = new[] { "Grass_A", "Grass_B", "Grass_C" }.Select(g => CreateGrassPrefab(props, g)).ToArray(),
@@ -109,6 +115,7 @@ public static partial class DungeonBuilder
         CreateFriendsAndDungeonProps(assets, wizardArt.Shadow, sparkle);
         CreateHazardPrefabs(assets, props);
         CreateCovePrefabs(assets, coin, sparkle, wizardArt.Shadow);
+        CreateTownPrefabs(assets, wizardArt.Shadow);
         assets.Props = props;
         return assets;
     }
@@ -197,8 +204,18 @@ public static partial class DungeonBuilder
                      "Grass_0", "Grass_1", "Grass_2", "Path", "Path_1", "Bank", "HedgeSide", "HedgeTop", "Roof", "Gate", "EarthSide",
                      "WoodFloor", "BathTile", "Water", "Puddle", "SpikePlate", "RockSide", "RockSideLow", "RockTop", "CaveFloor",
                      "Sand_0", "Sand_1", "Sea", "SandBank", "Planks", "Waterfall",
+                     "Cobble_0", "Cobble_1", "Plaster", "RoofTiles", "Thatch", "Window", "TownDoor", "Awning", "ShopSign",
                  })
             mats[name] = Mat(name, Color.white, texture: PixelTexture(name));
+        // The cathedral's stained glass glows a little, as if lit from inside.
+        foreach (var name in new[] { "Lancet", "RoseWindow" })
+        {
+            var glass = PixelTexture(name);
+            mats[name] = Mat(name, Color.white, new Color(0.45f, 0.45f, 0.45f), glass, emissionMap: glass);
+        }
+        mats["Picket"] = Mat("Picket", new Color(0.97f, 0.94f, 0.88f)); // the village's white picket fence
+        mats["Gold"] = Mat("Gold", new Color(1f, 0.8f, 0.35f), new Color(0.5f, 0.35f, 0.1f)); // the star on the spire
+        mats["Belfry"] = Mat("Belfry", new Color(0.2f, 0.11f, 0.21f)); // the dark openings at the top of the bell tower
         mats["Exit"] = Mat("Exit", new Color(0.2f, 0.9f, 0.3f), new Color(0.2f, 1.2f, 0.3f));
         // Lava lights itself: the texture is also its emission map, so the cracks glow and the crust stays dark.
         var lava = PixelTexture("Lava");

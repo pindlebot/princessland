@@ -1,3 +1,4 @@
+// 2: the Seashell Mail, beside the pirates' treasure in the sea cave.
 // Mermaid Cove: Pearl's home by the sea (she's Coralie's big sister), reached by rowboat from
 // the castle grounds' pond. Pirates have taken over the beaches, and their captain's grumpy
 // sea-spell has turned the cove's mermaids dark: they rise out of the water and throw bolts.
@@ -23,7 +24,7 @@ minimap_wall: #A69EB4
 %%wwwwwww%%%%..,..%%www%%..,..q...%%%%%%%%%%
 %wwwwwwww&w%%.........www.....J...%%%%%%%%%%
 wwwwwwwwwwww...q.......www.....,..%%%%u:::%%
-www@wwwwhhhhh..........hhh.........%%:::$:%%
+www@wwwwhhhhh..........hhh.........%%:2:$:%%
 wwwwwwww&www...J....q..www....o.x..%%:C:::%%
 wwwwwwwwwwww....,......www.........%%::J::%%
 wwwwwwwwwwww.......s...www..q......%%%:::%%%
@@ -45,4 +46,5 @@ wwwwwwwwwwwwwwwhwwwwwwwwwwwwwwwwwwwwwwwwwwww
 wwwwwwwwwwwwwww1wwwwwwwwwwwwwwwwwwwwwwwwwwww
 wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 ---
+2 = item seashell_mail
 1 = door Level0

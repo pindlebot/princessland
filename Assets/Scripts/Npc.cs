@@ -14,6 +14,8 @@ using UnityEngine;
 //              starting from the first)
 //
 // Flags live in GameSession, so they're saved and survive going through doors.
+//
+// A Merchant is an Npc that also sells something (Barnaby Badger in the village).
 public class Npc : MonoBehaviour, IInteractable
 {
     [Serializable]
@@ -32,8 +34,8 @@ public class Npc : MonoBehaviour, IInteractable
     }
 
     [SerializeField] private string npcName = "Amethyra";
-    [SerializeField] private Sprite portrait;
-    [SerializeField] private AudioClip voice;           // the little blip while they talk
+    [SerializeField] protected Sprite portrait;
+    [SerializeField] protected AudioClip voice;         // the little blip while they talk
     [SerializeField] private AudioClip giftSound;
     [SerializeField] private Conversation[] conversations;
     [Tooltip("Where you stand to talk, relative to the NPC (e.g. on the shore beside a mermaid).")]
@@ -51,7 +53,7 @@ public class Npc : MonoBehaviour, IInteractable
     public bool IsTalking { get; private set; }
 
     public Vector3 Position => transform.position + talkOffset;
-    public string Prompt => $"Talk to {npcName}";
+    public virtual string Prompt => $"Talk to {npcName}";
     public bool CanInteract => !DialogueController.IsOpen;
 
     private void OnEnable() => Interactables.Register(this);
@@ -66,13 +68,21 @@ public class Npc : MonoBehaviour, IInteractable
         return pool[GameSession.GetCounter("smalltalk:" + npcName) % pool.Length];
     }
 
-    public string Interact(GameObject player)
+    public virtual string Interact(GameObject player)
     {
         var conversation = Next();
         if (conversation == null) return null;
         DialogueController.Instance.Begin(conversation.lines, npcName, portrait, LevelBootstrap.Current.Character,
                                           () => Finish(conversation), voice);
         return null; // the dialogue box does the talking, no toast needed
+    }
+
+    // One line from the NPC in the dialogue box, outside of any conversation (a shopkeeper's
+    // "thank you!"). "{hero}" works here too.
+    protected void Say(string text, Action finished = null)
+    {
+        var line = new[] { new DialogueLine { heroSpeaks = false, text = text } };
+        DialogueController.Instance.Begin(line, npcName, portrait, LevelBootstrap.Current.Character, finished, voice);
     }
 
     private void Finish(Conversation conversation)

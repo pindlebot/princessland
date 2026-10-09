@@ -1,9 +1,16 @@
+// 2: the Trailblazer Boots, left by the tent at the camp.
 // The castle grounds: the first level. The stairs (X), east of the fountain, open once every
 // skeleton and slime is beaten. You start in the south-west corner.
 // Coralie the mermaid (m) sits in the pond (w), west of the castle. A rowboat (1) at the pond's
 // south-west corner rows down the river to Mermaid Cove. Easter eggs: one bush (f), in
 // the corner of the pine wood, hides Sir Hopsalot the frog, and the fountain (F) grants a wish
 // if you toss in enough coins.
+// Hollyhock, the village (fenced with '+', cobbled with '-'), sits east of the castle: a path
+// leads from the castle gate to its west gate, and another from its south gate down to the
+// fountain. Along the back: the cathedral (3), Barnaby's shop (4) with Barnaby Badger (6) at his
+// stall (7) selling bubble bath, and a thatched cottage (5). In front: the cobbled square with a
+// well (8), benches ([), lampposts (!), flower tubs ({) and a notice board (?), and a pen of
+// hens (< white, > brown) and chicks (') pecking at corn (") by their coop (9) and grain sack (0).
 // Amethyra the dragon (D) is tucked away in her cave in the rocky hill (%) in the north-east
 // corner; its way in is on the south side, behind the pines. Someone has pitched a tent (V) by a
 // campfire (c) in the birch wood to the south-east: warm up there for full health.
@@ -17,40 +24,58 @@ open_hint: The stairs are open!
 minimap_floor: #7EA068
 minimap_wall: #C4BEAA
 ---
-HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-Hf...t..t...e..KKKKKKK.........tt%%%%%%%%%%%%H
-H.t...t.t..e...KKKKKKK.........t%%%%%%%%%%%%%H
-Ht.e.t...t.....KKKKKKK.........t%%%%u::::u%%%H
-H.t..tt....s...KKKKKKK..........t%%%:::::::%%H
-H..t..,e.t.......Q=Q.....E.......%%%:::::D:%%H
-Ht...t............=......a...s.t.%%%:::::::%%H
-H.t.....e..t......=..............%%%%::%%%%%%H
-H..e.t............=............t.t%%%::%%%t.bH
-H..........Y......=.,......O....t.Ot.e..t.t..H
-H.................=...,...........t.t.t..e...H
-H...www......L....=.....a.....a.i...e...t....H
-H.wwwww..;........=...........,..............H
-H.wwwwwwm.........=....................a.....H
-H.wwwww...........=..........z......E......s.H
-H..1ww...;........=..;..;..Y.................H
-H............b....=......*..............;....H
-H.....*...........=====F.....................H
-H.b...............=...===================X...H
-H.................=..;.......................H
-H...===============...................,...;..H
-H...=........................s...............H
-H...=...,.....E....................a.........H
-H...=.....,.........b........L............O..H
-H...=....Y...i...i..............i....i...i...H
-H...=...................i........e.V.........H
-H...=......i..s..i...e..............*........H
-H...=..s..............E..........l.c.l....t..H
-H...=..........O...i................z........H
-H...=........;............i.s...............tH
-H...P.......i...e...i..........i..s...i..i...H
-H.b.....................................,.t..H
-H........e......,............................H
-HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+Hf...t..t...e..KKKKKKK.+33333.4444.555.+...tt%%%%%%%%%%%%H
+H.t...t.t..e...KKKKKKK.+33333.4444.555Y+...t%%%%%%%%%%%%%H
+Ht.e.t...t.....KKKKKKK.+33333,4444.;-;.+...t%%%%u::::u%%%H
+H.t..tt....s...KKKKKKK.+33333..7.6o;-;.+....t%%%:::::::%%H
+H..t..,e.t.......Q=Q...+{.-{!.....?.-.!+.....%%%:::::D:%%H
+Ht...t............======---------------+.s.t.%%%:::::::%%H
+H.t.....e..t......=....+.--------!.....+.....%%%%::%%%%%%H
+H..e.t............=....+{----8---.++++++...t.t%%%::%%%t.bH
+H..........Y......=.,..+.--------.+0"<9+....t.Ot.e..t.t..H
+H.................=...,+.[-----[-..'">.+......t.t.t..e...H
+H...www......L....=....+;.-;.;....+<"'>+..a.i...e...t....H
+H.wwwww..;........=....+++-+++++++++++++..,..............H
+H.wwwwwwm.........=.......=........................a.....H
+H.wwwww...........=.......=......,.......z......E......s.H
+H..1ww...;........=..;..;.=Y..;..........................H
+H............b....=......*=........Y................;....H
+H.....*...........=====F..=..............................H
+H.b...............=...===============================X...H
+H.................=..;...........;.......................H
+H...===============...................,...........,...;..H
+H...=..........................a.........s...............H
+H...=...,.....E....................E...........a.........H
+H...=.....,.........b........,...........L............O..H
+H...=....Y...i...i..............i....i......i....i...i...H
+H...=...................i.............e......e.V.2.......H
+H...=......i..s..i...e.......i.....s............*........H
+H...=..s..............E...........i..........l.c.l....t..H
+H...=..........O...i...........e................z........H
+H...=........;............i........i....s...............tH
+H...P.......i...e...i........s.............i..s...i..i...H
+H.b..............................,..................,.t..H
+H........e......,........................................H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 ---
+2 = item trailblazer_boots
 K = castle House
 1 = door Cove
+// The village (DungeonBuilder.Town.cs).
+3 = building cathedral
+4 = building shop
+5 = building cottage
+6 = npc barnaby
+7 = prop stall
+8 = prop well
+9 = prop coop
+0 = prop grainsack
+! = prop lamppost
+? = prop noticeboard
+[ = prop bench
+{ = prop planter
+< = prop hen
+> = prop brownhen
+' = prop chick
+" = prop grain

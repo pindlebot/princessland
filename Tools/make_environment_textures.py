@@ -29,6 +29,15 @@ Out:  Assets/Art/Environment/
         SandBank.png                 32x4   the sea's bank: a sandy lip over wet sand
         Planks.png                   32x32  the cove's jetties and boardwalks: driftwood boards
         Waterfall.png                32x16  falling water, repeating downward (scrolls fast in game)
+      The village (east of the castle on Level 0):
+        Cobble_0.png / Cobble_1.png  32x32  the village's cobbled street and square (Cobble_1 has moss)
+        Plaster.png                  32x20  one 2m x 1.2m course of a timber-framed house wall
+        RoofTiles.png / Thatch.png   32x32  terracotta roof tiles (the shop) and straw thatch (the cottage)
+        Window.png                   16x16  a cottage window with a box of flowers
+        Lancet.png / RoseWindow.png  12x32 / 24x24  the cathedral's stained glass (it glows a little)
+        TownDoor.png                 16x32  a plank door with an arched top
+        Awning.png                   32x16  the shop's coral-and-cream striped awning
+        ShopSign.png                 24x16  Barnaby's sign: a bottle of bubble bath and bubbles
 
 Every texture is seamless: mortar lines sit on the left/top edge only, so two
 tiles placed side by side share a single 1px joint.
@@ -560,6 +569,253 @@ def spike_plate():
     return img
 
 
+# ---------- The village (Level 0, east of the castle) ----------
+# Warm, lived-in materials for the village's houses, a step warmer than the castle's
+# lavender stone: cobbles, cream plaster with oak beams, terracotta tiles and straw thatch.
+# Windows, doors, the awning and the sign go on thin blocks just proud of a wall, so each is
+# drawn at its real size (16 texels a metre) and keeps the wall's colour around its shape.
+
+COBBLE, COBBLE_SHADE, COBBLE_GAP = (186, 172, 160), (160, 146, 138), (150, 128, 104)
+OAK, OAK_SHADE = (118, 80, 56), (88, 58, 46)
+PLASTER = pal.CREAM_SHADE
+TERRACOTTA, TERRACOTTA_DARK, TERRACOTTA_LIGHT = (198, 112, 92), (142, 70, 66), (226, 152, 120)
+STRAW, STRAW_DARK, STRAW_LIGHT = (212, 178, 108), (164, 128, 74), (236, 210, 146)
+GLASS = [(96, 168, 214), (240, 112, 128), (255, 214, 110), (122, 196, 132), (170, 130, 214)]
+LEAD = (60, 48, 70)
+
+
+def cobble_tile(seed, moss):
+    """Rounded cobbles in four staggered rows on sandy gaps: calm, a little lighter than the
+    castle's flagstones. Seamless: the stones wrap around the edges."""
+    rng = random.Random(seed)
+    img = Image.new("RGB", (32, 32), COBBLE_GAP)
+    px = img.load()
+    for row in range(4):
+        y0 = row * 8
+        offset = 4 if row % 2 else 0
+        for i in range(4):
+            x0 = offset + i * 8
+            tone = rng.randint(-8, 8)
+            for dy in range(7):
+                for dx in range(7):
+                    # Round off the corners of each 7x7 stone.
+                    if (dx in (0, 6)) and (dy in (0, 6)):
+                        continue
+                    c = shade(COBBLE, tone)
+                    if dy <= 1 and dx <= 4:
+                        c = shade(c, 12)                     # lit from the top-left
+                    elif dy >= 5 or dx == 6:
+                        c = shade(COBBLE_SHADE, tone)
+                    px[(x0 + dx) % 32, (y0 + dy) % 32] = c
+    if moss:  # a few tufts of moss between the stones
+        for _ in range(6):
+            x, y = rng.randrange(32), rng.choice((7, 15, 23, 31))
+            px[x, y] = pal.SAGE_DARK
+            px[(x + 1) % 32, y] = pal.SAGE
+    return img
+
+
+def plaster_side():
+    """32x20, one 2m x 1.2m course of a house wall: cream plaster between oak beams. A beam
+    runs along the top and a post up the left edge (the next block's post is its right edge),
+    with a diagonal brace, so stacked courses read as one timber-framed wall."""
+    rng = random.Random(91)
+    img = Image.new("RGB", (32, 20), PLASTER)
+    px = img.load()
+    for _ in range(10):  # a little texture in the plaster
+        px[rng.randrange(3, 32), rng.randrange(3, 20)] = shade(PLASTER, rng.choice((-8, 6)))
+    for x in range(32):
+        px[x, 0], px[x, 1] = OAK, OAK_SHADE
+    for y in range(20):
+        px[0, y], px[1, y] = OAK, OAK_SHADE
+    for i in range(14):  # the brace, two texels thick
+        x, y = 4 + i * 2, 18 - i
+        for dx in (0, 1):
+            px[x + dx, y] = OAK
+            if y + 1 < 20:
+                px[x + dx, y + 1] = OAK_SHADE
+    return img
+
+
+def roof_tiles():
+    """Terracotta tiles: rows of rounded tiles, each row offset by half a tile (like the
+    castle's shingles, in warm clay)."""
+    rng = random.Random(93)
+    img = Image.new("RGB", (32, 32), TERRACOTTA)
+    px = img.load()
+    for row in range(8):
+        y0 = row * 4
+        off = 3 if row % 2 else 0
+        for x in range(32):
+            px[x, y0 + 3] = TERRACOTTA_DARK
+            if (x + off) % 6 in (1, 2, 3):
+                px[x, y0] = shade(TERRACOTTA_LIGHT, rng.randint(-6, 4))
+            if (x + off) % 6 == 0:
+                for y in range(y0, y0 + 3):
+                    px[x, y] = TERRACOTTA_DARK
+    return img
+
+
+def thatch():
+    """Straw thatch: short vertical strands in three tones, with a darker band where each
+    layer of straw overlaps the one below."""
+    rng = random.Random(95)
+    img = Image.new("RGB", (32, 32), STRAW)
+    px = img.load()
+    for x in range(32):
+        for y in range(32):
+            if (x * 7 + y // 3 * 5) % 5 == 0:
+                px[x, y] = STRAW_LIGHT
+            elif (x * 3 + y // 4) % 7 == 0:
+                px[x, y] = STRAW_DARK
+    for y0 in (7, 15, 23, 31):
+        for x in range(32):
+            px[x, y0] = STRAW_DARK
+            if rng.random() < 0.5:
+                px[x, y0 - 1] = shade(STRAW_DARK, 12)
+    return img
+
+
+def window():
+    """16x16, a 1m cottage window: four panes of sky-blue glass in an oak frame, a window box
+    of flowers along the bottom, on cream plaster."""
+    img = Image.new("RGB", (16, 16), PLASTER)
+    px = img.load()
+    for y in range(1, 13):
+        for x in range(2, 14):
+            edge = y in (1, 12) or x in (2, 13) or x in (7, 8) or y == 6
+            px[x, y] = OAK if edge else (pal.WATER_GLINT if (x - y) in (0, 1) else pal.WATER)
+    for x in range(1, 15):  # the window box
+        px[x, 13], px[x, 14] = OAK, OAK_SHADE
+    for x in range(2, 14, 2):
+        px[x, 12] = pal.CORAL if x % 4 else pal.BUTTER
+    return img
+
+
+def lancet():
+    """12x32, a tall pointed stained-glass window (0.75m x 2m) set in the cathedral's stone:
+    bright panes in lead lines, glowing a little in game (emission)."""
+    img = Image.new("RGB", (12, 32), BRICK)
+    px = img.load()
+    for y in range(2, 31):
+        if y < 8:  # the pointed arch: narrowing toward the top
+            half = 1 + (y - 2) * 4 / 6
+        else:
+            half = 5
+        for x in range(12):
+            if abs(x - 5.5) <= half:
+                lead = (y % 6 == 2) or abs(x - 5.5) >= half - 0.5 or x == 6
+                px[x, y] = LEAD if lead else GLASS[(y // 6 + (x > 5)) % len(GLASS)]
+    return img
+
+
+def rose_window():
+    """24x24, the round rose window over the cathedral door (1.5m): eight petals of coloured
+    glass around a golden middle, in two rings, set in a stone ring."""
+    img = Image.new("RGB", (24, 24), BRICK)
+    px = img.load()
+    for y in range(24):
+        for x in range(24):
+            dx, dy = x + 0.5 - 12, y + 0.5 - 12
+            d = math.hypot(dx, dy)
+            if d > 12:
+                continue
+            petal = int((math.atan2(dy, dx) + math.pi) / (2 * math.pi) * 8) % 8
+            if d > 10.5:
+                px[x, y] = shade(BRICK, 24)        # the stone ring
+            elif d > 9.5 or 5 < d < 6:
+                px[x, y] = LEAD
+            elif d >= 6:
+                px[x, y] = GLASS[0] if petal % 2 else GLASS[4]   # outer petals: blue and lilac
+            elif d > 2.5:
+                px[x, y] = GLASS[1] if petal % 2 else GLASS[3]   # inner petals: coral and green
+            else:
+                px[x, y] = GLASS[2]                              # the golden middle
+    return img
+
+
+def town_door(wood=OAK):
+    """16x32, a 1m x 2m plank door with an arched top, a little round window and a brass knob."""
+    img = Image.new("RGB", (16, 32), shade(wood, -30))
+    px = img.load()
+    for y in range(32):
+        for x in range(16):
+            arch = y < 4 and (x - 7.5) ** 2 / 64 + (y - 4) ** 2 / 16 > 1
+            if arch:
+                continue
+            px[x, y] = shade(wood, 14) if x % 4 == 1 else wood
+            if x % 4 == 0:
+                px[x, y] = shade(wood, -22)
+    for y in (9, 24):  # iron straps
+        for x in range(1, 15):
+            px[x, y] = (80, 80, 92)
+    for y in range(5, 9):
+        for x in range(6, 10):
+            px[x, y] = pal.WATER_GLINT if (x, y) == (6, 5) else pal.WATER
+    px[12, 17], px[12, 18] = pal.HONEY_LIGHT, pal.HONEY
+    return img
+
+
+def awning():
+    """32x16, the shop's striped canvas awning (2m x 1m): coral and cream stripes with a
+    scalloped valance along the front edge."""
+    img = Image.new("RGB", (32, 16), pal.CREAM)
+    px = img.load()
+    for y in range(16):
+        for x in range(32):
+            stripe = (x // 4) % 2 == 0
+            c = pal.CORAL if stripe else pal.CREAM
+            if y < 3:
+                c = shade(c, 10)
+            if y >= 12:  # the valance: scallops hanging from y = 12
+                t = ((x % 4) + 0.5) / 4 * 2 - 1
+                if y - 12 > round(3 * (1 - t * t) ** 0.5):
+                    c = shade(c, -60)
+                else:
+                    c = shade(c, -14)
+            px[x, y] = c
+    return img
+
+
+def shop_sign():
+    """24x16, Barnaby's shop sign (1.5m x 1m): a cream board in a honey frame with a bottle of
+    bubble bath and three bubbles, so you can read it before you can read."""
+    img = Image.new("RGB", (24, 16), pal.HONEY)
+    px = img.load()
+    for y in range(1, 15):
+        for x in range(1, 23):
+            px[x, y] = pal.CREAM
+    for y in range(15):
+        px[0, y] = pal.HONEY_SHADE
+    for x in range(24):
+        px[x, 15] = pal.HONEY_SHADE
+    lilac, lilac_dark, glass, cork = (196, 150, 226), (150, 104, 186), (238, 236, 250), (176, 128, 86)
+    bottle = [  # rows 3..12 of the board, from x = 3: the bottle from the bubble bath icon, in small
+        "...cc...",
+        "...gg...",
+        "..rrrr..",
+        "..gggg..",
+        ".gggggg.",
+        "gLLLLLLg",
+        "gLLLLLLg",
+        "gLLLLLLg",
+        ".dddddd.",
+    ]
+    colors = {"c": cork, "g": glass, "r": pal.CORAL, "L": lilac, "d": lilac_dark}
+    for j, row in enumerate(bottle):
+        for i, ch in enumerate(row):
+            if ch != ".":
+                px[3 + i, 3 + j] = colors[ch]
+    for cx, cy, r in ((15.5, 5.5, 2.4), (19.5, 9.5, 1.8), (15.5, 11.5, 1.3)):  # bubbles
+        for y in range(16):
+            for x in range(24):
+                d = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
+                if d <= r:
+                    px[x, y] = (214, 232, 252) if d < r - 0.9 else (120, 168, 216)
+        px[int(cx - r / 2), int(cy - r / 2)] = (255, 255, 255)
+    return img
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     floor_tile(1).save(OUT / "Floor_0.png")
@@ -594,6 +850,17 @@ def main():
     sand_bank().save(OUT / "SandBank.png")
     planks().save(OUT / "Planks.png")
     waterfall().save(OUT / "Waterfall.png")
+    cobble_tile(141, moss=False).save(OUT / "Cobble_0.png")
+    cobble_tile(142, moss=True).save(OUT / "Cobble_1.png")
+    plaster_side().save(OUT / "Plaster.png")
+    roof_tiles().save(OUT / "RoofTiles.png")
+    thatch().save(OUT / "Thatch.png")
+    window().save(OUT / "Window.png")
+    lancet().save(OUT / "Lancet.png")
+    rose_window().save(OUT / "RoseWindow.png")
+    town_door().save(OUT / "TownDoor.png")
+    awning().save(OUT / "Awning.png")
+    shop_sign().save(OUT / "ShopSign.png")
     print("Wrote", ", ".join(sorted(p.name for p in OUT.glob("*.png"))))
 
 

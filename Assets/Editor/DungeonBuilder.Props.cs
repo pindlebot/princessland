@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-// Props and items: chest, wall torch, grass tufts, the Ember Ring pickup, the castle flag.
+// Props: chest, wall torch, grass tufts, the castle flag. (Items are in DungeonBuilder.Items.cs.)
 public static partial class DungeonBuilder
 {
     // Gold stars rising with a warm flash: used when a chest opens and when you level up.
@@ -130,59 +130,5 @@ public static partial class DungeonBuilder
             .OrderBy(a => Mathf.Abs(int.Parse(a.name.Substring("Shadow_".Length)) / (float)ArtStyle.PixelsPerUnit - size))
             .First();
         return shadowSheet.Frames(best.name)[0];
-    }
-
-    // ---------- Items ----------
-
-    // Items are ScriptableObject assets: pure data, shared by everything that refers to them.
-    // You can also make new ones by hand: Project window > Create > Dungeon > Item.
-    private static ItemDefinition CreateEmberRing()
-    {
-        var ring = LoadOrCreateAsset<ItemDefinition>("Assets/Items/EmberRing.asset");
-        var so = new SerializedObject(ring);
-        so.FindProperty("id").stringValue = "ember_ring";
-        so.FindProperty("displayName").stringValue = "Ember Ring";
-        so.FindProperty("description").stringValue = "A gold band set with a smouldering gem. +1 spell damage.";
-        so.FindProperty("icon").objectReferenceValue = SpriteSheetImporter.ImportSingle("Assets/Art/UI/IconEmberRing.png", 16);
-        so.FindProperty("slot").enumValueIndex = (int)EquipSlot.Ring;
-        so.FindProperty("spellDamageBonus").intValue = 1;
-        so.ApplyModifiedPropertiesWithoutUndo();
-        return ring;
-    }
-
-    // Every item, so ids from the inventory (and later, save files) can be turned back into items.
-    // Add new items to this list as they're created.
-    private static ItemDatabase CreateItemDatabase(params ItemDefinition[] items)
-    {
-        var database = LoadOrCreateAsset<ItemDatabase>("Assets/Items/ItemDatabase.asset");
-        SetRefs(database, "items", items);
-        return database;
-    }
-
-    // An item on the floor: a bobbing, glinting sprite with a faint glow so it's easy to spot.
-    private static GameObject CreateItemPickupPrefab(SpriteSheetImporter.SpriteSheet props, ItemDefinition item, Sprite shadowSprite)
-    {
-        var go = new GameObject("EmberRingPickup");
-
-        var visual = new GameObject("Visual");
-        visual.transform.SetParent(go.transform, false);
-        visual.transform.localPosition = new Vector3(0f, 0.15f, 0f);
-        AddLoopingSprite(visual, props, "Ring");
-
-        AddShadow(go, shadowSprite, 0.6f);
-
-        var glow = new GameObject("Glow").AddComponent<Light>();
-        glow.transform.SetParent(go.transform, false);
-        glow.transform.localPosition = new Vector3(0f, 0.6f, 0f);
-        glow.type = LightType.Point;
-        glow.color = new Color(1f, 0.45f, 0.25f);
-        glow.range = 2.5f;
-        glow.intensity = 1.5f;
-
-        var pickup = go.AddComponent<ItemPickup>();
-        SetRef(pickup, "item", item);
-        SetRef(pickup, "visual", visual.transform);
-        SetRef(pickup, "pickupSound", Sound("pickup"));
-        return SavePrefab(go, "EmberRingPickup");
     }
 }

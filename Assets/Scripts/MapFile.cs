@@ -21,6 +21,12 @@ using System.Linq;
 //                                       doors that lead to each other need nothing else.
 //   K = castle <Scene> [<Spawn>]        the castle's gate leads to <Scene> (same rules as a door)
 //   <symbol> = spawn <Name>             an extra named arrival spot
+//   <symbol> = item <id>                an item lying there to pick up (ids: DungeonBuilder.Items.cs).
+//                                       'I' with no legend entry is always the Ember Ring.
+//   <symbol> = building <kind>          a filled rectangle of this symbol is a building (BuildingKinds);
+//                                       its door is in the middle of its south side
+//   <symbol> = prop <kind>              a village prop standing there (PropKinds): a well, a hen, ...
+//   <symbol> = npc <id>                 a friendly character standing there (NpcIds)
 //
 // Lines starting with "//" are comments (in the header and legend; the map is taken as is).
 // This is plain C# with no Unity editor code, so both DungeonBuilder and the tests can use it.
@@ -28,12 +34,21 @@ public class MapFile
 {
     // Every symbol that means something without a legend entry. Keep in sync with
     // DungeonBuilder.BuildLevel's switch.
-    public const string BuiltInTiles = " .,=_#THKPELMCIDBWSRYFbQ*;Xwmfcoxjupdkyn~^ANUGvrtiaOszlVe%:hqJ&|@Z$";
+    public const string BuiltInTiles = " .,=_#THKPELMCIDBWSRYFbQ*;Xwmfcoxjupdkyn~^ANUGvrtiaOszlVe%:hqJ&|@Z$+-";
+
+    // What "building", "prop" and "npc" entries can name. Keep in sync with DungeonBuilder.Town.cs.
+    public static readonly string[] BuildingKinds = { "cathedral", "shop", "cottage" };
+    public static readonly string[] PropKinds =
+    {
+        "stall", "well", "coop", "grainsack", "lamppost", "noticeboard", "bench", "planter",
+        "hen", "brownhen", "chick", "grain",
+    };
+    public static readonly string[] NpcIds = { "barnaby" };
 
     public class LegendEntry
     {
         public char Symbol;
-        public string Kind;      // "door", "castle" or "spawn"
+        public string Kind;      // "door", "castle", "spawn", "item", "building", "prop" or "npc"
         public string[] Args;
         public int Line;         // 1-based line in the file, for error messages
     }
@@ -133,6 +148,12 @@ public class MapFile
                 yield return new Door { Symbol = entry.Symbol, Col = col, Row = row, TargetScene = target, TargetSpawn = spawn, IsCastle = entry.Kind == "castle" };
         }
     }
+
+    // Is this symbol one of the map's buildings (solid, like a wall)?
+    public bool IsBuilding(char c) => Legend.TryGetValue(c, out var e) && e.Kind == "building";
+
+    // Every building symbol on this map, e.g. "345".
+    public string BuildingSymbols => new string(Legend.Values.Where(e => e.Kind == "building").Select(e => e.Symbol).ToArray());
 
     // The named arrival spots this level has: one beside each door, plus any "spawn" entries.
     public IEnumerable<string> SpawnNames()
