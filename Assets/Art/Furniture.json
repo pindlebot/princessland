@@ -72,6 +72,48 @@
       "frames": 1,
       "fps": 1,
       "loop": false
+    },
+    {
+      "name": "SpiralDown",
+      "row": 10,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "SpiralUp",
+      "row": 11,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Stove",
+      "row": 12,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Pantry",
+      "row": 13,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Island",
+      "row": 14,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "TowelShelf",
+      "row": 15,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
     }
   ]
 }

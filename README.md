@@ -6,6 +6,7 @@ A tiny isometric dungeon crawler for learning Unity (6000.6.4f1, Built-in Render
 (Pressing ▶ in a level scene directly also works; you play as the wizard.)
 
 **Flow:** Title (3 save slots) → Character Select (for a new slot) → **Level 0** (the castle grounds) → **Level 1** (the dungeon).
+A gate in Level 0's southern hedge leads to **Hollow Farm**, a haunted (but friendly) farmland.
 Level 0's exit only appears once its 4 skeletons are defeated. A rowboat on Level 0's pond goes to **Mermaid Cove**, a
 seaside side-quest whose sea cave has a secret stair down into the dungeon too (see below). Esc / Start opens the pause menu. M mutes the music.
 
@@ -24,13 +25,31 @@ and tell Coralie), the fountain takes wishes (1 coin each; the third comes true)
 **Hollyhock**, a little fenced village, sits just east of the castle (follow the path from the gate): a cathedral
 with a stained-glass rose window and a spire, a thatched cottage, a cobbled square with a well, benches, lampposts
 and a notice board, and a pen of hens and chicks pecking at corn. **Barnaby Badger** keeps a stall in front of his
-shop: talk to him once, then press **E** to buy **Bubble Bath** (10 coins; it goes in your bag and, for now, does
-nothing but smell lovely). The doors, the well, the notice board, the benches and the hens all have something to say.
+shop: talk to him once, then press **E** to buy **Bubble Bath** (10 coins; it goes in your bag, and the bath at
+home turns it into a mountain of bubbles). The doors, the well, the notice board, the benches and the hens all have something to say.
 Press **E** at the **castle gate** to go inside to the hero's home. The bedroom has a bed (a nap restores health
 and mana), a lamp to switch on and off, and a wardrobe, bookshelf, toy chest and plant that say something different
-each time. In the bathroom you can sit on the toilet (E again flushes and stands you up; so does walking away), then
-wash your hands and dry them on the paper towel. The front
-door brings you back out by the gate. Cleared levels and finished conversations are remembered between scenes.
+each time. In the big bathroom you can sit on the toilet (E again flushes and stands you up; so does walking away),
+pump the lavender soap and rinse your hands at the sink, then dry them on the paper towel. The big **marble bath**, three
+tiles wide and open all round on a stepped marble plinth, with a gold swan-neck tap, candles and a vase of lavender,
+puts the hero into their swimwear (Aldric's striped
+bathing suit, Marina's aquamarine swimsuit) lying back in the water with a rubber duck, until E (or walking) gets
+them out, dripping wet: grab a towel from the open **towel shelf** to dry off. Stand at its east end and press E on the gold **tap** to turn the water on (it pours and splashes, and
+you can hear it running) and off again. A tall monstera and a big fern stand either side of it, with more potted
+plants about the room. With a bottle of **Bubble Bath** in the bag, getting
+in pours it in (one bottle per bath) and foam heaps up on the water. A doorway in the bedroom's west wall opens onto a
+big, sunny **courtyard**: ivy on its walls, hedges, trees, bushes and flower tubs, a bench, a **wishing well** (like the
+fountain, its third wish comes true), **Whiskers** the tabby cat, who purrs when you pet her, and a stone path to an
+old barred **door** at the far end that's locked tight (there's no key for it yet). A **spiral staircase** in the
+bedroom winds down to the **kitchen** (`Levels/Kitchen.txt`): a stove, a pantry and a kitchen island.
+
+**Cooking** (after Stardew Valley's kitchen): gather ingredients, then cook them from a recipe card at the
+**stove**, the only place you can cook. The first recipe is **Strawberry Pancakes**: 1 **Egg** (look in the nest box of
+the hens' coop in Hollyhock), 1 **Flour** (the kitchen pantry) and 1 **Strawberry** (the fruit bowl on the kitchen
+island). Each place hands out one at a time. At the stove, E opens the card (the game pauses): the dish and what it
+does (+3 hearts, +50 magic), then each ingredient with how many you have, a gold star once you have it and, until you
+do, where to find it. E / A (or clicking the button) cooks; Esc / B closes it. The pancakes go in the bag: click them
+there to eat them, at home or in the middle of the dungeon. The front door brings you back out by the gate. Cleared levels and finished conversations are remembered between scenes.
 
 **Progression:** enemies drop gold coins (walk near them) and give XP (skeleton 15, slime 20; the chest holds
 25 gold). Level 2 is a big step at **400 XP** (about a whole adventure, Slime King included); after that levels need
@@ -99,6 +118,8 @@ to its buttons as soon as you touch it.
 | `Scripts/SceneDoor.cs`, `GameSession.cs` | Doors between scenes, named arrival points, flags that survive scene loads |
 | `Scripts/HouseFixture.cs` | One data-driven component for several simple interactables (an enum picks the effect) |
 | `Scripts/DialogueController.cs`, `Npc.cs` | Conversations: typewriter text, pausing with `Time.timeScale`, unscaled time, serialized structs |
+| `Scripts/Recipe.cs`, `CraftingStation.cs`, `CookingView.cs` | Crafting: recipes as data assets (`Create > Dungeon > Recipe`), static rules shared by the stove, the HUD and the tests, a recipe card built from code |
+| `Scripts/AmbientLoop.cs` | A looping sound that plays exactly while its object is active (the bath's running faucet) |
 | `Scripts/Merchant.cs` | Inheritance: a shopkeeper is an `Npc` that overrides its prompt and what talking does (spend gold, add to the bag) |
 | `Scripts/Chicken.cs` | A tiny two-state machine (walk / peck) on timers, flipping a sprite to face its direction on screen |
 | `Scripts/AudioManager.cs` | Music loop + a pool of `AudioSource`s for overlapping effects, random pitch variation |
@@ -149,6 +170,8 @@ to its buttons as soon as you touch it.
 | `DungeonBuilder.Dragon.cs` | The NPC recipe, Amethyra's prefab **and her dialogue lines** (edit them here) |
 | `DungeonBuilder.Friends.cs` | Coralie's and Bonesy's lines, the frog, the wishing fountain, the dungeon props |
 | `DungeonBuilder.Home.cs` | The home's furniture and front door (prompts and messages live here) |
+| `DungeonBuilder.Bath.cs` | The sauna bath: its faucet and running water, steam, the bubble heap, the fern and monstera |
+| `DungeonBuilder.Cooking.cs` | **The recipes** (ingredients and messages; add a dish here) and the stove |
 | `DungeonBuilder.Castle.cs` | The castle from stacked wall blocks + a hand-built pyramid mesh for roofs |
 | `DungeonBuilder.CharacterSelect.cs` | The select screen scene |
 | `DungeonBuilder.Title.cs` | The title screen scene |
@@ -171,9 +194,13 @@ Built-in tiles: `.` ground · `,` grass tufts · `=` path · `#` stone wall · `
 `t` pine · `i` birch · `a` autumn tree · `O` boulder · `z` stump · `l` log · `V` tent · `s` pebbles · `e` fern · `%` rock · `:` cave floor ·
 `J` pirate · `&` dark mermaid (in the water) · `Z` Pearl (in the water) · `q` palm · `@` pirate ship (on the water) · `$` treasure heap ·
 `h` wooden planks · `|` rock with a waterfall (water below it) · `+` picket fence · `-` cobbles.
+Indoors (`theme: Home`), `,`/`;` and anything among them are the courtyard's grass (walls beside it grow ivy) and `=`
+a path; `floor: kitchen` tiles the floor.
 Legend extras for villages: `3 = building cathedral|shop|cottage` (a filled rectangle of that symbol; its front
 door is in the middle of its south side), `6 = npc barnaby`, and `! = prop <kind>` for `stall`, `well`, `coop`,
-`grainsack`, `lamppost`, `noticeboard`, `bench`, `planter`, `hen`, `brownhen`, `chick` and `grain` (the lists live in `MapFile.cs`).
+`grainsack`, `lamppost`, `noticeboard`, `bench`, `planter`, `hen`, `brownhen`, `chick` and `grain`, and at home
+`bathtub`, `pottedfern`, `pottedmonstera`, `cat`, `wishingwell`, `lockeddoor`, `stove`, `pantry` and `island` (the lists live in `MapFile.cs`).
+`3 = stairsdown Kitchen` / `stairsup House` are doors drawn as a spiral staircase.
 Header extras: `water: sea` (the sea instead of the pond), `ground: sand` (`.` and the markers are beach sand). On an
 Outdoor level, a door is a **rowboat** at the end of a jetty, and water on the map's edge spills off the island.
 
@@ -182,8 +209,8 @@ Each character is a sprite sheet (one animation per row) plus a JSON layout, dra
 
 | Sheet | Script | Action state |
 |---|---|---|
-| `Assets/Art/Wizard.png` (player) | `make_wizard_sprites.py` | `Cast`, plus `Sit` (front only) |
-| `Assets/Art/Princess.png` (player) | `make_princess_sprites.py` | `Cast`, plus `Sit` (front only) |
+| `Assets/Art/Wizard.png` (player) | `make_wizard_sprites.py` | `Cast`, plus `Sit` and `Bathe` (front only) |
+| `Assets/Art/Princess.png` (player) | `make_princess_sprites.py` | `Cast`, plus `Sit` and `Bathe` (front only) |
 | `Assets/Art/Skeleton.png` (enemy) | `make_skeleton_sprites.py` | `Attack` |
 | `Assets/Art/Slime.png` (enemy) | `make_slime_sprites.py` | `Attack` (squash-and-stretch lunge) |
 | `Assets/Art/SlimeKing.png` (boss, 64×64) | `make_slime_sprites.py` (same code at 2.6× scale) | `Attack` |
@@ -192,8 +219,9 @@ Each character is a sprite sheet (one animation per row) plus a JSON layout, dra
 | `Assets/Art/Pirate.png` (enemy) | `make_cove_sprites.py` | `Attack` (a cutlass swing) |
 | `Assets/Art/DarkMermaid.png` (enemy) | `make_cove_sprites.py` | `Attack` (raises an orb, throws it; Walk = Idle, she never moves) |
 | `Assets/Art/Pearl.png` (NPC, 48×48) | `make_cove_sprites.py` | (Coralie's drawing in Pearl's colours) |
-| `Assets/Art/Items.png` + `Art/UI/Icon<Item>.png` | `make_item_sprites.py` | (equipment on the floor, glinting, and its 24×24 inventory icon) |
-| `Assets/Art/Barnaby.png` (NPC, 48×48) | `make_town_sprites.py` | (Idle/Talk; plus `Chicken.png`, `TownProps.png`, `TownDecals.png`) |
+| `Assets/Art/Items.png` + `Art/UI/Icon<Item>.png` | `make_item_sprites.py` | (items on the floor, glinting, and their 24×24 inventory icons; the cooking ingredients and pancakes too) |
+| `Assets/Art/Bath.png` (96×96 frames) | `make_bath_sprites.py` | (the sauna bath, its running stream, bubble heap, steam, and the fern and monstera) |
+| `Assets/Art/Barnaby.png` (NPC, 48×48) | `make_town_sprites.py` | (Idle/Talk; plus `Chicken.png`, `TownProps.png`, `TownDecals.png` and Whiskers' `Cat.png`) |
 
 Shared drawing helpers live in `Tools/sprite_common.py`. Regenerate with e.g.
 `Tools/.venv/bin/python Tools/make_skeleton_sprites.py`, then **Dungeon → Rebuild All Scenes**.
@@ -236,7 +264,10 @@ plays once with a fading flash of light (`FadeOutLight`) and then destroys itsel
   | Armor | **Seashell Mail** | +2 hearts | Mermaid Cove's sea cave, by the pirates' treasure |
   | Boots | **Trailblazer Boots** | walk 20% faster | the camp on the castle grounds, by the tent |
   | Ring | **Ember Ring** | +1 spell damage | the dungeon's first room (with it, fireballs kill skeletons in one hit) |
-  | (none) | **Bubble Bath** | nothing yet: a novelty | Barnaby's stall in Hollyhock, 10 coins a bottle |
+  | Helm | **Jack-o'-Lantern Hat** | +1 spell damage, +15 magic | the centre of Hollow Farm's corn maze |
+  | (none) | **Bubble Bath** | used up in the bath at home: a mountain of bubbles | Barnaby's stall in Hollyhock, 10 coins a bottle |
+  | (none) | **Egg**, **Flour**, **Strawberry** | cooking ingredients | the hens' coop, the kitchen pantry, the kitchen island's fruit bowl |
+  | (food) | **Strawberry Pancakes** | click in the bag to eat: +3 hearts, +50 magic | cooked at the kitchen stove |
 
   Items are `ItemDefinition` assets whose stats are set in `Editor/DungeonBuilder.Items.cs`; `Inventory` adds up
   the bonuses, and `SpellAbility`, `PlayerController` and `PlayerProgression` read the totals. To add one: draw it
@@ -329,6 +360,25 @@ off the northern cliffs, and the sea spilling over the island's south and west e
 - Art: `Tools/make_cove_sprites.py` (pirate, dark mermaid, Pearl, palms, rowboat, ship, splash, shells), the bolt in
   `make_spell_sprites.py`, sand/sea/planks/waterfall textures in `make_environment_textures.py`, and a 6/8 sea
   shanty (`music_cove`) plus pirate, siren, bolt and oar sounds in `make_sounds.py`.
+
+## Hollow Farm
+A farm gate in the castle grounds' southern hedge (follow the path south from the fountain) opens onto **Hollow Farm**
+(`Levels/Farm.txt`), a haunted farmland that's spooky but friendly, lit at dusk (`mood: dusk`: a violet sky, a low
+orange sun, and props painted a little dimmer, so the glowing things shine). No monsters here.
+
+- A **pumpkin patch** in tilled soil (`/`), with jack-o'-lanterns that glow and flicker, crows, and a scarecrow.
+- **Old Stitches**, the scarecrow who talks, by the red **barn** (`building barn`: peek through its doors), with haystacks.
+- A **corn field** with a way through the middle, and a **bonfire** ringed with jack-o'-lanterns (warm up there).
+- The old **graveyard** behind a picket fence: gravestones with silly epitaphs, dead trees, ground mist, will-o'-the-wisps,
+  and little **ghosts** floating about (say boo to them).
+- The **autumn festival** in the farm's south-west corner, through a leafy arch south of the bonfire: **Pippin** the ghost
+  sells **Hot Apple Cider** at his stand (3 coins; drink it from the bag for +2 hearts and +25 magic), with bunting,
+  pumpkin stacks, a tub for **bobbing for apples**, a first-prize **giant pumpkin** ringed with haystacks, autumn trees
+  and fallen leaves. Beside it, a **corn maze** (`prop cornwall`: low corn walls, so you can always see the hero; drawn as
+  walls on the minimap) with the **Jack-o'-Lantern Hat** (a helm: +1 spell damage, +15 magic) in a clearing at its centre.
+- Art: `Tools/make_farm_sprites.py`; soil, barn and corn-maze textures in `make_environment_textures.py`; a spooky 3/4 tune
+  (`music_farm`) plus a crow's caw, a ghost's "oooo" and Stitches' voice in `make_sounds.py`. Builder: `DungeonBuilder.Farm.cs`.
+  Gates between levels are legend `gate <Scene>` entries (a door drawn as a farm gate).
 
 ## Exercises to try
 1. Select an Enemy prefab and tweak `Move Speed`/`Aggro Range` in the Inspector while playing.

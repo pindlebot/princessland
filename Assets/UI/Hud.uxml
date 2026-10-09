@@ -141,6 +141,18 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
+        <!-- Cooking (at the kitchen stove): one recipe card. CookingView builds the card's insides. -->
+        <ui:VisualElement class="centered-row cooking-row" picking-mode="Ignore">
+            <ui:VisualElement name="cooking" class="panel cooking">
+                <ui:VisualElement class="inventory-header" picking-mode="Ignore">
+                    <ui:Label name="cooking-title" class="inventory-title" text="Cooking" />
+                    <ui:Label name="cooking-close" class="inventory-close cooking-close" text="Esc / B: close" />
+                </ui:VisualElement>
+                <ui:VisualElement name="recipe-card" class="recipe-card" picking-mode="Ignore" />
+                <ui:Label name="cooking-message" class="item-details cooking-message" text="" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
         <!-- Help (press H): the full controls list, out of the way until asked for -->
         <ui:VisualElement class="centered-row help-row" picking-mode="Ignore">
             <ui:VisualElement name="help" class="panel help" picking-mode="Ignore">

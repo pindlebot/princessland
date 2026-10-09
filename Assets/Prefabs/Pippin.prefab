@@ -1,0 +1,232 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2459935636464494065
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6066158918168400663}
+  - component: {fileID: 6158519585622746717}
+  - component: {fileID: 4453685276911477228}
+  m_Layer: 0
+  m_Name: Pippin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6066158918168400663
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2459935636464494065}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3532339408261781879}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6158519585622746717
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2459935636464494065}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2, z: 0.6}
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &4453685276911477228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2459935636464494065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b76c5b6d2602a453c853467a4e93dbb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Merchant
+  npcName: Pippin
+  portrait: {fileID: 21300000, guid: d2f54533247854073ad568fe300c444b, type: 3}
+  voice: {fileID: 8300000, guid: e5390ee1a72604b8dbc8c7316811a5e4, type: 3}
+  giftSound: {fileID: 8300000, guid: a142d3c7adcfa46989d2fae3161d654d, type: 3}
+  conversations:
+  - requires: 
+    notIf: met:Pippin
+    sets: met:Pippin
+    giveGold: 0
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Ooooh! A visitor! Welcome to the Autumn Festival! I'm Pippin.
+    - heroSpeaks: 1
+      text: You're a ghost... running a cider stand?
+    - heroSpeaks: 0
+      text: Best hot apple cider in the whole kingdom! I stir it with my ghostly ladle. Three coins a mug.
+    - heroSpeaks: 0
+      text: Drink it whenever you're tired. It'll warm you right up! Oh, and have you tried the corn maze?
+    - heroSpeaks: 0
+      text: They say there's a glowing hat at the very middle. Nobody's found it yet... nobody ALIVE, anyway! Hee hee!
+  talkOffset: {x: 0, y: 0, z: -1}
+  flipbook: {fileID: 1932076583022393958}
+  idleFrames:
+  - {fileID: 758283146, guid: 7e2b0dc8ece694515b3493b6653a614d, type: 3}
+  - {fileID: 1775312216, guid: 7e2b0dc8ece694515b3493b6653a614d, type: 3}
+  talkFrames:
+  - {fileID: -1878440716, guid: 7e2b0dc8ece694515b3493b6653a614d, type: 3}
+  - {fileID: 495879345, guid: 7e2b0dc8ece694515b3493b6653a614d, type: 3}
+  idleFps: 2
+  talkFps: 6
+  ware: {fileID: 11400000, guid: 3fc3637db43ae483b91d0e6771771a2d, type: 2}
+  price: 3
+  thanks: One hot apple cider, extra cinnamon! Drink it up when you need a pick-me-up. | Careful, it's warm! Boo-tiful, isn't it? Hee hee! | Another cider? You've got good taste, {hero}!
+  tooPoor: Oooh, it's {price} coins a mug. Come back when your pockets jingle!
+  bagFull: Your bag's too full for a mug! Drink something first, maybe?
+  saleSound: {fileID: 8300000, guid: c9f2232dc1a084e389e6c2fa8eabb14d, type: 3}
+--- !u!1 &5263839322189731851
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3532339408261781879}
+  - component: {fileID: 2982503759408575545}
+  - component: {fileID: 1932076583022393958}
+  - component: {fileID: 6911271772903822263}
+  m_Layer: 0
+  m_Name: Sprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3532339408261781879
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5263839322189731851}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6066158918168400663}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &2982503759408575545
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5263839322189731851}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 758283146, guid: 7e2b0dc8ece694515b3493b6653a614d, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 3, y: 3}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!114 &1932076583022393958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5263839322189731851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 752f7aecbf0a145fe8f89f9b53b039e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::SpriteFlipbook
+  frames:
+  - {fileID: 758283146, guid: 7e2b0dc8ece694515b3493b6653a614d, type: 3}
+  - {fileID: 1775312216, guid: 7e2b0dc8ece694515b3493b6653a614d, type: 3}
+  fps: 2
+  loop: 1
+  destroyWhenDone: 0
+  randomStart: 0
+  unscaledTime: 1
+--- !u!114 &6911271772903822263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5263839322189731851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 502420a4bf9fa47588f60892af5832e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Billboard

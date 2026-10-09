@@ -373,6 +373,55 @@ def bell():  # the cathedral bell: a deep strike with its ringing overtones, fad
     return place(out, [x * 0.2 for x in envelope(lowpass(noise(0.03, seed=91), 2500), curve=2)], 0)
 
 
+def splash():  # sinking into the bath (or climbing out): a soft watery slosh and a few drips
+    out = list(envelope(lowpass(noise(0.45, seed=33), 1400, 500), attack=0.02, curve=1.5))
+    for k, f in enumerate((900, 1300, 1100)):
+        place(out, [x * 0.3 for x in envelope(tone(f, 0.08, "sine", freq_end=f * 1.5), curve=2.5)], 0.25 + k * 0.09)
+    return [x * 0.7 for x in out]
+
+
+def soap():  # a pump of hand soap: a soft squish, then a bubbly squelch
+    squish = envelope(lowpass(noise(0.12, seed=41), 1800), attack=0.01, curve=1.5)
+    blub = envelope(tone(380, 0.1, "sine", freq_end=620, vibrato=0.2), curve=2)
+    return place([x * 0.5 for x in squish], [x * 0.5 for x in blub], 0.08)
+
+
+def bubbles():  # pouring in the bubble bath: glugs, then a froth of rising pops
+    out = []
+    for k in range(3):
+        place(out, [x * 0.4 for x in envelope(lowpass(tone(220 + k * 30, 0.09, "sine", freq_end=160), 900), curve=1.5)], k * 0.1)
+    rng = random.Random(77)
+    for k in range(14):
+        f = rng.uniform(700, 1800)
+        place(out, [x * 0.25 for x in envelope(tone(f, 0.05, "sine", freq_end=f * 1.7), curve=2.5)], 0.3 + k * 0.045)
+    return out
+
+
+def caw():  # a crow: two harsh, scratchy "caw"s
+    c = lambda: envelope(lowpass(mix(tone(520, 0.16, "saw", freq_end=380), [x * 0.4 for x in noise(0.16, seed=13)]), 2400),
+                         attack=0.01, curve=1.4)
+    return [x * 0.5 for x in place(list(c()), c(), 0.22)]
+
+
+def ghost_ooo():  # a friendly ghost: a soft, wavering "oooooo", rising and falling
+    voice = envelope(lowpass(tone(330, 1.0, "sine", freq_end=300, vibrato=0.35), 900), attack=0.25, curve=1.2)
+    under = envelope(tone(495, 1.0, "triangle", freq_end=450, vibrato=0.3), attack=0.3, curve=1.2)
+    return mix([x * 0.5 for x in voice], [x * 0.15 for x in under])
+
+
+def voice_stitches():  # Old Stitches: a dry, strawy little rustle with a hum in it
+    hum = envelope(tone(210, 0.06, "triangle", freq_end=190), attack=0.004, curve=1.5)
+    rustle = envelope(highpass(noise(0.06, seed=17), 2500), attack=0.002, curve=2)
+    return mix(hum, [x * 0.25 for x in rustle])
+
+
+def meow():  # Whiskers: a little "mrrow?", rising then falling, with a purry buzz underneath
+    voice = envelope(lowpass(tone(520, 0.35, "square", duty=0.3, freq_end=440, vibrato=0.06), 1800), attack=0.04, curve=1.6)
+    rise = envelope(tone(600, 0.12, "triangle", freq_end=760), attack=0.02, curve=1.5)
+    purr = envelope(lowpass(tone(28, 0.5, "square", duty=0.5), 300), attack=0.05, curve=1.2)
+    return mix([x * 0.6 for x in place(list(rise), voice, 0.1)], [x * 0.25 for x in purr])
+
+
 def purchase():  # buying something: a cheerful coin "ding" and three bubbles popping upward
     out = list(coin())
     for k, f in enumerate((900, 1200, 1500)):
@@ -397,6 +446,48 @@ def sizzle():  # stepping in lava: a hot hiss with a low pop
     hiss = envelope(highpass(lowpass(noise(0.45, seed=91), 7000, 2500), 1200), attack=0.01, curve=1.6)
     pop = envelope(tone(180, 0.12, freq_end=90), curve=3)
     return mix([x * 0.8 for x in hiss], [x * 0.5 for x in pop])
+
+
+def cook():  # cooking at the stove: a pan sizzling, a stir, and the timer's cheerful "ding!"
+    hiss = envelope(highpass(lowpass(noise(0.7, seed=95), 6000, 3500), 1500), attack=0.04, curve=0.9)
+    out = [x * 0.45 for x in hiss]
+    for k, f in enumerate((300, 340)):  # two soft stirs of the spoon
+        place(out, [x * 0.25 for x in envelope(lowpass(noise(0.08, seed=96 + k), 900), curve=2)], 0.15 + k * 0.2)
+    ding = mix(envelope(tone(midi(n("E6")), 0.6, "sine"), curve=2.2),
+               [x * 0.4 for x in envelope(tone(midi(n("E7")), 0.4, "sine"), curve=3)])
+    return place(out, [x * 0.6 for x in ding], 0.7)
+
+
+def munch():  # eating: three crunchy-soft bites and a happy "mm!"
+    out = []
+    for k in range(3):
+        place(out, [x * 0.5 for x in envelope(lowpass(noise(0.07, seed=60 + k), 2200), attack=0.004, curve=2)], k * 0.13)
+    mm = envelope(lowpass(tone(330, 0.22, "triangle", freq_end=420, vibrato=0.02), 900), attack=0.03, curve=1.5)
+    return place(out, [x * 0.5 for x in mm], 0.42)
+
+
+def faucet():  # the bath's faucet running: a steady stream into deep water (a seamless loop)
+    seconds, fade = 2.0, 0.3
+    body = lowpass(highpass(noise(seconds + fade + 0.05, seed=57), 300), 2600)
+    rumble = lowpass(noise(seconds + fade + 0.05, seed=58), 180)
+    rng = random.Random(59)
+    stream = [b * 0.6 + r * 1.5 for b, r in zip(body, rumble)]
+    for _ in range(18):  # little bubbly plips where the stream hits the water
+        f = rng.uniform(500, 1100)
+        place(stream, [x * 0.12 for x in envelope(tone(f, 0.05, "sine", freq_end=f * 1.4), curve=2.5)],
+              rng.uniform(0, seconds))
+    n_loop, n_fade = int(seconds * RATE), int(fade * RATE)
+    out = stream[:n_loop]
+    for i in range(n_fade):  # crossfade the tail into the start, so the loop has no click
+        t = i / n_fade
+        out[i] = out[i] * t + stream[n_loop + i] * (1 - t)
+    return out
+
+
+def tap_turn():  # turning the brass tap handle: a little squeak and a clunk
+    squeak = envelope(lowpass(tone(1300, 0.14, "saw", freq_end=1800, vibrato=0.03), 2600), attack=0.02, curve=1.2)
+    clunk = envelope(lowpass(tone(160, 0.08, "triangle", freq_end=110), 600), curve=2.5)
+    return place([x * 0.35 for x in squeak], [x * 0.7 for x in clunk], 0.12)
 
 
 def victory():
@@ -536,6 +627,29 @@ def home_theme():
                render_part(bass, beat, "sine", 0.45, gap=0.7))
 
 
+def farm_theme():
+    """Hollow Farm: spooky but friendly. E minor in 3/4, 132 bpm, 16 bars: a creeping, plucky
+    tune over an "oom-pah-pah" with a chromatic slide at the end of each line, like a
+    haunted hayride."""
+    beat = 60 / 132
+    melody = [
+        ("E5", 1), ("G5", 1), ("B5", 1), ("A#5", 2), ("B5", 1),      # Em
+        ("A5", 1), ("G5", 1), ("F#5", 1), ("E5", 3),                 # Am / Em
+        ("C5", 1), ("E5", 1), ("G5", 1), ("F#5", 2), ("E5", 1),      # C
+        ("D#5", 1), ("F#5", 1), ("A5", 1), ("B5", 3),                # B7
+        ("E5", 1), ("G5", 1), ("B5", 1), ("C6", 2), ("B5", 1),       # Em
+        ("A5", 1), ("C6", 1), ("A5", 1), ("G5", 3),                  # Am
+        ("F#5", 1), ("G5", 1), ("F#5", 1), ("D#5", 1), ("C5", 1), ("B4", 1),  # B7
+        ("E5", 3), (None, 3),                                        # Em
+    ]
+    bass = []
+    for root, chord in [("E2", "B2"), ("A2", "E3"), ("C3", "G3"), ("B2", "F#3"),
+                        ("E2", "B2"), ("A2", "E3"), ("B2", "D#3"), ("E2", "B2")]:
+        bass += [(root, 1), (chord, 1), (chord, 1)] * 2
+    return mix(render_part(melody, beat, "square", 0.28, duty=0.2, gap=0.6),
+               render_part(bass, beat, "triangle", 0.45, gap=0.5))
+
+
 def cove_theme():
     """A sea shanty in D minor, 6/8 (two swaying beats a bar, each split in three), 100 bpm,
     8 bars: Dm - C - Bb - A, twice, with waves washing in and out underneath."""
@@ -584,6 +698,9 @@ SOUNDS = {
     "pirate_hit": pirate_hit, "pirate_death": pirate_death, "siren_cast": siren_cast, "siren_hit": siren_hit,
     "bolt_impact": bolt_impact, "oars": oars,
     "voice_badger": voice_badger, "cluck": cluck, "bell": bell, "purchase": purchase,
+    "splash": splash, "soap": soap, "meow": meow, "bubbles": bubbles,
+    "caw": caw, "ghost_ooo": ghost_ooo, "voice_stitches": voice_stitches,
+    "cook": cook, "faucet": faucet, "tap_turn": tap_turn, "munch": munch,
 }
 
 if __name__ == "__main__":
@@ -593,6 +710,7 @@ if __name__ == "__main__":
     save("music_dungeon", dungeon_theme(), peak=0.7)
     save("music_home", home_theme(), peak=0.65)
     save("music_cove", cove_theme(), peak=0.65)
+    save("music_farm", farm_theme(), peak=0.65)
     for f in sorted(OUT.glob("*.wav")):
         with wave.open(str(f)) as w:
             print(f"{f.name:20} {w.getnframes() / w.getframerate():5.2f}s")

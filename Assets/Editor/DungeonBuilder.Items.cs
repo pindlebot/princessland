@@ -16,12 +16,16 @@ public static partial class DungeonBuilder
         public string IconPath;                        // defaults to Assets/Art/UI/Icon<Asset>.png
         public Color Glow;
         public int SpellDamage, Hearts, Magic, WalkPercent, RechargePercent;
+        public int RestoreHearts, RestoreMagic; // food: what eating it gives back
     }
 
     // Where each one lies: the Ember Ring in the dungeon's first room ('I'), the helm in the
     // bedroom at home, the boots by the camp on the castle grounds, the mail in Mermaid Cove's
     // sea cave, and the wand in the dungeon's locked treasure room. The bubble bath isn't lying
-    // anywhere: Barnaby Badger sells it in the village (DungeonBuilder.Town.cs).
+    // anywhere: Barnaby Badger sells it in the village (DungeonBuilder.Town.cs). Nor are the
+    // cooking ingredients: the hens' coop, the pantry and the fruit bowl hand them out, and the
+    // stove cooks them into pancakes (DungeonBuilder.Cooking.cs). An ingredient's description
+    // says where to find it: the recipe card shows it until you have one.
     private static readonly ItemSpec[] ItemSpecs =
     {
         new ItemSpec
@@ -59,12 +63,55 @@ public static partial class DungeonBuilder
             Glow = new Color(1f, 0.75f, 0.45f),
             WalkPercent = 20,
         },
-        // Not equipment (Slot None): a novelty that just sits in your bag, for now.
+        // Not equipment (Slot None): pour it into the bath at home for a mountain of bubbles (HouseFixture).
         new ItemSpec
         {
             Id = "bubble_bath", Asset = "BubbleBath", Name = "Bubble Bath",
-            Description = "Lavender and honey, from Barnaby's stall in Hollyhock. It makes a mountain of bubbles... if only the castle had a bathtub.",
+            Description = "Lavender and honey, from Barnaby's stall in Hollyhock. Pour it into the bath at home for a mountain of bubbles!",
             Glow = new Color(0.8f, 0.65f, 1f),
+        },
+        // Cooking ingredients (Slot None): DungeonBuilder.Cooking.cs says where each one comes from.
+        new ItemSpec
+        {
+            Id = "egg", Asset = "Egg", Name = "Egg",
+            Description = "Find one in the hens' coop in Hollyhock.",
+            Glow = new Color(1f, 0.95f, 0.8f),
+        },
+        new ItemSpec
+        {
+            Id = "flour", Asset = "Flour", Name = "Flour",
+            Description = "There's a sack in the pantry, here in the kitchen.",
+            Glow = new Color(1f, 0.95f, 0.85f),
+        },
+        new ItemSpec
+        {
+            Id = "strawberry", Asset = "Strawberry", Name = "Strawberry",
+            Description = "Pick one from the fruit bowl on the kitchen island.",
+            Glow = new Color(1f, 0.5f, 0.55f),
+        },
+        // Food: click it in the bag to eat it.
+        new ItemSpec
+        {
+            Id = "pancakes", Asset = "Pancakes", Name = "Strawberry Pancakes",
+            Description = "A fluffy stack with butter, syrup and a strawberry on top. Cooked on the stove at home.",
+            Glow = new Color(1f, 0.8f, 0.45f),
+            RestoreHearts = 3, RestoreMagic = 50,
+        },
+        // Hollow Farm's autumn festival: Pippin sells cider (DungeonBuilder.Farm.cs), and the
+        // corn maze hides a hat at its centre (Levels/Farm.txt).
+        new ItemSpec
+        {
+            Id = "apple_cider", Asset = "AppleCider", Name = "Hot Apple Cider",
+            Description = "Warm, spiced and sweet, from Pippin's stand at the autumn festival on Hollow Farm.",
+            Glow = new Color(1f, 0.6f, 0.3f),
+            RestoreHearts = 2, RestoreMagic = 25,
+        },
+        new ItemSpec
+        {
+            Id = "pumpkin_hat", Asset = "PumpkinHat", Name = "Jack-o'-Lantern Hat", Slot = EquipSlot.Helm,
+            Description = "A carved pumpkin to wear, its grin glowing. Found at the heart of Hollow Farm's corn maze.",
+            Glow = new Color(1f, 0.55f, 0.2f),
+            SpellDamage = 1, Magic = 15,
         },
     };
 
@@ -85,6 +132,8 @@ public static partial class DungeonBuilder
         so.FindProperty("maxManaBonus").intValue = spec.Magic;
         so.FindProperty("moveSpeedPercent").intValue = spec.WalkPercent;
         so.FindProperty("spellRechargePercent").intValue = spec.RechargePercent;
+        so.FindProperty("healthRestore").intValue = spec.RestoreHearts;
+        so.FindProperty("manaRestore").intValue = spec.RestoreMagic;
         so.ApplyModifiedPropertiesWithoutUndo();
         return item;
     }

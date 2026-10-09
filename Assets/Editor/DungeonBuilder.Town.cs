@@ -33,7 +33,7 @@ public static partial class DungeonBuilder
                 H("What are you selling?"),
                 N("Only the finest bubble bath in the whole kingdom! Lavender and honey. One bottle makes a mountain of bubbles."),
                 H("What does it do?"),
-                N("Do? Why, nothing at all! It just smells wonderful. Ten coins a bottle, whenever you like, {hero}."),
+                N("Pour a bottle into a warm bath and you'll see! Bubbles up to your nose! Ten coins a bottle, whenever you like, {hero}."),
             },
         },
     };
@@ -46,15 +46,22 @@ public static partial class DungeonBuilder
 
     // ---------- Prefabs ----------
 
-    private static void CreateTownPrefabs(SharedAssets assets, Sprite shadow)
+    private static void CreateTownPrefabs(SharedAssets assets, Sprite shadow, GameObject sparkle)
     {
         var props = SpriteSheetImporter.Import("TownProps");
         var chickens = SpriteSheetImporter.Import("Chicken");
         var decals = SpriteSheetImporter.Import("TownDecals");
-        var town = new Dictionary<string, GameObject>();
+        var town = assets.PropPrefabs;
 
         town["stall"] = Scenic("Stall", props, "Stall", new Vector3(3.4f, 1.2f, 1.2f), shadow, 3.6f);
-        town["coop"] = Scenic("Coop", props, "Coop", new Vector3(2.2f, 1.6f, 1.6f), shadow, 2.6f);
+        // The hens lay eggs for cooking: check the nest box (DungeonBuilder.Cooking.cs).
+        town["coop"] = CreateFixture(props, "Coop", new Vector3(2.2f, 1.6f, 1.6f), shadow, 2.6f,
+            "Look in the nest box",
+            "You find a warm brown egg in the straw. Thank you, hens! | " +
+            "A hen clucks proudly at you. She's laid another egg! | " +
+            "Tucked in the straw: one perfect egg. You carry it very, very carefully.",
+            HouseFixture.Effect.Gather, "cluck",
+            coop => Gather(coop, "Egg", "You've already got an egg. Let the hens have a rest!"));
         town["grainsack"] = Scenic("GrainSack", props, "GrainSack", new Vector3(1f, 0.8f, 1f), shadow, 1.2f);
         town["planter"] = Scenic("Planter", props, "Planter", new Vector3(1.3f, 0.8f, 1.3f), shadow, 1.4f);
         town["lamppost"] = Scenic("Lamppost", props, "Lamppost", new Vector3(0.4f, 3f, 0.4f), shadow, 0.8f);
@@ -65,6 +72,10 @@ public static partial class DungeonBuilder
             "You drop in a pebble. ...Plip! | A frog at the bottom says \"Ribbit.\" It's not Sir Hopsalot. | " +
             "Your reflection waves back at you.",
             HouseFixture.Effect.None, "plink");
+        // The castle courtyard's wishing well: the village well's art, with the fountain's wishing
+        // (its own count, so its third wish comes true separately).
+        town["wishingwell"] = Scenic("WishingWell", props, "Well", new Vector3(2f, 1.2f, 1.6f), shadow, 2.4f);
+        AddWishing(town["wishingwell"], sparkle, thing: "well", counter: "wishes:well", grantedFlag: "wish:well");
         town["noticeboard"] = CreateFixture(props, "NoticeBoard", new Vector3(2.2f, 2f, 0.5f), shadow, 2f,
             "Read the notice board",
             "LOST: one frog. Small, green, wears a tiny crown. Please tell Coralie at the pond! | " +
@@ -96,7 +107,6 @@ public static partial class DungeonBuilder
         sr.sortingOrder = -2;
         town["grain"] = SavePrefab(grain, "Grain");
 
-        assets.TownProps = town;
         assets.Barnaby = CreateNpcPrefab("Barnaby", "Barnaby", "Barnaby", "Assets/Art/UI/PortraitBarnaby.png",
             "voice_badger", BarnabyTalks(), new Vector3(1f, 2f, 0.8f), shadow, 1.6f, typeof(Merchant), npc =>
             {
@@ -156,21 +166,23 @@ public static partial class DungeonBuilder
     }
 
     // A "prop" or "npc" from the map's legend, standing on its tile.
-    private static void PlaceTownThing(MapFile.LegendEntry entry, SharedAssets assets, Transform parent, Vector3 pos,
-                                       System.Random rng)
+    private static void PlaceProp(MapFile.LegendEntry entry, SharedAssets assets, Transform parent, Vector3 pos,
+                                  System.Random rng)
     {
         string kind = entry.Args[0];
         if (entry.Kind == "npc")
         {
-            Place(assets.Barnaby, parent, pos);
+            Place(kind == "stitches" ? assets.Stitches : kind == "pippin" ? assets.Pippin : assets.Barnaby, parent, pos);
             return;
         }
         if (kind == "grain")
         {
-            Place(assets.TownProps[kind], parent, pos + new Vector3(rng.Next(-3, 4) * 0.1f, 0.01f, rng.Next(-3, 4) * 0.1f));
+            Place(assets.PropPrefabs[kind], parent, pos + new Vector3(rng.Next(-3, 4) * 0.1f, 0.01f, rng.Next(-3, 4) * 0.1f));
             return;
         }
-        Place(assets.TownProps[kind], parent, pos);
+        // The kitchen island is long: it reaches a little into the tile east of its own. (The
+        // marble bath is three tiles wide, centred on its own tile: one either side.)
+        Place(assets.PropPrefabs[kind], parent, kind is "island" ? pos + Vector3.right * 0.6f : pos);
     }
 
     // ---------- The picket fence ('+') ----------
@@ -254,6 +266,7 @@ public static partial class DungeonBuilder
                 case "cathedral": BuildCathedral(building, f, assets); break;
                 case "shop": BuildShop(building, f, assets.Materials); break;
                 case "cottage": BuildCottage(building, f, assets.Materials); break;
+                case "barn": BuildBarn(building, f, assets.Materials); break;
             }
         }
     }

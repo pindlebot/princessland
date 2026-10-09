@@ -18,8 +18,14 @@ EditorBuildSettings:
     path: Assets/Scenes/Dungeon.unity
     guid: 77bad4e4ef6a54cac8fea3dde0fa3332
   - enabled: 1
+    path: Assets/Scenes/Farm.unity
+    guid: 414a8c100000a4ba88cffebe5df79a7c
+  - enabled: 1
     path: Assets/Scenes/House.unity
     guid: 873fa7d9fd6a746f892aa2fd39b9d5ea
+  - enabled: 1
+    path: Assets/Scenes/Kitchen.unity
+    guid: 27301995a3f0a4603b3e234c967ffaf4
   - enabled: 1
     path: Assets/Scenes/Level0.unity
     guid: 31ff46361e0df4a099d07defc0ec613f

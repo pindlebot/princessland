@@ -31,6 +31,7 @@ public static partial class DungeonBuilder
     //            q  palm    @  the pirates' ship, on the water    $  treasure heap    h  wooden planks (jetties, bridges)
     //            |  rock with a waterfall pouring down its front (put water below it)
     //   Village  +  white picket fence (solid)    -  cobbles
+    //   Farm     /  tilled soil (pumpkin patches); "mood: dusk" in the header lights it at dusk
     //            (buildings, props and Barnaby come from the legend: see DungeonBuilder.Town.cs)
     //            (header "water: sea" makes 'w' the sea; "ground: sand" makes '.' and the markers beach sand.
     //             On outdoor levels, water on the map's edge spills off the island, and doors are rowboats.)
@@ -53,6 +54,8 @@ public static partial class DungeonBuilder
         public bool ExitNeedsAllEnemiesDefeated;
         public Color MinimapFloor, MinimapWall;
         public bool Sea, SandGround;       // "water: sea", "ground: sand" (Mermaid Cove)
+        public string Floor;               // "floor: kitchen": indoors, '.' is tiled (the kitchen)
+        public bool Dusk;                  // "mood: dusk": low orange sun, a violet sky (Hollow Farm)
     }
 
     private const string LevelsFolder = "Assets/Levels";
@@ -89,6 +92,8 @@ public static partial class DungeonBuilder
             MinimapWall = HexColor(file.Get("minimap_wall", "#AAA4B8")),
             Sea = file.Get("water") == "sea",
             SandGround = file.Get("ground") == "sand",
+            Floor = file.Get("floor"),
+            Dusk = file.Get("mood") == "dusk",
         };
     }
 
@@ -104,7 +109,7 @@ public static partial class DungeonBuilder
         var map = spec.Map;
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         string sceneName = System.IO.Path.GetFileNameWithoutExtension(spec.ScenePath);
-        SetUpLighting(spec.Theme);
+        SetUpLighting(spec.Theme, spec.Dusk);
 
         var level = new GameObject("Level").transform;
         // Save the layout into the scene too, so runtime code (the minimap) can read it.
@@ -113,6 +118,7 @@ public static partial class DungeonBuilder
         SetColor(levelMap, "floorColor", spec.MinimapFloor);
         SetColor(levelMap, "wallColor", spec.MinimapWall);
         SetString(levelMap, "buildings", spec.File.BuildingSymbols);
+        SetString(levelMap, "walls", spec.File.WallSymbols);
 
         var enemies = new GameObject("Enemies").transform;
         var decor = new GameObject("Decor").transform;
@@ -143,8 +149,11 @@ public static partial class DungeonBuilder
 
                 if (c == '#' || c == 'T')
                 {
+                    // Ivy climbs the home courtyard's walls (any wall beside its grass or hedge).
+                    bool ivy = spec.Theme == Theme.Home && new[] { (1, 0), (-1, 0), (0, 1), (0, -1) }
+                        .Any(d => ",;H".IndexOf(MapAt(map, col + d.Item1, row + d.Item2)) >= 0);
                     var wall = Block("Wall", level, pos + Vector3.up * WallHeight * 0.5f,
-                                     new Vector3(Tile, WallHeight, Tile), mats["WallSide"]);
+                                     new Vector3(Tile, WallHeight, Tile), mats[ivy ? "WallSideIvy" : "WallSide"]);
                     AddCap(wall, mats["WallTop"]);
                     if (c == 'T') PlaceTorch(assets.Torch, decor, map, col, row, pos);
                     continue;
@@ -160,7 +169,7 @@ public static partial class DungeonBuilder
                     var hedge = Block("Hedge", level, pos + Vector3.up * HedgeHeight * 0.5f,
                                       new Vector3(Tile, HedgeHeight, Tile), mats["HedgeSide"]);
                     AddCap(hedge, mats["HedgeTop"]);
-                    AddCliff(level, pos, mats["EarthSide"]); // the floating island's earthy edge
+                    if (spec.Theme == Theme.Outdoor) AddCliff(level, pos, mats["EarthSide"]); // the floating island's earthy edge
                     continue;
                 }
 
@@ -183,7 +192,7 @@ public static partial class DungeonBuilder
                     continue;
                 }
 
-                bool isDoor = spec.File.Legend.TryGetValue(c, out var legendEntry) && legendEntry.Kind == "door";
+                bool isDoor = spec.File.Legend.TryGetValue(c, out var legendEntry) && MapFile.IsDoorKind(legendEntry.Kind);
                 var floor = Block("Floor", level, pos + Vector3.down * 0.25f, new Vector3(Tile, 0.5f, Tile),
                                   mats[FloorMaterial(spec, map, c, col, row, rng.Next(100), isDoor)]);
                 // Turning tiles in 90° steps hides the repetition of only three textures.
@@ -222,7 +231,11 @@ public static partial class DungeonBuilder
                     case 'v': Place(assets.Plant, decor, pos); break;
                     // Half a tile north, so a rug on the tile in front of the bed lines up with it.
                     case 'r': Place(assets.Rug, decor, pos + new Vector3(0f, 0.01f, Tile / 2f)); break;
-                    case ',': PlaceGrass(assets.Grass, decor, rng, pos, flowers: false); break;
+                    case ',':
+                        if (spec.Dusk) // autumn: fallen leaves instead of tufts of grass
+                            Place(assets.PropPrefabs["leaves"], decor, pos + new Vector3(rng.Next(-4, 5) * 0.1f, 0.01f, rng.Next(-4, 5) * 0.1f));
+                        else PlaceGrass(assets.Grass, decor, rng, pos, flowers: false);
+                        break;
                     case ';': PlaceGrass(assets.Grass, decor, rng, pos, flowers: true); break;
                     case 'Y': Place(assets.Tree, decor, pos); break;
                     case 'F':
@@ -280,11 +293,14 @@ public static partial class DungeonBuilder
                     else if (entry.Kind == "item")
                         SetString(Place(assets.ItemPickups[entry.Args[0]], decor, pos).GetComponent<ItemPickup>(),
                                   "persistentId", $"{sceneName}/{col},{row}");
-                    else if (entry.Kind == "door")
-                        PlaceDoor(spec.File, spec.Theme == Theme.Outdoor ? assets.Rowboat : assets.HouseDoor,
+                    else if (MapFile.IsDoorKind(entry.Kind))
+                        PlaceDoor(spec.File, entry.Kind == "stairsdown" ? assets.SpiralDown
+                                           : entry.Kind == "stairsup" ? assets.SpiralUp
+                                           : entry.Kind == "gate" ? assets.FarmGate
+                                           : spec.Theme == Theme.Outdoor ? assets.Rowboat : assets.HouseDoor,
                                   decor, namedSpawns, col, row, pos);
                     else if (entry.Kind == "prop" || entry.Kind == "npc")
-                        PlaceTownThing(entry, assets, decor, pos, rng); // buildings are built below, whole
+                        PlaceProp(entry, assets, decor, pos, rng); // buildings are built below, whole
                 }
             }
         }
@@ -296,12 +312,13 @@ public static partial class DungeonBuilder
         if (spec.Theme == Theme.Outdoor)
             AddClouds(decor, map, assets.Cloud);
         BuildBuildings(spec.File, level, assets); // the village's houses (legend "building" entries)
+        if (spec.Theme == Theme.Home) AddCourtyardSun(level, map);
 
         // The castle (only on maps with 'K' tiles) also gives us a spawn point outside its gate.
         var castleDoor = spec.File.Doors().FirstOrDefault(d => d.IsCastle);
         var outsideGate = BuildCastle(map, level, assets, castleDoor);
         if (outsideGate != null) namedSpawns.Add(outsideGate);
-        var camera = CreateCamera(spec.Theme);
+        var camera = CreateCamera(spec.Theme, spec.Dusk);
         var gameManager = new GameObject("GameManager").AddComponent<GameManager>();
         SetRef(gameManager, "winSound", Sound("victory"));
         SetRef(gameManager, "loseSound", Sound("defeat"));
@@ -420,9 +437,25 @@ public static partial class DungeonBuilder
         // A monster standing in a puddle stands in water too (not on a dry square).
         if ("EL".IndexOf(c) >= 0 && MapAt(map, col - 1, row) == 'p' && MapAt(map, col + 1, row) == 'p') c = 'p';
         if (theme == Theme.Home)
-            return "_WSR".IndexOf(c) >= 0 ? "BathTile" : "WoodFloor";
+        {
+            // The home's courtyard: grass (',' and ';' and anything standing among them), with a
+            // path ('=') through its doorway. The bathroom: tiles, under its fixtures too.
+            bool lockedDoor = spec.File.Legend.TryGetValue(c, out var prop) && prop.Kind == "prop" && prop.Args[0] == "lockeddoor";
+            if (c == '=' || lockedDoor) return "Path"; // the path runs right up to the courtyard's locked door
+            if (c == ',' || c == ';' || (c != '.' && CountAround(map, col, row, ',') + CountAround(map, col, row, ';') >= 1))
+                return GrassPatch(col, row);
+            if ("_WSR".IndexOf(c) >= 0 || (c != '.' && CountAround(map, col, row, '_') >= 2)) return "BathTile";
+            return spec.Floor == "kitchen" ? "KitchenTile" : "WoodFloor";
+        }
         if (c == 'p') return "Puddle";
+        bool gate = spec.File.Legend.TryGetValue(c, out var gateEntry) && gateEntry.Kind == "gate";
+        if (gate) return "Path"; // a farm gate stands on the end of a path
+        // A prop standing across a path (the festival's arch) keeps the path going under it.
+        if (spec.File.Legend.TryGetValue(c, out var across) && across.Kind == "prop" && CountAround(map, col, row, '=') >= 2)
+            return roll < 80 ? "Path" : "Path_1";
         if (c == 'h' || (door && theme == Theme.Outdoor)) return "Planks"; // jetties, bridges, a rowboat's mooring
+        // Hollow Farm's tilled soil, and anything growing in it (a pumpkin with soil on two sides).
+        if (c == '/' || (c != '.' && CountAround(map, col, row, '/') >= 2)) return "Soil";
         // The cave floor, and anything standing on it (Amethyra, mushrooms): a marker with cave floor
         // on two sides is inside the cave too.
         if (c == ':' || (c != '.' && CountAround(map, col, row, ':') >= 2)) return "CaveFloor";
@@ -436,13 +469,47 @@ public static partial class DungeonBuilder
         if (LevelMap.IsCobbles(c) || (town && (thing.Kind == "building" || CountAround(map, col, row, '-') >= 2)))
             return roll < 85 ? "Cobble_0" : "Cobble_1";
         if (spec.SandGround) return roll < 92 ? "Sand_0" : "Sand_1"; // the beach (now and then, a shell)
-        // Large, quiet patches: smooth Perlin noise across the map rather than a random pick per
-        // tile, so neighbouring tiles usually match and the ground reads as calm areas of green.
+        return GrassPatch(col, row);
+    }
+
+    // Large, quiet patches: smooth Perlin noise across the map rather than a random pick per
+    // tile, so neighbouring tiles usually match and the ground reads as calm areas of green.
+    private static string GrassPatch(int col, int row)
+    {
         float patch = Mathf.PerlinNoise(col * 0.16f + 3.7f, row * 0.16f + 9.1f);
         return patch < 0.4f ? "Grass_1" : patch > 0.62f ? "Grass_2" : "Grass_0";
     }
 
-    private static void SetUpLighting(Theme theme)
+    // Indoors the light is low and warm, but the home's courtyard is open to the sky: a broad
+    // spotlight straight down over its grass makes it a patch of daylight.
+    private static void AddCourtyardSun(Transform parent, string[] map)
+    {
+        var grass = new List<Vector3>();
+        for (int row = 0; row < map.Length; row++)
+            for (int col = 0; col < map[row].Length; col++)
+                if (map[row][col] == ',' || map[row][col] == ';')
+                    grass.Add(new Vector3(col * Tile, 0f, (map.Length - 1 - row) * Tile));
+        if (grass.Count == 0) return;
+        var min = grass.Aggregate(Vector3.Min);
+        var max = grass.Aggregate(Vector3.Max);
+        float size = Mathf.Max(max.x - min.x, max.z - min.z) + Tile * 2f;
+        const float height = 10f;
+
+        var sun = new GameObject("CourtyardSun").AddComponent<Light>();
+        sun.transform.SetParent(parent);
+        sun.transform.position = (min + max) / 2f + Vector3.up * height;
+        sun.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        sun.type = LightType.Spot;
+        sun.spotAngle = 2f * Mathf.Atan(size * 0.6f / height) * Mathf.Rad2Deg;
+        sun.innerSpotAngle = sun.spotAngle * 0.8f;
+        sun.range = height * 2f;
+        sun.color = new Color(1f, 0.95f, 0.85f);
+        sun.intensity = 2.2f;
+        sun.shadows = LightShadows.Hard;
+        sun.shadowStrength = 0.45f;
+    }
+
+    private static void SetUpLighting(Theme theme, bool dusk = false)
     {
         RenderSettings.ambientMode = AmbientMode.Flat;
         // Outdoors: tuned so the tops of things (sun 0.7 x 0.77 + ambient) come out at about 1x,
@@ -459,6 +526,15 @@ public static partial class DungeonBuilder
         sun.shadows = LightShadows.Hard; // crisp edges, like the pixel art
         sun.shadowStrength = theme == Theme.Outdoor ? 0.45f : 1f; // softer, friendlier shadows outside
         sun.transform.rotation = theme == Theme.Outdoor ? ArtStyle.OutdoorSun : ArtStyle.IndoorSun; // blob shadows lean the same way
+        if (dusk)
+        {
+            // Dusk: a cool violet ambient and a low, orange sun, so the ground goes moody and the
+            // jack-o'-lanterns' and wisps' own lights carry the scene.
+            RenderSettings.ambientLight = new Color(0.33f, 0.29f, 0.45f);
+            sun.color = new Color(1f, 0.62f, 0.42f);
+            sun.intensity = 0.5f;
+            sun.shadowStrength = 0.55f;
+        }
     }
 
     private static int CountAround(string[] map, int col, int row, char c) =>
@@ -504,7 +580,7 @@ public static partial class DungeonBuilder
         }
     }
 
-    private static IsoCameraFollow CreateCamera(Theme theme)
+    private static IsoCameraFollow CreateCamera(Theme theme, bool dusk = false)
     {
         var camGo = new GameObject("Main Camera") { tag = "MainCamera" };
         var cam = camGo.AddComponent<Camera>();
@@ -513,7 +589,7 @@ public static partial class DungeonBuilder
         cam.clearFlags = CameraClearFlags.SolidColor;
         // What you see past the edge of the map: night-dark indoors, a soft sky around the
         // floating island outside.
-        cam.backgroundColor = theme == Theme.Outdoor ? ArtStyle.Sky : ArtStyle.Night;
+        cam.backgroundColor = dusk ? ArtStyle.DuskSky : theme == Theme.Outdoor ? ArtStyle.Sky : ArtStyle.Night;
         cam.nearClipPlane = 0.1f;
         cam.farClipPlane = 100f;
         camGo.AddComponent<AudioListener>();
@@ -608,7 +684,12 @@ public static partial class DungeonBuilder
         SetRef(minimap, "map", map);
         var controller = hud.AddComponent<HudController>();
         SetRef(controller, "clickSound", Sound("ui_select"));
+        SetRef(controller, "eatSound", Sound("munch"));
         SetRef(hud.AddComponent<SkillTreeView>(), "learnSound", Sound("skill_learn"));
+        var cooking = hud.AddComponent<CookingView>(); // the stove's recipe card
+        SetRef(cooking, "cookSound", Sound("cook"));
+        SetRef(cooking, "missingSound", Sound("door_locked"));
+        SetRef(cooking, "closeSound", Sound("ui_select"));
         SetRef(hud.AddComponent<PauseMenu>(), "clickSound", Sound("ui_select"));
         var dialogue = hud.AddComponent<DialogueController>();
         SetRef(dialogue, "npcVoice", Sound("voice_dragon"));

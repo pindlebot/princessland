@@ -97,8 +97,7 @@ public class MapFileTests
         SceneManager.LoadScene("House");
         yield return null;
         yield return null;
-        var door = Object.FindAnyObjectByType<SceneDoor>();
-        Assert.AreEqual("Level0", door.TargetScene);
+        var door = Object.FindObjectsByType<SceneDoor>().Single(d => d.TargetScene == "Level0"); // (not the stairs)
         var arrival = GameObject.Find("FromLevel0");
         Assert.IsNotNull(arrival, "the door made an arrival spot beside itself");
         Assert.Less(Vector3.Distance(arrival.transform.position, door.transform.position), 3f);

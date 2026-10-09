@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3193ce9550180428381dace6c2004341, type: 3}
+  m_Name: StrawberryPancakes
+  m_EditorClassIdentifier: Game::Recipe
+  id: strawberry_pancakes
+  kind: 0
+  ingredients:
+  - item: {fileID: 11400000, guid: ac6c9b9559a9a429681277d894f2f668, type: 2}
+    count: 1
+  - item: {fileID: 11400000, guid: 65002edecc49f4d2da861f1fba3559f9, type: 2}
+    count: 1
+  - item: {fileID: 11400000, guid: 84bb9bbb000b5474f9342efdc8f75020, type: 2}
+    count: 1
+  result: {fileID: 11400000, guid: 14c613f38a5a2477ca7c29d0ee9365c3, type: 2}
+  madeMessage: Crack, stir, pour, sizzle... FLIP! A stack of Strawberry Pancakes! | You flip a pancake so high it nearly touches the ceiling! Strawberry Pancakes! | Mmm, the whole kitchen smells of pancakes. You've made another stack!

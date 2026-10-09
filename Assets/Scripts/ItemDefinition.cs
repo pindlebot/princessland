@@ -35,6 +35,12 @@ public class ItemDefinition : ScriptableObject
     [Tooltip("The spell recharges this much faster, in percent.")]
     [SerializeField] private int spellRechargePercent;
 
+    [Header("Food (eaten from the bag)")]
+    [Tooltip("Hearts it gives back when eaten. Food is anything that restores hearts or magic.")]
+    [SerializeField] private int healthRestore;
+    [Tooltip("Magic it gives back when eaten.")]
+    [SerializeField] private int manaRestore;
+
     public string Id => id;
     public string DisplayName => displayName;
     public string Description => description;
@@ -46,6 +52,21 @@ public class ItemDefinition : ScriptableObject
     public int MaxManaBonus => maxManaBonus;
     public int MoveSpeedPercent => moveSpeedPercent;
     public int SpellRechargePercent => spellRechargePercent;
+    public int HealthRestore => healthRestore;
+    public int ManaRestore => manaRestore;
+    public bool IsFood => healthRestore > 0 || manaRestore > 0;
+
+    // "+3 hearts, +50 magic", like the numbers under a recipe card in Stardew Valley.
+    public string FoodText
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (healthRestore > 0) parts.Add($"+{healthRestore} {(healthRestore == 1 ? "heart" : "hearts")}");
+            if (manaRestore > 0) parts.Add($"+{manaRestore} magic");
+            return string.Join(", ", parts);
+        }
+    }
 
     // "+1 spell damage, +2 hearts", for the inventory's details line.
     public string BonusText

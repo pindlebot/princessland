@@ -51,11 +51,33 @@ public class DevCapture : MonoBehaviour
         yield return Visit("Level0", '8', 0, 2, "level0_village_square", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("Level0", '9', -2, 2, "level0_village_hens", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("Level0", '+', -1, 6, "level0_village_gate", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Level0", ')', 0, -2, "level0_farm_gate", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Farm", '1', 0, 2, "farm_gate", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Farm", '4', 1, 2, "farm_pumpkins", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Farm", '2', 0, 2, "farm_barn", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Farm", 'c', 0, 2, "farm_bonfire", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Farm", '?', -2, 2, "farm_graveyard", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Farm", '(', 1, 2, "farm_festival", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Farm", '\\', -2, 2, "farm_festival_pumpkin", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Farm", ']', 0, 1, "farm_maze_centre", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Farm", '>', 0, 3, "farm_maze_entrance", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("Dungeon", 'P', 0, 0, "dungeon_spawn", max: 20, hearts: 7, manaFraction: 0.7f);
         yield return Visit("Dungeon", 'M', -4, 1, "dungeon_king_hall", max: 20, hearts: 7, manaFraction: 0.7f);
         yield return Visit("House", 'B', 1, 2, "house", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("House", 'W', 0, 1, "house_bathroom", max: 0, hearts: 0, manaFraction: 1f);
         yield return SitOnTheToilet("house_toilet");
+        yield return Visit("House", '8', 0, 1, "house_bathroom_tub", max: 0, hearts: 0, manaFraction: 1f);
+        yield return TakeABath("house_bath");
+        yield return Visit("House", '8', 1, 1, "house_faucet_off", max: 0, hearts: 0, manaFraction: 1f);
+        yield return TurnOnTheFaucet("house_faucet_on");
+        yield return Visit("House", ')', 0, 2, "house_bath_plants", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("House", '7', 1, 1, "house_courtyard", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("House", '9', 2, 1, "house_courtyard_door", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("House", '3', 0, 1, "house_stairs", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Kitchen", 'P', 0, 0, "kitchen", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Kitchen", '6', 1, 2, "kitchen_island", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Kitchen", '4', 0, 1, "kitchen_stove", max: 6, hearts: 2, manaFraction: 0.3f);
+        yield return Cook("kitchen_cooking");
         yield return InventoryShot("house_inventory");
         yield return Visit("Level0", '1', 0, 1, "level0_rowboat", max: 0, hearts: 0, manaFraction: 1f);
         yield return Visit("Cove", 'P', 0, 0, "cove_spawn", max: 8, hearts: 6, manaFraction: 0.8f);
@@ -86,7 +108,7 @@ public class DevCapture : MonoBehaviour
     {
         if (only != null && only != "House") yield break;
         foreach (var fixture in FindObjectsByType<HouseFixture>())
-            if (fixture.Kind == HouseFixture.Effect.Sit)
+            if (fixture.name == "Toilet")
                 fixture.Interact(LevelBootstrap.Current.Player);
         yield return new WaitForSecondsRealtime(1f);
         ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + ".png"));
@@ -117,6 +139,68 @@ public class DevCapture : MonoBehaviour
             DialogueController.Instance.Advance();
             yield return null;
         }
+        var hud = FindAnyObjectByType<HudController>();
+        hud.SetInventoryOpen(true);
+        yield return new WaitForSecondsRealtime(0.5f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + "_bag.png"));
+        yield return new WaitForSecondsRealtime(0.5f);
+        hud.SetInventoryOpen(false);
+        GameSession.Inventory.Bag.Clear();
+    }
+
+    // Gets into the bath (the hero is standing beside it) with a bottle of bubble bath, and
+    // saves a picture.
+    private IEnumerator TakeABath(string shot)
+    {
+        if (only != null && only != "House") yield break;
+        GameSession.Inventory.Bag.Add("bubble_bath");
+        foreach (var fixture in FindObjectsByType<HouseFixture>())
+            if (fixture.Kind == HouseFixture.Effect.Bathe)
+                fixture.Interact(LevelBootstrap.Current.Player);
+        yield return new WaitForSecondsRealtime(1f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + ".png"));
+        yield return new WaitForSecondsRealtime(0.5f);
+        LevelBootstrap.Current.Player.GetComponent<PlayerController>().StandUp();
+    }
+
+    // Turns on the bath's faucet (the hero is standing at its end) and saves a picture of the
+    // water running, then turns it off again.
+    private IEnumerator TurnOnTheFaucet(string shot)
+    {
+        if (only != null && only != "House") yield break;
+        var player = LevelBootstrap.Current.Player;
+        HouseFixture tap = null;
+        foreach (var fixture in FindObjectsByType<HouseFixture>())
+            if (fixture.Kind == HouseFixture.Effect.Faucet) tap = fixture;
+        tap.Interact(player);
+        yield return new WaitForSecondsRealtime(1f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + ".png"));
+        yield return new WaitForSecondsRealtime(0.5f);
+        tap.Interact(player);
+    }
+
+    // At the stove: opens the recipe card with only some of the ingredients (a picture), then
+    // with all of them, cooks (another), and opens the bag with the pancakes in it (a third).
+    private IEnumerator Cook(string shot)
+    {
+        if (only != null && only != "Kitchen") yield break;
+        var player = LevelBootstrap.Current.Player;
+        GameSession.Inventory.Bag.Add("egg");
+        GameSession.Inventory.Bag.Add("flour");
+        var stove = FindAnyObjectByType<CraftingStation>();
+        stove.Interact(player);
+        yield return new WaitForSecondsRealtime(0.5f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + "_missing.png"));
+        yield return new WaitForSecondsRealtime(0.5f);
+        CookingView.Instance.Close();
+        GameSession.Inventory.Bag.Add("strawberry");
+        stove.Interact(player);
+        yield return new WaitForSecondsRealtime(0.3f);
+        CookingView.Instance.Cook();
+        yield return new WaitForSecondsRealtime(0.6f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + "_done.png"));
+        yield return new WaitForSecondsRealtime(0.5f);
+        CookingView.Instance.Close();
         var hud = FindAnyObjectByType<HudController>();
         hud.SetInventoryOpen(true);
         yield return new WaitForSecondsRealtime(0.5f);

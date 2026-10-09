@@ -20,6 +20,9 @@ using System.Linq;
 //                                       an arrival spot beside itself named "From<Scene>", so two
 //                                       doors that lead to each other need nothing else.
 //   K = castle <Scene> [<Spawn>]        the castle's gate leads to <Scene> (same rules as a door)
+//   <symbol> = stairsdown <Scene> [<Spawn>]   a spiral staircase, down or up, to another scene
+//   <symbol> = stairsup <Scene> [<Spawn>]     (works exactly like a door)
+//   <symbol> = gate <Scene> [<Spawn>]   a farm gate to another scene (a door, outdoors, on a path)
 //   <symbol> = spawn <Name>             an extra named arrival spot
 //   <symbol> = item <id>                an item lying there to pick up (ids: DungeonBuilder.Items.cs).
 //                                       'I' with no legend entry is always the Ember Ring.
@@ -34,21 +37,33 @@ public class MapFile
 {
     // Every symbol that means something without a legend entry. Keep in sync with
     // DungeonBuilder.BuildLevel's switch.
-    public const string BuiltInTiles = " .,=_#THKPELMCIDBWSRYFbQ*;Xwmfcoxjupdkyn~^ANUGvrtiaOszlVe%:hqJ&|@Z$+-";
+    public const string BuiltInTiles = " .,=_#THKPELMCIDBWSRYFbQ*;Xwmfcoxjupdkyn~^ANUGvrtiaOszlVe%:hqJ&|@Z$+-/";
 
-    // What "building", "prop" and "npc" entries can name. Keep in sync with DungeonBuilder.Town.cs.
-    public static readonly string[] BuildingKinds = { "cathedral", "shop", "cottage" };
+    // What "building", "prop" and "npc" entries can name. Keep in sync with DungeonBuilder.Town.cs
+    // (and DungeonBuilder.Home.cs for the cat and the kitchen, DungeonBuilder.Bath.cs for the
+    // bathtub and its plants).
+    public static readonly string[] BuildingKinds = { "cathedral", "shop", "cottage", "barn" };
     public static readonly string[] PropKinds =
     {
         "stall", "well", "coop", "grainsack", "lamppost", "noticeboard", "bench", "planter",
-        "hen", "brownhen", "chick", "grain",
+        "hen", "brownhen", "chick", "grain", "bathtub", "cat",
+        "wishingwell", "lockeddoor", "stove", "pantry", "island", "towels", "pottedfern", "pottedmonstera",
+        "scarecrow", "pumpkin", "jackolantern", "corn", "deadtree", "haystack", "gravestone", "crow", "ghost",
+        "wisp", "mist", "signpost",
+        "ciderstand", "pumpkinstack", "bunting", "festivalarch", "bobbingtub", "giantpumpkin", "cornwall",
     };
-    public static readonly string[] NpcIds = { "barnaby" };
+
+    // Legend kinds that lead to another scene: a door, or a spiral staircase.
+    public static bool IsDoorKind(string kind) => kind == "door" || kind == "stairsdown" || kind == "stairsup" || kind == "gate";
+    public static readonly string[] NpcIds = { "barnaby", "stitches", "pippin" };
+
+    // Props that are walls (solid, drawn as walls on the minimap): the corn maze.
+    public static readonly string[] WallPropKinds = { "cornwall" };
 
     public class LegendEntry
     {
         public char Symbol;
-        public string Kind;      // "door", "castle", "spawn", "item", "building", "prop" or "npc"
+        public string Kind;      // "door", "stairsdown", "stairsup", "castle", "spawn", "item", "building", "prop" or "npc"
         public string[] Args;
         public int Line;         // 1-based line in the file, for error messages
     }
@@ -139,7 +154,7 @@ public class MapFile
     {
         foreach (var entry in Legend.Values)
         {
-            if (entry.Kind != "door" && entry.Kind != "castle") continue;
+            if (!IsDoorKind(entry.Kind) && entry.Kind != "castle") continue;
             if (entry.Args.Length == 0) continue; // the validator reports it
             string target = entry.Args[0];
             string spawn = entry.Args.Length > 1 ? entry.Args[1] : SpawnNameFor(Name);
@@ -151,6 +166,13 @@ public class MapFile
 
     // Is this symbol one of the map's buildings (solid, like a wall)?
     public bool IsBuilding(char c) => Legend.TryGetValue(c, out var e) && e.Kind == "building";
+
+    // Is this symbol a wall-like prop (a corn maze wall)?
+    public bool IsWallProp(char c) =>
+        Legend.TryGetValue(c, out var e) && e.Kind == "prop" && e.Args.Length > 0 && WallPropKinds.Contains(e.Args[0]);
+
+    // Every wall-like prop symbol on this map.
+    public string WallSymbols => new string(Legend.Values.Where(e => IsWallProp(e.Symbol)).Select(e => e.Symbol).ToArray());
 
     // Every building symbol on this map, e.g. "345".
     public string BuildingSymbols => new string(Legend.Values.Where(e => e.Kind == "building").Select(e => e.Symbol).ToArray());

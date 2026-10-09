@@ -119,8 +119,8 @@ public static class GameInput
     public static bool AdvancePressed =>
         Down(Keyboard.current?.eKey) || Down(Keyboard.current?.spaceKey) || ConfirmPressed || ClickPressed;
 
-    // Gameplay buttons are ignored while a conversation or the pause menu is open.
-    public static bool GameplayBlocked => DialogueController.BlocksInput || PauseMenu.IsOpen;
+    // Gameplay buttons are ignored while a conversation, the recipe card or the pause menu is open.
+    public static bool GameplayBlocked => DialogueController.BlocksInput || CookingView.BlocksInput || PauseMenu.IsOpen;
 
     // Menu navigation: arrow keys, d-pad, or a flick of the stick.
     public static bool UpPressed =>

@@ -11,6 +11,8 @@
 // stall (7) selling bubble bath, and a thatched cottage (5). In front: the cobbled square with a
 // well (8), benches ([), lampposts (!), flower tubs ({) and a notice board (?), and a pen of
 // hens (< white, > brown) and chicks (') pecking at corn (") by their coop (9) and grain sack (0).
+// A path runs south from the fountain path to a farm gate ()) in the southern hedge: through it
+// lies Hollow Farm, the haunted farmland (Levels/Farm.txt).
 // Amethyra the dragon (D) is tucked away in her cave in the rocky hill (%) in the north-east
 // corner; its way in is on the south side, behind the pines. Someone has pitched a tent (V) by a
 // campfire (c) in the birch wood to the south-east: warm up there for full health.
@@ -43,21 +45,21 @@ H..1ww...;........=..;..;.=Y..;..........................H
 H............b....=......*=........Y................;....H
 H.....*...........=====F..=..............................H
 H.b...............=...===============================X...H
-H.................=..;...........;.......................H
-H...===============...................,...........,...;..H
-H...=..........................a.........s...............H
-H...=...,.....E....................E...........a.........H
-H...=.....,.........b........,...........L............O..H
-H...=....Y...i...i..............i....i......i....i...i...H
-H...=...................i.............e......e.V.2.......H
-H...=......i..s..i...e.......i.....s............*........H
-H...=..s..............E...........i..........l.c.l....t..H
-H...=..........O...i...........e................z........H
-H...=........;............i........i....s...............tH
-H...P.......i...e...i........s.............i..s...i..i...H
-H.b..............................,..................,.t..H
-H........e......,........................................H
-HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+H.................=..;......=....;.......................H
+H...===============.........=.........,...........,...;..H
+H...=.......................=..a.........s...............H
+H...=...,.....E.............=......E...........a.........H
+H...=.....,.........b.......=,...........L............O..H
+H...=....Y...i...i..........=...i....i......i....i...i...H
+H...=...................i...=.........e......e.V.2.......H
+H...=......i..s..i...e......=i.....s............*........H
+H...=..s..............E.....=.....i..........l.c.l....t..H
+H...=..........O...i........=..e................z........H
+H...=........;............i.=......i....s...............tH
+H...P.......i...e...i.......=s.............i..s...i..i...H
+H.b.........................=....,..................,.t..H
+H........e......,...........=............................H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHH)HHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 ---
 2 = item trailblazer_boots
 K = castle House
@@ -79,3 +81,4 @@ K = castle House
 > = prop brownhen
 ' = prop chick
 " = prop grain
+) = gate Farm

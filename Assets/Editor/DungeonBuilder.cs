@@ -20,6 +20,7 @@ using UnityEngine;
 //   DungeonBuilder.Hazards.cs          lava and spike traps
 //   DungeonBuilder.Cove.cs             Mermaid Cove: pirates, dark mermaids, Pearl, waterfalls, the rowboat
 //   DungeonBuilder.Town.cs             Hollyhock, the village: buildings, the picket fence, Barnaby, chickens
+//   DungeonBuilder.Farm.cs             Hollow Farm: pumpkins, scarecrows, the barn, ghosts, Old Stitches
 //   DungeonBuilder.CharacterSelect.cs  the character select screen
 //   DungeonBuilder.Title.cs            the title screen and its save slots
 public static partial class DungeonBuilder
@@ -34,7 +35,7 @@ public static partial class DungeonBuilder
         public Dictionary<string, Material> Materials;
         public GameObject Skeleton, Slime, SlimeKing, Chest, Torch, Flag, Dragon;
         public Dictionary<string, GameObject> ItemPickups; // by item id (DungeonBuilder.Items.cs)
-        public GameObject Bed, Toilet, Sink, PaperTowel, HouseDoor;
+        public GameObject Bed, Toilet, Sink, PaperTowel, HouseDoor, SpiralDown, SpiralUp;
         public GameObject Wardrobe, Nightstand, Bookshelf, ToyChest, Plant, Rug;
         public GameObject Tree, Fountain, Bush, Butterfly, Mote, Cloud, Stairs;
         public GameObject Pine, Birch, AutumnTree, Boulder, Stones, Stump, Log, Tent, Fern;
@@ -42,8 +43,9 @@ public static partial class DungeonBuilder
         public GameObject Campfire, Barrel, Crate, Bones, Mushrooms, Door, LockedDoor, Key, Ripple, Lily;
         public GameObject SpikeTrap, LavaBubble, Ember;
         public GameObject Pirate, DarkMermaid, Pearl, Palm, Treasure, Rowboat, Ship, Splash, Shell, Starfish, Foam;
-        public GameObject Barnaby;
-        public Dictionary<string, GameObject> TownProps; // by prop kind (MapFile.PropKinds)
+        public GameObject Barnaby, Stitches, FarmGate, Pippin;
+        // Legend "prop" entries, by kind (MapFile.PropKinds): the village's, and the home's bathtub and cat.
+        public Dictionary<string, GameObject> PropPrefabs = new Dictionary<string, GameObject>();
         public SpriteSheetImporter.SpriteSheet Props;
         public GameObject[] Grass;
 
@@ -115,7 +117,8 @@ public static partial class DungeonBuilder
         CreateFriendsAndDungeonProps(assets, wizardArt.Shadow, sparkle);
         CreateHazardPrefabs(assets, props);
         CreateCovePrefabs(assets, coin, sparkle, wizardArt.Shadow);
-        CreateTownPrefabs(assets, wizardArt.Shadow);
+        CreateTownPrefabs(assets, wizardArt.Shadow, sparkle);
+        CreateFarmPrefabs(assets, wizardArt.Shadow);
         assets.Props = props;
         return assets;
     }
@@ -205,6 +208,7 @@ public static partial class DungeonBuilder
                      "WoodFloor", "BathTile", "Water", "Puddle", "SpikePlate", "RockSide", "RockSideLow", "RockTop", "CaveFloor",
                      "Sand_0", "Sand_1", "Sea", "SandBank", "Planks", "Waterfall",
                      "Cobble_0", "Cobble_1", "Plaster", "RoofTiles", "Thatch", "Window", "TownDoor", "Awning", "ShopSign",
+                     "WallSideIvy", "KitchenTile", "Soil", "BarnSide", "BarnDoor", "BarnRoof", "CornSide", "CornTop",
                  })
             mats[name] = Mat(name, Color.white, texture: PixelTexture(name));
         // The cathedral's stained glass glows a little, as if lit from inside.

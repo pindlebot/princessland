@@ -57,6 +57,33 @@ public class Inventory : MonoBehaviour
         return true;
     }
 
+    // Takes one of an item out of the bag (used up, like a bottle of bubble bath).
+    public bool Remove(ItemDefinition item)
+    {
+        if (!state.Bag.Remove(item.Id)) return false;
+        OnChanged();
+        return true;
+    }
+
+    // How many of an item are in the bag (ingredients for a recipe).
+    public int Count(ItemDefinition item)
+    {
+        int n = 0;
+        foreach (var id in state.Bag)
+            if (id == item.Id) n++;
+        return n;
+    }
+
+    // Eats one food from the bag: it gives back hearts and magic. Returns whether it did.
+    public bool Eat(ItemDefinition item)
+    {
+        if (item == null || !item.IsFood || !Remove(item)) return false;
+        if (item.HealthRestore > 0 && TryGetComponent(out Health health)) health.Heal(item.HealthRestore);
+        if (item.ManaRestore > 0 && TryGetComponent(out Mana mana)) mana.Restore(item.ManaRestore);
+        GameSession.AddToCounter("ate:" + item.Id);
+        return true;
+    }
+
     // Moves an item from the bag into its slot; whatever was there goes back into the bag.
     public bool Equip(ItemDefinition item)
     {

@@ -901,6 +901,163 @@ Label {
     min-height: 34px;
 }
 
+/* ---------- Cooking: a recipe card, like the Stardew Valley guidebook's ---------- */
+
+.cooking-row {
+    top: 90px;
+}
+
+.cooking {
+    width: 440px;
+    padding: 14px 20px 14px 20px;
+    display: none;
+}
+
+.cooking.open {
+    display: flex;
+}
+
+.cooking-close:hover {
+    color: var(--ink);
+}
+
+/* The card itself: warm paper with a ruled border, like an index card */
+.recipe-card {
+    background-color: rgb(255, 248, 228);
+    border-width: 2px;
+    border-color: rgb(214, 180, 120);
+    border-radius: 6px;
+    padding: 10px 14px 12px 14px;
+    margin-bottom: 8px;
+}
+
+.recipe-top {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.recipe-dish-icon {
+    width: 64px;
+    height: 64px;
+    margin-right: 12px;
+    transition-property: scale;
+    transition-duration: 0.18s;
+}
+
+.recipe-dish-icon.pop {
+    scale: 1.3 1.3;
+}
+
+.recipe-name {
+    font-size: var(--text-title);
+}
+
+/* What it does, in the card's green (hearts and magic) */
+.recipe-effect {
+    font-size: var(--text-label);
+    color: rgb(46, 140, 70);
+}
+
+.recipe-description {
+    font-size: var(--text-small);
+    color: var(--ink-soft);
+    white-space: normal;
+    margin-bottom: 8px;
+}
+
+/* One ingredient: its picture, its name (and where to find it, until you have it), x/y and a star */
+.recipe-ingredient {
+    flex-direction: row;
+    align-items: center;
+    padding: 3px 6px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    background-color: rgb(244, 232, 206);
+}
+
+.recipe-ingredient.have {
+    background-color: rgb(222, 240, 206);
+}
+
+.recipe-ingredient-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 8px;
+    opacity: 0.55;
+}
+
+.recipe-ingredient.have .recipe-ingredient-icon {
+    opacity: 1;
+}
+
+.recipe-ingredient-name {
+    font-size: var(--text-label);
+}
+
+.recipe-ingredient-where {
+    font-size: var(--text-small);
+    color: var(--ink-soft);
+    white-space: normal;
+}
+
+.recipe-count {
+    font-size: var(--text-label);
+    color: rgb(190, 90, 40);
+    margin: 0 6px;
+}
+
+.recipe-ingredient.have .recipe-count {
+    color: rgb(46, 140, 70);
+}
+
+.recipe-tick {
+    width: 22px;
+    height: 22px;
+    background-image: url("project://database/Assets/Art/UI/PipStar.png");
+    opacity: 0;
+}
+
+.recipe-ingredient.have .recipe-tick {
+    opacity: 1;
+}
+
+.cook-button {
+    margin-top: 8px;
+    padding: 6px 12px;
+    -unity-text-align: middle-center;
+    font-size: var(--text-label);
+    color: var(--ink-soft);
+    background-color: rgb(232, 222, 204);
+    border-radius: 6px;
+}
+
+.cook-button.ready {
+    color: rgb(255, 255, 255);
+    background-color: rgb(222, 120, 60);
+}
+
+.cook-button.ready:hover {
+    background-color: rgb(236, 140, 70);
+}
+
+/* Just cooked: a happy green, not "find the ingredients" */
+.cook-button.made {
+    color: rgb(255, 255, 255);
+    background-color: rgb(46, 140, 70);
+}
+
+.recipe-pages {
+    margin-top: 6px;
+    font-size: var(--text-small);
+    color: var(--ink-soft);
+    -unity-text-align: middle-center;
+}
+
+.cooking-message {
+    min-height: 40px;
+}
+
 /* ---------- Dialogue ---------- */
 
 .dialogue-row {

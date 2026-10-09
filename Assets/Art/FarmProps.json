@@ -1,0 +1,140 @@
+{
+  "frameSize": 64,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Scarecrow",
+      "row": 0,
+      "frames": 2,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "name": "Pumpkin",
+      "row": 1,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "JackOLantern",
+      "row": 2,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Corn",
+      "row": 3,
+      "frames": 2,
+      "fps": 1,
+      "loop": true
+    },
+    {
+      "name": "DeadTree",
+      "row": 4,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Haystack",
+      "row": 5,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Gravestone",
+      "row": 6,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Crow",
+      "row": 7,
+      "frames": 3,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Ghost",
+      "row": 8,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Wisp",
+      "row": 9,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Mist",
+      "row": 10,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Signpost",
+      "row": 11,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "FarmGate",
+      "row": 12,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "CiderStand",
+      "row": 13,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "PumpkinStack",
+      "row": 14,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Bunting",
+      "row": 15,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "FestivalArch",
+      "row": 16,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "BobbingTub",
+      "row": 17,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "GiantPumpkin",
+      "row": 18,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    }
+  ]
+}

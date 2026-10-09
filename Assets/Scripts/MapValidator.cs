@@ -38,11 +38,14 @@ public static class MapValidator
                 switch (entry.Kind)
                 {
                     case "door":
+                    case "stairsdown":
+                    case "stairsup":
+                    case "gate":
                         if (MapFile.BuiltInTiles.IndexOf(entry.Symbol) >= 0)
                             Error($"{where}: '{entry.Symbol}' is already a built-in tile; pick another symbol (digits are good)");
                         else if (!map.Find(entry.Symbol).Any())
                             Error($"{where}: the door isn't on the map");
-                        if (entry.Args.Length < 1 || entry.Args.Length > 2) Error($"{where}: write 'door <Scene> [<Spawn>]'");
+                        if (entry.Args.Length < 1 || entry.Args.Length > 2) Error($"{where}: write '{entry.Kind} <Scene> [<Spawn>]'");
                         break;
                     case "castle":
                         if (entry.Symbol != 'K') Error($"{where}: the castle is always 'K'");
@@ -78,7 +81,7 @@ public static class MapValidator
                             Error($"{where}: a building's tiles must fill a rectangle");
                         break;
                     default:
-                        Error($"{where}: unknown kind '{entry.Kind}' (door, castle, spawn, item, building, prop or npc)");
+                        Error($"{where}: unknown kind '{entry.Kind}' (door, stairsdown, stairsup, castle, spawn, item, building, prop or npc)");
                         break;
                 }
             }
@@ -117,7 +120,7 @@ public static class MapValidator
         foreach (var (dc, dr) in new[] { (0, -1), (0, 1), (-1, 0), (1, 0) })
         {
             char c = map.At(col + dc, row + dr);
-            bool walkable = c != ' ' && !LevelMap.IsWall(c) && !map.IsBuilding(c) && !LevelMap.IsWater(c) && !LevelMap.IsHazard(c) && !IsDoor(map, c);
+            bool walkable = c != ' ' && !LevelMap.IsWall(c) && !map.IsBuilding(c) && !map.IsWallProp(c) && !LevelMap.IsWater(c) && !LevelMap.IsHazard(c) && !IsDoor(map, c);
             if (walkable) return (col + dc, row + dr);
         }
         return null;
@@ -133,5 +136,5 @@ public static class MapValidator
         return tiles.Count == width * height;
     }
 
-    private static bool IsDoor(MapFile map, char c) => map.Legend.TryGetValue(c, out var e) && e.Kind == "door";
+    private static bool IsDoor(MapFile map, char c) => map.Legend.TryGetValue(c, out var e) && MapFile.IsDoorKind(e.Kind);
 }

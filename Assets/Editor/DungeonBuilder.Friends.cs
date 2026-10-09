@@ -170,11 +170,15 @@ public static partial class DungeonBuilder
         return prefab;
     }
 
-    private static void AddWishing(GameObject fountainPrefab, GameObject sparkle)
+    private static void AddWishing(GameObject fountainPrefab, GameObject sparkle, string thing = "fountain",
+                                   string counter = "wishes", string grantedFlag = WishingFountain.GrantedFlag)
     {
         string path = AssetDatabase.GetAssetPath(fountainPrefab);
         var root = PrefabUtility.LoadPrefabContents(path);
         var wishing = root.AddComponent<WishingFountain>();
+        SetString(wishing, "thing", thing);
+        SetString(wishing, "counter", counter);
+        SetString(wishing, "grantedFlag", grantedFlag);
         SetRef(wishing, "plinkSound", Sound("plink"));
         SetRef(wishing, "wishSound", Sound("wish"));
         SetRef(wishing, "sparkle", sparkle);
