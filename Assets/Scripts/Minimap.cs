@@ -111,7 +111,7 @@ public class Minimap : MonoBehaviour
                               : LevelMap.IsFence(c) ? Fence
                               : LevelMap.IsCobbles(c) ? Cobbles
                               : map.IsBuilding(c) ? Roof
-                              : LevelMap.IsWall(c) ? (Color32)map.WallColor
+                              : LevelMap.IsWall(c) || map.IsWallProp(c) ? (Color32)map.WallColor
                               : LevelMap.IsWater(c) ? Water
                               : LevelMap.IsSand(c) ? Sand
                               : LevelMap.IsPlanks(c) ? Planks

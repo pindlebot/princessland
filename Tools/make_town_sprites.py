@@ -14,6 +14,8 @@ Out:  Assets/Art/Barnaby.png / .json      (48x48)  Barnaby Badger, who sells bub
       Assets/Art/TownDecals.png / .json   (32x32, centre pivot; laid flat on the ground)
         Grain  scattered corn for the chickens to peck at
       Assets/Art/UI/PortraitBarnaby.png   32x32 dialogue portrait
+      Assets/Art/Cat.png / .json          (32x32)  Whiskers, the tabby cat in the castle's courtyard
+        Idle  6 frames, looping   sitting up, her tail swishing, and a slow blink
 
 The village is a little warmer than the castle grounds (oak, cream plaster, terracotta), but
 props stay quiet next to the characters, like the rest of the scenery (see palette.py).
@@ -174,6 +176,51 @@ def draw_chick(bob=0):
     if bob:
         c.dot(21, y - 3, BEAK)                            # cheep!
     c.dot(13, y - 1, CHICK_SH)
+    return c.img
+
+
+# ---------- Whiskers the tabby cat ----------
+
+TABBY, TABBY_SH, TABBY_STRIPE = (204, 150, 96, 255), (164, 112, 72, 255), (124, 80, 56, 255)
+CAT_WHITE = (246, 238, 226, 255)
+CAT_EYE, CAT_NOSE = (110, 180, 90, 255), (232, 130, 140, 255)
+
+
+def draw_cat(tail=0, blink=False):
+    """A ginger tabby sitting up, facing the viewer: stripes on her head and flanks, a white
+    chest and paws, green eyes. tail (-1..1) swings the tip of her tail; blink shuts her eyes."""
+    c = Canvas()
+    # Tail curling round from behind, its tip swishing.
+    for i in range(9):
+        x = 21 + i * 0.6 + (tail * i / 8) * 2
+        y = 29 - i * 1.4
+        c.rect(round(x), round(y), round(x) + 1, round(y), TABBY_STRIPE if i % 3 == 2 else TABBY)
+    c.ellipse(15.5, 25, 6.5, 6, TABBY_SH)               # body, sitting
+    c.ellipse(15, 24.5, 6, 5.5, TABBY)
+    for x in (10, 20):                                    # stripes on her flanks
+        c.rect(x, 22, x, 26, TABBY_STRIPE)
+    c.ellipse(15.5, 25.5, 2.6, 4, CAT_WHITE)              # white chest
+    for x in (12, 17):                                    # white front paws
+        c.rect(x, 29, x + 2, 30, CAT_WHITE)
+    c.ellipse(15.5, 15, 6, 5, TABBY)                      # head
+    for x0 in (10, 18):                                   # ears, pink inside
+        c.rect(x0, 9, x0 + 2, 11, TABBY)
+        c.dot(x0 + 1, 10, CAT_NOSE)
+        c.dot(x0 + (0 if x0 < 15 else 2), 8, TABBY)
+    for x in (13, 15, 17):                                # the "M" stripes on her forehead
+        c.rect(x, 11, x, 12, TABBY_STRIPE)
+    c.ellipse(15.5, 17.5, 2.6, 1.6, CAT_WHITE)            # muzzle
+    if blink:
+        c.rect(12, 15, 13, 15, TABBY_STRIPE)
+        c.rect(18, 15, 19, 15, TABBY_STRIPE)
+    else:
+        for ex in (12, 18):
+            c.rect(ex, 14, ex + 1, 15, CAT_EYE)
+            c.dot(ex + 1, 14, EYE)
+    c.dot(15, 17, CAT_NOSE)
+    c.dot(16, 17, CAT_NOSE)
+    c.rect(9, 18, 11, 18, CAT_WHITE)                      # whiskers
+    c.rect(20, 18, 22, 18, CAT_WHITE)
     return c.img
 
 
@@ -437,5 +484,8 @@ if __name__ == "__main__":
         ("GrainSack", 1, False, [grain_sack()]),
     ], frame_size=S)
     write_sheet("TownDecals", None, [("Grain", 1, False, [grain()])], pivot="center", outline_color=None)
+    write_sheet("Cat", None, [
+        ("Idle", 4, True, [draw_cat(0), draw_cat(1), draw_cat(1), draw_cat(0), draw_cat(-1), draw_cat(-1, blink=True)]),
+    ])
     head = draw_barnaby().crop((8, 2, 40, 34))
     portrait(head, (70, 90, 70)).save(ART / "UI" / "PortraitBarnaby.png")

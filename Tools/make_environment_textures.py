@@ -38,6 +38,16 @@ Out:  Assets/Art/Environment/
         TownDoor.png                 16x32  a plank door with an arched top
         Awning.png                   32x16  the shop's coral-and-cream striped awning
         ShopSign.png                 24x16  Barnaby's sign: a bottle of bubble bath and bubbles
+      The castle at home:
+        WallSideIvy.png              32x20  the courtyard's walls: the castle's bricks under climbing ivy
+        KitchenTile.png              32x32  the kitchen floor: terracotta and cream tiles
+      Hollow Farm (the haunted farmland south of the castle grounds):
+        Soil.png                     32x32  tilled earth in furrows, for the pumpkin patches ('/')
+        BarnSide.png                 32x20  one 2m x 1.2m course of the barn: red boards with dark seams
+        BarnDoor.png                 32x32  the barn's big doors, white X braces on red
+        BarnRoof.png                 32x32  dark, weathered shingles
+        CornSide.png / CornTop.png   32x20 / 32x32  the corn maze's walls: dense dry stalks, and their
+                                     leafy tops with tassels, seen from above
 
 Every texture is seamless: mortar lines sit on the left/top edge only, so two
 tiles placed side by side share a single 1px joint.
@@ -816,6 +826,179 @@ def shop_sign():
     return img
 
 
+def wall_side_ivy():
+    """The courtyard's walls: WallSide's bricks with ivy climbing up from the bottom and
+    trailing down from the top. Seamless across: every stem wraps at the edges."""
+    img = wall_side()
+    px = img.load()
+    rng = random.Random(201)
+    leaf, dark, light = pal.SAGE_DARK, pal.SAGE_DEEP, pal.SAGE_LIGHT
+    for x0 in (2, 11, 19, 27):
+        x = x0
+        top = rng.randint(0, 9)
+        for y in range(19, top - 1, -1):  # a stem wandering up
+            px[x % 32, y] = dark
+            if rng.random() < 0.55:      # leaves either side
+                for dx in (-1, 1):
+                    px[(x + dx) % 32, y] = leaf if rng.random() < 0.7 else light
+            if rng.random() < 0.3:
+                x += rng.choice((-1, 1))
+    for x in range(32):                  # a fringe trailing over the top edge
+        if rng.random() < 0.6:
+            for y in range(rng.randint(1, 3)):
+                px[x, y] = leaf if (x + y) % 3 else light
+    return img
+
+
+def kitchen_tile():
+    """Terracotta and cream tiles, 8 texels (half a metre) each, in a checker, with grout."""
+    img = Image.new("RGB", (32, 32))
+    px = img.load()
+    terracotta, cream, grout = (196, 116, 86), (236, 222, 196), (150, 120, 104)
+    for y in range(32):
+        for x in range(32):
+            c = terracotta if ((x // 8) + (y // 8)) % 2 else cream
+            if x % 8 == 0 or y % 8 == 0:
+                c = grout
+            elif x % 8 == 1 and y % 8 == 1:
+                c = shade(c, 16)
+            px[x, y] = c
+    return img
+
+
+BARN, BARN_SH, BARN_HI = (164, 66, 60), (124, 46, 48), (190, 92, 78)
+TRIM = (232, 222, 206)
+
+
+def soil():
+    """Tilled earth: four furrows across the tile, each a lit ridge and a shaded trough, with a
+    few clods. Seamless: the furrows run edge to edge."""
+    rng = random.Random(301)
+    img = Image.new("RGB", (32, 32), pal.EARTH_MID)
+    px = img.load()
+    for y in range(32):
+        k = y % 8
+        base = shade(pal.EARTH_TOP, -6) if k < 3 else pal.EARTH_MID if k < 6 else shade(pal.EARTH_LOW, -6)
+        for x in range(32):
+            px[x, y] = base
+        if k == 0:
+            for x in range(32):
+                px[x, y] = shade(pal.EARTH_TOP, 8)
+    for _ in range(10):
+        x, y = rng.randrange(32), rng.randrange(32)
+        px[x, y] = shade(pal.EARTH_LOW, -14)
+    return img
+
+
+def barn_side():
+    """32x20: red vertical boards with dark seams, a little lighter at the top of each course."""
+    rng = random.Random(303)
+    img = Image.new("RGB", (32, 20), BARN)
+    px = img.load()
+    for x in range(32):
+        tone = (x // 4) * 3 % 7 - 3
+        for y in range(20):
+            px[x, y] = shade(BARN, tone + (6 if y < 2 else 0))
+        if x % 4 == 0:
+            for y in range(20):
+                px[x, y] = BARN_SH
+    for _ in range(6):  # knots and scuffs
+        px[rng.randrange(1, 32), rng.randrange(20)] = shade(BARN_SH, -10)
+    return img
+
+
+def barn_door():
+    """32x32: the barn's big doors, two red leaves with white frames and X braces."""
+    img = Image.new("RGB", (32, 32), BARN)
+    px = img.load()
+    for y in range(32):
+        for x in range(32):
+            if x % 4 == 0:
+                px[x, y] = BARN_SH
+    for x0 in (0, 16):
+        for y in range(32):  # an X brace corner to corner, two texels thick
+            x = round(y * 15 / 31)
+            for dx in (0, 1):
+                px[min(x0 + 15, x0 + x + dx), y] = TRIM
+                px[max(x0, x0 + 15 - x - dx), y] = TRIM
+        for y in range(32):
+            px[x0, y] = TRIM
+            px[x0 + 15, y] = TRIM
+        for x in range(x0, x0 + 16):
+            px[x, 0] = TRIM
+            px[x, 31] = TRIM
+            px[x, 15] = TRIM
+    return img
+
+
+def barn_roof():
+    """Dark, weathered shingles in offset rows, a few of them mossy."""
+    rng = random.Random(305)
+    base, dark, light = (92, 82, 100), (62, 54, 70), (120, 110, 128)
+    img = Image.new("RGB", (32, 32), base)
+    px = img.load()
+    for row in range(8):
+        y0 = row * 4
+        off = 4 if row % 2 else 0
+        for x in range(32):
+            px[x, y0 + 3] = dark
+            px[x, y0] = light if (x + off) % 8 in (2, 3, 4) else base
+            if (x + off) % 8 == 0:
+                for y in range(y0, y0 + 3):
+                    px[x, y] = dark
+    for _ in range(5):
+        x, y = rng.randrange(32), rng.randrange(32)
+        px[x, y] = pal.SAGE_DARK
+    return img
+
+
+# Late-season corn: still green-gold, so the maze reads as corn even in the farm's dusk light.
+CORN, CORN_SH, CORN_HI = (196, 186, 84), (130, 140, 64), (236, 220, 120)
+CORN_LEAF, CORN_LEAF_HI = (132, 164, 76), (176, 200, 104)
+
+
+def corn_side():
+    """32x20, one 2m x 1.2m face of a corn-maze wall: close-packed stalks with drooping leaves
+    and the odd cob, darker toward the ground. Seamless across."""
+    rng = random.Random(311)
+    img = Image.new("RGB", (32, 20), CORN_SH)
+    px = img.load()
+    for x0 in range(0, 32, 3):  # stalks
+        for y in range(20):
+            px[x0, y] = CORN if y > 2 else CORN_HI
+            px[(x0 + 1) % 32, y] = CORN_SH
+    for _ in range(14):         # leaves angling out and down
+        x, y = rng.randrange(32), rng.randrange(1, 14)
+        d = rng.choice((-1, 1))
+        for k in range(5):
+            px[(x + d * k) % 32, min(19, y + k // 2)] = CORN_LEAF_HI if k < 2 else CORN_LEAF
+    for _ in range(3):          # cobs
+        x, y = rng.randrange(32), rng.randrange(5, 14)
+        for k in range(3):
+            px[x, y + k] = (240, 200, 90)
+    for x in range(32):         # shade at the roots
+        px[x, 19] = shade(CORN_SH, -24)
+        px[x, 18] = shade(CORN_SH, -10)
+    return img
+
+
+def corn_top():
+    """32x32, the top of a corn-maze wall from above: a tangle of leaves with pale tassels."""
+    rng = random.Random(313)
+    img = Image.new("RGB", (32, 32), CORN_LEAF)
+    px = img.load()
+    for _ in range(40):
+        x, y = rng.randrange(32), rng.randrange(32)
+        a = rng.uniform(0, math.pi)
+        for k in range(6):
+            px[round(x + math.cos(a) * k) % 32, round(y + math.sin(a) * k) % 32] = CORN_SH if k > 3 else CORN_LEAF_HI
+    for _ in range(7):
+        x, y = rng.randrange(32), rng.randrange(32)
+        px[x, y] = (246, 232, 180)
+        px[(x + 1) % 32, y] = (246, 232, 180)
+    return img
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     floor_tile(1).save(OUT / "Floor_0.png")
@@ -861,6 +1044,14 @@ def main():
     town_door().save(OUT / "TownDoor.png")
     awning().save(OUT / "Awning.png")
     shop_sign().save(OUT / "ShopSign.png")
+    wall_side_ivy().save(OUT / "WallSideIvy.png")
+    kitchen_tile().save(OUT / "KitchenTile.png")
+    soil().save(OUT / "Soil.png")
+    barn_side().save(OUT / "BarnSide.png")
+    barn_door().save(OUT / "BarnDoor.png")
+    barn_roof().save(OUT / "BarnRoof.png")
+    corn_side().save(OUT / "CornSide.png")
+    corn_top().save(OUT / "CornTop.png")
     print("Wrote", ", ".join(sorted(p.name for p in OUT.glob("*.png"))))
 
 

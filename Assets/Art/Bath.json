@@ -1,0 +1,49 @@
+{
+  "frameSize": 96,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Bathtub",
+      "row": 0,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Stream",
+      "row": 1,
+      "frames": 3,
+      "fps": 10,
+      "loop": true
+    },
+    {
+      "name": "BubbleFoam",
+      "row": 2,
+      "frames": 3,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Bubble",
+      "row": 3,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "PottedFern",
+      "row": 4,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "PottedMonstera",
+      "row": 5,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    }
+  ]
+}

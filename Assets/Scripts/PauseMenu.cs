@@ -68,7 +68,7 @@ public class PauseMenu : MonoBehaviour
     {
         if (!IsOpen)
         {
-            if (GameInput.MenuPressed && !DialogueController.BlocksInput) Open();
+            if (GameInput.MenuPressed && !DialogueController.BlocksInput && !CookingView.BlocksInput) Open();
             return;
         }
         if (Time.frameCount == openedFrame) return; // the press that opened it

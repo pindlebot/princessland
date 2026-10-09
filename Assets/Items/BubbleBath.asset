@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game::ItemDefinition
   id: bubble_bath
   displayName: Bubble Bath
-  description: Lavender and honey, from Barnaby's stall in Hollyhock. It makes a mountain of bubbles... if only the castle had a bathtub.
+  description: Lavender and honey, from Barnaby's stall in Hollyhock. Pour it into the bath at home for a mountain of bubbles!
   icon: {fileID: 21300000, guid: 061d4132a48b04742bcff4589a223a13, type: 3}
   slot: 0
   spellDamageBonus: 0

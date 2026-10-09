@@ -12,6 +12,7 @@ using UnityEngine;
 //   Hurt        (trigger) -> Hurt, then back to Idle
 //   Dead        (bool)    -> Die (and nothing can interrupt it)
 //   Sitting     (bool)    -> Sit, for heroes sitting down (PlayerController.IsSeated)
+//   Bathing     (bool)    -> Bathe, for heroes lying in the bath (PlayerController.IsBathing)
 //
 // Left/right isn't an Animator parameter at all: we just mirror the sprite with flipX.
 [RequireComponent(typeof(CharacterController), typeof(Health))]
@@ -24,6 +25,7 @@ public class CharacterAnimator : MonoBehaviour
     private static readonly int HurtId = Animator.StringToHash("Hurt");
     private static readonly int DeadId = Animator.StringToHash("Dead");
     private static readonly int SittingId = Animator.StringToHash("Sitting");
+    private static readonly int BathingId = Animator.StringToHash("Bathing");
 
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -60,7 +62,9 @@ public class CharacterAnimator : MonoBehaviour
         Vector3 velocity = controller.enabled ? controller.velocity : Vector3.zero;
         velocity.y = 0f;
         animator.SetFloat(SpeedId, velocity.magnitude);
-        animator.SetBool(SittingId, player != null && player.IsSeated);
+        bool bathing = player != null && player.IsBathing;
+        animator.SetBool(SittingId, player != null && player.IsSeated && !bathing);
+        animator.SetBool(BathingId, bathing);
 
         // Which way is the character facing *on screen*? Compare its forward vector
         // with the camera's screen-right and screen-up directions (flattened onto the floor).

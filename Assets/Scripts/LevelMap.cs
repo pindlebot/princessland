@@ -10,6 +10,8 @@ public class LevelMap : MonoBehaviour
     [SerializeField] private Color wallColor = new Color32(170, 164, 184, 255);
     [Tooltip("The map's building symbols (from its legend, e.g. \"345\"): solid, drawn as roofs on the minimap.")]
     [SerializeField] private string buildings = "";
+    [Tooltip("The map's wall-like prop symbols (the corn maze's walls): solid, drawn as walls on the minimap.")]
+    [SerializeField] private string walls = "";
 
     public int Height => rows.Length;
     public int Width => rows[0].Length;
@@ -31,7 +33,10 @@ public class LevelMap : MonoBehaviour
     public bool IsBuilding(char c) => c != ' ' && buildings.IndexOf(c) >= 0;
 
     // Does this tile block the way: a wall, or part of a building?
-    public bool IsSolid(char c) => IsWall(c) || IsBuilding(c);
+    public bool IsSolid(char c) => IsWall(c) || IsBuilding(c) || IsWallProp(c);
+
+    // A wall made of a prop from the legend (a corn maze wall).
+    public bool IsWallProp(char c) => c != ' ' && walls.IndexOf(c) >= 0;
 
     // Water: 'w', and the water under 'm' Coralie, 'Z' Pearl, '&' a dark mermaid and '@' the
     // pirate ship. Not walkable, drawn blue on the minimap.

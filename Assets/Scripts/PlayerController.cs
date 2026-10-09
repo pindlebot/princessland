@@ -3,7 +3,8 @@ using UnityEngine;
 // WASD movement on the isometric grid. The player turns to face the way they're
 // walking; abilities can briefly take over facing (e.g. to look at a spell's target).
 // The hero can also sit down on something (the toilet at home): SitOn puts them on it,
-// facing the camera, until they walk away or StandUp is called.
+// facing the camera, until they walk away or StandUp is called. Lying in the bath is the
+// same, with bathing set: the animator shows them in their swimwear instead of sitting.
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class PlayerController : MonoBehaviour
     // What the hero is sitting on (null when standing).
     public Transform Seat { get; private set; }
     public bool IsSeated => Seat != null;
+    public bool IsBathing { get; private set; } // seated in the bath, in their swimwear
 
     private void Awake()
     {
@@ -59,10 +61,11 @@ public class PlayerController : MonoBehaviour
     // level), facing the camera. height lifts the sprite so the hero sits on top of the
     // seat with their feet dangling. The CharacterController is off while seated, so it
     // doesn't bump into the seat's collider.
-    public void SitOn(Transform seat, Vector3 seatPosition, float height)
+    public void SitOn(Transform seat, Vector3 seatPosition, float height, bool bathing = false)
     {
         if (IsSeated) StandUp();
         Seat = seat;
+        IsBathing = bathing;
         standingPosition = transform.position;
         controller.enabled = false;
         transform.position = new Vector3(seatPosition.x, transform.position.y, seatPosition.z);
@@ -80,6 +83,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!IsSeated) return;
         Seat = null;
+        IsBathing = false;
         var sprite = SpriteTransform();
         if (sprite != null)
         {

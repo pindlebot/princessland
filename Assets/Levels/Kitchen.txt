@@ -1,0 +1,28 @@
+// Down the spiral staircase from the bedroom: the castle kitchen, on terracotta tiles.
+// 5 the pantry, 4 the stove (a bowl of soup restores health and magic, like a nap), 6 the
+// kitchen island (it reaches into the tile east of it), a barrel (o), a crate (x), a potted plant
+// (v), and 3 the spiral staircase back up to the bedroom.
+title: {hero}'s Kitchen
+theme: Home
+floor: kitchen
+music: music_home
+region: castle
+enemy_count: hide
+locked_hint: Something smells delicious
+open_hint: Something smells delicious
+minimap_floor: #C07858
+minimap_wall: #AAA4B8
+---
+###T####T###
+#5..4...ox.#
+#..........#
+#...6......#
+#..........#
+#v......3..#
+#....P.....#
+############
+---
+3 = stairsup House
+5 = prop pantry
+4 = prop stove
+6 = prop island

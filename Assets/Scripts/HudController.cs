@@ -15,6 +15,7 @@ public class HudController : MonoBehaviour
 {
     [SerializeField] private float toastSeconds = 3f;
     [SerializeField] private AudioClip clickSound; // inventory open/close and equip
+    [SerializeField] private AudioClip eatSound;   // eating food from the bag
 
     // The player's parts, handed over by LevelBootstrap via Bind() when it spawns them.
     private Health playerHealth;
@@ -31,7 +32,7 @@ public class HudController : MonoBehaviour
     private const int MaxPips = 16;
     private const int FullSizeHearts = 8;  // more than this and they shrink to fit one row...
     private const int MaxHeartsShown = 12; // ...and past this, one heart and a count ("7 / 14")
-    private const string DetailsHint = "Hover an item to inspect it. Click to put it on or take it off.";
+    private const string DetailsHint = "Hover an item to inspect it. Click to put it on, take it off, or eat it.";
     // The worn slots, in the order the inventory panel shows them.
     private static readonly EquipSlot[] WornSlots = { EquipSlot.Weapon, EquipSlot.Helm, EquipSlot.Armor, EquipSlot.Boots, EquipSlot.Ring };
 
@@ -497,6 +498,13 @@ public class HudController : MonoBehaviour
     private void OnBagSlotClicked(int index)
     {
         var item = BagItem(index);
+        if (item != null && item.IsFood && inventory.Eat(item))
+        {
+            itemDetails.text = $"Yum! You eat the {item.DisplayName}. {item.FoodText}!";
+            ShowToast($"Yum! {item.DisplayName}! {item.FoodText}");
+            AudioManager.Play(eatSound != null ? eatSound : clickSound);
+            return;
+        }
         if (item != null && inventory.Equip(item))
         {
             ShowDetails(item, equipped: true);
@@ -525,8 +533,10 @@ public class HudController : MonoBehaviour
     {
         if (item == null) { itemDetails.text = DetailsHint; return; }
         string action = equipped ? "Click to take it off."
-                      : item.IsEquippable ? $"Click to wear it ({item.Slot.ToString().ToLowerInvariant()})." : "";
-        string bonus = item.BonusText.Length > 0 ? $" ({item.BonusText})" : "";
+                      : item.IsEquippable ? $"Click to wear it ({item.Slot.ToString().ToLowerInvariant()})."
+                      : item.IsFood ? "Click to eat it." : "";
+        string bonus = item.BonusText.Length > 0 ? $" ({item.BonusText})"
+                     : item.IsFood ? $" ({item.FoodText})" : "";
         itemDetails.text = $"{item.DisplayName}: {item.Description}{bonus} {action}";
     }
 

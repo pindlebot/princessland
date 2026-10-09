@@ -21,6 +21,9 @@ EYE = (40, 30, 50, 255)
 SHOE = (90, 60, 110, 255)
 ROD = (200, 206, 222, 255)
 ORB, ORB_HI = (100, 228, 220, 255), (232, 255, 252, 255)
+SUIT, SUIT_HI = (64, 196, 180, 255), (132, 232, 214, 255)  # an aquamarine swimsuit, to match her gown
+BUBBLE, BUBBLE_SHINE = (238, 244, 252, 255), (255, 255, 255, 255)
+DUCK, BEAK = (255, 214, 60, 255), (250, 140, 40, 255)
 
 
 def draw_princess(back=False, bob=0, legs=(0, 0), wand_up=0, glow=0, hurt=False, sit=False, kick=0):
@@ -133,6 +136,58 @@ def draw_lap(c, kick):
         c.rect(x - (1 if x < 15 else 0), 30 - lift, x + 1 + (1 if x > 15 else 0), 30 - lift, SHOE)
 
 
+# ---------- Bath time (the tub at home) ----------
+# The hero lies back in the tub in their swimwear, seen from the front with their head at the
+# left end: only what's above the water is drawn, and a row of bubbles along the bottom hides
+# where the water would be. PlayerController lifts the sprite so the bubbles sit at the water
+# line of the tub (Furniture.png's Bathtub), drawn just in front of it.
+
+def bath_bubbles(c, frame):
+    """The heap of bubbles along the bottom of a bathing frame, and a rubber duck bobbing on it."""
+    for i, x in enumerate(range(2, 30, 4)):
+        r = 2.6 if (i + frame) % 2 else 2.1
+        c.ellipse(x + 0.5, 28.5 - (i % 2), r, r, BUBBLE)
+        c.dot(round(x - r / 2), round(27.5 - (i % 2) - r / 2), BUBBLE_SHINE)
+    c.rect(1, 29, 30, 31, BUBBLE)
+    dy = frame  # the duck bobs
+    c.rect(19, 24 + dy, 23, 26 + dy, DUCK)            # body
+    c.rect(22, 21 + dy, 24, 23 + dy, DUCK)            # head
+    c.dot(23, 22 + dy, EYE)
+    c.rect(25, 22 + dy, 26, 22 + dy, BEAK)
+
+
+def draw_princess_bathing(frame):
+    """Marina in the bath: tiara on, golden hair spread over the rim behind her, a smile, her
+    aquamarine swimsuit with its little straps, an arm along the rim and her toes at the far end."""
+    c = Canvas()
+    c.rect(2, 10, 5, 22, HAIR)                           # hair spilling over the tub's end
+    c.rect(2, 14, 3, 22, HAIR_SH)
+    for y in range(19, 28):                              # the swimsuit
+        c.rect(10, y, 18, y, SUIT)
+    c.rect(10, 19, 18, 19, SUIT_HI)
+    c.rect(11, 17, 11, 18, SUIT)                         # its straps
+    c.rect(17, 17, 17, 18, SUIT)
+    c.rect(12, 17, 16, 18, SKIN)
+    c.rect(18, 20, 25, 21, SKIN)                         # her arm along the rim
+    c.rect(5, 11, 11, 17, SKIN)                          # face
+    c.rect(5, 8, 11, 10, HAIR)                           # fringe
+    c.rect(4, 9, 4, 17, HAIR)
+    c.dot(7, 13, EYE)
+    c.dot(10, 13, EYE)
+    c.dot(6, 15, BLUSH)
+    c.dot(11, 15, BLUSH)
+    c.rect(8, 15, 9, 15, (200, 90, 110, 255))            # a smile
+    c.rect(5, 7, 10, 7, GOLD)                            # tiara
+    for x, y in ((5, 6), (10, 6), (7, 5), (8, 5)):
+        c.dot(x, y, GOLD)
+    c.rect(7, 6, 8, 6, GEM)
+    toes = 1 if frame else 0
+    c.rect(26, 20 - toes, 27, 23, SKIN)
+    c.rect(28, 21, 29, 23, SKIN)
+    bath_bubbles(c, frame)
+    return c.img
+
+
 def fallen(angle, darken=0.0):
     """Death frames: tip the hurt pose over around her feet, like the wizard."""
     big = Image.new("RGBA", (F * 3, F * 3), CLEAR)
@@ -165,6 +220,8 @@ def build_animations():
         ]
     # Sitting on something (the toilet at home): front only, swinging her feet.
     anims.append(("Sit", 3, True, [draw_princess(sit=True), draw_princess(sit=True, kick=1)]))
+    # Lying in the bath at home, in her swimsuit: front only.
+    anims.append(("Bathe", 2, True, [draw_princess_bathing(0), draw_princess_bathing(1)]))
     anims.append(("Die", 8, False, [fallen(0), fallen(30), fallen(60), fallen(90, darken=0.35)]))
     return anims
 

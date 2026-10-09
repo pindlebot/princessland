@@ -67,8 +67,15 @@
       "loop": true
     },
     {
-      "name": "Die",
+      "name": "Bathe",
       "row": 9,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Die",
+      "row": 10,
       "frames": 4,
       "fps": 8,
       "loop": false

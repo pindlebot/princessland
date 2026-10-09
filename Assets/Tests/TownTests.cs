@@ -184,7 +184,7 @@ public class TownTests
             char under = map.At(Mathf.RoundToInt(tile.x), Mathf.RoundToInt(tile.y));
             Assert.IsFalse(map.IsSolid(under), $"a chicken wandered into '{under}' at {tile}");
         }
-        var hen = chickens.First().GetComponent<HouseFixture>();
+        var hen = chickens.First(c => c.name.StartsWith("Hen")).GetComponent<HouseFixture>();
         Assert.AreEqual("Pet the hen", hen.Prompt);
     }
 

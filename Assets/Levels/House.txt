@@ -1,8 +1,18 @@
 // 2: the Plumed Helm, on the floor by the wardrobe.
-// Inside the castle: a bedroom on the left, a tiled bathroom on the right.
+// Inside the castle: the bedroom in the middle, a tiled bathroom on the right, and an open-air
+// courtyard on the left, through a doorway in the bedroom's west wall.
 // Bedroom: B bed (a tile out from the walls, so it doesn't poke into them), r the rug at its
-// foot, N nightstand with a lamp, A wardrobe, U bookshelf, G toy chest, v a potted plant.
-// Bathroom: W toilet (you can sit on it), S sink, R paper towel.
+// foot, N nightstand with a lamp, A wardrobe, U bookshelf, G toy chest, v a potted plant, and 3
+// the spiral staircase down to the kitchen.
+// Bathroom: W toilet (you can sit on it), S sink (with hand soap: soap, then rinse), R paper
+// towel, 8 the big marble bath (three tiles wide, centred on its own: lie back in it in your
+// swimwear; turn its gold tap on and off from its east end), with a tall monstera ) west of it and
+// a big fern ( east of it (the wide fern behind, so it doesn't hide the tub), } the open towel
+// shelf (you climb out of the bath dripping: grab a towel), and more potted plants (v) about the room.
+// Courtyard: grass (',' and ';' with flowers) with ivy on its walls and hedges (H) along them, a
+// stone path (=) from the bedroom to an old locked door (9) at the far end (no key for it yet),
+// trees (Y), bushes (b), flower tubs ({), a bench ([), a wishing well (0) and Whiskers the tabby
+// cat (7). It's lit like daylight (DungeonBuilder.AddCourtyardSun).
 // "{hero}" in the title becomes the hero's name.
 title: {hero}'s Home
 theme: Home
@@ -14,14 +24,27 @@ open_hint: Rest and get cozy
 minimap_floor: #96683E
 minimap_wall: #AAA4B8
 ---
-###T###T###T##
-#N....A.U#W_S#
-#.B...2..#___#
-#.r.....G#_R_#
-#........____#
-#........#####
-#v....P......#
-######1#######
+##############T###T####T#######
+#HHHHHHHHHH#N....A.U#WRS_)_8_(#
+#H;,Y,;,Y;v#.B...2..#_________#
+#H,;,{,;,{,#.r.....G#________}#
+9===========....3...__________#
+#,,,[,,,,,,#........#________v#
+#;,,,0,,,,;#v....P..#v_______v#
+#,,,,,,7,,,######1#############
+#HH,b,,b,HH#
+#;;b{;;{b;;#
+############
 ---
 2 = item plumed_helm
 1 = door Level0
+3 = stairsdown Kitchen
+8 = prop bathtub
+( = prop pottedfern
+) = prop pottedmonstera
+7 = prop cat
+{ = prop planter
+9 = prop lockeddoor
+0 = prop wishingwell
+[ = prop bench
+} = prop towels

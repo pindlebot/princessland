@@ -279,8 +279,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edc04a256fd79408d9a584a329dbb9bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::HouseFixture
-  prompt: Wash your hands
-  message: You wash your hands. Now they're all wet.
+  prompt: Rinse your hands
+  message: You rinse off the bubbles. Now your hands are all wet.
   effect: 2
   sound: {fileID: 8300000, guid: 74bfc32a122894e7194ecce884de31d5, type: 3}
   standPrompt: Flush and stand up
@@ -288,5 +288,18 @@ MonoBehaviour:
   standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
+  soapPrompt: Pump the soap
+  soapMessage: Squish! Lavender soap. Rub-a-dub-dub, all the way round your fingers. Now rinse!
+  soapSound: {fileID: 8300000, guid: a3dbf6a523ba24a27a919206a3528798, type: 3}
+  bubbleItem: {fileID: 0}
+  bubbles: {fileID: 0}
+  bubbleMessage: 
+  bubbleSound: {fileID: 0}
   lamp: {fileID: 0}
   offPrompt: Turn the lamp on
+  stream: {fileID: 0}
+  offMessage: 
+  dryMessage: 
+  gift: {fileID: 0}
+  haveOneMessage: You already have one.
+  bagFullMessage: Your bag is full!

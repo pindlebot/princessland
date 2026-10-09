@@ -22,6 +22,9 @@ public class Mana : MonoBehaviour
 
     public void Refill() => Current = max;
 
+    // Gives some back at once (eating something), never past the max.
+    public void Restore(float amount) => Current = Mathf.Min(max, Current + amount);
+
     public void SetMax(float newMax)
     {
         max = Mathf.Max(1f, newMax);

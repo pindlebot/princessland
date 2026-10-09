@@ -37,6 +37,48 @@
       "frames": 2,
       "fps": 3,
       "loop": true
+    },
+    {
+      "name": "Egg",
+      "row": 5,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Flour",
+      "row": 6,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Strawberry",
+      "row": 7,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Pancakes",
+      "row": 8,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "AppleCider",
+      "row": 9,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "PumpkinHat",
+      "row": 10,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
     }
   ]
 }

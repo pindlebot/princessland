@@ -65,6 +65,10 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    // How loud effects are right now (the pause menu's sound setting), for sounds that play
+    // from their own AudioSource, like a looping faucet (AmbientLoop).
+    public static float EffectsVolume => Instance != null ? Instance.effectsVolume * GameSession.Settings.Sound01 : 0f;
+
     // Safe to call from anywhere: does nothing if the clip isn't set or there's no manager.
     public static void Play(AudioClip clip, float volume = 1f)
     {

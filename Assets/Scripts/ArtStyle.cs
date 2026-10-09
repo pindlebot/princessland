@@ -36,4 +36,5 @@ public static class ArtStyle
     // Around the floating island: a soft, slightly warm sky (palette.SKY).
     public static readonly Color Sky = new Color32(176, 212, 228, 255);
     public static readonly Color Night = new Color(0.03f, 0.03f, 0.05f);
+    public static readonly Color DuskSky = new Color32(92, 70, 112, 255); // Hollow Farm: violet, going dark
 }

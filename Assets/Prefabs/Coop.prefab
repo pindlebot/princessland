@@ -221,6 +221,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1307584727501540811}
   - component: {fileID: 2523866769337796331}
+  - component: {fileID: 8806738617161136033}
   m_Layer: 0
   m_Name: Coop
   m_TagString: Untagged
@@ -266,3 +267,39 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.2, y: 1.6, z: 1.6}
   m_Center: {x: 0, y: 0.8, z: 0}
+--- !u!114 &8806738617161136033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6994033414501101751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc04a256fd79408d9a584a329dbb9bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::HouseFixture
+  prompt: Look in the nest box
+  message: 'You find a warm brown egg in the straw. Thank you, hens! | A hen clucks proudly at you. She''s laid another egg! | Tucked in the straw: one perfect egg. You carry it very, very carefully.'
+  effect: 7
+  sound: {fileID: 8300000, guid: 7bc117296c8fd42ca8aa2af3282a5d1d, type: 3}
+  standPrompt: Flush and stand up
+  standMessage: 
+  standSound: {fileID: 0}
+  seatHeight: 0.85
+  seatForward: 0.35
+  soapPrompt: 
+  soapMessage: 
+  soapSound: {fileID: 0}
+  bubbleItem: {fileID: 0}
+  bubbles: {fileID: 0}
+  bubbleMessage: 
+  bubbleSound: {fileID: 0}
+  lamp: {fileID: 0}
+  offPrompt: Turn the lamp on
+  stream: {fileID: 0}
+  offMessage: 
+  dryMessage: 
+  gift: {fileID: 11400000, guid: ac6c9b9559a9a429681277d894f2f668, type: 2}
+  haveOneMessage: You've already got an egg. Let the hens have a rest!
+  bagFullMessage: Your bag is full! Eat something, or make a little room.

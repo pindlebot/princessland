@@ -206,8 +206,21 @@ MonoBehaviour:
   standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
+  soapPrompt: 
+  soapMessage: 
+  soapSound: {fileID: 0}
+  bubbleItem: {fileID: 0}
+  bubbles: {fileID: 0}
+  bubbleMessage: 
+  bubbleSound: {fileID: 0}
   lamp: {fileID: 0}
   offPrompt: Turn the lamp on
+  stream: {fileID: 0}
+  offMessage: 
+  dryMessage: 
+  gift: {fileID: 0}
+  haveOneMessage: You already have one.
+  bagFullMessage: Your bag is full!
 --- !u!1 &6279217162158655361
 GameObject:
   m_ObjectHideFlags: 0

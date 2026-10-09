@@ -91,6 +91,7 @@ public static class CharacterSpriteBuilder
         ctrl.AddParameter("Hurt", AnimatorControllerParameterType.Trigger);
         ctrl.AddParameter("Dead", AnimatorControllerParameterType.Bool);
         ctrl.AddParameter("Sitting", AnimatorControllerParameterType.Bool); // only heroes have a Sit clip
+        ctrl.AddParameter("Bathing", AnimatorControllerParameterType.Bool); // ...and a Bathe clip
 
         var sm = ctrl.layers[0].stateMachine;
 
@@ -139,22 +140,27 @@ public static class CharacterSpriteBuilder
         // Sitting (the heroes, on the toilet at home): held for as long as Sitting is set.
         // Hurt or Action can still interrupt it; they return to Idle, and from there this
         // Any State transition sits the hero straight back down.
-        AnimatorState sit = null;
-        if (clips.TryGetValue("Sit", out var sitClip))
+        // Bathing (the tub at home) works the same way on its own bool.
+        AnimatorState Held(string name, string flag)
         {
-            sit = sm.AddState("Sit");
-            sit.motion = sitClip;
-            var toSit = Instant(sm.AddAnyStateTransition(sit));
-            toSit.AddCondition(AnimatorConditionMode.If, 0f, "Sitting");
-            toSit.AddCondition(AnimatorConditionMode.IfNot, 0f, "Dead");
-            toSit.canTransitionToSelf = false;
-            Instant(sit.AddTransition(idle)).AddCondition(AnimatorConditionMode.IfNot, 0f, "Sitting");
+            if (!clips.TryGetValue(name, out var clip)) return null;
+            var state = sm.AddState(name);
+            state.motion = clip;
+            var into = Instant(sm.AddAnyStateTransition(state));
+            into.AddCondition(AnimatorConditionMode.If, 0f, flag);
+            into.AddCondition(AnimatorConditionMode.IfNot, 0f, "Dead");
+            into.canTransitionToSelf = false;
+            Instant(state.AddTransition(idle)).AddCondition(AnimatorConditionMode.IfNot, 0f, flag);
+            return state;
         }
+        var sit = Held("Sit", "Sitting");
+        var bathe = Held("Bathe", "Bathing");
 
         // Lay the graph out readably for the Animator window.
         Place(sm, idle, 300, 0); Place(sm, walk, 560, 0);
         Place(sm, act, 300, 140); Place(sm, hurt, 560, 140); Place(sm, die, 300, -140);
         if (sit != null) Place(sm, sit, 560, -140);
+        if (bathe != null) Place(sm, bathe, 820, -140);
         sm.anyStatePosition = new Vector3(40, 140);
         sm.entryPosition = new Vector3(40, 0);
 

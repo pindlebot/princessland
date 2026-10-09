@@ -322,7 +322,7 @@ MonoBehaviour:
     - heroSpeaks: 1
       text: What does it do?
     - heroSpeaks: 0
-      text: Do? Why, nothing at all! It just smells wonderful. Ten coins a bottle, whenever you like, {hero}.
+      text: Pour a bottle into a warm bath and you'll see! Bubbles up to your nose! Ten coins a bottle, whenever you like, {hero}.
   talkOffset: {x: 0, y: 0, z: -1}
   flipbook: {fileID: 9007086452824870593}
   idleFrames:
