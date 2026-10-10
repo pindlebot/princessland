@@ -80,52 +80,70 @@
             <ui:Label name="objective-hint" class="objective-hint" text="" />
         </ui:VisualElement>
 
-        <!-- Inventory (press I), on the left under the status card -->
+        <!-- Inventory (press I), on the left under the status card. On the left, the hero as a paper doll with
+             each worn slot sitting on the part of the body it dresses (HudController finds each by name:
+             equip-<slot>); on the right, the stats, the bag and the treasures. What an item is and does shows in the
+             floating tooltip (item-tooltip), not down here. -->
         <ui:VisualElement name="inventory" class="panel inventory">
             <ui:VisualElement class="inventory-header" picking-mode="Ignore">
                 <ui:Label class="inventory-title" text="Inventory" />
                 <ui:Label class="inventory-close" text="I: close" />
             </ui:VisualElement>
-            <!-- What the hero is wearing. HudController finds each slot by name: equip-<slot>. -->
-            <ui:Label class="section-label" text="Wearing" />
-            <ui:VisualElement class="equip-row" picking-mode="Ignore">
-                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
-                    <ui:VisualElement name="equip-weapon" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                    <ui:Label class="equip-label" text="Weapon" picking-mode="Ignore" />
+            <ui:VisualElement class="inventory-body" picking-mode="Ignore">
+                <ui:VisualElement name="doll" class="doll" picking-mode="Ignore">
+                    <ui:VisualElement name="doll-figure" class="doll-figure" picking-mode="Ignore" />
+                <ui:VisualElement name="equip-hat" class="slot inv-slot equip-slot doll-slot doll-hat"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="equip-helm" class="slot inv-slot equip-slot doll-slot doll-helm"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="equip-charm" class="slot inv-slot equip-slot doll-slot doll-charm"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="equip-armor" class="slot inv-slot equip-slot doll-slot doll-armor"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="equip-weapon" class="slot inv-slot equip-slot doll-slot doll-weapon"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="equip-ring" class="slot inv-slot equip-slot doll-slot doll-ring"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                <ui:VisualElement name="equip-boots" class="slot inv-slot equip-slot doll-slot doll-boots"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
-                    <ui:VisualElement name="equip-helm" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                    <ui:Label class="equip-label" text="Helm" picking-mode="Ignore" />
-                </ui:VisualElement>
-                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
-                    <ui:VisualElement name="equip-armor" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                    <ui:Label class="equip-label" text="Armor" picking-mode="Ignore" />
-                </ui:VisualElement>
-                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
-                    <ui:VisualElement name="equip-boots" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                    <ui:Label class="equip-label" text="Boots" picking-mode="Ignore" />
-                </ui:VisualElement>
-                <ui:VisualElement class="equip-cell" picking-mode="Ignore">
-                    <ui:VisualElement name="equip-ring" class="slot inv-slot equip-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                    <ui:Label class="equip-label" text="Ring" picking-mode="Ignore" />
+                <ui:VisualElement class="inventory-side" picking-mode="Ignore">
+                    <ui:VisualElement class="equip-info" picking-mode="Ignore">
+                        <ui:Label name="stat-damage" class="stat-line" text="Fireball damage: 1" />
+                        <ui:Label name="stat-gear" class="stat-line gear" text="" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="tab-row" picking-mode="Ignore">
+                        <ui:Label name="tab-bag" class="tab active" text="Bag" />
+                        <ui:Label name="tab-treasures" class="tab" text="Treasures" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="bag" class="bag" picking-mode="Ignore">
+                    <ui:VisualElement name="bag-0" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="bag-1" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="bag-2" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="bag-3" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="bag-4" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="bag-5" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="bag-6" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="bag-7" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    </ui:VisualElement>
+                    <!-- The treasures tab: key items (abilities, lanterns, gems), shown instead of the bag -->
+                    <ui:VisualElement name="treasures" class="bag" picking-mode="Ignore">
+                    <ui:VisualElement name="key-0" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="key-1" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="key-2" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="key-3" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="key-4" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="key-5" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="key-6" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="key-7" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="key-8" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    <ui:VisualElement name="key-9" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label name="item-details" class="item-details" text="" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement class="equip-info" picking-mode="Ignore">
-                <ui:Label name="stat-damage" class="stat-line" text="Fireball damage: 1" />
-                <ui:Label name="stat-gear" class="stat-line gear" text="" />
-            </ui:VisualElement>
-            <ui:Label class="section-label" text="Bag" />
-            <ui:VisualElement class="bag" picking-mode="Ignore">
-                <ui:VisualElement name="bag-0" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                <ui:VisualElement name="bag-1" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                <ui:VisualElement name="bag-2" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                <ui:VisualElement name="bag-3" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                <ui:VisualElement name="bag-4" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                <ui:VisualElement name="bag-5" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                <ui:VisualElement name="bag-6" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-                <ui:VisualElement name="bag-7" class="slot inv-slot"><ui:VisualElement class="slot-icon" picking-mode="Ignore" /></ui:VisualElement>
-            </ui:VisualElement>
-            <ui:Label name="item-details" class="item-details" text="" />
+        </ui:VisualElement>
+
+        <!-- The item tooltip: follows the pointer over any item slot (HudController.ShowTip) -->
+        <ui:VisualElement name="item-tooltip" class="panel item-tooltip" picking-mode="Ignore">
+            <ui:Label name="tip-name" class="tip-name" text="" picking-mode="Ignore" />
+            <ui:Label name="tip-kind" class="tip-kind" text="" picking-mode="Ignore" />
+            <ui:Label name="tip-desc" class="tip-desc" text="" picking-mode="Ignore" />
+            <ui:Label name="tip-stats" class="tip-stats" text="" picking-mode="Ignore" />
+            <ui:Label name="tip-action" class="tip-action" text="" picking-mode="Ignore" />
         </ui:VisualElement>
 
         <!-- Skill tree (press K). SkillTreeView builds the hero's path of nodes from SkillCatalog. -->
@@ -138,6 +156,43 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="skill-branches" class="skill-branches" picking-mode="Ignore" />
                 <ui:Label name="skill-details" class="item-details skill-details" text="" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Quest log (press J). QuestLogView builds one card per quest from QuestCatalog. -->
+        <ui:VisualElement class="centered-row quests-row" picking-mode="Ignore">
+            <ui:VisualElement name="quests" class="panel quests">
+                <ui:VisualElement class="inventory-header" picking-mode="Ignore">
+                    <ui:Label class="inventory-title" text="Quests" />
+                    <ui:Label class="inventory-close" text="J: close" />
+                </ui:VisualElement>
+                <ui:Label name="quest-empty" class="item-details quest-empty" text="" picking-mode="Ignore" />
+                <ui:VisualElement name="quest-list" class="quest-list" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- The world map (press M): WorldMapView paints the rooms you've visited into the canvas. -->
+        <ui:VisualElement class="centered-row worldmap-row" picking-mode="Ignore">
+            <ui:VisualElement name="worldmap" class="panel worldmap">
+                <ui:VisualElement class="inventory-header" picking-mode="Ignore">
+                    <ui:Label class="inventory-title" text="World map" />
+                    <ui:Label class="inventory-close" text="M: close" />
+                </ui:VisualElement>
+                <ui:VisualElement name="world-canvas" class="world-canvas" picking-mode="Ignore" />
+                <ui:Label name="world-legend" class="item-details" text="" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Fountains (press T beside one): rest and save, or travel to another fountain you've touched.
+             FountainTravelView builds the rows. -->
+        <ui:VisualElement class="centered-row fountain-row" picking-mode="Ignore">
+            <ui:VisualElement name="fountain-menu" class="panel panel-star fountain-menu">
+                <ui:VisualElement class="inventory-header" picking-mode="Ignore">
+                    <ui:Label class="inventory-title" text="Fountain" />
+                    <ui:Label name="fountain-close" class="inventory-close fountain-close" text="Esc / B: close" />
+                </ui:VisualElement>
+                <ui:VisualElement name="fountain-list" class="fountain-list" />
+                <ui:Label name="fountain-message" class="item-details" text="" picking-mode="Ignore" />
             </ui:VisualElement>
         </ui:VisualElement>
 
@@ -164,7 +219,9 @@
                 <ui:Label class="help-line" text="Space, Click or X:  magic! (it aims by itself)" />
                 <ui:Label class="help-line" text="Q or LB,  F or LT:  abilities from the skill path" />
                 <ui:Label class="help-line" text="E or A:  open, talk, pick up" />
-                <ui:Label class="help-line" text="I or Y:  bag      K or View:  skills      M:  music" />
+                <ui:Label class="help-line" text="I or Y:  bag      K or View:  skills      J or R3:  quests" />
+                <ui:Label class="help-line" text="2 3 4 5 or right stick:  eat from the hotbar      T or L3:  fountain" />
+                <ui:Label class="help-line" text="M:  world map (also in the pause menu)" />
                 <ui:Label class="help-line" text="H or RB:  this help      R:  try again" />
                 <ui:Label class="help-line" text="Esc or Start:  pause menu" />
             </ui:VisualElement>
@@ -200,6 +257,35 @@
                         <ui:Label class="slot-cost" text="30" picking-mode="Ignore" />
                     </ui:VisualElement>
                     <ui:Label class="spell-key" text="F" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <!-- Consumables from the bag, on keys 2-5: hidden until something is on the slot -->
+                <ui:VisualElement name="quick-0" class="hotbar-item future-slot" picking-mode="Ignore">
+                    <ui:VisualElement name="quick-slot-0" class="slot ability-slot quick-slot">
+                        <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
+                        <ui:Label class="slot-cost" text="1" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label class="spell-key" text="2" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="quick-1" class="hotbar-item future-slot" picking-mode="Ignore">
+                    <ui:VisualElement name="quick-slot-1" class="slot ability-slot quick-slot">
+                        <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
+                        <ui:Label class="slot-cost" text="1" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label class="spell-key" text="3" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="quick-2" class="hotbar-item future-slot" picking-mode="Ignore">
+                    <ui:VisualElement name="quick-slot-2" class="slot ability-slot quick-slot">
+                        <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
+                        <ui:Label class="slot-cost" text="1" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label class="spell-key" text="4" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="quick-3" class="hotbar-item future-slot" picking-mode="Ignore">
+                    <ui:VisualElement name="quick-slot-3" class="slot ability-slot quick-slot">
+                        <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
+                        <ui:Label class="slot-cost" text="1" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label class="spell-key" text="5" picking-mode="Ignore" />
                 </ui:VisualElement>
             </ui:VisualElement>
 
@@ -271,6 +357,7 @@
                     <ui:Button class="pause-more" text="&gt;" />
                 </ui:VisualElement>
                 <ui:Label name="pause-mode-description" class="pause-description" />
+                <ui:Button name="pause-map" class="pause-row pause-button" text="World map" />
                 <ui:Button name="pause-quit" class="pause-row pause-button" text="Save and go to title" />
                 <ui:Button name="pause-exit" class="pause-row pause-button" text="Save and quit game" />
             </ui:VisualElement>

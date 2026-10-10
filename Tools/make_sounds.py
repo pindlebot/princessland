@@ -422,6 +422,22 @@ def meow():  # Whiskers: a little "mrrow?", rising then falling, with a purry bu
     return mix([x * 0.6 for x in place(list(rise), voice, 0.1)], [x * 0.25 for x in purr])
 
 
+def baby_giggle():  # the baby mermaid in her crib: a bubbly little "hee-hee-hee", rising each time, then a coo
+    out = []
+    for k, pitch in enumerate((760, 860, 980)):
+        hee = envelope(tone(pitch, 0.09, "sine", freq_end=pitch * 1.25, vibrato=0.05), attack=0.01, curve=1.6)
+        place(out, [x * 0.55 for x in hee], k * 0.12)
+    coo = envelope(lowpass(tone(540, 0.3, "triangle", freq_end=640, vibrato=0.1), 1600), attack=0.06, curve=1.5)
+    return place(out, [x * 0.45 for x in coo], 0.42)
+
+
+def cannon():  # a ship's cannon: a flat crack, then a deep boom rolling away over the sea
+    crack = envelope(highpass(noise(0.08, seed=61), 1500), attack=0.002, curve=3)
+    boom = envelope(tone(110, 0.7, "sine", freq_end=38), attack=0.004, curve=1.8)
+    roll = envelope(lowpass(noise(0.7, seed=62), 700, 150), attack=0.01, curve=1.6)
+    return mix(mix(crack, boom), [x * 0.6 for x in roll])
+
+
 def purchase():  # buying something: a cheerful coin "ding" and three bubbles popping upward
     out = list(coin())
     for k, f in enumerate((900, 1200, 1500)):
@@ -529,6 +545,119 @@ def oars():  # climbing into the rowboat: a wooden knock, then two oar splashes
     for k in range(2):
         place(out, [s * 0.5 for s in envelope(highpass(noise(0.22, seed=24 + k), 700), attack=0.03, curve=2)], 0.2 + k * 0.35)
     return out
+
+
+def fountain_touch():  # a fountain remembering you: a rippling glissando of bright bubbles
+    out = []
+    for k, note in enumerate(["C6", "E6", "G6", "C7", "E7"]):
+        place(out, [x * 0.45 for x in envelope(tone(midi(n(note)), 0.35, "sine", vibrato=0.01), curve=2.2)], k * 0.07)
+    splash = envelope(highpass(noise(0.4, seed=110), 1500), attack=0.02, curve=2)
+    return mix(out, [x * 0.25 for x in splash])
+
+
+def pot_break():  # a clay pot smashing: a hard crack, then tinkling shards
+    crack = envelope(highpass(noise(0.1, seed=111), 1200), attack=0.002, curve=3)
+    thud = envelope(lowpass(tone(190, 0.12, "triangle", freq_end=110), 700), curve=2.5)
+    out = mix(crack, [x * 0.7 for x in thud])
+    rng = random.Random(112)
+    for k in range(6):
+        f = rng.uniform(1600, 3200)
+        place(out, [x * 0.22 for x in envelope(tone(f, 0.05, "triangle", freq_end=f * 0.8), curve=2.5)], 0.06 + k * 0.045)
+    return out
+
+
+def tree_wake():  # a sleepy tree waking up: a creaky yawn that rises into a happy rustle
+    yawn = envelope(lowpass(tone(120, 0.55, "saw", freq_end=260, vibrato=0.1), 900), attack=0.08, curve=1.3)
+    leaves = envelope(highpass(lowpass(noise(0.5, seed=113), 5000), 1800), attack=0.15, curve=1.4)
+    chime = arpeggio(["E5", "G5", "C6"], 0.09, 0.3, "triangle", 0.35)
+    out = mix([x * 0.55 for x in yawn], [x * 0.3 for x in leaves])
+    return place(out, chime, 0.4)
+
+
+def spore_puff():  # a Spore Puff: a soft, muffled "pfff" with a little pop
+    puff = envelope(lowpass(noise(0.3, seed=114), 1800, 500), attack=0.03, curve=1.6)
+    pop = envelope(tone(300, 0.1, "sine", freq_end=150), curve=3)
+    return mix(puff, [x * 0.5 for x in pop])
+
+
+def spore_hit():  # a squishy mushroom "boing"
+    return mix(envelope(tone(260, 0.18, "sine", freq_end=420, vibrato=0.1), attack=0.01, curve=2),
+               [x * 0.4 for x in envelope(lowpass(noise(0.12, seed=115), 1500), curve=3)])
+
+
+def voice_moss():  # Old Moss: a slow, mossy, creaky hum, like an old tree that has just woken up
+    hum = envelope(lowpass(tone(130, 0.07, "triangle", freq_end=115, vibrato=0.04), 800), attack=0.006, curve=1.5)
+    creak = envelope(lowpass(tone(90, 0.07, "saw", freq_end=105), 500), attack=0.004, curve=2)
+    return mix(hum, [x * 0.3 for x in creak])
+
+
+def lantern_get():  # the Fairy Lantern: a twinkling, rising fairy-dust fanfare
+    out = arpeggio(["E5", "G5", "B5", "E6", "G6", "B6"], 0.09, 0.4, "triangle", 0.5)
+    return place(out, [x * 0.5 for x in envelope(tone(midi(n("E7")), 0.9, "sine", vibrato=0.01), curve=1.5)], 0.5)
+
+
+def quest_new():  # a quest starting: two bright notes, up
+    return place([x * 0.5 for x in envelope(tone(midi(n("G5")), 0.14, "triangle"), curve=2)],
+                 [x * 0.6 for x in envelope(tone(midi(n("D6")), 0.35, "triangle"), curve=2)], 0.1)
+
+
+def quest_done():  # a quest finished: a little three-note fanfare
+    out = arpeggio(["C6", "E6", "G6"], 0.09, 0.3, "triangle", 0.5)
+    return place(out, [x * 0.6 for x in envelope(tone(midi(n("C7")), 0.6, "sine"), curve=1.6)], 0.28)
+
+
+
+# ---------- Gates and abilities ----------
+
+def hop():  # the Bouncy Boots: a springy "boing" that rises
+    spring = envelope(tone(190, 0.28, "sine", freq_end=520, vibrato=0.06), attack=0.01, curve=1.6)
+    squeak = envelope(tone(900, 0.12, "triangle", freq_end=1500), attack=0.005, curve=3)
+    return mix(spring, [x * 0.3 for x in squeak])
+
+
+def hop_land():  # landing: a soft thud and a little rubbery wobble
+    thud = envelope(lowpass(tone(110, 0.16, "sine", freq_end=70), 500), attack=0.004, curve=2.5)
+    wobble = envelope(tone(300, 0.2, "sine", freq_end=200, vibrato=0.12), attack=0.01, curve=2.5)
+    return mix(thud, [x * 0.45 for x in wobble])
+
+
+def bramble_burn():  # a bramble catching fire: a crackle and a whoosh
+    whoosh = envelope(lowpass(noise(0.5, seed=120), 4500, 900), attack=0.04, curve=1.4)
+    crackle = envelope(highpass(noise(0.45, seed=121), 2500), attack=0.01, curve=2.2)
+    return mix([x * 0.7 for x in whoosh], [x * 0.5 for x in crackle])
+
+
+def bramble_bloom():  # a bramble blooming: a rustle of leaves and a rising, bell-like chime
+    leaves = envelope(highpass(lowpass(noise(0.4, seed=122), 5000), 1800), attack=0.1, curve=1.5)
+    chime = arpeggio(["G5", "B5", "D6", "G6"], 0.08, 0.35, "triangle", 0.4)
+    return place([x * 0.4 for x in leaves], chime, 0.12)
+
+
+def brazier_light():  # a brazier lighting: a soft "fwoomp" and a warm glow
+    fwoomp = envelope(lowpass(tone(140, 0.4, "saw", freq_end=70), 700), attack=0.03, curve=1.5)
+    hiss = envelope(lowpass(noise(0.35, seed=123), 3000, 800), attack=0.05, curve=1.6)
+    return mix([x * 0.7 for x in fwoomp], [x * 0.4 for x in hiss])
+
+
+def hint():  # a gate she can't open yet: a soft, curious two-note "hm?"
+    return place([x * 0.5 for x in envelope(tone(midi(n("E5")), 0.12, "triangle"), curve=2)],
+                 [x * 0.5 for x in envelope(tone(midi(n("G5")), 0.2, "triangle", freq_end=midi(n("A5"))), curve=2)], 0.1)
+
+
+def amethyst_get():  # the Amethyst: a deep, glowing chord that swells and shimmers
+    out = []
+    for k, note in enumerate(["C4", "G4", "E5", "C6"]):
+        place(out, [x * 0.4 for x in envelope(tone(midi(n(note)), 1.4, "sine", vibrato=0.01), attack=0.15, curve=1.2)], k * 0.12)
+    return place(out, arpeggio(["E6", "G6", "C7", "E7"], 0.1, 0.5, "triangle", 0.4), 0.7)
+
+
+def secret_found():  # a hidden passage: a sneaky, rising little arpeggio
+    return arpeggio(["A4", "C5", "E5", "A5", "C6"], 0.07, 0.4, "triangle", 0.45)
+
+
+def color_return():  # colour flooding back: a long, rising harp-like run
+    out = arpeggio(["C5", "E5", "G5", "C6", "E6", "G6", "C7"], 0.11, 0.6, "triangle", 0.45)
+    return place(out, [x * 0.35 for x in envelope(tone(midi(n("C5")), 1.5, "sine"), attack=0.3, curve=1.3)], 0.0)
 
 
 # ---------- Music ----------
@@ -680,6 +809,35 @@ def cove_theme():
     return out[:total]
 
 
+def woods_theme():
+    """Whispering Woods: a dreamy, flute-y 6/8 in G major, 96 bpm, 8 bars: G - Em - C - D, twice,
+    over a rocking bass, with a few high bird twitters. (An eighth note is `beat`; six to a bar.)"""
+    beat = 60 / 96 / 3
+    melody = [
+        ("B4", 2), ("D5", 1), ("G5", 3),                         # G
+        ("E5", 2), ("G5", 1), ("B5", 2), ("A5", 1),              # Em
+        ("G5", 2), ("E5", 1), ("C5", 3),                         # C
+        ("D5", 2), ("F#5", 1), ("A5", 3),                        # D
+        ("B5", 2), ("A5", 1), ("G5", 2), ("D5", 1),              # G
+        ("E5", 3), ("G5", 2), ("B4", 1),                         # Em
+        ("C5", 2), ("E5", 1), ("G5", 2), ("E5", 1),              # C
+        ("D5", 3), ("G4", 3),                                    # D -> home
+    ]
+    bass = []
+    for root, fifth in [("G2", "D3"), ("E2", "B2"), ("C3", "G3"), ("D3", "A3")] * 2:
+        bass += [(root, 3), (fifth, 3)]
+    eighths = 48
+    out = mix(render_part(melody, beat, "triangle", 0.5, gap=0.9),
+              render_part(bass, beat, "sine", 0.5, gap=0.85))
+    rng = random.Random(116)
+    for b in range(2, eighths, 7):  # now and then a bird twitters high above
+        for k in range(rng.randint(2, 3)):
+            f = rng.uniform(2200, 3200)
+            place(out, [x * 0.07 for x in envelope(tone(f, 0.05, "sine", freq_end=f * 1.3), curve=2)],
+                  (b + rng.uniform(0, 1)) * beat + k * 0.07)
+    return out[: int(eighths * beat * RATE)]
+
+
 SOUNDS = {
     "ribbit": ribbit, "plink": plink, "wish": wish, "voice_mermaid": voice_mermaid,
     "voice_bonesy": voice_bonesy, "door_locked": door_locked,
@@ -701,6 +859,12 @@ SOUNDS = {
     "splash": splash, "soap": soap, "meow": meow, "bubbles": bubbles,
     "caw": caw, "ghost_ooo": ghost_ooo, "voice_stitches": voice_stitches,
     "cook": cook, "faucet": faucet, "tap_turn": tap_turn, "munch": munch,
+    "baby_giggle": baby_giggle, "cannon": cannon,
+    "fountain_touch": fountain_touch, "pot_break": pot_break, "tree_wake": tree_wake, "spore_puff": spore_puff,
+    "spore_hit": spore_hit, "voice_moss": voice_moss, "lantern_get": lantern_get,
+    "quest_new": quest_new, "quest_done": quest_done,
+    "hop": hop, "hop_land": hop_land, "bramble_burn": bramble_burn, "bramble_bloom": bramble_bloom,
+    "brazier_light": brazier_light, "hint": hint, "secret_found": secret_found, "amethyst_get": amethyst_get, "color_return": color_return,
 }
 
 if __name__ == "__main__":
@@ -711,6 +875,7 @@ if __name__ == "__main__":
     save("music_home", home_theme(), peak=0.65)
     save("music_cove", cove_theme(), peak=0.65)
     save("music_farm", farm_theme(), peak=0.65)
+    save("music_woods", woods_theme(), peak=0.65)
     for f in sorted(OUT.glob("*.wav")):
         with wave.open(str(f)) as w:
             print(f"{f.name:20} {w.getnframes() / w.getframerate():5.2f}s")

@@ -1,0 +1,43 @@
+// Whispering Woods, room 4 of 4: Mother Mushroom's Grove. The west opening (1) goes back to the Spore Meadow.
+// Mother Mushroom (M) guards the grove: she slams the ground (stay out of the red circle), blows a fan of spores,
+// and puffs out Spore Puffs when she's hurt. Beat her, and the Fairy Lantern (5) appears where she stood.
+// Giant mushrooms (9) stand about; the pots (4) hold coins.
+title: Whispering Woods: Mother Mushroom's Grove
+theme: Outdoor
+music: music_woods
+mood: woods
+region: woods
+monsters: E=sporepuff M=mothermushroom
+minimap_floor: #6E9A5E
+minimap_wall: #4E7A50
+world: -130 5
+---
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+H...,.t.e..........,........t.;..i.H
+H..........,........t........e.....H
+H.,..i...t,....t..,..........t,....H
+H....,...,..........,..,t..........H
+H.ti.e;,.....e....9....tet,,.....4.H
+H.....,..9........,..........9..,..H
+Hi........,....t....,.,.....,,.....H
+H....,,,..,.............e........i.H
+H.....4................e......t....H
+H...,,..................,,,..,.....H
+H.,......,.........,....,...,......H
+1==P===========4======..,M,..,.5..,H
+H...,..........,,..............,,..H
+H................,..,,...........,eH
+H.....4,..t.........;...t.....,.t..H
+Ht...........t.........,..e........H
+H..........,i;......,.,............H
+H....,...9...................9..,..H
+Ht.t......,....;..9,.....e....,.,.iH
+H..t............,......,.ti.....,..H
+H...e.t..;i..te....,......t,.......H
+H..i...t.;.e.......et...t..i...t.,tH
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Woods2
+4 = prop pot
+5 = item fairy_lantern hidden
+9 = prop giantmushroom

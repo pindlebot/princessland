@@ -91,6 +91,27 @@ public class MapFileTests
         StringAssert.Contains("no floor next to it", Only(Map("A", "HHH\nH1H\nHHH\nH.P", "1 = door A FromA\nx = spawn FromA")));
     }
 
+    [Test]
+    public void MonstersHeaderChoosesWhatTheMarkersMean()
+    {
+        string Only(MapFile m) => string.Join(" | ", MapValidator.Validate(new[] { m }));
+        var plain = Map("A", "H.PEH", "");
+        Assert.AreEqual("skeleton", plain.MonsterFor('E'));
+        Assert.AreEqual("slime", plain.MonsterFor('L'));
+        Assert.AreEqual("pirate", plain.MonsterFor('J'));
+        Assert.AreEqual("slimeking", plain.MonsterFor('M'));
+
+        var farm = Map("A", "H.PEH", "", "title: T\ntheme: Outdoor\nmonsters: E=gourdling  M=PumpkinKing");
+        Assert.AreEqual("gourdling", farm.MonsterFor('E'));
+        Assert.AreEqual("pumpkinking", farm.MonsterFor('M'), "ids aren't case-sensitive");
+        Assert.AreEqual("slime", farm.MonsterFor('L'), "markers it doesn't mention keep their meaning");
+        Assert.IsEmpty(Only(farm));
+
+        StringAssert.Contains("no monster 'dragonfly'", Only(Map("A", "H.PEH", "", "title: T\ntheme: Outdoor\nmonsters: E=dragonfly")));
+        StringAssert.Contains("the marker must be one of", Only(Map("A", "H.PEH", "", "title: T\ntheme: Outdoor\nmonsters: Q=slime")));
+        StringAssert.Contains("the marker must be one of", Only(Map("A", "H.PEH", "", "title: T\ntheme: Outdoor\nmonsters: gourdling")));
+    }
+
     [UnityTest]
     public IEnumerator DoorsInTheBuiltScenesMatchTheFiles()
     {

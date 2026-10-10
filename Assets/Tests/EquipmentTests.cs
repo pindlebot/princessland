@@ -54,8 +54,10 @@ public class EquipmentTests
             foreach (var pickup in Object.FindObjectsByType<ItemPickup>())
                 slots[pickup.Item.Slot] = $"{pickup.Item.DisplayName} ({scene})";
         }
+        // The Hat (the toilet frog's, after ten flushes) and the Charm (Old Moss's thank-you) are given, not found
+        // lying about: WoodsAndSystemsTests checks both.
         foreach (EquipSlot slot in System.Enum.GetValues(typeof(EquipSlot)))
-            if (slot != EquipSlot.None)
+            if (slot != EquipSlot.None && slot != EquipSlot.Hat && slot != EquipSlot.Charm)
                 Assert.IsTrue(slots.ContainsKey(slot), $"no {slot} anywhere; found {string.Join(", ", slots.Values)}");
     }
 

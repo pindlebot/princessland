@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 
 // Where an item is worn. Saves store these as numbers, so add new slots at the end: never
 // reorder or remove one, or old saves would put their items in the wrong place.
-public enum EquipSlot { None, Ring, Helm, Armor, Weapon, Boots }
+public enum EquipSlot { None, Ring, Helm, Armor, Weapon, Boots, Hat, Charm }
 
 // What an item *is*: name, art and stats, saved as an asset (Assets/Items/*.asset).
 // A ScriptableObject is a data container that lives in the project rather than in a
@@ -20,6 +20,8 @@ public class ItemDefinition : ScriptableObject
     [TextArea] [SerializeField] private string description;
     [SerializeField] private Sprite icon;
     [SerializeField] private EquipSlot slot = EquipSlot.None;
+    [Tooltip("A treasure: it goes in the treasures tab (no bag room needed) and can't be lost or dropped.")]
+    [SerializeField] private bool keyItem;
 
     [Header("Bonuses while equipped")]
     // FormerlySerializedAs: this field used to be called fireballDamageBonus. The attribute
@@ -47,6 +49,7 @@ public class ItemDefinition : ScriptableObject
     public Sprite Icon => icon;
     public EquipSlot Slot => slot;
     public bool IsEquippable => slot != EquipSlot.None;
+    public bool IsKeyItem => keyItem;
     public int SpellDamageBonus => spellDamageBonus;
     public int MaxHealthBonus => maxHealthBonus;
     public int MaxManaBonus => maxManaBonus;
@@ -55,6 +58,7 @@ public class ItemDefinition : ScriptableObject
     public int HealthRestore => healthRestore;
     public int ManaRestore => manaRestore;
     public bool IsFood => healthRestore > 0 || manaRestore > 0;
+    public bool IsConsumable => IsFood; // can sit on a quick slot (hotbar 2-5)
 
     // "+3 hearts, +50 magic", like the numbers under a recipe card in Stardew Valley.
     public string FoodText
@@ -67,6 +71,20 @@ public class ItemDefinition : ScriptableObject
             return string.Join(", ", parts);
         }
     }
+
+    // One line per thing it does, for the tooltip: "+1 spell damage", "+2 hearts", or what eating it gives back.
+    public string[] BonusLines
+    {
+        get
+        {
+            string text = BonusText.Length > 0 ? BonusText : IsFood ? FoodText : "";
+            return text.Length == 0 ? new string[0] : text.Split(new[] { ", " }, System.StringSplitOptions.RemoveEmptyEntries);
+        }
+    }
+
+    // "Helm", "Food", "Treasure": what sort of thing it is, for the tooltip.
+    public string KindText =>
+        IsEquippable ? Slot.ToString() : IsFood ? "Food" : IsKeyItem ? "Treasure" : "Item";
 
     // "+1 spell damage, +2 hearts", for the inventory's details line.
     public string BonusText

@@ -8,7 +8,7 @@ aquamarine orb. Same animation set as the wizard, so she gets the same state mac
 """
 from PIL import Image
 
-from sprite_common import CLEAR, F, Canvas, tint, write_sheet
+from sprite_common import CLEAR, F, Canvas, sleeping_quilt, tint, write_sheet, zzz
 
 GOWN, GOWN_SH, GOWN_HI = (64, 196, 180, 255), (34, 136, 134, 255), (132, 232, 214, 255)
 TRIM = (236, 248, 244, 255)
@@ -188,6 +188,34 @@ def draw_princess_bathing(frame):
     return c.img
 
 
+# ---------- Bedtime (the bed at home) ----------
+
+def draw_princess_sleeping(frame):
+    """Marina tucked up in bed: golden hair spread over the pillow either side of her face, her
+    tiara still on, eyes shut and cheeks pink. frame 1 breathes in, with the Zs drifting up."""
+    c = Canvas()
+    sleeping_quilt(c, frame)
+    c.rect(7, 4, 24, 5, HAIR)                                  # hair fanned across the pillow
+    c.rect(6, 6, 25, 11, HAIR)
+    c.rect(7, 12, 9, 15, HAIR)
+    c.rect(22, 12, 24, 15, HAIR)
+    for x in (8, 12, 19, 23):
+        c.rect(x, 7, x, 14, HAIR_SH)                           # strands
+    c.rect(11, 6, 20, 12, SKIN)                                # face
+    c.rect(11, 6, 20, 7, HAIR)                                 # fringe
+    c.rect(13, 3, 18, 3, GOLD)                                 # tiara
+    for x in (13, 18, 15, 16):
+        c.dot(x, 2, GOLD)
+    c.rect(15, 3, 16, 3, GEM)
+    for ex in (13, 17):                                        # eyes shut
+        c.rect(ex, 9, ex + 1, 9, EYE)
+    c.dot(12, 11, BLUSH)
+    c.dot(19, 11, BLUSH)
+    c.rect(22, 17, 24, 18, SKIN)                               # a hand resting on the quilt
+    zzz(c, frame)
+    return c.img
+
+
 def fallen(angle, darken=0.0):
     """Death frames: tip the hurt pose over around her feet, like the wizard."""
     big = Image.new("RGBA", (F * 3, F * 3), CLEAR)
@@ -222,6 +250,8 @@ def build_animations():
     anims.append(("Sit", 3, True, [draw_princess(sit=True), draw_princess(sit=True, kick=1)]))
     # Lying in the bath at home, in her swimsuit: front only.
     anims.append(("Bathe", 2, True, [draw_princess_bathing(0), draw_princess_bathing(1)]))
+    # Tucked up in bed at home: front only.
+    anims.append(("Sleep", 2, True, [draw_princess_sleeping(0), draw_princess_sleeping(1)]))
     anims.append(("Die", 8, False, [fallen(0), fallen(30), fallen(60), fallen(90, darken=0.35)]))
     return anims
 

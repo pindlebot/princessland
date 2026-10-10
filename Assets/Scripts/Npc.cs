@@ -5,10 +5,12 @@ using UnityEngine;
 // the mermaid, Bonesy the skeleton. Each NPC has a list of conversations, and talking picks
 // the first one whose conditions are met, so what they say depends on what you've done:
 //
-//   requires   a flag that must be set ("" = always ok), e.g. "found:frog"
-//   notIf      a flag that must NOT be set, e.g. "met:Coralie" (so an introduction plays once)
+//   requires   a condition that must hold ("" = always ok): a flag like "found:frog", a counter like
+//              "talks:Amethyra>=9", or an item like "has:fairy_lantern" (see Condition.cs)
+//   notIf      a condition that must NOT hold, e.g. "met:Coralie" (so an introduction plays once)
 //   sets       flags to set when the conversation ends, e.g. "met:Coralie" (comma-separated)
 //   giveGold   coins handed over when it ends (a thank-you present)
+//   giveItem   an item id handed over when it ends (a reward: it goes in the bag, or the treasures tab)
 //   smallTalk  if the first match is small talk, the NPC takes turns through *all* the
 //              matching small-talk conversations, one per visit (counted in GameSession,
 //              starting from the first)
@@ -25,12 +27,22 @@ public class Npc : MonoBehaviour, IInteractable
         public string notIf = "";
         public string sets = "";
         public int giveGold;
+        public string giveItem = "";
         public bool smallTalk;
         public DialogueLine[] lines;
 
         public bool Matches() =>
-            (string.IsNullOrEmpty(requires) || GameSession.Flags.Contains(requires)) &&
-            (string.IsNullOrEmpty(notIf) || !GameSession.Flags.Contains(notIf));
+            Condition.Met(requires) && (string.IsNullOrWhiteSpace(notIf) || !Condition.Met(notIf)) && HasRoomForGift();
+
+        // A reward that wouldn't fit in the bag waits (this conversation doesn't match) until there's room.
+        private bool HasRoomForGift()
+        {
+            if (string.IsNullOrEmpty(giveItem)) return true;
+            var player = LevelBootstrap.Current != null ? LevelBootstrap.Current.Player : null;
+            if (player == null || !player.TryGetComponent(out Inventory bag)) return true;
+            var item = bag.Database.Find(giveItem);
+            return item == null || item.IsKeyItem || bag.Bag.Count < bag.Capacity;
+        }
     }
 
     [SerializeField] private string npcName = "Amethyra";
@@ -95,6 +107,12 @@ public class Npc : MonoBehaviour, IInteractable
         {
             GameSession.Progress.AddGold(conversation.giveGold);
             AudioManager.Play(giftSound);
+        }
+        if (!string.IsNullOrEmpty(conversation.giveItem))
+        {
+            var player = LevelBootstrap.Current != null ? LevelBootstrap.Current.Player : null;
+            if (player != null && player.TryGetComponent(out Inventory bag) && bag.Add(conversation.giveItem))
+                AudioManager.Play(giftSound);
         }
     }
 

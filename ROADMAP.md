@@ -359,24 +359,24 @@ Watch where she gets stuck without saying anything, and fix that before moving o
 
 ### Phase 1: The systems content needs
 - [ ] Generic `Npc` + condition/effect dialogue + choices; port Amethyra to it
-- [ ] Quest data + quest log with pictures
-- [ ] Counters, and the first easter eggs that use them (toilet frog, dragon jokes, washed hands)
-- [ ] Hat and Charm slots, consumables on hotbar slots 2–5, key-item tab
+- [x] Quest data + quest log with pictures
+- [x] Counters, and the first easter eggs that use them (toilet frog, dragon jokes, washed hands)
+- [x] Hat and Charm slots, consumables on quick slots (keys 2–5), key-item tab ("Treasures")
 - [ ] The Village (2 rooms off the castle grounds): Barnaby's shop and Pip the Baker
   (started: Hollyhock is a fenced village beside the castle on Level 0, and Barnaby sells bubble bath at his stall;
   still to come: a buy panel with several wares, Pip the Baker)
-- [ ] Fountains as save points / fast travel
-- [ ] Breakable pots
+- [x] Fountains as save points / fast travel
+- [x] Breakable pots
 
 ### Phase 2: Metroidvania vertical slice (the most important phase)
 Prove one full loop with **one** ability before building five regions:
-- [ ] Ability + gate framework, `ISpellTarget`, brambles/braziers
-- [ ] Slime King drops the Amethyst + Bouncy Boots; color returns to the castle grounds
-- [ ] Gaps placed in the Castle Grounds and Dungeon *before* you have the boots
-- [ ] Bonesy in the Dungeon; Dad's Workshop secret room
-- [ ] Whispering Woods: 4 rooms, Spore Puffs, Old Moss, Mother Mushroom, Fairy Lantern
-- [ ] Room-edge transitions, world map screen, NavMesh enemies
-- [ ] The first dragon egg, heart pieces and star shards
+- [x] Ability + gate framework, `ISpellTarget`, brambles/braziers
+- [x] Slime King drops the Amethyst + Bouncy Boots; color returns to the castle grounds
+- [x] Gaps placed in the Castle Grounds and Dungeon *before* you have the boots
+- [x] Bonesy in the Dungeon; Dad's Workshop secret room
+- [x] Whispering Woods: 4 rooms, Spore Puffs, Old Moss, Mother Mushroom, Fairy Lantern
+- [x] Room-edge transitions, world map screen, NavMesh enemies (a tile-grid pathfinder: the AI Navigation package doesn't compile on this Unity)
+- [x] The first dragon egg, heart pieces and star shards
 - [ ] **Checkpoint:** does she *remember* the gap and want to go back to it once she has the boots? If not,
   make the hint bubbles stronger before continuing.
 

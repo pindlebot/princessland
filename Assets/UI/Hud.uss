@@ -719,7 +719,7 @@ Label {
     position: absolute;
     left: var(--margin);
     top: 150px; /* under the status card */
-    width: 404px; /* five worn slots side by side */
+    width: 600px; /* the paper doll on the left, the bag on the right */
     padding: 12px 16px 14px 16px;
     display: none;
 }
@@ -744,33 +744,50 @@ Label {
     color: var(--ink-soft);
 }
 
-.equip-row {
+.inventory-body {
     flex-direction: row;
 }
 
-.equip-cell {
-    align-items: center;
-    margin-right: 6px;
+.inventory-side {
+    flex: 1;
+    margin-left: 14px;
 }
 
-.equip-cell .inv-slot {
+/* The paper doll: the hero's own picture, big, with the worn slots set on the body */
+.doll {
+    width: 262px;
+    height: 296px;
+}
+
+.doll-figure {
+    position: absolute;
+    left: 19px;
+    top: 36px;
+    width: 224px;
+    height: 224px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.doll-slot {
+    position: absolute;
+    width: 52px;
+    height: 52px;
     margin: 0;
 }
 
-/* An empty worn slot is a little faded, so the filled ones stand out */
-.equip-slot {
-    opacity: 0.7;
+.doll-slot .slot-icon {
+    left: 2px;
+    top: 2px;
 }
 
-.equip-slot.has-item {
-    opacity: 1;
-}
-
-.equip-label {
-    font-size: var(--text-small);
-    color: var(--ink-soft);
-    margin-top: 1px;
-}
+/* Where each one sits on the body (the figure is the 32px hero drawn at 7x) */
+.doll-hat    { left: 166px; top: 4px; }
+.doll-helm   { left: 105px; top: 62px; }
+.doll-charm  { left: 40px;  top: 92px; }
+.doll-armor  { left: 105px; top: 132px; }
+.doll-weapon { left: 196px; top: 140px; }
+.doll-ring   { left: 22px;  top: 166px; }
+.doll-boots  { left: 105px; top: 232px; }
 
 .equip-info {
     margin: 4px 0 8px 0;
@@ -1284,4 +1301,306 @@ Label {
     font-size: var(--text-title);
     color: rgb(220, 206, 240);
     margin-top: 8px;
+}
+
+
+/* ---------- Bag / Treasures tabs ---------- */
+
+.tab-row {
+    flex-direction: row;
+    margin-bottom: 4px;
+}
+
+.tab {
+    font-size: var(--text-small);
+    color: var(--ink-soft);
+    padding: 2px 10px 3px 10px;
+    margin-right: 4px;
+    border-radius: 6px;
+    background-color: rgb(236, 224, 196);
+}
+
+.tab:hover {
+    color: var(--ink);
+}
+
+.tab.active {
+    color: rgb(255, 255, 255);
+    background-color: rgb(222, 168, 70);
+}
+
+/* The quick slots (2-5) show how many are left in the corner, and fade when you've run out */
+.quick-slot .slot-cost {
+    color: rgb(150, 100, 20);
+}
+
+/* ---------- Quest log ---------- */
+
+.quests-row {
+    top: 100px;
+}
+
+.quests {
+    width: 480px;
+    max-height: 520px;
+    padding: 14px 20px 14px 20px;
+    display: none;
+}
+
+.quests.open {
+    display: flex;
+}
+
+.quest-empty {
+    min-height: 40px;
+}
+
+.quest-list {
+    flex-direction: column;
+}
+
+/* One quest: who gave it, what it is and where you're up to, and a picture of what to do next */
+.quest-card {
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    border-width: 2px;
+    border-color: rgb(222, 168, 70);
+    background-color: rgb(250, 238, 206);
+}
+
+.quest-card.done {
+    border-color: rgb(196, 176, 150);
+    background-color: rgb(236, 226, 204);
+    opacity: 0.75;
+}
+
+.quest-portrait {
+    width: 52px;
+    height: 52px;
+    margin-right: 10px;
+    border-radius: 6px;
+    background-color: rgb(238, 226, 198);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.quest-body {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.quest-title {
+    font-size: var(--text-body);
+}
+
+.quest-step {
+    font-size: var(--text-small);
+    color: var(--ink-soft);
+    white-space: normal;
+}
+
+.quest-pips {
+    flex-direction: row;
+    margin-top: 3px;
+}
+
+.quest-pip {
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    border-radius: 6px;
+    background-color: rgb(214, 198, 168);
+}
+
+.quest-pip.done {
+    background-color: rgb(222, 168, 70);
+}
+
+.quest-next {
+    width: 48px;
+    height: 48px;
+    margin-left: 10px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.quest-star {
+    width: 36px;
+    height: 36px;
+    margin-left: 10px;
+    background-image: url("project://database/Assets/Art/UI/PipStar.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* ---------- Fountain menu: rest and save, or travel ---------- */
+
+.fountain-row {
+    top: 120px;
+}
+
+.fountain-menu {
+    width: 380px;
+    padding: 14px 20px 14px 20px;
+    display: none;
+}
+
+.fountain-menu.open {
+    display: flex;
+}
+
+.fountain-close:hover {
+    color: var(--ink);
+}
+
+.fountain-option {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    font-size: var(--text-body);
+    border-radius: 6px;
+    background-color: rgb(244, 232, 206);
+    border-width: 2px;
+    border-color: rgb(244, 232, 206);
+}
+
+.fountain-option:hover {
+    border-color: var(--ink);
+}
+
+.fountain-option.selected {
+    color: rgb(255, 255, 255);
+    background-color: rgb(222, 120, 60);
+    border-color: rgb(164, 112, 40);
+}
+
+.fountain-option.here {
+    background-color: rgb(222, 240, 206);
+}
+
+
+/* ---------- Item tooltip ---------- */
+
+.item-tooltip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 270px;
+    padding: 10px 14px 10px 14px;
+    display: none;
+}
+
+.item-tooltip.visible {
+    display: flex;
+}
+
+.tip-name {
+    font-size: var(--text-label);
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.tip-kind {
+    font-size: var(--text-small);
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+}
+
+.tip-desc {
+    font-size: var(--text-small);
+    white-space: normal;
+}
+
+.tip-stats {
+    font-size: var(--text-small);
+    color: rgb(46, 140, 70);
+    white-space: normal;
+    margin-top: 4px;
+}
+
+.tip-action {
+    font-size: var(--text-small);
+    color: var(--ink-soft);
+    -unity-font-style: italic;
+    white-space: normal;
+    margin-top: 6px;
+}
+
+
+/* ---------- World map ---------- */
+
+.worldmap-row {
+    top: 80px;
+}
+
+.worldmap {
+    width: 800px;
+    padding: 14px 20px 14px 20px;
+    display: none;
+}
+
+.worldmap.open {
+    display: flex;
+}
+
+.world-canvas {
+    width: 760px;
+    height: 380px;
+    background-color: rgba(98, 80, 120, 0.12);
+    border-radius: 6px;
+}
+
+.world-room {
+    position: absolute;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.world-room.here {
+    border-width: 2px;
+    border-color: rgb(236, 176, 60);
+}
+
+.world-title {
+    position: absolute;
+    font-size: var(--text-small);
+    color: var(--ink-soft);
+    white-space: nowrap;
+}
+
+.world-title.here {
+    color: rgb(190, 90, 40);
+    -unity-font-style: bold;
+}
+
+.world-dot {
+    position: absolute;
+    border-radius: 50%;
+    border-width: 1px;
+    border-color: rgb(60, 30, 70);
+    font-size: var(--text-small);
+    color: rgb(60, 30, 70);
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    padding: 0;
+}
+
+.world-you {
+    background-color: rgb(255, 255, 255);
+    border-width: 3px;
+    border-color: rgb(210, 70, 80);
+}
+
+.world-fountain {
+    background-color: rgb(90, 190, 240);
+}
+
+.world-fountain.dim {
+    background-color: rgba(90, 190, 240, 0.45);
+}
+
+.world-gap {
+    background-color: rgb(255, 214, 90);
+}
+
+.world-egg {
+    background-color: rgb(176, 110, 220);
 }

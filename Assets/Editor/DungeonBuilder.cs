@@ -21,6 +21,8 @@ using UnityEngine;
 //   DungeonBuilder.Cove.cs             Mermaid Cove: pirates, dark mermaids, Pearl, waterfalls, the rowboat
 //   DungeonBuilder.Town.cs             Hollyhock, the village: buildings, the picket fence, Barnaby, chickens
 //   DungeonBuilder.Farm.cs             Hollow Farm: pumpkins, scarecrows, the barn, ghosts, Old Stitches
+//   DungeonBuilder.Monsters.cs         the farm's Gourdlings, Strawmen and Pumpkin King, and Captain Grumblebeard
+//   DungeonBuilder.Woods.cs            Whispering Woods: Spore Puffs, Mother Mushroom, Old Moss, sleepy trees, pots
 //   DungeonBuilder.CharacterSelect.cs  the character select screen
 //   DungeonBuilder.Title.cs            the title screen and its save slots
 public static partial class DungeonBuilder
@@ -33,7 +35,7 @@ public static partial class DungeonBuilder
     private class SharedAssets
     {
         public Dictionary<string, Material> Materials;
-        public GameObject Skeleton, Slime, SlimeKing, Chest, Torch, Flag, Dragon;
+        public GameObject Skeleton, Slime, SlimeKing, Chest, Torch, Flag, Dragon, Sparkle;
         public Dictionary<string, GameObject> ItemPickups; // by item id (DungeonBuilder.Items.cs)
         public GameObject Bed, Toilet, Sink, PaperTowel, HouseDoor, SpiralDown, SpiralUp;
         public GameObject Wardrobe, Nightstand, Bookshelf, ToyChest, Plant, Rug;
@@ -42,8 +44,11 @@ public static partial class DungeonBuilder
         public GameObject Mermaid, Bonesy, Frog, FrogBush;
         public GameObject Campfire, Barrel, Crate, Bones, Mushrooms, Door, LockedDoor, Key, Ripple, Lily;
         public GameObject SpikeTrap, LavaBubble, Ember;
+        public GameObject Gourdling, Strawman, PumpkinKing, PirateCaptain; // DungeonBuilder.Monsters.cs
         public GameObject Pirate, DarkMermaid, Pearl, Palm, Treasure, Rowboat, Ship, Splash, Shell, Starfish, Foam;
         public GameObject Barnaby, Stitches, FarmGate, Pippin;
+        public GameObject SporePuff, MotherMushroom, OldMoss; // DungeonBuilder.Woods.cs
+        public GameObject HintBoots, HintLantern, RoomEdge;             // DungeonBuilder.Gates.cs
         // Legend "prop" entries, by kind (MapFile.PropKinds): the village's, and the home's bathtub and cat.
         public Dictionary<string, GameObject> PropPrefabs = new Dictionary<string, GameObject>();
         public SpriteSheetImporter.SpriteSheet Props;
@@ -62,6 +67,7 @@ public static partial class DungeonBuilder
     {
         var maps = LoadMaps(); // first, so a mistake in a level file stops the build before anything changes
         var assets = CreateAssets();
+        CreateWorldMap(maps); // the world map screen's rooms (read by each scene's HUD)
         AssetDatabase.SaveAssets(); // write everything to disk before scenes start changing
 
         var specs = maps.Select(SpecFor).ToList();
@@ -94,10 +100,14 @@ public static partial class DungeonBuilder
 
         var slimePrefab = CreateEnemyPrefab(slime, SlimeStats, coin, sparkle);
         var items = SpriteSheetImporter.Import("Items");
+        var woodsItems = SpriteSheetImporter.Import("WoodsItems");
+        var gateItems = SpriteSheetImporter.Import("GateItems");
         var itemDefinitions = ItemSpecs.Select(CreateItem).ToList();
         var itemDatabase = CreateItemDatabase(itemDefinitions.ToArray());
+        CreateQuestPictures();
         var assets = new SharedAssets
         {
+            Sparkle = sparkle,
             Materials = CreateMaterials(),
             Skeleton = CreateEnemyPrefab(skeleton, SkeletonStats, coin, sparkle),
             Slime = slimePrefab,
@@ -105,7 +115,7 @@ public static partial class DungeonBuilder
             Chest = CreateChestPrefab(props, wizardArt.Shadow, sparkle),
             Torch = CreateTorchPrefab(props),
             ItemPickups = itemDefinitions.Zip(ItemSpecs, (item, spec) => (item, spec))
-                .ToDictionary(p => p.item.Id, p => CreateItemPickupPrefab(p.spec.FloorSheet == "Props" ? props : items, p.spec, p.item, wizardArt.Shadow)),
+                .ToDictionary(p => p.item.Id, p => CreateItemPickupPrefab(p.spec.FloorSheet == "Props" ? props : p.spec.FloorSheet == "WoodsItems" ? woodsItems : p.spec.FloorSheet == "GateItems" ? gateItems : items, p.spec, p.item, wizardArt.Shadow)),
             Flag = CreateFlagPrefab(props),
             Dragon = CreateDragonPrefab(wizardArt.Shadow),
             Grass = new[] { "Grass_A", "Grass_B", "Grass_C" }.Select(g => CreateGrassPrefab(props, g)).ToArray(),
@@ -119,6 +129,9 @@ public static partial class DungeonBuilder
         CreateCovePrefabs(assets, coin, sparkle, wizardArt.Shadow);
         CreateTownPrefabs(assets, wizardArt.Shadow, sparkle);
         CreateFarmPrefabs(assets, wizardArt.Shadow);
+        CreateMonsterPrefabs(assets, coin, sparkle);
+        CreateWoodsPrefabs(assets, wizardArt.Shadow, coin, sparkle);
+        CreateGatePrefabs(assets, wizardArt.Shadow, sparkle);
         assets.Props = props;
         return assets;
     }
@@ -208,7 +221,7 @@ public static partial class DungeonBuilder
                      "WoodFloor", "BathTile", "Water", "Puddle", "SpikePlate", "RockSide", "RockSideLow", "RockTop", "CaveFloor",
                      "Sand_0", "Sand_1", "Sea", "SandBank", "Planks", "Waterfall",
                      "Cobble_0", "Cobble_1", "Plaster", "RoofTiles", "Thatch", "Window", "TownDoor", "Awning", "ShopSign",
-                     "WallSideIvy", "KitchenTile", "Soil", "BarnSide", "BarnDoor", "BarnRoof", "CornSide", "CornTop",
+                     "WallSideIvy", "KitchenTile", "Soil", "BarnSide", "BarnDoor", "BarnRoof", "CornSide", "CornTop", "Pit",
                  })
             mats[name] = Mat(name, Color.white, texture: PixelTexture(name));
         // The cathedral's stained glass glows a little, as if lit from inside.
@@ -224,6 +237,11 @@ public static partial class DungeonBuilder
         // Lava lights itself: the texture is also its emission map, so the cracks glow and the crust stays dark.
         var lava = PixelTexture("Lava");
         mats["Lava"] = Mat("Lava", Color.white, new Color(1.3f, 1.1f, 1f), lava, emissionMap: lava);
+        // The inside walls of a gap's pit: the dungeon's bricks or the island's earth, in shadow.
+        mats["PitWallStone"] = Mat("PitWallStone", new Color(0.55f, 0.5f, 0.66f), texture: PixelTexture("WallSide"));
+        mats["PitWallEarth"] = Mat("PitWallEarth", new Color(0.62f, 0.52f, 0.5f), texture: PixelTexture("EarthSide"));
+        mats["PitWallEarth"].mainTextureScale = new Vector2(1f, 0.25f); // EarthSide is 4m tall; show its top metre
+        EditorUtility.SetDirty(mats["PitWallEarth"]);
         var spike = Mat("Spike", new Color(0.78f, 0.78f, 0.86f)); // shiny steel
         spike.SetFloat("_Metallic", 0.6f);
         spike.SetFloat("_Glossiness", 0.6f);

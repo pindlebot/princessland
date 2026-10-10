@@ -61,6 +61,10 @@ public static class SaveSystem
         ["Dungeon"] = "The Dungeon",
         ["House"] = "Home",
         ["Cove"] = "Mermaid Cove",
+        ["Woods1"] = "Whispering Woods",
+        ["Woods2"] = "Spore Meadow",
+        ["Woods3"] = "Mushroom Hollow",
+        ["Woods4"] = "Mother Mushroom's Grove",
     };
 
     public static string PlaceName(string scene) =>
@@ -126,6 +130,8 @@ public static class SaveSystem
             skillPoints = p.SkillPoints,
             skills = p.LearnedSkills.ToList(),
             bag = inv.Bag.ToList(),
+            keyItems = inv.KeyItems.ToList(),
+            quick = inv.Quick.ToList(),
             equipped = inv.Equipped.Select(e => new SaveData.EquippedItem { slot = e.Key, item = e.Value }).ToList(),
             settings = GameSession.Settings,
         };
@@ -152,6 +158,9 @@ public static class SaveSystem
         GameSession.Progress.Restore(data.level, data.xp, data.gold, data.skillPoints, data.skills);
         GameSession.Progress.RefundSkillsNotIn(SkillCatalog.PathFor(SkillCatalog.CurrentHero).Select(s => s.Id));
         GameSession.Inventory.Bag.AddRange(data.bag);
+        GameSession.Inventory.KeyItems.AddRange(data.keyItems ?? new List<string>());
+        for (int i = 0; i < InventoryState.QuickSlotCount && data.quick != null && i < data.quick.Count; i++)
+            GameSession.Inventory.Quick[i] = data.quick[i] ?? "";
         foreach (var e in data.equipped) GameSession.Inventory.Equipped[e.slot] = e.item;
         GameSession.NextSpawn = string.IsNullOrEmpty(data.spawn) ? null : data.spawn;
         GameSession.Settings = data.settings ?? new GameSettings();

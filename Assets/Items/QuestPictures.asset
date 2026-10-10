@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8ab8d95f9ac740cf8f4d695c51c90fa, type: 3}
+  m_Name: QuestPictures
+  m_EditorClassIdentifier: Game::QuestPictures
+  entries:
+  - key: npc:Coralie
+    sprite: {fileID: 21300000, guid: 8be7ccfcffc8b4af78456a2c3a81fadf, type: 3}
+  - key: npc:Pearl
+    sprite: {fileID: 21300000, guid: 13c1093a2d7574b69b9c15efdf7781a9, type: 3}
+  - key: npc:Pippin
+    sprite: {fileID: 21300000, guid: d2f54533247854073ad568fe300c444b, type: 3}
+  - key: npc:Old Stitches
+    sprite: {fileID: 21300000, guid: 4bb4d9eb6413b4f2c9c9c0b1d0718cd9, type: 3}
+  - key: npc:Old Moss
+    sprite: {fileID: 21300000, guid: 54206c283e3b3408797cdc46ae10ca6b, type: 3}
+  - key: npc:Amethyra
+    sprite: {fileID: 21300000, guid: 7f267f10f48ab4afe93f0f8e408f159c, type: 3}
+  - key: icon:frog
+    sprite: {fileID: 21300000, guid: 7c7cbea5b372448d2b810407dd33bd3c, type: 3}
+  - key: icon:tree
+    sprite: {fileID: 21300000, guid: 129f20b9d0d7d4a8487e799292e406ff, type: 3}
+  - key: icon:monster
+    sprite: {fileID: 21300000, guid: c5c8ff747352d42609523e796df6c055, type: 3}

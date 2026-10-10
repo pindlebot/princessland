@@ -26,6 +26,7 @@ public class WhirlpoolZone : MonoBehaviour
         endsAt = Time.time + lifetime;
         nextTick = Time.time + tickSeconds;
         transform.localScale = Vector3.one * radius / 2f; // the sprite is 4 units across at scale 1
+        SpellTargets.HitNear(transform.position, radius, damage, SpellElement.Water); // brambles bloom, braziers fill
     }
 
     private void Update()

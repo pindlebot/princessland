@@ -116,7 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5472038533635701425}
   - component: {fileID: 6172057864243275340}
-  - component: {fileID: 3184559939127151871}
+  - component: {fileID: 4609078544917703574}
   m_Layer: 0
   m_Name: BobbingTub
   m_TagString: Untagged
@@ -162,7 +162,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.8, y: 1, z: 1.4}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &3184559939127151871
+--- !u!114 &4609078544917703574
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -183,6 +183,7 @@ MonoBehaviour:
   standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
+  seatSideways: 0
   soapPrompt: 
   soapMessage: 
   soapSound: {fileID: 0}
@@ -198,6 +199,13 @@ MonoBehaviour:
   gift: {fileID: 0}
   haveOneMessage: You already have one.
   bagFullMessage: Your bag is full!
+  useCounter: 
+  useFlag: 
+  surpriseAt: 0
+  surprisePrefab: {fileID: 0}
+  surpriseGift: {fileID: 0}
+  surpriseMessage: 
+  surpriseSound: {fileID: 0}
 --- !u!1 &9002659181338426509
 GameObject:
   m_ObjectHideFlags: 0

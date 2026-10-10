@@ -54,6 +54,7 @@ MonoBehaviour:
     notIf: thanked:frog
     sets: thanked:frog,met:Coralie
     giveGold: 20
+    giveItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 1
@@ -66,6 +67,7 @@ MonoBehaviour:
     notIf: met:Coralie
     sets: met:Coralie
     giveGold: 0
+    giveItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -84,6 +86,7 @@ MonoBehaviour:
     notIf: found:frog
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -92,6 +95,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -100,6 +104,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -108,6 +113,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -120,6 +126,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -128,6 +135,7 @@ MonoBehaviour:
     notIf: met:Pearl
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -138,6 +146,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0

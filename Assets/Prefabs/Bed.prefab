@@ -69,14 +69,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::HouseFixture
   prompt: Take a nap
-  message: You curl up for a quick nap. Health and mana restored!
+  message: You tuck yourself in for a cozy nap. Zzz... Health and mana restored!
   effect: 1
   sound: {fileID: 8300000, guid: 730c7a3d003744e55a6c6025a4c8c6eb, type: 3}
-  standPrompt: Flush and stand up
-  standMessage: 
-  standSound: {fileID: 0}
-  seatHeight: 0.85
+  standPrompt: Get up
+  standMessage: You stretch and yawn. What a lovely nap!
+  standSound: {fileID: 8300000, guid: 651ac8b47e7b94173a61282569985eb1, type: 3}
+  seatHeight: 1.2
   seatForward: 0.35
+  seatSideways: -0.7
   soapPrompt: 
   soapMessage: 
   soapSound: {fileID: 0}
@@ -92,6 +93,13 @@ MonoBehaviour:
   gift: {fileID: 0}
   haveOneMessage: You already have one.
   bagFullMessage: Your bag is full!
+  useCounter: 
+  useFlag: 
+  surpriseAt: 0
+  surprisePrefab: {fileID: 0}
+  surpriseGift: {fileID: 0}
+  surpriseMessage: 
+  surpriseSound: {fileID: 0}
 --- !u!1 &3205997248665598069
 GameObject:
   m_ObjectHideFlags: 0

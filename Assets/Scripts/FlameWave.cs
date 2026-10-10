@@ -32,6 +32,7 @@ public class FlameWave : HeroAbility
             enemy.GetComponent<Health>().TakeDamage(SpellDamage + bonusDamage);
             Push(enemy, to, knockback);
         }
+        SpellTargets.HitNear(transform.position, range, SpellDamage, SpellElement.Fire, forward, halfAngle); // brambles, braziers, pots
         StartCoroutine(ShowFan(forward));
         return true;
     }

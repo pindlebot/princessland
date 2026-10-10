@@ -74,8 +74,15 @@
       "loop": true
     },
     {
-      "name": "Die",
+      "name": "Sleep",
       "row": 10,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Die",
+      "row": 11,
       "frames": 4,
       "fps": 8,
       "loop": false

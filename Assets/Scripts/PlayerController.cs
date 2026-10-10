@@ -4,7 +4,8 @@ using UnityEngine;
 // walking; abilities can briefly take over facing (e.g. to look at a spell's target).
 // The hero can also sit down on something (the toilet at home): SitOn puts them on it,
 // facing the camera, until they walk away or StandUp is called. Lying in the bath is the
-// same, with bathing set: the animator shows them in their swimwear instead of sitting.
+// same, with bathing set: the animator shows them in their swimwear instead of sitting. Going to
+// bed is the same again, with sleeping set: they lie tucked under the quilt, with Zs floating up.
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
@@ -24,6 +25,9 @@ public class PlayerController : MonoBehaviour
     public Transform Seat { get; private set; }
     public bool IsSeated => Seat != null;
     public bool IsBathing { get; private set; } // seated in the bath, in their swimwear
+    public bool IsSleeping { get; private set; } // tucked up in bed
+    public bool IsHopping { get; private set; }  // mid-air over a gap (HopAbility)
+    public Vector3 MoveDirection { get; private set; } // where the stick/keys point now, on the ground (zero when still)
 
     private void Awake()
     {
@@ -35,6 +39,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) return;
+        if (IsHopping) return; // in the air: HopTo moves us
 
         if (IsSeated)
         {
@@ -44,8 +49,37 @@ public class PlayerController : MonoBehaviour
         }
 
         Vector3 move = Move();
+        MoveDirection = move.sqrMagnitude > 0.01f ? move.normalized : Vector3.zero;
         if (Time.time >= holdFacingUntil)
             FaceTowards(move);
+    }
+
+    // A hop over a gap: a short arc to `target` (on the ground), with the CharacterController off so
+    // nothing in the way (the gap's invisible wall) stops us. `onLanded` runs as we touch down.
+    public void HopTo(Vector3 target, float seconds, float height, System.Action onLanded = null)
+    {
+        if (!IsHopping) StartCoroutine(Hop(target, seconds, height, onLanded));
+    }
+
+    private System.Collections.IEnumerator Hop(Vector3 target, float seconds, float height, System.Action onLanded)
+    {
+        IsHopping = true;
+        controller.enabled = false;
+        Vector3 from = transform.position;
+        target.y = from.y;
+        for (float t = 0f; t < seconds; t += Time.deltaTime)
+        {
+            float f = t / seconds;
+            var p = Vector3.Lerp(from, target, f);
+            p.y = from.y + Mathf.Sin(f * Mathf.PI) * height;
+            transform.position = p;
+            yield return null;
+        }
+        transform.position = target;
+        controller.enabled = true;
+        verticalVelocity = -1f;
+        IsHopping = false;
+        onLanded?.Invoke();
     }
 
     // Turn to face a direction now and keep facing it for a moment, even while walking.
@@ -61,11 +95,12 @@ public class PlayerController : MonoBehaviour
     // level), facing the camera. height lifts the sprite so the hero sits on top of the
     // seat with their feet dangling. The CharacterController is off while seated, so it
     // doesn't bump into the seat's collider.
-    public void SitOn(Transform seat, Vector3 seatPosition, float height, bool bathing = false)
+    public void SitOn(Transform seat, Vector3 seatPosition, float height, bool bathing = false, bool sleeping = false)
     {
         if (IsSeated) StandUp();
         Seat = seat;
         IsBathing = bathing;
+        IsSleeping = sleeping;
         standingPosition = transform.position;
         controller.enabled = false;
         transform.position = new Vector3(seatPosition.x, transform.position.y, seatPosition.z);
@@ -84,6 +119,7 @@ public class PlayerController : MonoBehaviour
         if (!IsSeated) return;
         Seat = null;
         IsBathing = false;
+        IsSleeping = false;
         var sprite = SpriteTransform();
         if (sprite != null)
         {

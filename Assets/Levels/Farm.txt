@@ -12,39 +12,43 @@
 // fallen leaves (,). In the south-west corner, a corn maze ({ walls, low enough to see over)
 // with the Jack-o'-Lantern Hat (]) waiting in the clearing at its centre; its way in faces the
 // festival.
+// Not everything here is friendly: angry Gourdlings (E) hide among the pumpkins, Strawmen (L) walk the
+// corn rows and loiter outside the graveyard's gap, and the Pumpkin King (M) sleeps in the middle of
+// the graveyard. Beating him clears the farm (see the monsters: line below, and BossAbilities.cs).
 title: Hollow Farm
 theme: Outdoor
 mood: dusk
 music: music_farm
 region: farm
-enemy_count: hide
-locked_hint: Spooky, but friendly
+locked_hint: Beat the Pumpkin King!
 open_hint: Spooky, but friendly
+monsters: E=gourdling L=strawman M=pumpkinking
 minimap_floor: #6E7A5E
 minimap_wall: #A89CB8
+world: 70 38
 ---
 HHHHHHHHHHHHHHHHHHHH1HHHHHHHHHHHHHHHHHHH
 H...................=..................H
 H.O.................=[.......33333.....H
-H..//////////////8.6=........33333.9...H
-H../5//5//65/!///...=6....9..33333.....H
+H..//////E///////8.6=........33333.9...H
+H../5E/5//65/!///...=6....9..33333.....H
 H..//!////////5//...=........33333.....H
-H..//5///54////6/...=..........=....9..H
+H..//5///54/E//6/...=..........=....9..H
 H..///6//////5///...=..........2.......H
-H../5///5//////5/...=......6...=...6...H
+H../5///5/E////5/...=......6...=...6...H
 H..///5///6/5////...=...!......=.......H
 H.z.................=..........=.....z.H
 H...................=..........=.......H
 H...=================================..H
 H...................=..................H
 H..777777..77777....=...++++++++++++++.H
-H.................6.=.6.+.......?...8+.H
+H......L..........6.=.6.+.......?...8+.H
 H..777777..77777...lcl..+..0..0..0.".+.H
-H...................=...+."..........+.H
+H...........L.......=...+."..........+.H
 H..7..777..77777..6.=.66.....?..'..0.+.H
-H........4..........=.......'.....'..+.H
-H..777777..77777....=...+..0..0..0...+.H
-H...................=...+.........?..+.H
+H........4..........=.......'..M..'..+.H
+H..777777..77777....=.L.+..0..0..0...+.H
+H.....L.............=...+.........?..+.H
 H..777777..77777..P.=...+.8..'.".....+.H
 H...8.........55....=...++++++++++++++.H
 H...................=..................H

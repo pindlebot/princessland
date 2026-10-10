@@ -1,0 +1,48 @@
+// Whispering Woods, room 2 of 4: the Spore Meadow. The west opening (1) goes back to the Sleepy Glade, the east
+// opening (5) to Mother Mushroom's Grove, and the south opening (3) to the dark Mushroom Hollow.
+// Spore Puffs (E) sit rooted in the meadow and cough spores when you come close: zap them from afar.
+// Pots (4), healing apples (6) and a mana berry (7) are scattered about; glowcaps (8) light the way south.
+title: Whispering Woods: The Spore Meadow
+theme: Outdoor
+music: music_woods
+mood: woods
+region: woods
+monsters: E=sporepuff M=mothermushroom
+minimap_floor: #6E9A5E
+minimap_wall: #4E7A50
+world: -90 5
+---
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+H.et,i..t.......t..,..............e..,i..H
+H.....,..i.....t.......t,....,ii..t......H
+H............i.t,...t.,.....t..,......,..H
+Hi.....i....,e.....,...........,.........H
+H....i,......et.i.e.....E....t...4.......H
+Ht.....t.,E,..,.........,..,t........e..,H
+Hi...,.....,,e..,...t................;...H
+H............i..,....i..t........e.......H
+H......4......,.........t..e..E.,......e.H
+H.t....,,.......E,.;,.t...........t.t;...H
+H......,..................,.....,,..,....H
+H......,.........,,.,.....4........,.....H
+1==P==6=============E====================5
+H......,.........,...=..,..,.......E...,.H
+H.,,,......,..4.,....=..,.,..............H
+H.e.i....t...,.....,.=.,.i...,...........H
+H....................=.................e.H
+H..,.i......,..t..t.,=...i..E..........,.H
+H...,....,..E.,.t.i,.=...t..,,..t........H
+H....i..,......t.....=6,,.........t..4...H
+H...,.,.4....,,,.....=................,..H
+H..e....,.....it..8..=..8...t,.7,.......tH
+Hti...,....e..tt..,..=......,...,,,...ii.H
+H.,.....t.......,....=.....i......t..i...H
+HHHHHHHHHHHHHHHHHHHHH3HHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Woods1
+5 = edge Woods4
+3 = edge Woods3
+4 = prop pot
+6 = item healing_apple
+7 = item mana_berry
+8 = prop glowcaps

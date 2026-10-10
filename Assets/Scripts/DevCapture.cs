@@ -2,6 +2,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 // A developer tool for checking the look of the game: launch the player with
 //   Tidecrown.app/Contents/MacOS/Tidecrown -devcapture <folder> -screen-width 1280 -screen-height 720 -screen-fullscreen 0
@@ -31,6 +32,12 @@ public class DevCapture : MonoBehaviour
     private IEnumerator Start()
     {
         Directory.CreateDirectory(folder);
+        if (only == "Phase2")
+        {
+            yield return Phase2();
+            Application.Quit();
+            yield break;
+        }
         if (only == null)
         {
             yield return Menu("Title", "title");
@@ -93,6 +100,29 @@ public class DevCapture : MonoBehaviour
             yield return Walk("walk", new Vector3(1f, 0f, 0.35f), 3);
         }
         Application.Quit();
+    }
+
+    // -capturescene Phase2: the secret workshop, a room's edge, and the world map.
+    private IEnumerator Phase2()
+    {
+        only = null;
+        GameSession.NewGame(null);
+        yield return Visit("Dungeon", '0', -2, 0, "p2_fakewall", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Dungeon", '!', 0, -2, "p2_workshop", max: 0, hearts: 0, manaFraction: 1f);
+        yield return Visit("Level0", '(', 3, 0, "p2_edge_level0", max: 0, hearts: 0, manaFraction: 1f);
+        GameSession.Flags.Add("visited:Woods1");
+        GameSession.Flags.Add("visited:Woods2");
+        GameSession.Flags.Add("visited:Dungeon");
+        GameSession.Flags.Add("visited:House");
+        GameSession.Flags.Add("fountain:Level0");
+        GameSession.Flags.Add(HintBubble.SeenFlag("Dungeon/17,3"));
+        GameSession.Flags.Add(HintBubble.SeenFlag("Dungeon/59,35"));
+        yield return Visit("Level0", 'P', 0, 0, "p2_level0_start", max: 0, hearts: 0, manaFraction: 1f);
+        WorldMapView.Instance.Open();
+        yield return new WaitForSecondsRealtime(0.6f);
+        ScreenCapture.CaptureScreenshot(Path.Combine(folder, "p2_worldmap.png"));
+        yield return new WaitForSecondsRealtime(0.6f);
+        WorldMapView.Instance.Close();
     }
 
     private IEnumerator Menu(string scene, string shot)
@@ -219,6 +249,11 @@ public class DevCapture : MonoBehaviour
         var inventory = player.GetComponent<Inventory>();
         GameSession.Inventory.Equipped[EquipSlot.Weapon] = "starlight_wand";
         GameSession.Inventory.Equipped[EquipSlot.Boots] = "trailblazer_boots";
+        GameSession.Inventory.Equipped[EquipSlot.Armor] = "seashell_mail";
+        GameSession.Inventory.Equipped[EquipSlot.Hat] = "frog_hat";
+        GameSession.Inventory.Equipped[EquipSlot.Charm] = "clover_charm";
+        GameSession.Inventory.Bag.Add("pancakes");
+        GameSession.Inventory.KeyItems.Add("bouncy_boots");
         GameSession.Inventory.Bag.Add("ember_ring");
         foreach (var pickup in FindObjectsByType<ItemPickup>())
             if (pickup.Interact(player) != null) inventory.Equip(pickup.Item); // the helm (this also redraws the HUD)
@@ -227,7 +262,20 @@ public class DevCapture : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.5f);
         ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + ".png"));
         yield return new WaitForSecondsRealtime(0.5f);
+        // Hover the wand on the paper doll, then a bag item: the tooltip appears beside the pointer.
+        var root = hud.GetComponent<UnityEngine.UIElements.UIDocument>().rootVisualElement;
+        foreach (var name in new[] { "equip-weapon", "bag-0" })
+        {
+            var slot = root.Q(name);
+            using (var ev = UnityEngine.UIElements.PointerEnterEvent.GetPooled()) { ev.target = slot; slot.SendEvent(ev); }
+            using (var ev = UnityEngine.UIElements.PointerMoveEvent.GetPooled()) { ev.target = slot; slot.SendEvent(ev); }
+            yield return new WaitForSecondsRealtime(0.3f);
+            ScreenCapture.CaptureScreenshot(Path.Combine(folder, shot + "_tip_" + name + ".png"));
+            yield return new WaitForSecondsRealtime(0.5f);
+            using (var ev = UnityEngine.UIElements.PointerLeaveEvent.GetPooled()) { ev.target = slot; slot.SendEvent(ev); }
+        }
         hud.SetInventoryOpen(false);
+        GameSession.Inventory.KeyItems.Clear();
         GameSession.Inventory.Bag.Clear();
         GameSession.Inventory.Equipped.Clear();
     }

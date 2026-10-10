@@ -8,7 +8,7 @@ A tiny isometric dungeon crawler for learning Unity (6000.6.4f1, Built-in Render
 **Flow:** Title (3 save slots) → Character Select (for a new slot) → **Level 0** (the castle grounds) → **Level 1** (the dungeon).
 A gate in Level 0's southern hedge leads to **Hollow Farm**, a haunted (but friendly) farmland.
 Level 0's exit only appears once its 4 skeletons are defeated. A rowboat on Level 0's pond goes to **Mermaid Cove**, a
-seaside side-quest whose sea cave has a secret stair down into the dungeon too (see below). Esc / Start opens the pause menu. M mutes the music.
+seaside side-quest whose sea cave has a secret stair down into the dungeon too (see below). Esc / Start opens the pause menu (music and sound volume are there). M opens the world map.
 
 **Saving:** three slots, each a JSON file in `Application.persistentDataPath` (`save1.json` ...). Every door, the
 stairs and starting a new adventure autosave; the pause menu's "Save and go to title" and "Save and quit game" save at
@@ -51,6 +51,48 @@ does (+3 hearts, +50 magic), then each ingredient with how many you have, a gold
 do, where to find it. E / A (or clicking the button) cooks; Esc / B closes it. The pancakes go in the bag: click them
 there to eat them, at home or in the middle of the dungeon. The front door brings you back out by the gate. Cleared levels and finished conversations are remembered between scenes.
 
+**Quests, quick slots and fountains.** **J** (or a click of the right stick) opens the **quest log**: a card per quest with the
+giver's picture, the step you're on and a picture of what to do next (`QuestCatalog.cs`; quests only *read* flags, counters
+and items, via the little condition language in `Condition.cs`, so they need no saving). The bag has **Hat** and **Charm** slots,
+a **paper doll** (the worn slots sit on the hero's own picture: hat and helm on the head, charm at the neck, armor on the chest, wand and ring in the hands, boots at the feet), item **tooltips** (hover any slot for its description, each attribute and what a click does), a **Treasures** tab for key items (like the Fairy Lantern: no bag room needed), and four **quick slots**, keys **2-5** (right stick
+on a gamepad): food you pick up lands on the first free one; hover an item in the bag and press 2-5 to move it. Every
+**fountain** is a save point: walk up and it remembers you (healing and saving); press **T** (left stick click) beside one to rest
+or travel to another fountain you've touched. **Clay pots** (zap them) break for coins and now and then an apple. Easter eggs with
+counters: flush the toilet ten times (a frog hands you his hat), skip washing your hands and Amethyra notices, and talk to her
+10 and 25 times.
+
+**The Whispering Woods** (`Levels/Woods1-4.txt`): a gate in the castle grounds' west hedge leads in. Room 1, the Sleepy Glade, has a
+fountain, **Old Moss** and four sleepy trees to wake with your magic; room 2, the Spore Meadow, is full of rooted **Spore Puffs**;
+room 3, the Mushroom Hollow, is dark (glowcaps, a chest, and the Fairy Lantern lights it); room 4 is **Mother Mushroom's Grove**.
+Beating her makes the **Fairy Lantern** appear. Art: `Tools/make_woods_sprites.py`.
+
+**The Bouncy Boots loop (Phase 2).** The castle grounds start **grey**: the Grey Gloom drained the colour when he stole
+Amethyra's **Amethyst**. After you clear the grounds she tells you the Slime King has it. Beat him (his stairs now lead back
+up to the grounds instead of ending the game) and he leaves two treasures where he fell: **the Amethyst** and the **Bouncy
+Boots** (made from his jelly). Bring the Amethyst to Amethyra and the colour floods back. The boots let you **hop over gaps**: walk
+into a pit tile (or press **Shift** / **B**) and you spring over it, one or two tiles wide. Gaps are placed *before* you have the boots,
+each with a thought bubble showing the boots and a "?" (`HintBubble`) so you remember to come back: a secret garden with a
+**heart piece** in the castle grounds' south-east corner, a star-shard alcove above the dungeon's first corridor, and an
+egg chamber behind a two-tile gap in the Slime King's hall: **one of Amethyra's five dragon eggs**. Whatever you
+find in the **Treasures** tab (boots, Amethyst, egg, lantern) is an *ability* just by being there: `Abilities.Has(id)`.
+Both heroes also open the **spell gates** from the start: **brambles** (a thorny wall: fire burns it, water makes it bloom, a
+thorn nook with a chest sits beside your start) and **braziers** (fire lights them, water fills the basin: light both in the
+dungeon's mushroom grotto and a star shard appears). Four **heart pieces** make one more heart; **star shards** are kept for the
+wardrobe at home (coming later). Art: `Tools/make_gate_sprites.py`; code: `Gap`, `HopAbility`, `HintBubble`, `Bramble`,
+`Brazier`, `Collectible`, `ColorDrain`; builder: `DungeonBuilder.Gates.cs`.
+
+**Rooms, the world map, secrets and smarter monsters.** In the Whispering Woods (and the castle grounds' west side) the
+rooms connect by **room edges** (`<symbol> = edge <Scene>` in the map): an arrow on the floor, and walking onto it crosses into
+the next room with a quick fade, no button (`RoomEdge`, `ScreenFade`). Press **M** (or **World map** in the pause menu: music
+is turned down there now) for the **world map**: every room you've visited, laid out by its `world: x y` header, with you as
+a white dot, blue marks on fountains, a **?** on every gap you've seen but can't cross yet, and a purple egg where you've
+spotted one (`WorldMapView`, drawn from `WorldMapData`, which the builder makes from the map files). **Dad's Workshop** is a
+secret room in the dungeon: a **fake wall** (`prop fakewall`) in the start room's east wall looks like the rest but you can
+walk through it (the minimap draws it as a wall and keeps the room hidden until you do, and the room's contents stay out of sight
+until then): a computer showing the Unity editor, a signed note (the words are Dad's: change them in `DungeonBuilder.Gates.cs`)
+and a star shard. **Monsters path around walls** now: when the way to you isn't clear they follow an A* path over the level's 2m
+tiles (`NavGrid`, baked from the physics world at the start of each level, and again when a bramble burns or a pot breaks).
+
 **Progression:** enemies drop gold coins (walk near them) and give XP (skeleton 15, slime 20; the chest holds
 25 gold). Level 2 is a big step at **400 XP** (about a whole adventure, Slime King included); after that levels need
 40 × level^1.5 XP (113, 208, 320, ...). Each level gives +1 max health, +5 max mana and a **skill point**.
@@ -79,7 +121,7 @@ his Ground Slam knocks you. A run across several lava tiles still costs one hear
 Mode every hazard does half damage like the monsters. `Scripts/Hazard.cs` does the hurting; `Editor/DungeonBuilder.Hazards.cs` builds them.
 
 **Boss:** the dungeon's last room holds **the Slime King** (30 HP, hits for 2, worth 400 XP and 15–20 coins).
-The crystal is sealed until he falls. *Ground Slam*: a red circle grows under you, then he leaps and lands
+The crystal is sealed until he falls, and he leaves the **Amethyst** and the **Bouncy Boots** behind; the stairs lead back up to the castle grounds. *Ground Slam*: a red circle grows under you, then he leaps and lands
 there: 2 damage, knockback and a screen shake if you're still inside, so step out of the circle. *Royal Split*:
 at half health he splits off 3 slimelings. A boss health bar appears once he notices you.
 
@@ -96,13 +138,14 @@ to its buttons as soon as you touch it.
 | Walk | WASD / arrows | left stick / d-pad |
 | Magic (auto-aims) | Space / click | X / right trigger |
 | Abilities (once learned) | Q · F | LB · LT |
+| Hop (Bouncy Boots) | walk into a gap, or Shift | walk into a gap, or B |
 | Talk, open, pick up | E | A |
 | Bag · skills | I · K | Y · View |
 | Pause menu · back | Esc | Start · B |
 | Menus | arrows · Enter | d-pad / stick · A |
 | Help | H | RB |
 | Try again | R | A (after a Game Over) |
-| Music on/off | M | (pause menu volume) |
+| World map | M | Start > World map |
 
 ## Where things live
 | Path | What it teaches |
@@ -176,6 +219,8 @@ to its buttons as soon as you touch it.
 | `DungeonBuilder.CharacterSelect.cs` | The select screen scene |
 | `DungeonBuilder.Title.cs` | The title screen scene |
 | `DungeonBuilder.Cove.cs` | Mermaid Cove: pirate and dark mermaid stats, Pearl's lines, the rowboat, waterfalls |
+| `DungeonBuilder.Gates.cs` | The gates: gaps (pits), brambles, braziers, hint bubbles, heart pieces and star shards, the grey-world effect, room edges, Dad's Workshop |
+| `DungeonBuilder.WorldMap.cs` | The world map's data (every room's place, tiles and markers) |
 
 **Levels are text files** in `Assets/Levels/<Scene>.txt`: a header (`title`, `theme`: Outdoor/Dungeon/Home, `music`,
 `exit`, `exit_needs: all_monsters`, hints, minimap colors), `---`, the map, `---`, and a legend for doors
@@ -201,7 +246,12 @@ door is in the middle of its south side), `6 = npc barnaby`, and `! = prop <kind
 `grainsack`, `lamppost`, `noticeboard`, `bench`, `planter`, `hen`, `brownhen`, `chick` and `grain`, and at home
 `bathtub`, `pottedfern`, `pottedmonstera`, `cat`, `wishingwell`, `lockeddoor`, `stove`, `pantry` and `island` (the lists live in `MapFile.cs`).
 `3 = stairsdown Kitchen` / `stairsup House` are doors drawn as a spiral staircase.
-Header extras: `water: sea` (the sea instead of the pond), `ground: sand` (`.` and the markers are beach sand). On an
+The gates: `\ = prop gap` (a pit tile: hop it with the boots), `` ` = prop bramble``, `6 = prop brazier`, `} = prop heartpiece`,
+`9 = prop starshard` (add `hidden braziers` to make it wait for the braziers), and `item <id> hidden [braziers]` for a treasure
+that waits for the boss or the braziers (`MapFile.cs` has the full list; `GatesTests` checks that every gap really seals its treasure
+until you have the boots).
+Header extras: `exit_spawn: <Name>` (where the stairs arrive), `grey_until: <condition>` (a level drained of colour until e.g.
+`has:amethyst` holds), `water: sea` (the sea instead of the pond), `ground: sand` (`.` and the markers are beach sand). On an
 Outdoor level, a door is a **rowboat** at the end of a jetty, and water on the map's edge spills off the island.
 
 ## Character sprites
@@ -384,7 +434,7 @@ orange sun, and props painted a little dimmer, so the glowing things shine). No 
 1. Select an Enemy prefab and tweak `Move Speed`/`Aggro Range` in the Inspector while playing.
 2. Edit a map in `DungeonBuilder.Levels.cs`, then **Dungeon → Rebuild All Scenes** (this overwrites the scenes).
 3. Fill hotbar slot 2 with a new ability, e.g. a mana potion on key `2` with a charge count label.
-4. Swap enemy chasing for a `NavMeshAgent` (AI Navigation package) so they path around walls.
+4. Monsters already path around walls with `NavGrid` (A* over the level's tiles). Try swapping it for a `NavMeshAgent` (the AI Navigation package didn't compile on this Unity when I tried 2.0.9), or give them a "give up" timer.
 5. Add a second ability (dash on Shift) — then switch input to the new Input System package.
 
 ## Version control

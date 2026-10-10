@@ -154,3 +154,41 @@ def write_shadow():
         layout["animations"].append({"name": f"Shadow_{d}", "row": row, "frames": 1, "fps": 1, "loop": False})
     sheet.save(ART / "Shadows.png")
     (ART / "Shadows.json").write_text(json.dumps(layout, indent=2) + "\n")
+
+
+# ---------- Sleeping in bed (shared by the heroes' "Sleep" frames) ----------
+# Seen from the foot of the bed with the head up at the pillow: only the head and the tucked-in
+# quilt are drawn. HouseFixture lifts the sprite so it lies on the bed's quilt (Furniture.png's Bed).
+QUILT, QUILT_SH, QUILT_HI = (64, 196, 180, 255), (34, 136, 134, 255), (132, 232, 214, 255)
+QUILT_SHEET = (240, 240, 232, 255)  # the folded-back top edge of the sheet
+ZEE = (255, 255, 255, 255)
+ZEE_SH = (190, 200, 232, 255)
+
+
+def sleeping_quilt(c, frame, top=15):
+    """The hero's body under the bed's aquamarine quilt, from the chin down to two toe-bumps at the
+    foot of the bed. frame 1 breathes in (the chest rises a pixel)."""
+    rise = frame
+    for y in range(top - rise, 31):
+        c.rect(6, y, 25, y, QUILT)
+        c.dot(6, y, QUILT_HI)
+        c.dot(25, y, QUILT_SH)
+    c.rect(6, top - rise, 25, top + 1 - rise, QUILT_SHEET)       # the sheet folded back under the chin
+    c.rect(6, top + 2 - rise, 25, top + 2 - rise, QUILT_HI)
+    for x in (10, 15, 20):                                         # quilt stitching
+        c.rect(x, top + 5, x, 28, QUILT_SH)
+    for fx in (10, 18):                                            # two toes pushing up the end
+        c.rect(fx, 26, fx + 3, 28, QUILT_HI)
+        c.rect(fx, 29, fx + 3, 29, QUILT_SH)
+    c.rect(6, 30, 25, 30, QUILT_SH)
+
+
+def zzz(c, frame):
+    """Two floating Zs drifting up beside the sleeper's head (they rise a little each frame)."""
+    up = frame
+    for x0, y0, size in ((23, 8 - up, 3), (26, 1 - up, 5)):
+        c.rect(x0, y0, x0 + size - 1, y0, ZEE)
+        c.line(x0 + size - 1, y0, x0, y0 + size - 1, ZEE)
+        c.rect(x0, y0 + size - 1, x0 + size - 1, y0 + size - 1, ZEE)
+        c.dot(x0 + size - 1, y0 + 1, ZEE_SH)
+

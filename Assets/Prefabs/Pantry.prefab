@@ -288,6 +288,7 @@ MonoBehaviour:
   standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
+  seatSideways: 0
   soapPrompt: 
   soapMessage: 
   soapSound: {fileID: 0}
@@ -303,3 +304,10 @@ MonoBehaviour:
   gift: {fileID: 11400000, guid: 65002edecc49f4d2da861f1fba3559f9, type: 2}
   haveOneMessage: You've got some flour already. Off to the stove!
   bagFullMessage: Your bag is full! Eat something, or make a little room.
+  useCounter: 
+  useFlag: 
+  surpriseAt: 0
+  surprisePrefab: {fileID: 0}
+  surpriseGift: {fileID: 0}
+  surpriseMessage: 
+  surpriseSound: {fileID: 0}

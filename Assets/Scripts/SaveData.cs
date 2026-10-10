@@ -20,6 +20,8 @@ public class SaveData
     public List<string> skills = new List<string>();
 
     public List<string> bag = new List<string>();
+    public List<string> keyItems = new List<string>();   // the treasures tab
+    public List<string> quick = new List<string>();      // the consumable on each quick slot (hotbar 2-5)
     public List<EquippedItem> equipped = new List<EquippedItem>();
 
     public GameSettings settings = new GameSettings();

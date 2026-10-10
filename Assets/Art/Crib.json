@@ -1,0 +1,14 @@
+{
+  "frameSize": 48,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Crib",
+      "row": 0,
+      "frames": 4,
+      "fps": 3,
+      "loop": true
+    }
+  ]
+}

@@ -23,13 +23,30 @@ using System.Linq;
 //   <symbol> = stairsdown <Scene> [<Spawn>]   a spiral staircase, down or up, to another scene
 //   <symbol> = stairsup <Scene> [<Spawn>]     (works exactly like a door)
 //   <symbol> = gate <Scene> [<Spawn>]   a farm gate to another scene (a door, outdoors, on a path)
+//   <symbol> = edge <Scene> [<Spawn>]   an opening at the room's edge: walk onto it (no button) and you cross into the
+//                                       neighbouring room, with a fade (RoomEdge). Put it on a floor tile in the border.
 //   <symbol> = spawn <Name>             an extra named arrival spot
-//   <symbol> = item <id>                an item lying there to pick up (ids: DungeonBuilder.Items.cs).
-//                                       'I' with no legend entry is always the Ember Ring.
+//   <symbol> = item <id> [hidden [braziers]]   an item lying there to pick up (ids: DungeonBuilder.Items.cs).
+//                                       'I' with no legend entry is always the Ember Ring. "hidden" keeps it
+//                                       out of sight until the level's boss is beaten (the Fairy Lantern, the
+//                                       Slime King's Amethyst); "hidden braziers" until every brazier is lit.
 //   <symbol> = building <kind>          a filled rectangle of this symbol is a building (BuildingKinds);
 //                                       its door is in the middle of its south side
 //   <symbol> = prop <kind>              a village prop standing there (PropKinds): a well, a hen, ...
+//                                       The gates (DungeonBuilder.Gates.cs): gap (a pit tile: hop it with the Bouncy Boots),
+//                                       bramble and brazier (spells), heartpiece and starshard (walk into them).
 //   <symbol> = npc <id>                 a friendly character standing there (NpcIds)
+//
+// Header keys worth knowing about (the rest are in DungeonBuilder.Levels.cs):
+//   mood: dusk | woods | dark         the light: Hollow Farm's dusk, the Whispering Woods' green dapple, a dark hollow
+//   world: <x> <y>                    where the room's top-left corner sits on the world map (M), in tiles. Rooms
+//                                     without it aren't on the map.
+//   exit_spawn: <Name>                where to arrive through the stairs (X), a named spot in the exit's level
+//   grey_until: <condition>           the level is drained of colour until it holds, e.g. has:amethyst (Condition.cs)
+//   monsters: E=gourdling L=strawman M=pumpkinking
+//       which monster each of the map's monster markers stands for on this level. Without it, E is a
+//       skeleton, L a slime, J a pirate and M the Slime King (MonsterIds lists the others). M is always
+//       the level's boss: the exit (if there is one) stays sealed until it's dead.
 //
 // Lines starting with "//" are comments (in the header and legend; the map is taken as is).
 // This is plain C# with no Unity editor code, so both DungeonBuilder and the tests can use it.
@@ -46,16 +63,27 @@ public class MapFile
     public static readonly string[] PropKinds =
     {
         "stall", "well", "coop", "grainsack", "lamppost", "noticeboard", "bench", "planter",
-        "hen", "brownhen", "chick", "grain", "bathtub", "cat",
+        "hen", "brownhen", "chick", "grain", "bathtub", "cat", "crib",
         "wishingwell", "lockeddoor", "stove", "pantry", "island", "towels", "pottedfern", "pottedmonstera",
         "scarecrow", "pumpkin", "jackolantern", "corn", "deadtree", "haystack", "gravestone", "crow", "ghost",
         "wisp", "mist", "signpost",
         "ciderstand", "pumpkinstack", "bunting", "festivalarch", "bobbingtub", "giantpumpkin", "cornwall",
+        "pot", "sleepytree", "giantmushroom", "glowcaps",
+        "gap", "bramble", "brazier", "heartpiece", "starshard",
+        "fakewall", "workshopdesk", "workshopnote",
     };
 
+    // The monster markers on a map (E, L, J and M), and what each one means unless the level's
+    // "monsters:" header says otherwise. Keep in sync with DungeonBuilder.Monsters.cs.
+    public const string MonsterMarkers = "ELJM";
+    public static readonly string[] MonsterIds =
+        { "skeleton", "slime", "pirate", "slimeking", "gourdling", "strawman", "pumpkinking", "piratecaptain", "sporepuff", "mothermushroom" };
+    private static readonly Dictionary<char, string> DefaultMonsters =
+        new Dictionary<char, string> { { 'E', "skeleton" }, { 'L', "slime" }, { 'J', "pirate" }, { 'M', "slimeking" } };
+
     // Legend kinds that lead to another scene: a door, or a spiral staircase.
-    public static bool IsDoorKind(string kind) => kind == "door" || kind == "stairsdown" || kind == "stairsup" || kind == "gate";
-    public static readonly string[] NpcIds = { "barnaby", "stitches", "pippin" };
+    public static bool IsDoorKind(string kind) => kind == "door" || kind == "stairsdown" || kind == "stairsup" || kind == "gate" || kind == "edge";
+    public static readonly string[] NpcIds = { "barnaby", "stitches", "pippin", "oldmoss" };
 
     // Props that are walls (solid, drawn as walls on the minimap): the corn maze.
     public static readonly string[] WallPropKinds = { "cornwall" };
@@ -63,7 +91,7 @@ public class MapFile
     public class LegendEntry
     {
         public char Symbol;
-        public string Kind;      // "door", "stairsdown", "stairsup", "castle", "spawn", "item", "building", "prop" or "npc"
+        public string Kind;      // "door", "stairsdown", "stairsup", "gate", "edge", "castle", "spawn", "item", "building", "prop" or "npc"
         public string[] Args;
         public int Line;         // 1-based line in the file, for error messages
     }
@@ -164,12 +192,84 @@ public class MapFile
         }
     }
 
+    // The "monsters:" header as (marker, monster id) pairs, e.g. "E=gourdling L=strawman". Problems (a
+    // marker that isn't E, L, J or M, an unknown monster) come back as errors for the validator.
+    public IEnumerable<(string marker, string id)> MonsterOverrides()
+    {
+        foreach (var word in Get("monsters").Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
+        {
+            int equals = word.IndexOf('=');
+            yield return equals < 0 ? (word, "") : (word.Substring(0, equals), word.Substring(equals + 1).ToLowerInvariant());
+        }
+    }
+
+    // The monster that a marker (E, L, J or M) places on this level.
+    public string MonsterFor(char marker)
+    {
+        foreach (var (m, id) in MonsterOverrides())
+            if (m.Length == 1 && m[0] == marker) return id;
+        return DefaultMonsters[marker];
+    }
+
     // Is this symbol one of the map's buildings (solid, like a wall)?
     public bool IsBuilding(char c) => Legend.TryGetValue(c, out var e) && e.Kind == "building";
 
     // Is this symbol a wall-like prop (a corn maze wall)?
     public bool IsWallProp(char c) =>
         Legend.TryGetValue(c, out var e) && e.Kind == "prop" && e.Args.Length > 0 && WallPropKinds.Contains(e.Args[0]);
+
+    // Is this symbol a fake wall (looks like a wall, walks like air: a secret room's door)?
+    public bool IsFakeWall(char c) =>
+        Legend.TryGetValue(c, out var e) && e.Kind == "prop" && e.Args.Length > 0 && e.Args[0] == "fakewall";
+
+    public string FakeWallSymbols => new string(Legend.Values.Where(e => IsFakeWall(e.Symbol)).Select(e => e.Symbol).ToArray());
+
+    // The tiles of the secret room(s) behind the fake walls: walkable tiles that can only be reached through
+    // one, i.e. not connected to the player's start once the fake walls count as solid.
+    public List<(int col, int row)> SecretTiles()
+    {
+        var result = new List<(int, int)>();
+        var starts = Find('P').ToList();
+        if (starts.Count == 0 || FakeWallSymbols.Length == 0) return result;
+        bool Open(int c, int r)
+        {
+            char t = At(c, r);
+            return t != ' ' && !LevelMapIsWall(t) && !IsBuilding(t) && !IsWallProp(t) && !IsFakeWall(t);
+        }
+        var seen = new HashSet<(int, int)>();
+        var queue = new Queue<(int, int)>();
+        queue.Enqueue(starts[0]);
+        seen.Add(starts[0]);
+        while (queue.Count > 0)
+        {
+            var (c, r) = queue.Dequeue();
+            foreach (var (dc, dr) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+                if (Open(c + dc, r + dr) && seen.Add((c + dc, r + dr))) queue.Enqueue((c + dc, r + dr));
+        }
+        // Flood from each fake wall's neighbours that the player can't reach otherwise.
+        foreach (var (fc, fr) in Rows.SelectMany((row, r) => row.Select((ch, c) => (ch, c, r))).Where(t => IsFakeWall(t.ch)).Select(t => (t.c, t.r)))
+        {
+            foreach (var (dc, dr) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+            {
+                var start = (fc + dc, fr + dr);
+                if (!Open(start.Item1, start.Item2) || seen.Contains(start)) continue;
+                var room = new Queue<(int, int)>();
+                room.Enqueue(start);
+                seen.Add(start);
+                while (room.Count > 0)
+                {
+                    var (c, r) = room.Dequeue();
+                    result.Add((c, r));
+                    foreach (var (ec, er) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+                        if (Open(c + ec, r + er) && seen.Add((c + ec, r + er))) room.Enqueue((c + ec, r + er));
+                }
+            }
+        }
+        return result;
+    }
+
+    // MapFile has no Unity code, so it asks the same question LevelMap.IsWall answers.
+    private static bool LevelMapIsWall(char c) => c == '#' || c == 'T' || c == 'H' || c == 'K' || c == '%' || c == '|' || c == '+';
 
     // Every wall-like prop symbol on this map.
     public string WallSymbols => new string(Legend.Values.Where(e => IsWallProp(e.Symbol)).Select(e => e.Symbol).ToArray());

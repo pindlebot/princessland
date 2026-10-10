@@ -29,4 +29,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level0.unity
     guid: 31ff46361e0df4a099d07defc0ec613f
+  - enabled: 1
+    path: Assets/Scenes/Woods1.unity
+    guid: 365499fa70882429398e39808e26daea
+  - enabled: 1
+    path: Assets/Scenes/Woods2.unity
+    guid: 293cb5c4ce1124790ab092e28d26fafe
+  - enabled: 1
+    path: Assets/Scenes/Woods3.unity
+    guid: d00a0c9876d1f425488e94d2d1ac556b
+  - enabled: 1
+    path: Assets/Scenes/Woods4.unity
+    guid: 4fe2248ca604b478282536b29fe6118b
   m_configObjects: {}

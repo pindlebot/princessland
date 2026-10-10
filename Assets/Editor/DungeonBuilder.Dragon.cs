@@ -10,7 +10,7 @@ public static partial class DungeonBuilder
     // with N("...") for the NPC and H("...") for the hero; "{hero}" becomes the hero's name.
     private class Talk
     {
-        public string Requires = "", NotIf = "", Sets = "";
+        public string Requires = "", NotIf = "", Sets = "", GiveItem = "";
         public int Gold;
         public bool SmallTalk;
         public (bool heroSpeaks, string text)[] Lines;
@@ -32,6 +32,86 @@ public static partial class DungeonBuilder
                 N("Those rattling skeletons crawled up from the dungeon below. Clear them away, and the way down will open."),
                 H("Won't you come and help?"),
                 N("My fighting days are long behind me, little one. But I'll be right here in my cave, cheering you on. Go on, {hero}!"),
+            },
+        },
+        // The story: the Amethyst, the Bouncy Boots, and the lost eggs (QuestCatalog: "The Lost Amethyst", "The Lost Egg").
+        new Talk
+        {
+            Requires = "cleared:Level0", NotIf = "told:amethyst", Sets = "told:amethyst",
+            Lines = new[]
+            {
+                N("The grounds are clear! Well done, {hero}. Now sit a moment, because I owe you the truth."),
+                N("The Grey Gloom took the colour from this island when he stole the Amethyst, the heart of my crown. That's why everything is so grey. It's why I can't fly."),
+                H("Who has it?"),
+                N("The Slime King, in the dungeon below. He's been sitting on it like a hen on an egg. Beat him, bring it back to me, and the colour will come home."),
+                N("And {hero}... the Gloom took my five dragon eggs as well. One for each island. Keep your eyes open for them."),
+            },
+        },
+        new Talk
+        {
+            Requires = "has:amethyst", NotIf = "thanked:amethyst", Sets = "thanked:amethyst", Gold = 50,
+            Lines = new[]
+            {
+                N("My Amethyst! Oh, {hero}, you brought it home! Hold it up. See how it glows?"),
+                H("Everything is turning colourful!"),
+                N("Yes! The colour is coming back to the castle grounds. And look at those boots you're wearing: made from the Slime King's jelly. Bouncy Boots!"),
+                N("With them you can hop over gaps. There were places in the grounds and in the dungeon you couldn't cross. Do you remember them? Now you can!"),
+                N("Go on, have a look around. I have a feeling there are treasures waiting, and maybe even one of my eggs."),
+            },
+        },
+        new Talk
+        {
+            Requires = "has:dragon_egg_castle", NotIf = "thanked:egg_castle", Sets = "thanked:egg_castle", Gold = 30,
+            Lines = new[]
+            {
+                N("Is that... it IS! My egg! Oh, it's warm. It's wiggling!"),
+                H("It was behind a gap in the dungeon."),
+                N("Clever {hero}! Keep it safe with you for now. When we've found all five, we'll hatch them together. Four more to go, in the other islands."),
+            },
+        },
+        // Easter eggs that count visits ("talks:Amethyra" goes up each time you finish a chat with her, so
+        // the 10th chat is when it reads 9). The first one that applies wins, so these come before small talk.
+        new Talk
+        {
+            Requires = "talks:Amethyra>=24", NotIf = "snored", Sets = "snored",
+            Lines = new[]
+            {
+                N("Oh, {hero}, you again! You do like chatting. I was just... just... *yawn*..."),
+                N("Zzzzz... snrrrk... mmm, pancakes... snrrrk... Zzzzz..."),
+                H("(She's fast asleep. Her snoring rumbles like a little thunderstorm.)"),
+                N("Zzzz... don't wake the dragon... Zzzz... Hoo... zzzz..."),
+            },
+        },
+        // Forgot to wash up after the toilet? She can tell.
+        new Talk
+        {
+            Requires = HouseFixture.UnwashedFlag,
+            Lines = new[]
+            {
+                N("...{hero}. Did you wash your hands?"),
+                H("Um... maybe?"),
+                N("A dragon knows these things. Hands wash at the sink at home, dear. Soap first, then rinse. Off you go!"),
+            },
+        },
+        new Talk
+        {
+            Requires = "talks:Amethyra>=9", NotIf = "joked:ten", Sets = "joked:ten", Gold = 10,
+            Lines = new[]
+            {
+                N("Ten chats! That deserves my VERY best joke. What do you call a dragon who never wakes up?"),
+                H("What?"),
+                N("A SNORE-asaurus! ...No wait, I'm a dragon, not a dinosaur. A snore-a-DRAGON! Hoo hoo hoo!"),
+                N("Here, a tip for listening. Dragons always pay for a good audience."),
+            },
+        },
+        new Talk
+        {
+            Requires = HouseFixture.HandsWashedCounter + ">=5", NotIf = "praised:hands", Sets = "praised:hands",
+            Lines = new[]
+            {
+                N("Is that lavender I smell? {hero}, your hands are squeaky clean!"),
+                H("I washed them five times!"),
+                N("Splendid. Cleanest hero in all of Gemhold. I'm so proud I could breathe sparkles."),
             },
         },
         // After that she takes turns between these, one per visit. (Dragon jokes: an easter egg.)
@@ -125,6 +205,7 @@ public static partial class DungeonBuilder
             c.FindPropertyRelative("notIf").stringValue = t.NotIf;
             c.FindPropertyRelative("sets").stringValue = t.Sets;
             c.FindPropertyRelative("giveGold").intValue = t.Gold;
+            c.FindPropertyRelative("giveItem").stringValue = t.GiveItem;
             c.FindPropertyRelative("smallTalk").boolValue = t.SmallTalk;
             var lines = c.FindPropertyRelative("lines");
             lines.arraySize = t.Lines.Length;

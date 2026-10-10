@@ -13,6 +13,7 @@ using UnityEngine;
 //   Dead        (bool)    -> Die (and nothing can interrupt it)
 //   Sitting     (bool)    -> Sit, for heroes sitting down (PlayerController.IsSeated)
 //   Bathing     (bool)    -> Bathe, for heroes lying in the bath (PlayerController.IsBathing)
+//   Sleeping    (bool)    -> Sleep, for heroes tucked up in bed (PlayerController.IsSleeping)
 //
 // Left/right isn't an Animator parameter at all: we just mirror the sprite with flipX.
 [RequireComponent(typeof(CharacterController), typeof(Health))]
@@ -26,6 +27,7 @@ public class CharacterAnimator : MonoBehaviour
     private static readonly int DeadId = Animator.StringToHash("Dead");
     private static readonly int SittingId = Animator.StringToHash("Sitting");
     private static readonly int BathingId = Animator.StringToHash("Bathing");
+    private static readonly int SleepingId = Animator.StringToHash("Sleeping");
 
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -63,8 +65,10 @@ public class CharacterAnimator : MonoBehaviour
         velocity.y = 0f;
         animator.SetFloat(SpeedId, velocity.magnitude);
         bool bathing = player != null && player.IsBathing;
-        animator.SetBool(SittingId, player != null && player.IsSeated && !bathing);
+        bool sleeping = player != null && player.IsSleeping;
+        animator.SetBool(SittingId, player != null && player.IsSeated && !bathing && !sleeping);
         animator.SetBool(BathingId, bathing);
+        animator.SetBool(SleepingId, sleeping);
 
         // Which way is the character facing *on screen*? Compare its forward vector
         // with the camera's screen-right and screen-up directions (flattened onto the floor).

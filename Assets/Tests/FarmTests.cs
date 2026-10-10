@@ -64,7 +64,8 @@ public class FarmTests
     {
         yield return Load("Farm");
         var player = LevelBootstrap.Current.Player;
-        Assert.AreEqual(0, Object.FindObjectsByType<EnemyAI>().Length, "no monsters: the ghosts are friendly");
+        Assert.IsTrue(Object.FindObjectsByType<EnemyAI>().All(e => !e.name.StartsWith("Ghost") && !e.name.StartsWith("Wisp")),
+            "the monsters are pumpkins and scarecrows: the ghosts are still friendly");
 
         // Dusk: a violet sky and a low orange sun.
         Assert.AreEqual((Color)ArtStyle.DuskSky, Camera.main.backgroundColor);
@@ -104,6 +105,136 @@ public class FarmTests
         for (int i = 0; i < 100 && DialogueController.IsOpen; i++) DialogueController.Instance.Advance();
         Assert.IsTrue(stitches.HasMet);
         StringAssert.Contains("OUTSTANDING", stitches.Next().lines.Last().text, "then the jokes start");
+    }
+
+    // Teleports with the CharacterController off, so the move isn't undone.
+    private static void Teleport(GameObject player, Vector3 to)
+    {
+        var cc = player.GetComponent<CharacterController>();
+        cc.enabled = false;
+        player.transform.position = to;
+        cc.enabled = true;
+    }
+
+    private static Vector3 TileCenter(int col, int row)
+    {
+        var map = Object.FindAnyObjectByType<LevelMap>();
+        return new Vector3(col * map.TileSize, 1f, (map.Height - 1 - row) * map.TileSize);
+    }
+
+    private static VisualElement Hud() =>
+        Object.FindAnyObjectByType<HudController>().GetComponent<UIDocument>().rootVisualElement;
+
+    [UnityTest]
+    public IEnumerator TheFarmHasGourdlingsAndStrawmenAndAPumpkinKingInTheGraveyard()
+    {
+        yield return Load("Farm");
+        var all = Object.FindObjectsByType<EnemyAI>();
+        int Count(string prefix) => all.Count(e => e.name.StartsWith(prefix));
+        Assert.AreEqual(4, Count("Gourdling"), "angry pumpkins in the pumpkin patch");
+        Assert.AreEqual(4, Count("Strawman"), "scarecrows gone bad, in the corn and by the graveyard");
+        Assert.AreEqual(1, Count("PumpkinKing"), "and the boss");
+        Assert.AreEqual(9, EnemyAI.AliveCount);
+
+        // The King sleeps in the middle of the graveyard (inside its picket fence).
+        var king = Object.FindAnyObjectByType<BossAbilities>();
+        Assert.AreEqual("The Pumpkin King", king.BossName);
+        Assert.Less(Vector3.Distance(king.transform.position, TileCenter(31, 19)), 2f, "in the middle of the graveyard");
+        Assert.IsTrue(king.HasVolley, "he throws bolts");
+
+        // He's a real boss: far more health and XP than a Gourdling or a Strawman.
+        var gourdling = all.First(e => e.name.StartsWith("Gourdling"));
+        Assert.Greater(king.Health.Max, gourdling.GetComponent<Health>().Max * 8);
+        int kingXp = king.GetComponent<Loot>().Experience;
+        foreach (var normal in all.Where(e => e.GetComponent<BossAbilities>() == null).Select(e => e.GetComponent<Loot>().Experience).Distinct())
+            Assert.That(kingXp, Is.InRange(10 * normal, 50 * normal), $"10-50x the {normal} XP of the others");
+
+        // The HUD counts the monsters and says what to do (there's no exit crystal here: the King is the goal).
+        yield return null;
+        Assert.AreEqual("9 monsters left", Hud().Q<Label>("enemies-left").text);
+        Assert.AreEqual("Beat the Pumpkin King!", Hud().Q<Label>("objective-hint").text);
+    }
+
+    [UnityTest]
+    public IEnumerator AGourdlingHopsAfterYouBitesAndIsBeaten()
+    {
+        yield return Load("Farm");
+        GameSession.Settings.gentle = false; // full damage, so the bite is easy to count
+        var player = LevelBootstrap.Current.Player;
+        player.GetComponent<PlayerController>().enabled = false;
+        // The one among the pumpkins at (10, 8), with an open row of soil running east from it.
+        var gourdling = Object.FindObjectsByType<EnemyAI>().Where(e => e.name.StartsWith("Gourdling"))
+            .OrderBy(e => Vector3.Distance(e.transform.position, TileCenter(10, 8))).First();
+        var health = player.GetComponent<Health>();
+
+        // It notices you from a few tiles away and hops over to bite.
+        Teleport(player, gourdling.transform.position + new Vector3(5f, 0f, 0f));
+        gourdling.enabled = true;
+        float start = Vector3.Distance(gourdling.transform.position, player.transform.position);
+        for (float t = 0f; t < 6f && health.Current == health.Max; t += Time.deltaTime) yield return null;
+        Assert.Less(health.Current, health.Max, "the Gourdling bit you");
+        Assert.Less(Vector3.Distance(gourdling.transform.position, player.transform.position), start, "it came after you");
+
+        // ...and it can be beaten: XP, coins and a puff of stars.
+        int xp = GameSession.Progress.Xp;
+        int before = EnemyAI.AliveCount;
+        gourdling.GetComponent<Health>().TakeDamage(99);
+        Assert.AreEqual(xp + gourdling.GetComponent<Loot>().Experience, GameSession.Progress.Xp);
+        Assert.AreEqual(before - 1, EnemyAI.AliveCount);
+        yield return new WaitForSeconds(1.2f);
+        Assert.IsTrue(gourdling == null, "it pops and is gone");
+    }
+
+    [UnityTest]
+    public IEnumerator ThePumpkinKingThrowsAFanOfBoltsCallsGourdlingsAndBeatingHimClearsTheFarm()
+    {
+        yield return Load("Farm");
+        GameSession.Settings.gentle = false;
+        var player = LevelBootstrap.Current.Player;
+        player.GetComponent<PlayerController>().enabled = false;
+        var king = Object.FindAnyObjectByType<BossAbilities>();
+        var announced = new System.Collections.Generic.List<string>();
+        king.Announced += announced.Add;
+
+        // He wakes when you walk in, and a health bar shows.
+        Teleport(player, king.transform.position + new Vector3(-6f, 0f, 0f));
+        yield return null;
+        yield return null;
+        Assert.IsTrue(king.IsEngaged);
+        CollectionAssert.Contains(announced, "The Pumpkin King rises from the graveyard!");
+
+        // His Volley: he rears back, then five bolts leave him in a fan.
+        king.StartVolley();
+        Assert.IsTrue(king.IsVolleying);
+        int bolts = 0;
+        for (float t = 0f; t < 3f && bolts == 0; t += Time.deltaTime)
+        {
+            yield return null;
+            bolts = Object.FindObjectsByType<EnemyBolt>().Length;
+        }
+        Assert.AreEqual(5, bolts, "a fan of five bolts");
+        var directions = Object.FindObjectsByType<EnemyBolt>().Select(b => b.transform.forward).ToList();
+        Assert.Greater(Vector3.Angle(directions.First(), directions.Last()), 20f, "fanned out, so you can step between them");
+
+        // Hurt to half, he shakes loose Gourdlings.
+        int gourdlings = Object.FindObjectsByType<EnemyAI>().Count(e => e.name.StartsWith("Gourdling"));
+        king.Health.TakeDamage(king.Health.Max / 2);
+        Assert.AreEqual(gourdlings + 4, Object.FindObjectsByType<EnemyAI>().Count(e => e.name.StartsWith("Gourdling")));
+        CollectionAssert.Contains(announced, "The Pumpkin King shakes loose angry Gourdlings!");
+
+        // Beating him clears the farm for good: even the monsters left over are gone next time.
+        Assert.IsFalse(GameSession.Flags.Contains("cleared:Farm"));
+        king.Health.TakeDamage(999);
+        Assert.IsTrue(GameSession.Flags.Contains("cleared:Farm"));
+        CollectionAssert.Contains(announced, "The Pumpkin King is beaten! Hollow Farm is safe again!");
+        yield return null;
+        yield return null;
+        Assert.AreEqual("Spooky, but friendly", Hud().Q<Label>("objective-hint").text, "the goal is met");
+
+        yield return Load("Farm");
+        Assert.AreEqual(0, EnemyAI.AliveCount, "the farm stays safe when you come back");
+        yield return null;
+        Assert.AreEqual("Spooky, but friendly", Hud().Q<Label>("objective-hint").text);
     }
 
     [UnityTest]

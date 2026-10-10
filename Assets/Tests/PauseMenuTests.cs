@@ -126,8 +126,8 @@ public class PauseMenuTests : InputTestFixture
         yield return Frames();
         Tap(pad.dpad.up); // up from the top row stays on it...
         yield return Frames();
-        for (int i = 0; i < 4; i++) { Tap(pad.dpad.down); yield return Frames(); }
-        Assert.AreEqual(4, Object.FindAnyObjectByType<PauseMenu>().Highlighted, "...and down four reaches Save and go to title");
+        for (int i = 0; i < 5; i++) { Tap(pad.dpad.down); yield return Frames(); }
+        Assert.AreEqual(5, Object.FindAnyObjectByType<PauseMenu>().Highlighted, "...and down five reaches Save and go to title (past World map)");
         Tap(pad.buttonSouth);
         yield return WaitFor("Title");
 
@@ -155,8 +155,8 @@ public class PauseMenuTests : InputTestFixture
 
             Tap(keyboard.escapeKey);
             yield return Frames();
-            for (int i = 0; i < 6; i++) { Tap(keyboard.downArrowKey); yield return Frames(); }
-            Assert.AreEqual(5, Object.FindAnyObjectByType<PauseMenu>().Highlighted, "the last row, past the end stays put");
+            for (int i = 0; i < 7; i++) { Tap(keyboard.downArrowKey); yield return Frames(); }
+            Assert.AreEqual(6, Object.FindAnyObjectByType<PauseMenu>().Highlighted, "the last row, past the end stays put");
             Tap(keyboard.enterKey);
             yield return Frames();
 

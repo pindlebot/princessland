@@ -52,8 +52,15 @@ public class PlayerProgression : MonoBehaviour
         // and putting it on gives empty hearts rather than a free heal.
         int gear = inventory != null ? inventory.MaxHealthBonus : 0;
         float gearMana = inventory != null ? inventory.MaxManaBonus : 0;
-        health.SetMax(baseHealth + progress.BonusHealth + gear);
+        health.SetMax(baseHealth + progress.BonusHealth + gear + Collectible.BonusHearts); // heart pieces: four make a heart
         mana.SetMax(baseMana + progress.BonusMana + gearMana);
+    }
+
+    // A heart piece was found: work the maximum out again, and heal fully if it completed a heart.
+    public void Refresh(bool heal)
+    {
+        ApplyStats();
+        if (heal) health.Heal(health.Max);
     }
 
     private void OnLevelUp(int level)

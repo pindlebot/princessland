@@ -44,6 +44,7 @@ public class LevelBootstrap : MonoBehaviour
     private void Awake()
     {
         Current = this;
+        GameSession.Flags.Add("visited:" + SceneManager.GetActiveScene().name); // quests (and one day the world map) read this
         Character = GameSession.SelectedCharacter != null ? GameSession.SelectedCharacter : defaultCharacter;
 
         // Won this level before (and just popped back in, e.g. from the castle)? Remove its
@@ -65,6 +66,7 @@ public class LevelBootstrap : MonoBehaviour
 
         Player = Instantiate(Character.Prefab, spawn.position, spawn.rotation);
         Player.name = Character.Prefab.name;
+        Player.AddComponent<LanternLight>(); // glows once the Fairy Lantern is in the treasures tab
         var torch = Player.transform.Find("Torch");
         if (torch != null) torch.gameObject.SetActive(playerTorch);
 

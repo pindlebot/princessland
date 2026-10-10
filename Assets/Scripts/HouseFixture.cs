@@ -7,6 +7,8 @@ using UnityEngine;
 // The message can hold several answers separated by '|'; each use gives the next one, so
 // the toy chest has a different toy each time you open it.
 //
+// Rest (the bed) works like Sit too: you climb in and lie tucked under the quilt, asleep, with your
+// health and mana restored, until you press E again (or walk away). The same goes for Bathe.
 // Bathe works like Sit (the bathtub: you lie back in it in your swimwear until you get out).
 // With a bottle of bubble bath in your bag, getting in pours it in (using it up) and a
 // mountain of bubbles heaps up over the tub until you get out.
@@ -16,14 +18,22 @@ using UnityEngine;
 // a strawberry from the fruit bowl), one at a time: if you're already carrying one, it says so.
 // Faucet turns a stream of water on and off (the bath's tap), like the lamp's light.
 // Getting into the bath leaves you dripping wet; Towel (the towel shelf) dries you off.
+// A fixture can count its uses (useCounter: each time you get up from the toilet, "toilet_flushes")
+// and mark you with a flag while you've done it (useFlag: "unwashed", cleared by rinsing your hands,
+// which Amethyra notices). After surpriseAt uses, something pops out (the toilet frog, who hands
+// you his hat). Rinsing your hands at a sink counts "hands_washed".
+// Read (a note, a computer) counts each look and sets its flag, then says the next message.
 // Effects are saved as numbers, so new ones go at the end of the enum.
 public class HouseFixture : MonoBehaviour, IInteractable
 {
-    public enum Effect { None, Rest, WashHands, DryHands, Sit, Lamp, Bathe, Gather, Faucet, Towel }
+    public enum Effect { None, Rest, WashHands, DryHands, Sit, Lamp, Bathe, Gather, Faucet, Towel, Read }
 
     private const string WetHandsFlag = "wetHands";
     public const string SoapyHandsFlag = "soapyHands";
     public const string DrippingFlag = "dripping"; // out of the bath, not dried off yet
+    public const string UnwashedFlag = "unwashed";      // used the toilet, haven't rinsed your hands since
+    public const string HandsWashedCounter = "hands_washed";
+    public const string ToiletFrogFlag = "found:toilet_frog";
 
     [SerializeField] private string prompt = "Use";
     [TextArea] [SerializeField] private string message;
@@ -38,6 +48,8 @@ public class HouseFixture : MonoBehaviour, IInteractable
     [SerializeField] private float seatHeight = 0.85f;
     [Tooltip("How far toward the camera the hero sits, so they're drawn in front of the seat.")]
     [SerializeField] private float seatForward = 0.35f;
+    [Tooltip("How far along the screen's right the hero sits from the middle (negative = left): the bed's left pillow.")]
+    [SerializeField] private float seatSideways;
 
     [Header("Soap (a sink)")]
     [Tooltip("Shown until you've soaped your hands, e.g. \"Pump the soap\". Empty = no soap step.")]
@@ -74,7 +86,20 @@ public class HouseFixture : MonoBehaviour, IInteractable
     [TextArea] [SerializeField] private string haveOneMessage = "You already have one.";
     [TextArea] [SerializeField] private string bagFullMessage = "Your bag is full!";
 
+    [Header("Counting uses (the toilet)")]
+    [Tooltip("A GameSession counter that goes up each time you get up from this seat. Empty = don't count.")]
+    [SerializeField] private string useCounter;
+    [Tooltip("A flag set each time (cleared elsewhere, e.g. 'unwashed' until you rinse your hands).")]
+    [SerializeField] private string useFlag;
+    [Tooltip("After this many uses, a surprise pops out (0 = never).")]
+    [SerializeField] private int surpriseAt;
+    [SerializeField] private GameObject surprisePrefab;   // Sir Hopsalot's cousin, hopping out
+    [SerializeField] private ItemDefinition surpriseGift; // ...and the hat he gives you
+    [TextArea] [SerializeField] private string surpriseMessage;
+    [SerializeField] private AudioClip surpriseSound;
+
     private int uses;
+    private bool wasSittingHere;
 
     public Effect Kind => effect;
     public Vector3 Position => transform.position;
@@ -84,7 +109,7 @@ public class HouseFixture : MonoBehaviour, IInteractable
     {
         get
         {
-            if ((effect == Effect.Sit || effect == Effect.Bathe) && IsSittingHere(Player())) return standPrompt;
+            if (IsSeatEffect && IsSittingHere(Player())) return standPrompt;
             if (effect == Effect.WashHands && NeedsSoap) return soapPrompt;
             if (effect == Effect.Lamp && lamp != null && !lamp.enabled) return offPrompt;
             if (effect == Effect.Faucet && !IsRunning) return offPrompt;
@@ -101,6 +126,7 @@ public class HouseFixture : MonoBehaviour, IInteractable
         {
             case Effect.Sit:
             case Effect.Bathe:
+            case Effect.Rest:
                 var hero = player.GetComponent<PlayerController>();
                 if (IsSittingHere(hero))
                 {
@@ -112,7 +138,18 @@ public class HouseFixture : MonoBehaviour, IInteractable
                 Vector3 towardCamera = Camera.main != null
                     ? -Vector3.ProjectOnPlane(Camera.main.transform.forward, Vector3.up).normalized
                     : Vector3.back;
-                hero.SitOn(transform, transform.position + towardCamera * seatForward, seatHeight, bathing: effect == Effect.Bathe);
+                Vector3 across = Camera.main != null
+                    ? Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized
+                    : Vector3.right;
+                hero.SitOn(transform, transform.position + towardCamera * seatForward + across * seatSideways, seatHeight,
+                           bathing: effect == Effect.Bathe, sleeping: effect == Effect.Rest);
+                if (effect == Effect.Rest)
+                {
+                    // A nap restores everything, the moment you're tucked in.
+                    var rested = player.GetComponent<Health>();
+                    rested.Heal(rested.Max);
+                    player.GetComponent<Mana>().Refill();
+                }
                 if (effect == Effect.Bathe) GameSession.Flags.Add(DrippingFlag);
                 if (effect == Effect.Bathe && bubbleItem != null && bubbles != null
                     && player.TryGetComponent(out Inventory bag) && bag.Remove(bubbleItem))
@@ -125,12 +162,6 @@ public class HouseFixture : MonoBehaviour, IInteractable
                 }
                 break;
 
-            case Effect.Rest:
-                var health = player.GetComponent<Health>();
-                health.Heal(health.Max);
-                player.GetComponent<Mana>().Refill();
-                break;
-
             case Effect.WashHands:
                 if (NeedsSoap)
                 {
@@ -140,6 +171,8 @@ public class HouseFixture : MonoBehaviour, IInteractable
                 }
                 GameSession.Flags.Remove(SoapyHandsFlag); // rinsed off
                 GameSession.Flags.Add(WetHandsFlag);
+                GameSession.Flags.Remove(UnwashedFlag);
+                GameSession.AddToCounter(HandsWashedCounter);
                 break;
 
             case Effect.DryHands:
@@ -157,6 +190,11 @@ public class HouseFixture : MonoBehaviour, IInteractable
                     if (basket.Count(gift) > 0) return haveOneMessage;
                     if (!basket.Add(gift)) return bagFullMessage;
                 }
+                break;
+
+            case Effect.Read: // a note or a computer: each look counts and sets its flag (Dad's Workshop)
+                if (!string.IsNullOrEmpty(useCounter)) GameSession.AddToCounter(useCounter);
+                if (!string.IsNullOrEmpty(useFlag)) GameSession.Flags.Add(useFlag);
                 break;
 
             case Effect.Towel:
@@ -203,10 +241,44 @@ public class HouseFixture : MonoBehaviour, IInteractable
     // Walking out of the bath (rather than pressing E) pops the bubbles too.
     private void Update()
     {
-        if (HasBubbles && !IsSittingHere(Player())) bubbles.SetActive(false);
+        bool sitting = IsSittingHere(Player());
+        if (HasBubbles && !sitting) bubbles.SetActive(false);
+        // Getting up counts as a use, whether you pressed E or just walked away.
+        if (wasSittingHere && !sitting) OnGotUp();
+        wasSittingHere = sitting;
+    }
+
+    private void OnGotUp()
+    {
+        if (!string.IsNullOrEmpty(useCounter)) GameSession.AddToCounter(useCounter);
+        if (!string.IsNullOrEmpty(useFlag)) GameSession.Flags.Add(useFlag);
+        TrySurprise();
+    }
+
+    // The tenth flush: a frog pops out of the bowl and gives you his hat (once; if your bag is
+    // full he waits for the next flush).
+    private void TrySurprise()
+    {
+        if (surpriseAt <= 0 || string.IsNullOrEmpty(useCounter) || GameSession.Flags.Contains(ToiletFrogFlag)) return;
+        if (GameSession.GetCounter(useCounter) < surpriseAt) return;
+        var hero = LevelBootstrap.Current != null ? LevelBootstrap.Current.Player : null;
+        if (hero == null || !hero.TryGetComponent(out Inventory bag)) return;
+        if (surpriseGift != null && !bag.Add(surpriseGift)) return; // no room: try again next time
+
+        GameSession.Flags.Add(ToiletFrogFlag);
+        AudioManager.Play(surpriseSound);
+        if (surprisePrefab != null)
+        {
+            var frog = Instantiate(surprisePrefab, transform.position + new Vector3(-1f, 0f, -1.4f), Quaternion.identity);
+            if (frog.TryGetComponent(out Frog hop)) hop.HopNow();
+        }
+        var hud = FindAnyObjectByType<HudController>();
+        if (hud != null) hud.ShowToast(surpriseMessage);
     }
 
     private bool NeedsSoap => !string.IsNullOrEmpty(soapPrompt) && !GameSession.Flags.Contains(SoapyHandsFlag);
+
+    private bool IsSeatEffect => effect == Effect.Sit || effect == Effect.Bathe || effect == Effect.Rest;
 
     private bool IsSittingHere(PlayerController hero) => hero != null && hero.Seat == transform;
 

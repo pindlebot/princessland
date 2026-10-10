@@ -76,6 +76,7 @@ MonoBehaviour:
     notIf: met:Pippin
     sets: met:Pippin
     giveGold: 0
+    giveItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0

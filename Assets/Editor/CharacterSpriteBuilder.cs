@@ -92,6 +92,7 @@ public static class CharacterSpriteBuilder
         ctrl.AddParameter("Dead", AnimatorControllerParameterType.Bool);
         ctrl.AddParameter("Sitting", AnimatorControllerParameterType.Bool); // only heroes have a Sit clip
         ctrl.AddParameter("Bathing", AnimatorControllerParameterType.Bool); // ...and a Bathe clip
+        ctrl.AddParameter("Sleeping", AnimatorControllerParameterType.Bool); // ...and a Sleep clip (the bed at home)
 
         var sm = ctrl.layers[0].stateMachine;
 
@@ -140,7 +141,7 @@ public static class CharacterSpriteBuilder
         // Sitting (the heroes, on the toilet at home): held for as long as Sitting is set.
         // Hurt or Action can still interrupt it; they return to Idle, and from there this
         // Any State transition sits the hero straight back down.
-        // Bathing (the tub at home) works the same way on its own bool.
+        // Bathing (the tub at home) and Sleeping (the bed) work the same way, each on its own bool.
         AnimatorState Held(string name, string flag)
         {
             if (!clips.TryGetValue(name, out var clip)) return null;
@@ -155,12 +156,14 @@ public static class CharacterSpriteBuilder
         }
         var sit = Held("Sit", "Sitting");
         var bathe = Held("Bathe", "Bathing");
+        var sleep = Held("Sleep", "Sleeping");
 
         // Lay the graph out readably for the Animator window.
         Place(sm, idle, 300, 0); Place(sm, walk, 560, 0);
         Place(sm, act, 300, 140); Place(sm, hurt, 560, 140); Place(sm, die, 300, -140);
         if (sit != null) Place(sm, sit, 560, -140);
         if (bathe != null) Place(sm, bathe, 820, -140);
+        if (sleep != null) Place(sm, sleep, 1080, -140);
         sm.anyStatePosition = new Vector3(40, 140);
         sm.entryPosition = new Vector3(40, 0);
 

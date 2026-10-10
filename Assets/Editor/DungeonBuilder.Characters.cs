@@ -71,6 +71,11 @@ public static partial class DungeonBuilder
         SetRef(progression, "levelUpSound", Sound("level_up"));
         SetRef(progression, "levelUpEffect", levelUpEffect);
 
+        var hop = go.AddComponent<HopAbility>(); // does nothing until the Bouncy Boots are in the treasures tab
+        SetRef(hop, "puffPrefab", levelUpEffect);
+        SetRef(hop, "hopSound", Sound("hop"));
+        SetRef(hop, "landSound", Sound("hop_land"));
+
         var castPoint = new GameObject("CastPoint").transform;
         castPoint.SetParent(go.transform, false);
         castPoint.localPosition = new Vector3(0f, 0.2f, 0.9f);
@@ -256,6 +261,7 @@ public static partial class DungeonBuilder
         var projectile = go.AddComponent<Projectile>();
         SetRef(projectile, "impactPrefab", impact);
         SetRef(projectile, "impactSound", impactSound);
+        SetInt(projectile, "element", (int)(spell == "TidalOrb" ? SpellElement.Water : SpellElement.Fire)); // brambles and braziers care
 
         // Child: the looping sprite, turned to point where it's flying.
         var sprite = new GameObject("Sprite");

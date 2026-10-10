@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2961227e4e78746d69d8edc969fc2b4b, type: 3}
+  m_Name: HealingApple
+  m_EditorClassIdentifier: Game::ItemDefinition
+  id: healing_apple
+  displayName: Healing Apple
+  description: A crunchy red apple from the Whispering Woods.
+  icon: {fileID: 21300000, guid: 94a0b9fdb775d45fea7709feb4af4b41, type: 3}
+  slot: 0
+  keyItem: 0
+  spellDamageBonus: 0
+  maxHealthBonus: 0
+  maxManaBonus: 0
+  moveSpeedPercent: 0
+  spellRechargePercent: 0
+  healthRestore: 2
+  manaRestore: 0

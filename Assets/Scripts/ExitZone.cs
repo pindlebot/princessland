@@ -7,6 +7,8 @@ public class ExitZone : MonoBehaviour
 {
     [Tooltip("Scene to load when the player walks in. Leave empty for the final exit (wins the game).")]
     [SerializeField] private string nextScene;
+    [Tooltip("Where to arrive in the next scene (a named spawn); empty = its start.")]
+    [SerializeField] private string nextSpawn = "";
     [SerializeField] private bool requireAllEnemiesDefeated;
     [SerializeField] private GameObject visual; // the green crystal, hidden while locked
     [SerializeField] private AudioClip openSound; // fanfare when a locked exit opens
@@ -61,7 +63,8 @@ public class ExitZone : MonoBehaviour
             if (string.IsNullOrEmpty(nextScene)) GameManager.Instance.Win();
             else
             {
-                SaveSystem.Autosave(nextScene, ""); // the stairs are a door too
+                GameSession.NextSpawn = string.IsNullOrEmpty(nextSpawn) ? null : nextSpawn;
+                SaveSystem.Autosave(nextScene, nextSpawn); // the stairs are a door too
                 SceneManager.LoadScene(nextScene);
             }
         }

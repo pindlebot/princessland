@@ -11,8 +11,13 @@ using UnityEngine.InputSystem.Controls;
 //   Cast            Space / left click        X (west) / right trigger
 //   Ability 2       Q                         LB (left shoulder)
 //   Ability 3       F                         LT (left trigger)
+//   Hop (boots)     walk into a gap, or Shift B (east)
 //   Inventory       I                         Y (north)
 //   Skill tree      K                         View / Select
+//   Quest log       J                         right stick click
+//   Quick slots     2 3 4 5                   right stick up / right / down / left
+//   Fountain menu   T                         left stick click
+//   World map       M                         Start > World map
 //   Help            H                         RB (right shoulder)
 //   Pause menu      Esc                       Start
 //   Back            Esc                       B (east)
@@ -104,13 +109,37 @@ public static class GameInput
         _ => "",
     };
 
+    // Quick slots (hotbar 2-5), for the consumables in the bag: the number keys 2-5, or a flick of the right stick.
+    public static bool QuickPressed(int slot) => slot switch
+    {
+        0 => Down(Keyboard.current?.digit2Key) || Down(Gamepad.current?.rightStick.up),
+        1 => Down(Keyboard.current?.digit3Key) || Down(Gamepad.current?.rightStick.right),
+        2 => Down(Keyboard.current?.digit4Key) || Down(Gamepad.current?.rightStick.down),
+        3 => Down(Keyboard.current?.digit5Key) || Down(Gamepad.current?.rightStick.left),
+        _ => false,
+    };
+
+    public static string QuickKey(int slot) => UsingGamepad
+        ? new[] { "R Up", "R Right", "R Down", "R Left" }[slot]
+        : (slot + 2).ToString();
+
+    // Hop over a gap with the Bouncy Boots. (Walking into the gap hops too: this is for when you'd rather choose.)
+    public static bool HopPressed => Down(Keyboard.current?.leftShiftKey) || Down(Gamepad.current?.buttonEast);
+
+    public static bool QuestLogPressed => Down(Keyboard.current?.jKey) || Down(Gamepad.current?.rightStickButton);
+    public static string QuestLogKeyName => UsingGamepad ? "R3" : "J";
+    public static bool TravelPressed => Down(Keyboard.current?.tKey) || Down(Gamepad.current?.leftStickButton);
+    public static string TravelKey => UsingGamepad ? "L3" : "T";
+
     public static bool InventoryPressed => Down(Keyboard.current?.iKey) || Down(Gamepad.current?.buttonNorth);
     public static bool SkillTreePressed => Down(Keyboard.current?.kKey) || Down(Gamepad.current?.selectButton);
     public static bool HelpPressed => Down(Keyboard.current?.hKey) || Down(Gamepad.current?.rightShoulder);
     public static bool MenuPressed => Down(Keyboard.current?.escapeKey) || Down(Gamepad.current?.startButton);
     public static bool BackPressed => Down(Keyboard.current?.escapeKey) || Down(Gamepad.current?.buttonEast);
     public static bool RestartPressed => Down(Keyboard.current?.rKey);
-    public static bool MutePressed => Down(Keyboard.current?.mKey);
+    // The world map: M, or "World map" in the pause menu (Start). (Music is turned down in the pause menu now.)
+    public static bool MapPressed => Down(Keyboard.current?.mKey);
+    public static string MapKey => UsingGamepad ? "Start, World map" : "M";
 
     public static bool ConfirmPressed =>
         Down(Keyboard.current?.enterKey) || Down(Keyboard.current?.numpadEnterKey) || Down(Gamepad.current?.buttonSouth);
@@ -120,7 +149,8 @@ public static class GameInput
         Down(Keyboard.current?.eKey) || Down(Keyboard.current?.spaceKey) || ConfirmPressed || ClickPressed;
 
     // Gameplay buttons are ignored while a conversation, the recipe card or the pause menu is open.
-    public static bool GameplayBlocked => DialogueController.BlocksInput || CookingView.BlocksInput || PauseMenu.IsOpen;
+    public static bool GameplayBlocked =>
+        DialogueController.BlocksInput || CookingView.BlocksInput || FountainTravelView.BlocksInput || WorldMapView.BlocksInput || PauseMenu.IsOpen;
 
     // Menu navigation: arrow keys, d-pad, or a flick of the stick.
     public static bool UpPressed =>

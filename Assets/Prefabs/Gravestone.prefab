@@ -115,7 +115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6106067559900468066}
   - component: {fileID: 7961933239664887679}
-  - component: {fileID: 6284772949618202511}
+  - component: {fileID: 3321397269861127290}
   m_Layer: 0
   m_Name: Gravestone
   m_TagString: Untagged
@@ -161,7 +161,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2, y: 1.4, z: 0.5}
   m_Center: {x: 0, y: 0.7, z: 0}
---- !u!114 &6284772949618202511
+--- !u!114 &3321397269861127290
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -182,6 +182,7 @@ MonoBehaviour:
   standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
+  seatSideways: 0
   soapPrompt: 
   soapMessage: 
   soapSound: {fileID: 0}
@@ -197,6 +198,13 @@ MonoBehaviour:
   gift: {fileID: 0}
   haveOneMessage: You already have one.
   bagFullMessage: Your bag is full!
+  useCounter: 
+  useFlag: 
+  surpriseAt: 0
+  surprisePrefab: {fileID: 0}
+  surpriseGift: {fileID: 0}
+  surpriseMessage: 
+  surpriseSound: {fileID: 0}
 --- !u!1 &7493339538309263232
 GameObject:
   m_ObjectHideFlags: 0

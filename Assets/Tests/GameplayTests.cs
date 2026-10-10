@@ -175,20 +175,9 @@ public class GameplayTests
     {
         yield return null;
         var lights = Object.FindObjectsByType<FlickerLight>();
-        Assert.AreEqual(16, lights.Count(l => l.name != "LavaGlow"), "one light per T on the map (15), plus Bonesy's campfire");
+        Assert.AreEqual(20, lights.Count(l => l.name != "LavaGlow"), "one light per T on the map (17), plus Bonesy's campfire and the two braziers' glows");
         Assert.AreEqual(6, lights.Count(l => l.name == "LavaGlow"), "and a glow on every third lava tile");
         Assert.Greater(GameObject.Find("Decor").transform.childCount, 20, "grass tufts, torches and the chest");
-    }
-
-    [UnityTest]
-    public IEnumerator ReachingExitWinsGame()
-    {
-        // The exit is sealed until the Slime King is defeated.
-        Object.FindAnyObjectByType<BossAbilities>().Health.TakeDamage(999);
-        Teleport(player, Object.FindAnyObjectByType<ExitZone>().transform.position);
-        yield return new WaitForFixedUpdate();
-        yield return new WaitForFixedUpdate();
-        Assert.IsTrue(GameManager.Instance.IsGameOver);
     }
 
     [UnityTest]

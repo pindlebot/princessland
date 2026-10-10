@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -34,7 +35,13 @@ public class HudController : MonoBehaviour
     private const int MaxHeartsShown = 12; // ...and past this, one heart and a count ("7 / 14")
     private const string DetailsHint = "Hover an item to inspect it. Click to put it on, take it off, or eat it.";
     // The worn slots, in the order the inventory panel shows them.
-    private static readonly EquipSlot[] WornSlots = { EquipSlot.Weapon, EquipSlot.Helm, EquipSlot.Armor, EquipSlot.Boots, EquipSlot.Ring };
+    private static readonly EquipSlot[] WornSlots =
+        { EquipSlot.Weapon, EquipSlot.Helm, EquipSlot.Armor, EquipSlot.Boots, EquipSlot.Ring, EquipSlot.Hat, EquipSlot.Charm };
+    private const int KeySlotCount = 10; // the treasures tab's grid
+    // What the details box says on the treasures tab: your collection so far, then how to read about each treasure.
+    private static string TreasureHint =>
+        $"Heart pieces {Collectible.HeartPieces % Collectible.PiecesPerHeart}/{Collectible.PiecesPerHeart} · Star shards {Collectible.StarShards}. " +
+        "Hover a treasure to read about it.";
 
     // True while the mouse is over a clickable part of the HUD, so gameplay can ignore
     // that click (SpellAbility doesn't cast when you click an inventory slot).
@@ -56,9 +63,22 @@ public class HudController : MonoBehaviour
     private float toastHideAt;
     private VisualElement inventoryPanel;
     private readonly Dictionary<EquipSlot, VisualElement> equipSlots = new Dictionary<EquipSlot, VisualElement>();
-    private VisualElement[] bagSlots;
+    private VisualElement[] bagSlots, keySlots;
+    private VisualElement bagGrid, treasureGrid, bagTab, treasureTab;
+    private bool treasuresShown;
+    private int hoveredBag = -1; // the bag slot under the mouse (so 2-5 can put it on a quick slot)
+    private readonly List<QuickSlot> quickSlots = new List<QuickSlot>();
     private Label itemDetails, statDamage, statGear;
+    private VisualElement tooltip;
+    private Label tipName, tipKind, tipDesc, tipStats, tipAction;
     private readonly List<AbilitySlot> abilitySlots = new List<AbilitySlot>();
+
+    // One consumable slot in the hotbar (keys 2-5): its column (slot + key), and its parts.
+    private class QuickSlot
+    {
+        public VisualElement Item, Slot, Icon;
+        public Label Key, Count;
+    }
 
     // One learned-ability slot in the hotbar: its column (slot + key), the slot, and its parts.
     private class AbilitySlot
@@ -138,6 +158,7 @@ public class HudController : MonoBehaviour
 
         SetUpInventory();
         SetUpAbilitySlots();
+        SetUpQuickSlots();
 
         // Fill in who we're playing and where.
         root.Q("portrait").style.backgroundImage = new StyleBackground(character.Portrait);
@@ -156,7 +177,7 @@ public class HudController : MonoBehaviour
         }
 
         exit = FindAnyObjectByType<ExitZone>();
-        exitWasOpen = exit == null || exit.IsOpen;
+        exitWasOpen = ObjectiveDone;
         lastAlive = EnemyAI.AliveCount;
         startPosition = playerHealth.transform.position;
         startTime = Time.time;
@@ -172,6 +193,7 @@ public class HudController : MonoBehaviour
         manaFill.style.width = Length.Percent(100f * playerMana.Current / playerMana.Max);
         UpdateSpellSlot();
         UpdateAbilitySlots();
+        UpdateQuickSlots();
         UpdateObjective();
         UpdateSecondary();
         UpdateHints();
@@ -210,6 +232,7 @@ public class HudController : MonoBehaviour
             SetHelpOpen(!IsHelpOpen);
             AudioManager.Play(clickSound, 0.6f);
         }
+        HandleQuickKeys();
         // Which button does this player cast with? Show that one on the spell slot.
         if (GameInput.ClickPressed && !PointerOverUi) usedMouseLast = true;
         if (GameInput.CastPressed) usedMouseLast = false;
@@ -335,6 +358,83 @@ public class HudController : MonoBehaviour
         }
     }
 
+    // ---------- Quick slots (hotbar slots 2-5: consumables) ----------
+
+    private void SetUpQuickSlots()
+    {
+        for (int i = 0; i < InventoryState.QuickSlotCount; i++)
+        {
+            var item = root.Q($"quick-{i}");
+            if (item == null) continue;
+            var slot = item.Q(className: "slot");
+            int index = i;
+            slot.RegisterCallback<ClickEvent>(_ => UseQuickSlot(index)); // clicking works too
+            quickSlots.Add(new QuickSlot
+            {
+                Item = item,
+                Slot = slot,
+                Icon = slot.Q(className: "slot-icon"),
+                Key = item.Q<Label>(className: "spell-key"),
+                Count = slot.Q<Label>(className: "slot-cost"),
+            });
+        }
+    }
+
+    // A slot appears once it holds something, shows how many are left, and fades when you've run out.
+    private void UpdateQuickSlots()
+    {
+        for (int i = 0; i < quickSlots.Count; i++)
+        {
+            var q = quickSlots[i];
+            var item = inventory.Quick(i);
+            q.Item.EnableInClassList("unlocked", item != null);
+            if (item == null) continue;
+            int count = inventory.Count(item);
+            q.Icon.style.backgroundImage = new StyleBackground(item.Icon);
+            q.Count.text = count.ToString();
+            q.Slot.EnableInClassList("no-mana", count == 0);
+            q.Key.text = GameInput.QuickKey(i);
+        }
+    }
+
+    // 2-5 eats what's on that slot. With the bag open and the mouse over a consumable, 2-5 puts it
+    // on that slot instead (and a slot's item can be swapped the same way).
+    private void HandleQuickKeys()
+    {
+        for (int i = 0; i < InventoryState.QuickSlotCount; i++)
+        {
+            if (!GameInput.QuickPressed(i)) continue;
+            var hovered = IsInventoryOpen ? BagItem(hoveredBag) : null;
+            if (hovered != null && hovered.IsConsumable)
+            {
+                if (inventory.AssignQuick(i, hovered))
+                {
+                    ShowToast($"{hovered.DisplayName} is on slot {GameInput.QuickKey(i)}.");
+                    AudioManager.Play(clickSound, 0.6f);
+                }
+            }
+            else UseQuickSlot(i);
+        }
+    }
+
+    private void UseQuickSlot(int slot)
+    {
+        if (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) return;
+        var item = inventory.Quick(slot);
+        if (item == null) return;
+        if (!EatFromBag(item)) ShowToast($"No {item.DisplayName} left!");
+    }
+
+    // Eats one (from the bag or a quick slot), with the munch and the toast.
+    private bool EatFromBag(ItemDefinition item)
+    {
+        if (!inventory.Eat(item)) return false;
+        itemDetails.text = $"Yum! You eat the {item.DisplayName}. {item.FoodText}!";
+        ShowToast($"Yum! {item.DisplayName}! {item.FoodText}");
+        AudioManager.Play(eatSound != null ? eatSound : clickSound);
+        return true;
+    }
+
     private void OnSkillLearned(SkillDefinition skill)
     {
         if (!skill.IsAbility) return;
@@ -354,7 +454,7 @@ public class HudController : MonoBehaviour
         int total = defeated + alive;
 
         bool showCount = LevelBootstrap.Current.ShowEnemyCount;
-        bool exitOpen = exit == null || exit.IsOpen;
+        bool exitOpen = ObjectiveDone;
 
         enemiesLeft.text = alive == 1 ? "1 monster left" : $"{alive} monsters left";
         monstersRow.style.display = showCount && !exitOpen ? DisplayStyle.Flex : DisplayStyle.None;
@@ -382,11 +482,15 @@ public class HudController : MonoBehaviour
 
         if (exitOpen && !exitWasOpen)
         {
-            ShowToast("The stairs are open!");
+            if (exit != null) ShowToast("The stairs are open!"); // (a boss on a level with no exit announces its own defeat)
             Celebrate();
         }
         exitWasOpen = exitOpen;
     }
+
+    // The level's goal is met: its exit is open or, with no exit crystal but a boss (Hollow Farm's Pumpkin
+    // King), the boss is beaten. A destroyed boss compares equal to null (Unity overloads ==).
+    private bool ObjectiveDone => exit != null ? exit.IsOpen : boss == null || boss.Health.IsDead;
 
     // A few quick bounces of the objective card.
     private void Celebrate()
@@ -454,7 +558,11 @@ public class HudController : MonoBehaviour
 
     private void OnLevelUp(int level) => ShowToast($"Level up! You're level {level}!");
 
-    public void SetInventoryOpen(bool open) => inventoryPanel.EnableInClassList("open", open);
+    public void SetInventoryOpen(bool open)
+    {
+        inventoryPanel.EnableInClassList("open", open);
+        if (!open) HideTip();
+    }
     public void SetHelpOpen(bool open) => helpPanel.EnableInClassList("open", open);
 
     // ---------- Inventory panel ----------
@@ -467,6 +575,13 @@ public class HudController : MonoBehaviour
         statGear = root.Q<Label>("stat-gear");
         bagSlots = new VisualElement[inventory.Capacity];
         itemDetails.text = DetailsHint;
+        tooltip = root.Q("item-tooltip");
+        tipName = root.Q<Label>("tip-name");
+        tipKind = root.Q<Label>("tip-kind");
+        tipDesc = root.Q<Label>("tip-desc");
+        tipStats = root.Q<Label>("tip-stats");
+        tipAction = root.Q<Label>("tip-action");
+        SetUpDoll();
 
         // UI Toolkit events work like DOM events: register a callback on an element.
         for (int i = 0; i < bagSlots.Length; i++)
@@ -474,9 +589,36 @@ public class HudController : MonoBehaviour
             int index = i; // capture a copy for the lambdas below
             bagSlots[i] = root.Q($"bag-{i}");
             bagSlots[i].RegisterCallback<ClickEvent>(_ => OnBagSlotClicked(index));
-            bagSlots[i].RegisterCallback<PointerEnterEvent>(_ => ShowDetails(BagItem(index), equipped: false));
-            bagSlots[i].RegisterCallback<PointerLeaveEvent>(_ => itemDetails.text = DetailsHint);
+            bagSlots[i].RegisterCallback<PointerEnterEvent>(e =>
+            {
+                hoveredBag = index;
+                ShowDetails(BagItem(index), equipped: false, e.position);
+            });
+            bagSlots[i].RegisterCallback<PointerMoveEvent>(e => MoveTip(e.position));
+            bagSlots[i].RegisterCallback<PointerLeaveEvent>(_ =>
+            {
+                hoveredBag = -1;
+                HideTip();
+            });
         }
+
+        // The treasures tab: a grid of key items (abilities, lanterns, gems...), look but don't touch.
+        bagGrid = root.Q("bag");
+        treasureGrid = root.Q("treasures");
+        bagTab = root.Q("tab-bag");
+        treasureTab = root.Q("tab-treasures");
+        keySlots = new VisualElement[KeySlotCount];
+        for (int i = 0; i < KeySlotCount; i++)
+        {
+            int index = i;
+            keySlots[i] = root.Q($"key-{i}");
+            keySlots[i].RegisterCallback<PointerEnterEvent>(e => ShowDetails(KeyItem(index), equipped: false, e.position));
+            keySlots[i].RegisterCallback<PointerMoveEvent>(e => MoveTip(e.position));
+            keySlots[i].RegisterCallback<PointerLeaveEvent>(_ => HideTip());
+        }
+        bagTab.RegisterCallback<ClickEvent>(_ => ShowTreasures(false));
+        treasureTab.RegisterCallback<ClickEvent>(_ => ShowTreasures(true));
+        ShowTreasures(false);
         foreach (var slot in WornSlots)
         {
             var element = root.Q($"equip-{slot.ToString().ToLowerInvariant()}");
@@ -485,29 +627,39 @@ public class HudController : MonoBehaviour
             {
                 if (inventory.Unequip(slot)) AudioManager.Play(clickSound);
             });
-            element.RegisterCallback<PointerEnterEvent>(_ => ShowWornDetails(slot));
-            element.RegisterCallback<PointerLeaveEvent>(_ => itemDetails.text = DetailsHint);
+            element.RegisterCallback<PointerEnterEvent>(e => ShowWornDetails(slot, e.position));
+            element.RegisterCallback<PointerMoveEvent>(e => MoveTip(e.position));
+            element.RegisterCallback<PointerLeaveEvent>(_ => HideTip());
         }
 
         inventory.Changed += RefreshInventory;
         RefreshInventory();
     }
 
-    private ItemDefinition BagItem(int index) => index < inventory.Bag.Count ? inventory.Bag[index] : null;
+    private ItemDefinition BagItem(int index) => index >= 0 && index < inventory.Bag.Count ? inventory.Bag[index] : null;
+    private ItemDefinition KeyItem(int index) => index >= 0 && index < inventory.KeyItems.Count ? inventory.KeyItems[index] : null;
+
+    public bool TreasuresShown => treasuresShown;
+
+    // The Bag / Treasures tabs.
+    public void ShowTreasures(bool show)
+    {
+        treasuresShown = show;
+        bagGrid.style.display = show ? DisplayStyle.None : DisplayStyle.Flex;
+        treasureGrid.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+        bagTab.EnableInClassList("active", !show);
+        treasureTab.EnableInClassList("active", show);
+        itemDetails.text = show ? TreasureHint : DetailsHint;
+        HideTip();
+    }
 
     private void OnBagSlotClicked(int index)
     {
         var item = BagItem(index);
-        if (item != null && item.IsFood && inventory.Eat(item))
-        {
-            itemDetails.text = $"Yum! You eat the {item.DisplayName}. {item.FoodText}!";
-            ShowToast($"Yum! {item.DisplayName}! {item.FoodText}");
-            AudioManager.Play(eatSound != null ? eatSound : clickSound);
-            return;
-        }
+        if (item != null && item.IsFood && EatFromBag(item)) return;
         if (item != null && inventory.Equip(item))
         {
-            ShowDetails(item, equipped: true);
+            HideTip(); // it has moved to the doll
             AudioManager.Play(clickSound);
         }
     }
@@ -516,6 +668,8 @@ public class HudController : MonoBehaviour
     {
         for (int i = 0; i < bagSlots.Length; i++)
             SetSlotItem(bagSlots[i], BagItem(i));
+        for (int i = 0; i < keySlots.Length; i++)
+            SetSlotItem(keySlots[i], KeyItem(i));
         foreach (var pair in equipSlots)
             SetSlotItem(pair.Value, inventory.Equipped(pair.Key));
         statGear.text = GearSummary();
@@ -529,22 +683,71 @@ public class HudController : MonoBehaviour
         slot.EnableInClassList("has-item", item != null);
     }
 
-    private void ShowDetails(ItemDefinition item, bool equipped)
+    // ---------- Tooltip ----------
+
+    // The tooltip: the item's name and kind, what it is, each thing it does (in green), and what a click does.
+    // `at` is where the pointer is, in panel coordinates; the tooltip sits beside it and follows it (MoveTip).
+    public bool TooltipShown => tooltip != null && tooltip.ClassListContains("visible");
+    public string TooltipName => tipName.text;
+    public string TooltipText => $"{tipName.text}\n{tipKind.text}\n{tipDesc.text}\n{tipStats.text}\n{tipAction.text}";
+
+    private void ShowDetails(ItemDefinition item, bool equipped, Vector2 at)
     {
-        if (item == null) { itemDetails.text = DetailsHint; return; }
+        if (item == null) { HideTip(); return; }
         string action = equipped ? "Click to take it off."
                       : item.IsEquippable ? $"Click to wear it ({item.Slot.ToString().ToLowerInvariant()})."
-                      : item.IsFood ? "Click to eat it." : "";
-        string bonus = item.BonusText.Length > 0 ? $" ({item.BonusText})"
-                     : item.IsFood ? $" ({item.FoodText})" : "";
-        itemDetails.text = $"{item.DisplayName}: {item.Description}{bonus} {action}";
+                      : item.IsFood ? "Click to eat it. Hover and press 2-5 to put it on the hotbar."
+                      : item.IsKeyItem ? "A treasure: it stays with you." : "";
+        ShowTip(item.DisplayName, equipped ? $"{item.KindText} · worn" : item.KindText, item.Description,
+                string.Join("\n", item.BonusLines.Select(line => "• " + line)), action, at);
     }
 
-    private void ShowWornDetails(EquipSlot slot)
+    private void ShowWornDetails(EquipSlot slot, Vector2 at)
     {
         var item = inventory.Equipped(slot);
-        if (item != null) ShowDetails(item, equipped: true);
-        else itemDetails.text = $"{slot}: nothing yet. Maybe there's one out there somewhere...";
+        if (item != null) ShowDetails(item, equipped: true, at);
+        else ShowTip(slot.ToString(), "Empty slot", "Nothing yet. Maybe there's one out there somewhere...", "", "", at);
+    }
+
+    private void ShowTip(string name, string kind, string description, string stats, string action, Vector2 at)
+    {
+        tipName.text = name;
+        tipKind.text = kind;
+        tipDesc.text = description;
+        tipStats.text = stats;
+        tipAction.text = action;
+        tipStats.style.display = stats.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+        tipAction.style.display = action.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+        tooltip.EnableInClassList("visible", true);
+        MoveTip(at);
+    }
+
+    private void HideTip()
+    {
+        if (tooltip != null) tooltip.EnableInClassList("visible", false);
+    }
+
+    // Beside the pointer, flipped to its other side (or lifted) when it would run off the screen.
+    private void MoveTip(Vector2 at)
+    {
+        if (!TooltipShown) return;
+        const float gap = 18f;
+        float width = tooltip.resolvedStyle.width > 1f ? tooltip.resolvedStyle.width : 270f;
+        float height = tooltip.resolvedStyle.height > 1f ? tooltip.resolvedStyle.height : 120f;
+        float x = at.x + gap, y = at.y + gap;
+        if (x + width > root.layout.width) x = at.x - gap - width;
+        if (y + height > root.layout.height) y = Mathf.Max(0f, root.layout.height - height);
+        tooltip.style.left = Mathf.Max(0f, x);
+        tooltip.style.top = y;
+    }
+
+    // The paper doll's body: the hero's own picture (the first frame of their Idle, front-on).
+    private void SetUpDoll()
+    {
+        var figure = root.Q("doll-figure");
+        var visuals = inventory != null ? inventory.GetComponent<CharacterAnimator>() : null;
+        var sprite = visuals != null && visuals.SpriteRenderer != null ? visuals.SpriteRenderer.sprite : null;
+        if (figure != null && sprite != null) figure.style.backgroundImage = new StyleBackground(sprite);
     }
 
     // Everything the worn equipment adds besides spell damage (that's on the line above).
@@ -573,7 +776,7 @@ public class HudController : MonoBehaviour
 
     // ---------- Toast ----------
 
-    private void ShowToast(string message)
+    public void ShowToast(string message)
     {
         if (string.IsNullOrEmpty(message)) return;
         toast.text = message;

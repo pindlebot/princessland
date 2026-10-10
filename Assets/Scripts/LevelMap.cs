@@ -12,6 +12,12 @@ public class LevelMap : MonoBehaviour
     [SerializeField] private string buildings = "";
     [Tooltip("The map's wall-like prop symbols (the corn maze's walls): solid, drawn as walls on the minimap.")]
     [SerializeField] private string walls = "";
+    [Tooltip("The map's fake-wall symbols: drawn as walls on the minimap until you walk through one (FakeWall).")]
+    [SerializeField] private string fakeWalls = "";
+    [Tooltip("The tiles of the secret room behind a fake wall, as \"col,row\": the minimap keeps them hidden until it's found.")]
+    [SerializeField] private string[] secretTiles = new string[0];
+
+    private System.Collections.Generic.HashSet<(int, int)> secret;
 
     public int Height => rows.Length;
     public int Width => rows[0].Length;
@@ -34,6 +40,25 @@ public class LevelMap : MonoBehaviour
 
     // Does this tile block the way: a wall, or part of a building?
     public bool IsSolid(char c) => IsWall(c) || IsBuilding(c) || IsWallProp(c);
+
+    // Has this level's secret been found (a fake wall walked through)?
+    public bool SecretFound => GameSession.Flags.Contains(FakeWall.FoundFlag(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name));
+    public bool IsFakeWall(char c) => c != ' ' && fakeWalls.IndexOf(c) >= 0;
+
+    // A tile in the secret room (until it's found, the minimap knows nothing about it).
+    public bool IsSecretTile(int col, int row)
+    {
+        if (secret == null)
+        {
+            secret = new System.Collections.Generic.HashSet<(int, int)>();
+            foreach (var t in secretTiles)
+            {
+                var parts = t.Split(',');
+                secret.Add((int.Parse(parts[0]), int.Parse(parts[1])));
+            }
+        }
+        return secret.Contains((col, row));
+    }
 
     // A wall made of a prop from the legend (a corn maze wall).
     public bool IsWallProp(char c) => c != ' ' && walls.IndexOf(c) >= 0;

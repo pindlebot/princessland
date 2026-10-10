@@ -11,8 +11,18 @@ public static partial class DungeonBuilder
 {
     private static void CreateHomePrefabs(SharedAssets assets, SpriteSheetImporter.SpriteSheet sheet, Sprite shadow)
     {
+        // The bed: climb in and lie under the quilt on its left pillow (the hero's Sleep pose) until you
+        // press E again or walk away. Health and mana come back the moment you're tucked in.
         assets.Bed = CreateFixture(sheet, "Bed", new Vector3(3f, 1f, 1.8f), shadow, 3.4f,
-            "Take a nap", "You curl up for a quick nap. Health and mana restored!", HouseFixture.Effect.Rest, "rest");
+            "Take a nap", "You tuck yourself in for a cozy nap. Zzz... Health and mana restored!", HouseFixture.Effect.Rest, "rest",
+            bed =>
+            {
+                SetFloat(bed, "seatHeight", 1.2f);     // the sleeper lies on the quilt, head on the pillow...
+                SetFloat(bed, "seatSideways", -0.7f);  // ...the left one
+                SetString(bed, "standPrompt", "Get up");
+                SetString(bed, "standMessage", "You stretch and yawn. What a lovely nap!");
+                SetRef(bed, "standSound", Sound("pickup"));
+            });
         // The toilet sits you down; using it again flushes and stands you back up.
         assets.Toilet = CreateFixture(sheet, "Toilet", new Vector3(1f, 1f, 1f), shadow, 1.2f,
             "Sit on the toilet", "You sit down on the toilet. Ahh.", HouseFixture.Effect.Sit, null,
@@ -20,6 +30,14 @@ public static partial class DungeonBuilder
             {
                 SetString(toilet, "standMessage", "*Flush!* Much better. Now wash your hands!");
                 SetRef(toilet, "standSound", Sound("flush"));
+                // Easter egg: every flush is counted, and the tenth brings a surprise (the frog's prefab is added
+                // later, in AttachToiletFrog, because the frog isn't made yet).
+                SetString(toilet, "useCounter", "toilet_flushes");
+                SetString(toilet, "useFlag", HouseFixture.UnwashedFlag); // Amethyra notices if you don't wash up
+                SetInt(toilet, "surpriseAt", 10);
+                SetRef(toilet, "surpriseGift", AssetDatabase.LoadAssetAtPath<ItemDefinition>("Assets/Items/FrogHat.asset"));
+                SetString(toilet, "surpriseMessage", "Ribbit! A little frog pops out of the toilet, tips his tiny hat... and gives it to you!");
+                SetRef(toilet, "surpriseSound", Sound("ribbit"));
             });
         // Soap first, then rinse (see HouseFixture).
         assets.Sink = CreateFixture(sheet, "Sink", new Vector3(1.2f, 1f, 0.9f), shadow, 1.2f,
@@ -56,6 +74,7 @@ public static partial class DungeonBuilder
             "Turn the lamp off", "", HouseFixture.Effect.Lamp, "plink", AddLamp);
         assets.Rug = CreateRug();
         assets.PropPrefabs["cat"] = CreateCat(shadow);
+        assets.PropPrefabs["crib"] = CreateCrib(shadow);
         assets.PropPrefabs["lockeddoor"] = CreateLockedDoor();
 
         // The spiral staircase between the bedroom and the kitchen: doors in all but looks.
@@ -136,6 +155,33 @@ public static partial class DungeonBuilder
             "Whiskers blinks slowly at you. That's a cat kiss! | Whiskers sniffs your fingers. They smell of soap.");
         SetRef(fixture, "sound", Sound("meow"));
         return SavePrefab(go, "Cat");
+    }
+
+    // The nursery crib against the bedroom's north wall, with the baby mermaid in it: a looping sprite
+    // (she waves, blinks and flicks her tail while the shell mobile sways) and a HouseFixture to peek
+    // at her, giggling.
+    private static GameObject CreateCrib(Sprite shadow)
+    {
+        var sheet = SpriteSheetImporter.Import("Crib");
+        var go = new GameObject("Crib");
+        var box = go.AddComponent<BoxCollider>();
+        box.center = new Vector3(0f, 0.9f, 0f);
+        box.size = new Vector3(2f, 1.8f, 1f);
+        var sprite = new GameObject("Sprite");
+        sprite.transform.SetParent(go.transform, false);
+        AddLoopingSprite(sprite, sheet, "Crib");
+        AddShadow(go, shadow, 2.4f);
+
+        var fixture = go.AddComponent<HouseFixture>();
+        SetString(fixture, "prompt", "Peek at the baby mermaid");
+        SetString(fixture, "message",
+            "Coo! The baby mermaid giggles and waves her tiny hand at you. | " +
+            "She grabs your finger and won't let go. What a strong little grip! | " +
+            "Blub-blub! She blows a bubble, and it floats up to the shell mobile. | " +
+            "Splash! She flicks her tail and a few drops land on your nose. | " +
+            "She yawns a great big yawn. Maybe she'd like a lullaby?");
+        SetRef(fixture, "sound", Sound("baby_giggle"));
+        return SavePrefab(go, "Crib");
     }
 
     private static void AddLamp(HouseFixture nightstand)
