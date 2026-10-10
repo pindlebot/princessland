@@ -116,7 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6589707817594192499}
   - component: {fileID: 7437511453893411791}
-  - component: {fileID: 1800160652133529404}
+  - component: {fileID: 5439951872135145756}
   m_Layer: 0
   m_Name: Scarecrow
   m_TagString: Untagged
@@ -162,7 +162,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2.4, z: 0.6}
   m_Center: {x: 0, y: 1.2, z: 0}
---- !u!114 &1800160652133529404
+--- !u!114 &5439951872135145756
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -183,6 +183,7 @@ MonoBehaviour:
   standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
+  seatSideways: 0
   soapPrompt: 
   soapMessage: 
   soapSound: {fileID: 0}
@@ -198,6 +199,13 @@ MonoBehaviour:
   gift: {fileID: 0}
   haveOneMessage: You already have one.
   bagFullMessage: Your bag is full!
+  useCounter: 
+  useFlag: 
+  surpriseAt: 0
+  surprisePrefab: {fileID: 0}
+  surpriseGift: {fileID: 0}
+  surpriseMessage: 
+  surpriseSound: {fileID: 0}
 --- !u!1 &4595771453565352664
 GameObject:
   m_ObjectHideFlags: 0

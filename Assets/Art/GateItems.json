@@ -1,0 +1,28 @@
+{
+  "frameSize": 32,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "BouncyBoots",
+      "row": 0,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Amethyst",
+      "row": 1,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "DragonEgg",
+      "row": 2,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    }
+  ]
+}

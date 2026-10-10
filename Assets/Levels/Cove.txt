@@ -6,7 +6,8 @@
 // there) and a stream that splits the beach in two; two plank bridges (h) cross it. The sea
 // spills off the island's south and west edges.
 // The sea cave in the north-east hides the pirates' treasure (a chest and a heap of gold) and a
-// secret stair down into the dungeon, which opens once every pirate and dark mermaid is beaten.
+// secret stair down into the dungeon, which opens once every pirate and dark mermaid is beaten, and
+// Captain Grumblebeard (M), the cove's last boss, who guards the cave from the beach below it.
 title: Mermaid Cove
 theme: Outdoor
 music: music_cove
@@ -14,10 +15,12 @@ water: sea
 ground: sand
 exit: Dungeon
 exit_needs: all_monsters
-locked_hint: Break the sea-spell!
+monsters: M=piratecaptain
+locked_hint: Beat Captain Grumblebeard!
 open_hint: A secret stair in the sea cave!
 minimap_floor: #EED8AA
 minimap_wall: #A69EB4
+world: -50 -32
 ---
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%||%%%%%%%%%%%%%%|%%%%%%%%%%%%%%%%%%%%%%
@@ -37,7 +40,7 @@ wwwwwwwwwwwww..V.........www...........::..%
 wwwwwwwwwwww.............hhh....,......;...%
 wwwwwwwwwww....q..........www........J.....%
 wwwwwwwwww...................www.......q...%
-www&wwwwwZ........,...........www..........%
+www&wwwwwZ........,...........www......M...%
 wwwwwwwwww...q.................ww&wwww.....%
 wwwwwwwwwwww....P..........wwwwwwwwwwww....%
 wwwwwwwwwwwwwwwh...q....wwwwwwwwwwwwwwwww..%

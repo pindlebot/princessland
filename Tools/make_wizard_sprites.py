@@ -13,7 +13,7 @@ import math
 
 from PIL import Image
 
-from sprite_common import CLEAR, F, Canvas, tint, write_shadow, write_sheet
+from sprite_common import CLEAR, F, Canvas, sleeping_quilt, tint, write_shadow, write_sheet, zzz
 
 HAT, HAT_HI = (92, 56, 160, 255), (128, 92, 200, 255)
 BAND = (232, 192, 72, 255)
@@ -181,6 +181,33 @@ def draw_wizard_bathing(frame):
     return c.img
 
 
+# ---------- Bedtime (the bed at home) ----------
+
+def draw_wizard_sleeping(frame):
+    """Aldric tucked up in bed: hat still on (its tip flopped over the pillow), eyes shut, his
+    beard spread over the quilt. frame 1 breathes in, with the Zs drifting up."""
+    c = Canvas()
+    sleeping_quilt(c, frame)
+    # the hat: a cone lying back across the pillow, its tip flopped to the left
+    for y, (x0, x1) in zip(range(0, 5), ((3, 7), (5, 12), (7, 15), (9, 18), (10, 20))):
+        c.rect(x0, y + 1, x1, y + 1, HAT)
+        c.dot(x0, y + 1, HAT_HI)
+    c.rect(9, 6, 21, 6, HAT)                                   # brim
+    c.rect(11, 5, 19, 5, BAND)
+    c.rect(11, 7, 19, 11, SKIN)                                # face
+    for ex in (13, 17):                                        # eyes shut: two happy arcs
+        c.rect(ex, 9, ex + 1, 9, EYE)
+    c.dot(15, 11, SKIN)
+    top = 12 - frame
+    c.rect(10, top, 20, top + 2, BEARD)                        # the beard, over the sheet
+    c.rect(11, top + 3, 19, top + 4, BEARD)
+    c.rect(13, top + 5, 17, top + 5, BEARD)
+    c.rect(14, top + 6, 16, top + 6, BEARD_SH)
+    c.rect(22, 17, 24, 18, SKIN)                               # a hand resting on the quilt
+    zzz(c, frame)
+    return c.img
+
+
 def fallen(angle, darken=0.0):
     """Death frames: rotate the hurt pose around the feet and re-seat it on the floor."""
     big = Image.new("RGBA", (F * 3, F * 3), CLEAR)
@@ -216,6 +243,8 @@ def build_animations():
     anims.append(("Sit", 3, True, [draw_wizard(sit=True), draw_wizard(sit=True, kick=1)]))
     # Lying in the bath at home, in his bathing suit: front only.
     anims.append(("Bathe", 2, True, [draw_wizard_bathing(0), draw_wizard_bathing(1)]))
+    # Tucked up in bed at home: front only.
+    anims.append(("Sleep", 2, True, [draw_wizard_sleeping(0), draw_wizard_sleeping(1)]))
     anims.append(("Die", 8, False, [fallen(0), fallen(30), fallen(60), fallen(90, darken=0.35)]))
     return anims
 

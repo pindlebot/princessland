@@ -46,6 +46,13 @@ public class EnemyAI : MonoBehaviour
     private State state = State.Idle;
     private float nextAttackTime;
 
+    // Chasing around walls: when the way to the hero isn't clear, follow a path over the level's tiles (NavGrid).
+    private const float RepathSeconds = 0.4f;
+    private readonly List<Vector3> path = new List<Vector3>();
+    private int pathIndex;
+    private float repathAt;
+    private NavGrid nav;
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -81,6 +88,7 @@ public class EnemyAI : MonoBehaviour
         if (p == null) return;
         player = p.transform;
         playerHealth = p.GetComponent<Health>();
+        nav = NavGrid.Current;
     }
 
     private void Update()
@@ -107,7 +115,7 @@ public class EnemyAI : MonoBehaviour
         {
             // Adventurer Mode's monsters are a little quicker.
             float speed = moveSpeed * (GameSession.Settings.gentle ? 1f : AdventurerSpeedBoost);
-            Vector3 move = toPlayer.normalized * speed + Vector3.down;
+            Vector3 move = ChaseDirection(toPlayer, dist) * speed + Vector3.down;
             controller.Move(move * Time.deltaTime);
         }
         else if (state == State.Attack && Time.time >= nextAttackTime)
@@ -118,6 +126,45 @@ public class EnemyAI : MonoBehaviour
             Attacked?.Invoke();
             AudioManager.Play(attackSound, 0.7f);
         }
+    }
+
+    // Straight at the hero when the way is clear; otherwise along a path around whatever is in the way.
+    private Vector3 ChaseDirection(Vector3 toPlayer, float dist)
+    {
+        var direct = toPlayer.normalized;
+        if (nav == null || ClearWalk(direct, dist))
+        {
+            path.Clear();
+            return direct;
+        }
+        if (Time.time >= repathAt || pathIndex >= path.Count)
+        {
+            repathAt = Time.time + RepathSeconds;
+            if (!nav.FindPath(transform.position, player.position, path)) path.Clear();
+            pathIndex = 0;
+        }
+        while (pathIndex < path.Count && FlatDistance(path[pathIndex]) < 0.6f) pathIndex++;
+        if (pathIndex >= path.Count) return direct;
+        var step = path[pathIndex] - transform.position;
+        step.y = 0f;
+        return step.normalized;
+    }
+
+    private float FlatDistance(Vector3 point)
+    {
+        var d = point - transform.position;
+        d.y = 0f;
+        return d.magnitude;
+    }
+
+    // Is there nothing solid between here and the hero (to walk into)? Other characters don't count.
+    private bool ClearWalk(Vector3 direction, float dist)
+    {
+        if (nav != null) return nav.CanWalkStraight(transform.position, player.position);
+        var origin = transform.position + Vector3.up * 0.6f;
+        if (!Physics.SphereCast(origin, 0.4f, direction, out RaycastHit hit, Mathf.Max(0f, dist - 0.4f), ~0, QueryTriggerInteraction.Ignore))
+            return true;
+        return hit.collider is CharacterController || hit.transform == player;
     }
 
     // The wind-up, then the bolt flies at where the hero is now (flat, at throwing height).

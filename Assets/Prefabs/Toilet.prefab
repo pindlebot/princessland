@@ -182,6 +182,7 @@ MonoBehaviour:
   standSound: {fileID: 8300000, guid: 7e6eb5b6391654a95bbab8828c39f2a0, type: 3}
   seatHeight: 0.85
   seatForward: 0.35
+  seatSideways: 0
   soapPrompt: 
   soapMessage: 
   soapSound: {fileID: 0}
@@ -197,6 +198,13 @@ MonoBehaviour:
   gift: {fileID: 0}
   haveOneMessage: You already have one.
   bagFullMessage: Your bag is full!
+  useCounter: toilet_flushes
+  useFlag: unwashed
+  surpriseAt: 10
+  surprisePrefab: {fileID: 4527281374428029792, guid: 59557ecd7b0c648fda9a33bf0f206f88, type: 3}
+  surpriseGift: {fileID: 11400000, guid: 657e2012548364c889e6f00e4bde5c47, type: 2}
+  surpriseMessage: Ribbit! A little frog pops out of the toilet, tips his tiny hat... and gives it to you!
+  surpriseSound: {fileID: 8300000, guid: cd41b272ea7c942e0bd6fb2c4a6cb28f, type: 3}
 --- !u!1 &5283625899036765237
 GameObject:
   m_ObjectHideFlags: 0

@@ -166,23 +166,22 @@ public static partial class DungeonBuilder
     }
 
     // A "prop" or "npc" from the map's legend, standing on its tile.
-    private static void PlaceProp(MapFile.LegendEntry entry, SharedAssets assets, Transform parent, Vector3 pos,
+    private static GameObject PlaceProp(MapFile.LegendEntry entry, SharedAssets assets, Transform parent, Vector3 pos,
                                   System.Random rng)
     {
         string kind = entry.Args[0];
         if (entry.Kind == "npc")
         {
-            Place(kind == "stitches" ? assets.Stitches : kind == "pippin" ? assets.Pippin : assets.Barnaby, parent, pos);
-            return;
+            return Place(kind == "stitches" ? assets.Stitches : kind == "pippin" ? assets.Pippin
+                       : kind == "oldmoss" ? assets.OldMoss : assets.Barnaby, parent, pos);
         }
         if (kind == "grain")
         {
-            Place(assets.PropPrefabs[kind], parent, pos + new Vector3(rng.Next(-3, 4) * 0.1f, 0.01f, rng.Next(-3, 4) * 0.1f));
-            return;
+            return Place(assets.PropPrefabs[kind], parent, pos + new Vector3(rng.Next(-3, 4) * 0.1f, 0.01f, rng.Next(-3, 4) * 0.1f));
         }
         // The kitchen island is long: it reaches a little into the tile east of its own. (The
         // marble bath is three tiles wide, centred on its own tile: one either side.)
-        Place(assets.PropPrefabs[kind], parent, kind is "island" ? pos + Vector3.right * 0.6f : pos);
+        return Place(assets.PropPrefabs[kind], parent, kind is "island" ? pos + Vector3.right * 0.6f : pos);
     }
 
     // ---------- The picket fence ('+') ----------

@@ -137,7 +137,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4247778643796295997}
   - component: {fileID: 7646919027260251456}
-  - component: {fileID: 7680205712026029668}
+  - component: {fileID: 5115673256907700511}
   m_Layer: 0
   m_Name: Crow
   m_TagString: Untagged
@@ -183,7 +183,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.6, y: 0.6, z: 0.6}
   m_Center: {x: 0, y: 0.3, z: 0}
---- !u!114 &7680205712026029668
+--- !u!114 &5115673256907700511
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -204,6 +204,7 @@ MonoBehaviour:
   standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
+  seatSideways: 0
   soapPrompt: 
   soapMessage: 
   soapSound: {fileID: 0}
@@ -219,6 +220,13 @@ MonoBehaviour:
   gift: {fileID: 0}
   haveOneMessage: You already have one.
   bagFullMessage: Your bag is full!
+  useCounter: 
+  useFlag: 
+  surpriseAt: 0
+  surprisePrefab: {fileID: 0}
+  surpriseGift: {fileID: 0}
+  surpriseMessage: 
+  surpriseSound: {fileID: 0}
 --- !u!1 &7417980910405477856
 GameObject:
   m_ObjectHideFlags: 0

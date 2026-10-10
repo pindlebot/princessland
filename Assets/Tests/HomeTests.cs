@@ -41,10 +41,10 @@ public class HomeTests
             {
                 "Bed", "Toilet", "Sink", "PaperTowel", "Bathtub", "Faucet", "PottedFern", "PottedMonstera", "TowelShelf",
                 "Wardrobe", "Nightstand", "Bookshelf", "ToyChest",
-                "Plant", "Plant", "Plant", "Plant", "Plant", "Cat", "CourtyardDoor", "Bench",
+                "Plant", "Plant", "Plant", "Plant", "Plant", "Cat", "CourtyardDoor", "Bench", "Crib",
             },
-            names, "the bedroom, the bathroom (the bath's tap, a fern, a monstera, the towel shelf and three more plants) and " +
-                   "the courtyard (a potted plant, Whiskers, the old door and a bench)");
+            names, "the bedroom (with the baby mermaid's crib), the bathroom (the bath's tap, a fern, a monstera, the towel shelf " +
+                   "and three more plants) and the courtyard (a potted plant, Whiskers, the old door and a bench)");
 
         // Out through the front door...
         player = LevelBootstrap.Current.Player;
@@ -319,6 +319,120 @@ public class HomeTests
         Assert.AreEqual(3, said.Take(3).Distinct().Count());
         Assert.AreEqual(said[0], said[3]);
         Assert.IsFalse(said.Any(s => s.Contains("|")));
+    }
+
+
+    [UnityTest]
+    public IEnumerator TheBedLaysYouDownTuckedInUntilYouGetUp()
+    {
+        SceneManager.LoadScene("House");
+        yield return null;
+        yield return null;
+        var player = LevelBootstrap.Current.Player;
+        var hero = player.GetComponent<PlayerController>();
+        var health = player.GetComponent<Health>();
+        var bed = Object.FindObjectsByType<HouseFixture>().First(f => f.Kind == HouseFixture.Effect.Rest);
+        Vector3 nextToIt = bed.transform.position + new Vector3(0f, 1f, -1.5f);
+        Teleport(player, nextToIt);
+        health.TakeDamage(2);
+        yield return null;
+        Assert.AreEqual("E: Take a nap", Hud().Q<Label>("interact-prompt").text);
+
+        var sprite = player.GetComponent<CharacterAnimator>().SpriteRenderer.transform;
+        float spriteHeight = sprite.localPosition.y;
+        Assert.IsTrue(player.GetComponent<PlayerInteractor>().TryInteract());
+        yield return null;
+        yield return null;
+
+        // Lying in the bed, on its left pillow, not standing beside it.
+        Assert.IsTrue(hero.IsSleeping);
+        Assert.IsTrue(hero.IsSeated, "no walking or spells while you sleep");
+        Assert.AreSame(bed.transform, hero.Seat);
+        Vector3 across = Vector3.ProjectOnPlane(Camera.main.transform.right, Vector3.up).normalized;
+        Vector3 offset = player.transform.position - bed.transform.position;
+        Assert.Less(Vector3.Dot(offset, across), -0.4f, "on the bed's left pillow");
+        Assert.Less(new Vector2(offset.x, offset.z).magnitude, 1.2f, "in the bed, not beside it");
+        Assert.Greater(sprite.localPosition.y, spriteHeight + 0.8f, "up on the quilt");
+        Assert.AreEqual(health.Max, health.Current, "tucked in, you're all better");
+        var animator = player.GetComponent<CharacterAnimator>().Animator;
+        Assert.IsTrue(animator.GetBool("Sleeping"));
+        Assert.IsTrue(animator.GetCurrentAnimatorStateInfo(0).IsName("Sleep"), "the hero's lying-down pose, with Zs");
+        Assert.AreEqual("E: Get up", Hud().Q<Label>("interact-prompt").text);
+
+        // Pressing E again gets you up, back where you stood.
+        Assert.IsTrue(player.GetComponent<PlayerInteractor>().TryInteract());
+        yield return null;
+        yield return null;
+        Assert.IsFalse(hero.IsSleeping);
+        Assert.IsFalse(hero.IsSeated);
+        Assert.AreEqual(spriteHeight, sprite.localPosition.y, 0.001f);
+        Assert.Less(Vector3.Distance(player.transform.position, nextToIt), 0.1f, "back where you stood");
+        Assert.IsTrue(player.GetComponent<CharacterController>().enabled);
+        Assert.IsFalse(animator.GetCurrentAnimatorStateInfo(0).IsName("Sleep"));
+        Assert.AreEqual("E: Take a nap", Hud().Q<Label>("interact-prompt").text);
+    }
+
+    [UnityTest]
+    public IEnumerator BothHeroesHaveASleepingPoseAndWalkingAwayWakesThem()
+    {
+        foreach (var hero in new[] { "wizard", "princess" })
+        {
+            var path = hero == "wizard" ? "Assets/Art/Wizard.json" : "Assets/Art/Princess.json";
+            StringAssert.Contains("\"Sleep\"", System.IO.File.ReadAllText(path), $"{hero} has a Sleep animation");
+        }
+
+        SceneManager.LoadScene("House");
+        yield return null;
+        yield return null;
+        var player = LevelBootstrap.Current.Player;
+        var hero2 = player.GetComponent<PlayerController>();
+        var bed = Object.FindObjectsByType<HouseFixture>().First(f => f.Kind == HouseFixture.Effect.Rest);
+        bed.Interact(player);
+        Assert.IsTrue(hero2.IsSleeping);
+        // Walking away (any direction key) stands you up, as it does from the toilet.
+        hero2.StandUp();
+        Assert.IsFalse(hero2.IsSleeping);
+        Assert.IsTrue(player.GetComponent<CharacterController>().enabled);
+
+        // Sitting down somewhere else straight from bed leaves nothing stuck.
+        bed.Interact(player);
+        var toilet = Object.FindObjectsByType<HouseFixture>().Single(f => f.name == "Toilet");
+        toilet.Interact(player);
+        Assert.IsFalse(hero2.IsSleeping, "off the bed and onto the toilet");
+        Assert.IsTrue(hero2.IsSeated);
+        hero2.StandUp();
+    }
+
+    [UnityTest]
+    public IEnumerator ABabyMermaidSleepsInACribAgainstTheBedroomWall()
+    {
+        SceneManager.LoadScene("House");
+        yield return null;
+        yield return null;
+        var player = LevelBootstrap.Current.Player;
+        var crib = Object.FindObjectsByType<HouseFixture>().Single(f => f.name == "Crib");
+        StringAssert.Contains("baby mermaid", crib.Prompt);
+
+        // She's drawn waving and blinking (a looping sprite), solid like the rest of the furniture, and she
+        // stands on the bedroom's floor with room to walk up to her.
+        Assert.IsNotNull(crib.GetComponentInChildren<SpriteFlipbook>(), "the baby moves");
+        Assert.IsTrue(crib.GetComponent<BoxCollider>() != null && !crib.GetComponent<BoxCollider>().isTrigger);
+        var map = Object.FindAnyObjectByType<LevelMap>();
+        Vector2 tile = map.WorldToMap(crib.transform.position);
+        int col = Mathf.RoundToInt(tile.x), row = Mathf.RoundToInt(tile.y);
+        Assert.IsFalse(LevelMap.IsWall(map.At(col, row)), "the crib isn't in a wall");
+        Assert.IsFalse(LevelMap.IsWall(map.At(col, row + 1)), "there's floor in front of it to stand on");
+
+        // Each peek gives a different giggle, and she giggles.
+        var said = new System.Collections.Generic.List<string>();
+        for (int i = 0; i < 5; i++)
+        {
+            said.Add(crib.Interact(player));
+            Assert.AreEqual("baby_giggle", AudioManager.Instance.LastPlayed.name);
+        }
+        CollectionAssert.AllItemsAreUnique(said);
+        Assert.IsTrue(said.All(m => !string.IsNullOrEmpty(m) && !m.Contains("|")));
+        Assert.AreEqual(said[0], crib.Interact(player), "then round again");
     }
 
     [UnityTest]

@@ -101,6 +101,7 @@ MonoBehaviour:
   lifetime: 2
   impactPrefab: {fileID: 328360139785256122, guid: d594e00c2c9634433ba0109f30d3299b, type: 3}
   impactSound: {fileID: 8300000, guid: cda1bcf0ce1044baf8fe5be2ce9f55ed, type: 3}
+  element: 1
 --- !u!1 &3967801639374351492
 GameObject:
   m_ObjectHideFlags: 0

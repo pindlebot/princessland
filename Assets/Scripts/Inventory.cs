@@ -15,11 +15,14 @@ public class Inventory : MonoBehaviour
 
     private InventoryState state;
     private readonly List<ItemDefinition> bag = new List<ItemDefinition>(); // the bag's ids, resolved
+    private readonly List<ItemDefinition> keyItems = new List<ItemDefinition>(); // the treasures tab's, resolved
 
     public event Action Changed;
 
     public int Capacity => capacity;
     public IReadOnlyList<ItemDefinition> Bag => bag;
+    public IReadOnlyList<ItemDefinition> KeyItems => keyItems;
+    public ItemDatabase Database => database;
 
     private void Awake()
     {
@@ -51,10 +54,75 @@ public class Inventory : MonoBehaviour
 
     public bool Add(ItemDefinition item)
     {
+        if (item.IsKeyItem)
+        {
+            // Treasures need no bag room, and you only ever carry one of each.
+            if (!state.KeyItems.Contains(item.Id)) state.KeyItems.Add(item.Id);
+            OnChanged();
+            return true;
+        }
         if (state.Bag.Count >= capacity) return false;
         state.Bag.Add(item.Id);
+        if (item.IsConsumable) AutoAssignQuickSlot(item);
         OnChanged();
         return true;
+    }
+
+    // Gives an item by id (a conversation's reward). False if the id is unknown or the bag is full.
+    public bool Add(string itemId)
+    {
+        var item = database.Find(itemId);
+        return item != null && Add(item);
+    }
+
+    // Is this item anywhere on the hero (bag, treasures, worn)?
+    public bool Has(string itemId) => state.Has(itemId);
+    public bool HasKeyItem(string itemId) => state.KeyItems.Contains(itemId);
+
+    // ---------- Quick slots (hotbar slots 2-5) ----------
+
+    // The consumable a quick slot holds (even if you've run out of it: it shows empty).
+    public ItemDefinition Quick(int slot) =>
+        slot >= 0 && slot < InventoryState.QuickSlotCount && state.Quick[slot].Length > 0 ? database.Find(state.Quick[slot]) : null;
+
+    // Puts a consumable on a quick slot. It leaves any other slot it was on, so it's never twice.
+    public bool AssignQuick(int slot, ItemDefinition item)
+    {
+        if (slot < 0 || slot >= InventoryState.QuickSlotCount || item == null || !item.IsConsumable) return false;
+        for (int i = 0; i < InventoryState.QuickSlotCount; i++)
+            if (state.Quick[i] == item.Id) state.Quick[i] = "";
+        state.Quick[slot] = item.Id;
+        OnChanged();
+        return true;
+    }
+
+    public void ClearQuick(int slot)
+    {
+        if (slot < 0 || slot >= InventoryState.QuickSlotCount || state.Quick[slot].Length == 0) return;
+        state.Quick[slot] = "";
+        OnChanged();
+    }
+
+    // Which quick slot holds this item (-1 = none).
+    public int QuickSlotOf(ItemDefinition item) => item == null ? -1 : System.Array.IndexOf(state.Quick, item.Id);
+
+    // Eats (uses) one of whatever the slot holds. False if the slot is empty or you've run out.
+    public bool UseQuick(int slot)
+    {
+        var item = Quick(slot);
+        return item != null && Eat(item);
+    }
+
+    // The first time you pick up a consumable, it takes the first free quick slot.
+    private void AutoAssignQuickSlot(ItemDefinition item)
+    {
+        if (QuickSlotOf(item) >= 0) return;
+        for (int i = 0; i < InventoryState.QuickSlotCount; i++)
+            if (state.Quick[i].Length == 0)
+            {
+                state.Quick[i] = item.Id;
+                return;
+            }
     }
 
     // Takes one of an item out of the bag (used up, like a bottle of bubble bath).
@@ -116,6 +184,12 @@ public class Inventory : MonoBehaviour
         {
             var item = database.Find(id);
             if (item != null) bag.Add(item);
+        }
+        keyItems.Clear();
+        foreach (var id in state.KeyItems)
+        {
+            var item = database.Find(id);
+            if (item != null) keyItems.Add(item);
         }
     }
 }

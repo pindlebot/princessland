@@ -14,7 +14,8 @@ public static partial class DungeonBuilder
     //   Ground   .  floor/grass     ,  with grass tufts     =  dirt path     _  bathroom tiles
     //            (space) nothing
     //   Walls    #  stone wall      T  stone wall + torch   H  hedge         K  castle (Level 0)
-    //   Markers  P  player start    E  skeleton    L  slime    M  the Slime King (boss)
+    //   Markers  P  player start    E  skeleton    L  slime    M  the Slime King (boss)    J  pirate
+    //            (a level's "monsters:" header can change what E, L, J and M are: see MapFile.cs)
     //            C  chest    I  Ember Ring    D  dragon    X  exit (sealed until the boss, if any, is dead)
     //   Home     B  bed    W  toilet    S  sink    R  paper towel
     //   Legend   doors, the castle gate, named arrival spots and items are defined per file (MapFile.cs)
@@ -56,6 +57,9 @@ public static partial class DungeonBuilder
         public bool Sea, SandGround;       // "water: sea", "ground: sand" (Mermaid Cove)
         public string Floor;               // "floor: kitchen": indoors, '.' is tiled (the kitchen)
         public bool Dusk;                  // "mood: dusk": low orange sun, a violet sky (Hollow Farm)
+        public string Mood = "";           // "woods": a green dapple; "dark": a dark hollow (the Fairy Lantern lights it)
+        public string ExitSpawn = "";      // "exit_spawn": the named spot to arrive at through the exit
+        public string GreyUntil = "";      // "grey_until": the level is drained of colour until this condition holds
     }
 
     private const string LevelsFolder = "Assets/Levels";
@@ -86,6 +90,8 @@ public static partial class DungeonBuilder
             LockedHint = file.Get("locked_hint"),
             OpenHint = file.Get("open_hint", "The stairs are open!"),
             NextScene = file.Get("exit"),
+            ExitSpawn = file.Get("exit_spawn"),
+            GreyUntil = file.Get("grey_until"),
             ExitNeedsAllEnemiesDefeated = file.Get("exit_needs") == "all_monsters",
             ShowEnemyCount = file.Get("enemy_count", "show") != "hide",
             MinimapFloor = HexColor(file.Get("minimap_floor", "#7A6E62")),
@@ -94,6 +100,7 @@ public static partial class DungeonBuilder
             SandGround = file.Get("ground") == "sand",
             Floor = file.Get("floor"),
             Dusk = file.Get("mood") == "dusk",
+            Mood = file.Get("mood"),
         };
     }
 
@@ -109,16 +116,19 @@ public static partial class DungeonBuilder
         var map = spec.Map;
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         string sceneName = System.IO.Path.GetFileNameWithoutExtension(spec.ScenePath);
-        SetUpLighting(spec.Theme, spec.Dusk);
+        SetUpLighting(spec.Theme, spec.Dusk, spec.Mood);
 
         var level = new GameObject("Level").transform;
         // Save the layout into the scene too, so runtime code (the minimap) can read it.
         var levelMap = level.gameObject.AddComponent<LevelMap>();
+        level.gameObject.AddComponent<NavGrid>(); // monsters path around walls over the level's tiles
         SetStrings(levelMap, "rows", map);
         SetColor(levelMap, "floorColor", spec.MinimapFloor);
         SetColor(levelMap, "wallColor", spec.MinimapWall);
         SetString(levelMap, "buildings", spec.File.BuildingSymbols);
         SetString(levelMap, "walls", spec.File.WallSymbols);
+        SetString(levelMap, "fakeWalls", spec.File.FakeWallSymbols);
+        SetStrings(levelMap, "secretTiles", spec.File.SecretTiles().Select(t => $"{t.col},{t.row}").ToArray());
 
         var enemies = new GameObject("Enemies").transform;
         var decor = new GameObject("Decor").transform;
@@ -192,6 +202,12 @@ public static partial class DungeonBuilder
                     continue;
                 }
 
+                if (IsGapTile(spec.File, c))
+                {
+                    BuildGap(level, decor, assets, spec, pos, $"{sceneName}/{col},{row}");
+                    continue;
+                }
+
                 bool isDoor = spec.File.Legend.TryGetValue(c, out var legendEntry) && MapFile.IsDoorKind(legendEntry.Kind);
                 var floor = Block("Floor", level, pos + Vector3.down * 0.25f, new Vector3(Tile, 0.5f, Tile),
                                   mats[FloorMaterial(spec, map, c, col, row, rng.Next(100), isDoor)]);
@@ -201,13 +217,15 @@ public static partial class DungeonBuilder
                 switch (c)
                 {
                     case 'P': spawn.position = pos + Vector3.up; break;
+                    // Monster markers: which monster each is comes from the level's "monsters:" header.
                     case 'E':
                     case 'L':
                     case 'J':
-                        var e = Place(c == 'E' ? assets.Skeleton : c == 'L' ? assets.Slime : assets.Pirate, enemies, pos + Vector3.up);
-                        e.transform.rotation = Quaternion.Euler(0f, rng.Next(360), 0f);
+                    case 'M':
+                        var monster = Place(MonsterPrefab(assets, spec.File.MonsterFor(c)), enemies, pos + Vector3.up);
+                        if (c != 'M') monster.transform.rotation = Quaternion.Euler(0f, rng.Next(360), 0f);
+                        else boss = monster.GetComponent<Health>(); // the exit stays sealed until it falls
                         break;
-                    case 'M': boss = Place(assets.SlimeKing, enemies, pos + Vector3.up).GetComponent<Health>(); break;
                     case 'X':
                         exit = CreateExit(pos, mats["Exit"], spec, assets.Props);
                         Place(assets.Stairs, decor, pos + Vector3.up * 0.02f);
@@ -239,7 +257,8 @@ public static partial class DungeonBuilder
                     case ';': PlaceGrass(assets.Grass, decor, rng, pos, flowers: true); break;
                     case 'Y': Place(assets.Tree, decor, pos); break;
                     case 'F':
-                        Place(assets.Fountain, decor, pos);
+                        // The fountain's wake spot is also where you arrive when you travel by fountain.
+                        namedSpawns.Add(Place(assets.Fountain, decor, pos).transform.Find(WakeFountain.SpawnName));
                         AddMotes(decor, pos, assets.Mote);
                         break;
                     case 'b': Place(assets.Bush, decor, pos); break;
@@ -290,6 +309,9 @@ public static partial class DungeonBuilder
                 {
                     if (entry.Kind == "spawn")
                         namedSpawns.Add(SpawnPoint(entry.Args[0], pos + Vector3.up, Quaternion.identity));
+                    else if (entry.Kind == "item" && entry.Args.Length > 1) // "item <id> hidden [braziers]": until the boss falls (or the braziers are lit)
+                        PlaceHiddenReward(assets.ItemPickups[entry.Args[0]], decor, pos, $"{sceneName}/{col},{row}", assets.Sparkle,
+                                          byBraziers: entry.Args.Length > 2 && entry.Args[2] == "braziers");
                     else if (entry.Kind == "item")
                         SetString(Place(assets.ItemPickups[entry.Args[0]], decor, pos).GetComponent<ItemPickup>(),
                                   "persistentId", $"{sceneName}/{col},{row}");
@@ -297,10 +319,18 @@ public static partial class DungeonBuilder
                         PlaceDoor(spec.File, entry.Kind == "stairsdown" ? assets.SpiralDown
                                            : entry.Kind == "stairsup" ? assets.SpiralUp
                                            : entry.Kind == "gate" ? assets.FarmGate
+                                           : entry.Kind == "edge" ? assets.RoomEdge
                                            : spec.Theme == Theme.Outdoor ? assets.Rowboat : assets.HouseDoor,
                                   decor, namedSpawns, col, row, pos);
+                    else if (entry.Kind == "prop" && entry.Args.Length > 1) // a treasure that waits for the braziers: "prop starshard hidden braziers"
+                        PlaceHiddenReward(assets.PropPrefabs[entry.Args[0]], decor, pos, $"{sceneName}/{col},{row}", assets.Sparkle,
+                                          byBraziers: entry.Args.Length > 2 && entry.Args[2] == "braziers");
                     else if (entry.Kind == "prop" || entry.Kind == "npc")
-                        PlaceProp(entry, assets, decor, pos, rng); // buildings are built below, whole
+                    {
+                        var placed = PlaceProp(entry, assets, decor, pos, rng); // buildings are built below, whole
+                        // Pots, sleepy trees, brambles, braziers and treasures remember what happened to them, by where they stand.
+                        AssignPersistentIds(placed, $"{sceneName}/{col},{row}");
+                    }
                 }
             }
         }
@@ -312,13 +342,15 @@ public static partial class DungeonBuilder
         if (spec.Theme == Theme.Outdoor)
             AddClouds(decor, map, assets.Cloud);
         BuildBuildings(spec.File, level, assets); // the village's houses (legend "building" entries)
+        HideSecretRoom(spec.File, level, decor);
         if (spec.Theme == Theme.Home) AddCourtyardSun(level, map);
 
         // The castle (only on maps with 'K' tiles) also gives us a spawn point outside its gate.
         var castleDoor = spec.File.Doors().FirstOrDefault(d => d.IsCastle);
         var outsideGate = BuildCastle(map, level, assets, castleDoor);
         if (outsideGate != null) namedSpawns.Add(outsideGate);
-        var camera = CreateCamera(spec.Theme, spec.Dusk);
+        var camera = CreateCamera(spec.Theme, spec.Dusk, spec.Mood == "dark");
+        if (spec.GreyUntil.Length > 0) AddColorDrain(camera.gameObject, spec.GreyUntil);
         var gameManager = new GameObject("GameManager").AddComponent<GameManager>();
         SetRef(gameManager, "winSound", Sound("victory"));
         SetRef(gameManager, "loseSound", Sound("defeat"));
@@ -361,7 +393,8 @@ public static partial class DungeonBuilder
                                   int col, int row, Vector3 pos)
     {
         var info = file.Doors().First(d => d.Col == col && d.Row == row);
-        var door = Place(prefab, parent, pos).GetComponent<SceneDoor>();
+        var placed = Place(prefab, parent, pos);
+        Component door = placed.GetComponent<SceneDoor>() != null ? placed.GetComponent<SceneDoor>() : placed.GetComponent<RoomEdge>();
         SetString(door, "targetScene", info.TargetScene);
         SetString(door, "targetSpawn", info.TargetSpawn);
 
@@ -369,6 +402,7 @@ public static partial class DungeonBuilder
         var arrive = new Vector3(fc * Tile, 1f, (file.Rows.Length - 1 - fr) * Tile);
         var awayFromDoor = new Vector3(arrive.x - pos.x, 0f, arrive.z - pos.z);
         if (prefab.name == "Rowboat") MoorBoat(door.gameObject, -awayFromDoor, info.TargetScene);
+        if (prefab.name == "RoomEdge") placed.transform.rotation = Quaternion.LookRotation(-awayFromDoor); // the arrow points out of the room
         spawns.Add(SpawnPoint(MapFile.SpawnNameFor(info.TargetScene), arrive, Quaternion.LookRotation(awayFromDoor)));
     }
 
@@ -509,7 +543,7 @@ public static partial class DungeonBuilder
         sun.shadowStrength = 0.45f;
     }
 
-    private static void SetUpLighting(Theme theme, bool dusk = false)
+    private static void SetUpLighting(Theme theme, bool dusk = false, string mood = "")
     {
         RenderSettings.ambientMode = AmbientMode.Flat;
         // Outdoors: tuned so the tops of things (sun 0.7 x 0.77 + ambient) come out at about 1x,
@@ -526,6 +560,19 @@ public static partial class DungeonBuilder
         sun.shadows = LightShadows.Hard; // crisp edges, like the pixel art
         sun.shadowStrength = theme == Theme.Outdoor ? 0.45f : 1f; // softer, friendlier shadows outside
         sun.transform.rotation = theme == Theme.Outdoor ? ArtStyle.OutdoorSun : ArtStyle.IndoorSun; // blob shadows lean the same way
+        if (mood == "woods")
+        {
+            // Dappled green light under the leaves.
+            RenderSettings.ambientLight = new Color(0.40f, 0.50f, 0.44f);
+            sun.color = new Color(0.9f, 1f, 0.8f);
+            sun.intensity = 0.6f;
+        }
+        else if (mood == "dark")
+        {
+            // A hollow the Gloom never left: nearly black, so a lantern (or glowcaps) is what you see by.
+            RenderSettings.ambientLight = new Color(0.12f, 0.13f, 0.2f);
+            sun.intensity = 0.12f;
+        }
         if (dusk)
         {
             // Dusk: a cool violet ambient and a low, orange sun, so the ground goes moody and the
@@ -580,7 +627,7 @@ public static partial class DungeonBuilder
         }
     }
 
-    private static IsoCameraFollow CreateCamera(Theme theme, bool dusk = false)
+    private static IsoCameraFollow CreateCamera(Theme theme, bool dusk = false, bool dark = false)
     {
         var camGo = new GameObject("Main Camera") { tag = "MainCamera" };
         var cam = camGo.AddComponent<Camera>();
@@ -589,7 +636,7 @@ public static partial class DungeonBuilder
         cam.clearFlags = CameraClearFlags.SolidColor;
         // What you see past the edge of the map: night-dark indoors, a soft sky around the
         // floating island outside.
-        cam.backgroundColor = dusk ? ArtStyle.DuskSky : theme == Theme.Outdoor ? ArtStyle.Sky : ArtStyle.Night;
+        cam.backgroundColor = dark ? ArtStyle.Night : dusk ? ArtStyle.DuskSky : theme == Theme.Outdoor ? ArtStyle.Sky : ArtStyle.Night;
         cam.nearClipPlane = 0.1f;
         cam.farClipPlane = 100f;
         camGo.AddComponent<AudioListener>();
@@ -637,6 +684,7 @@ public static partial class DungeonBuilder
 
         var exitZone = exit.AddComponent<ExitZone>();
         SetString(exitZone, "nextScene", spec.NextScene);
+        SetString(exitZone, "nextSpawn", spec.ExitSpawn);
         SetBool(exitZone, "requireAllEnemiesDefeated", spec.ExitNeedsAllEnemiesDefeated);
         SetRef(exitZone, "visual", crystal);
         SetRef(exitZone, "openSound", Sound("stairs_open"));
@@ -691,6 +739,17 @@ public static partial class DungeonBuilder
         SetRef(cooking, "missingSound", Sound("door_locked"));
         SetRef(cooking, "closeSound", Sound("ui_select"));
         SetRef(hud.AddComponent<PauseMenu>(), "clickSound", Sound("ui_select"));
+        var quests = hud.AddComponent<QuestLogView>();
+        SetRef(quests, "pictures", AssetDatabase.LoadAssetAtPath<QuestPictures>("Assets/Items/QuestPictures.asset"));
+        SetRef(quests, "openSound", Sound("ui_select"));
+        SetRef(quests, "newQuestSound", Sound("quest_new"));
+        SetRef(quests, "doneSound", Sound("quest_done"));
+        var travel = hud.AddComponent<FountainTravelView>();
+        SetRef(travel, "openSound", Sound("ui_select"));
+        SetRef(travel, "travelSound", Sound("fountain_touch"));
+        var worldMap = hud.AddComponent<WorldMapView>();
+        SetRef(worldMap, "data", AssetDatabase.LoadAssetAtPath<WorldMapData>(WorldMapPath));
+        SetRef(worldMap, "openSound", Sound("ui_select"));
         var dialogue = hud.AddComponent<DialogueController>();
         SetRef(dialogue, "npcVoice", Sound("voice_dragon"));
         SetRef(dialogue, "heroVoice", Sound("voice_hero"));

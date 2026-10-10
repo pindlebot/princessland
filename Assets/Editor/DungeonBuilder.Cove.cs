@@ -34,7 +34,7 @@ public static partial class DungeonBuilder
             Requires = "cleared:Cove", NotIf = "thanked:cove", Sets = "thanked:cove,met:Pearl", Gold = 30,
             Lines = new[]
             {
-                N("You did it, {hero}! The sea-spell is broken. My friends are themselves again, and they're SO embarrassed."),
+                N("You did it, {hero}! You beat Captain Grumblebeard and the sea-spell is broken. My friends are themselves again, and they're SO embarrassed."),
                 N("And the pirates rowed off in such a hurry, they left their secret stair in the sea cave wide open!"),
                 N("Here, take these sea-coins. Coralie will want to hear all about this!"),
             },
@@ -50,6 +50,8 @@ public static partial class DungeonBuilder
                 N("She is! But a band of pirates sailed in last week. Their captain has a grumpy old sea-spell, and he cast it on my friends."),
                 N("Now they glow, and sulk, and throw dark bolts at everybody. They don't really mean it!"),
                 N("Break the spell with your magic, and chase those pirates off our beaches. Mind the bolts: step aside when you see one coming!"),
+                N("Their captain, Grumblebeard, guards the sea cave from the beach below it, with a parrot, a peg leg and the loudest cannons you ever heard."),
+                N("When you see a red circle on the sand, don't stand in it!"),
                 H("Leave it to me!"),
             },
         },
@@ -128,11 +130,13 @@ public static partial class DungeonBuilder
 
     // The bolt: the same parts as a hero's spell (DarkBolt.png from make_spell_sprites.py), with
     // EnemyBolt instead of Projectile.
-    private static EnemyBolt CreateDarkBoltPrefab()
+    private static EnemyBolt CreateDarkBoltPrefab() => CreateBoltPrefab("DarkBolt", new Color(0.75f, 0.4f, 1f));
+
+    // Any monster bolt: a sheet named after it (Fly + Impact), and the colour of its glow.
+    private static EnemyBolt CreateBoltPrefab(string name, Color glow)
     {
-        var sheet = SpriteSheetImporter.Import("DarkBolt");
-        var glow = new Color(0.75f, 0.4f, 1f);
-        var go = new GameObject("DarkBolt");
+        var sheet = SpriteSheetImporter.Import(name);
+        var go = new GameObject(name);
         var sphere = go.AddComponent<SphereCollider>();
         sphere.radius = 0.25f;
         sphere.isTrigger = true;
@@ -140,7 +144,7 @@ public static partial class DungeonBuilder
         rb.isKinematic = true;
         rb.useGravity = false;
         var bolt = go.AddComponent<EnemyBolt>();
-        SetRef(bolt, "impactPrefab", CreateImpactPrefab("DarkBolt", sheet, glow));
+        SetRef(bolt, "impactPrefab", CreateImpactPrefab(name, sheet, glow));
         SetRef(bolt, "impactSound", Sound("bolt_impact"));
 
         var sprite = new GameObject("Sprite");
@@ -155,7 +159,7 @@ public static partial class DungeonBuilder
         light.color = glow;
         light.range = 4f;
         light.intensity = 2.5f;
-        return SavePrefab<EnemyBolt>(go, "DarkBolt");
+        return SavePrefab<EnemyBolt>(go, name);
     }
 
     // A door on an outdoor level: a rowboat moored at the end of a jetty. The jetty tile is solid

@@ -1,0 +1,42 @@
+{
+  "frameSize": 32,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "FrogHat",
+      "row": 0,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "HealingApple",
+      "row": 1,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "ManaBerry",
+      "row": 2,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "FairyLantern",
+      "row": 3,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "CloverCharm",
+      "row": 4,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    }
+  ]
+}

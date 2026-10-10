@@ -1,0 +1,47 @@
+// 2: Old Moss, the gardener, who asks you to wake the sleepy trees.
+// Whispering Woods, room 1 of 4: the Sleepy Glade. The opening in the west hedge (1) leads back to the castle
+// grounds; the opening in the east hedge (5) on to the Spore Meadow. A fountain (F) is a save point:
+// touch it and it remembers you (and fountain travel takes you between it and the castle's).
+// Old Moss (2) is by the path. Four sleepy trees (3) wear nightcaps: zap each with magic to wake it
+// ("Wake the Trees"). Clay pots (4) can be broken for coins. A healing apple (6) lies in the grass.
+title: Whispering Woods: The Sleepy Glade
+theme: Outdoor
+music: music_woods
+mood: woods
+region: woods
+monsters: E=sporepuff M=mothermushroom
+minimap_floor: #6E9A5E
+minimap_wall: #4E7A50
+world: -44 5
+---
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+H......,...te..........t,.t.....,i...H
+H...;.,......t.t..i,...t.t.t......i..H
+H.i......,.,....,,.........,..4....,.H
+H...t..3.......t.....,t..t.........etH
+H...i.....i.i.t...3........i,........H
+H...t......,..,e......,..............H
+He..,.......t...............t.....,.,H
+Ht.t.....2...i..,.i......,.....3.....H
+H...t.......i..ee.....4.,;...........H
+H.........,.......,.................,H
+H......,.............................H
+1==P=======================E=========5
+H.......,....F....,..............E...H
+H.....,..,................,....,..,..H
+H.......i...........6........t....,..H
+H........t......i.,....t..........,..H
+H........,....,,...,.,,.........,4...H
+H,...4........,.,,.....t..3..........H
+H.......;...ti..4.....,...,......,..tH
+H.t,.....;..........................eH
+H...e,...t..e...,...,................H
+H...t.,t....t.........e..i...e.t.t...H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Level0
+5 = edge Woods2
+2 = npc oldmoss
+3 = prop sleepytree
+4 = prop pot
+6 = item healing_apple

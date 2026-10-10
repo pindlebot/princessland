@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5263283011706173119}
   - component: {fileID: 8771053210515150822}
-  - component: {fileID: 1218326183552338329}
+  - component: {fileID: 2212645153711905822}
   m_Layer: 0
   m_Name: Signpost
   m_TagString: Untagged
@@ -56,7 +56,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.6, y: 2, z: 0.5}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &1218326183552338329
+--- !u!114 &2212645153711905822
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -77,6 +77,7 @@ MonoBehaviour:
   standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
+  seatSideways: 0
   soapPrompt: 
   soapMessage: 
   soapSound: {fileID: 0}
@@ -92,6 +93,13 @@ MonoBehaviour:
   gift: {fileID: 0}
   haveOneMessage: You already have one.
   bagFullMessage: Your bag is full!
+  useCounter: 
+  useFlag: 
+  surpriseAt: 0
+  surprisePrefab: {fileID: 0}
+  surpriseGift: {fileID: 0}
+  surpriseMessage: 
+  surpriseSound: {fileID: 0}
 --- !u!1 &1790855765203813822
 GameObject:
   m_ObjectHideFlags: 0

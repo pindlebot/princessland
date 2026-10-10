@@ -24,6 +24,14 @@ public static class MapValidator
             string theme = map.Get("theme");
             if (!Themes.Contains(theme)) Error($"theme '{theme}' should be one of {string.Join(", ", Themes)}");
 
+            foreach (var (marker, id) in map.MonsterOverrides())
+            {
+                if (marker.Length != 1 || MapFile.MonsterMarkers.IndexOf(marker[0]) < 0)
+                    Error($"'monsters:' entry '{marker}={id}': the marker must be one of {string.Join(", ", MapFile.MonsterMarkers.ToCharArray())}");
+                else if (!MapFile.MonsterIds.Contains(id))
+                    Error($"'monsters:' entry '{marker}={id}': there's no monster '{id}' (known: {string.Join(", ", MapFile.MonsterIds)})");
+            }
+
             int starts = map.Find('P').Count();
             if (starts != 1) Error($"needs exactly one 'P' (player start), found {starts}");
 
@@ -41,6 +49,7 @@ public static class MapValidator
                     case "stairsdown":
                     case "stairsup":
                     case "gate":
+                    case "edge":
                         if (MapFile.BuiltInTiles.IndexOf(entry.Symbol) >= 0)
                             Error($"{where}: '{entry.Symbol}' is already a built-in tile; pick another symbol (digits are good)");
                         else if (!map.Find(entry.Symbol).Any())
@@ -61,7 +70,9 @@ public static class MapValidator
                             Error($"{where}: '{entry.Symbol}' is already a built-in tile; pick another symbol (digits are good)");
                         else if (!map.Find(entry.Symbol).Any())
                             Error($"{where}: the item isn't on the map");
-                        if (entry.Args.Length != 1) Error($"{where}: write 'item <id>'");
+                        if (entry.Args.Length < 1 || entry.Args.Length > 3 || (entry.Args.Length >= 2 && entry.Args[1] != "hidden")
+                            || (entry.Args.Length == 3 && entry.Args[2] != "braziers"))
+                            Error($"{where}: write 'item <id> [hidden [braziers]]'");
                         else if (itemIds != null && !itemIds.Contains(entry.Args[0]))
                             Error($"{where}: there's no item '{entry.Args[0]}' (known: {string.Join(", ", itemIds)})");
                         break;
@@ -74,14 +85,16 @@ public static class MapValidator
                             Error($"{where}: '{entry.Symbol}' is already a built-in tile; pick another symbol (digits are good)");
                         else if (!map.Find(entry.Symbol).Any())
                             Error($"{where}: the {entry.Kind} isn't on the map");
-                        if (entry.Args.Length != 1) Error($"{where}: write '{entry.Kind} <{(entry.Kind == "npc" ? "id" : "kind")}>'");
+                        bool hiddenOk = entry.Kind == "prop" && entry.Args.Length >= 2 && entry.Args.Length <= 3 && entry.Args[0] is "heartpiece" or "starshard";
+                        if (entry.Args.Length != 1 && !(hiddenOk && entry.Args[1] == "hidden" && (entry.Args.Length == 2 || entry.Args[2] == "braziers")))
+                            Error($"{where}: write '{entry.Kind} <{(entry.Kind == "npc" ? "id" : "kind")}>'" + (entry.Kind == "prop" ? " (a heartpiece or starshard may add 'hidden [braziers]')" : ""));
                         else if (!known.Contains(entry.Args[0]))
                             Error($"{where}: there's no {entry.Kind} '{entry.Args[0]}' (known: {string.Join(", ", known)})");
                         else if (entry.Kind == "building" && !IsRectangle(map, entry.Symbol))
                             Error($"{where}: a building's tiles must fill a rectangle");
                         break;
                     default:
-                        Error($"{where}: unknown kind '{entry.Kind}' (door, stairsdown, stairsup, castle, spawn, item, building, prop or npc)");
+                        Error($"{where}: unknown kind '{entry.Kind}' (door, stairsdown, stairsup, gate, edge, castle, spawn, item, building, prop or npc)");
                         break;
                 }
             }
@@ -106,6 +119,20 @@ public static class MapValidator
             string exit = map.Get("exit");
             if (exit.Length > 0 && !byName.ContainsKey(exit)) Error($"the exit leads to '{exit}', which has no map file");
             if (exit.Length > 0 && !map.Find('X').Any()) Error($"'exit: {exit}' is set but there's no 'X' on the map");
+            string world = map.Get("world");
+            if (world.Length > 0)
+            {
+                var parts = world.Split((char[])null, System.StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2 || !int.TryParse(parts[0], out _) || !int.TryParse(parts[1], out _))
+                    Error($"'world: {world}' should be two whole numbers: 'world: <x> <y>'");
+            }
+            string exitSpawn = map.Get("exit_spawn");
+            if (exitSpawn.Length > 0)
+            {
+                if (exit.Length == 0) Error("'exit_spawn' needs an 'exit'");
+                else if (byName.TryGetValue(exit, out var exitMap) && !exitMap.SpawnNames().Contains(exitSpawn))
+                    Error($"the exit arrives at '{exitSpawn}' in {exit}, which has no such spot ('<symbol> = spawn {exitSpawn}' there)");
+            }
         }
         return errors;
     }

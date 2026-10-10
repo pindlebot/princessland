@@ -288,6 +288,7 @@ MonoBehaviour:
   standSound: {fileID: 0}
   seatHeight: 0.85
   seatForward: 0.35
+  seatSideways: 0
   soapPrompt: Pump the soap
   soapMessage: Squish! Lavender soap. Rub-a-dub-dub, all the way round your fingers. Now rinse!
   soapSound: {fileID: 8300000, guid: a3dbf6a523ba24a27a919206a3528798, type: 3}
@@ -303,3 +304,10 @@ MonoBehaviour:
   gift: {fileID: 0}
   haveOneMessage: You already have one.
   bagFullMessage: Your bag is full!
+  useCounter: 
+  useFlag: 
+  surpriseAt: 0
+  surprisePrefab: {fileID: 0}
+  surpriseGift: {fileID: 0}
+  surpriseMessage: 
+  surpriseSound: {fileID: 0}

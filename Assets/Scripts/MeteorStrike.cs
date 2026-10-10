@@ -51,6 +51,7 @@ public class MeteorStrike : MonoBehaviour
             enemy.GetComponent<Health>().TakeDamage(damage);
             HeroAbility.Push(enemy, enemy.transform.position - at, knockback);
         }
+        SpellTargets.HitNear(at, radius, damage, SpellElement.Fire);
         if (impactPrefab != null) Instantiate(impactPrefab, at + Vector3.up * 0.8f, Quaternion.identity);
         AudioManager.Play(impactSound);
         var cameraFollow = FindAnyObjectByType<IsoCameraFollow>();

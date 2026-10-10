@@ -2,7 +2,8 @@
 
 Run:  Tools/.venv/bin/python Tools/make_spell_sprites.py
 Out:  Assets/Art/Fireball.png / Fireball.json, Assets/Art/TidalOrb.png / TidalOrb.json,
-      Assets/Art/DarkBolt.png / DarkBolt.json (the dark mermaids' bolt, thrown at the hero)
+      Assets/Art/DarkBolt.png / DarkBolt.json (the dark mermaids' bolt, thrown at the hero),
+      Assets/Art/SporeBolt.png / SporeBolt.json (Mother Mushroom's spore volley)
         Fly     4 frames, looping   the projectile, drawn pointing RIGHT (the game rotates it)
         Impact  5 frames, once      the burst where it hits something
 
@@ -47,6 +48,16 @@ INK = [
     (0.10, (64, 32, 96, 255)),
 ]
 INK_MIST = [(0.5, (150, 110, 180, 200)), (0.2, (104, 78, 136, 140))]
+
+# The Whispering Woods' spores: a soft green-yellow puff with a cream heart (Mother Mushroom's volley)
+SPORE = [
+    (0.80, (250, 255, 214, 255)),
+    (0.62, (214, 240, 128, 255)),
+    (0.42, (140, 206, 80, 255)),
+    (0.24, (80, 150, 70, 255)),
+    (0.10, (44, 96, 60, 255)),
+]
+SPORE_MIST = [(0.5, (176, 214, 128, 200)), (0.2, (120, 170, 100, 140))]
 
 # Royal slime goo, for the Slime King's ground-slam shockwave
 GOO = [
@@ -163,6 +174,7 @@ if __name__ == "__main__":
     write_spell("Fireball", FIRE, SMOKE)
     write_spell("TidalOrb", WATER, MIST)
     write_spell("DarkBolt", INK, INK_MIST)
+    write_spell("SporeBolt", SPORE, SPORE_MIST)
     # Not a spell, but the same expanding-ring burst suits the King's landing.
     # Drawn at 96px (three tiles across) rather than scaled up in game, so its pixels match.
     write_sheet("Shockwave", None, [("Impact", 14, False, [impact_frame(i, GOO, GOO_SPLATS, 96) for i in range(5)])],

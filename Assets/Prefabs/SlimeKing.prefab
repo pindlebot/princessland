@@ -390,6 +390,12 @@ MonoBehaviour:
   bossName: The Slime King
   engageRange: 9
   roarSound: {fileID: 8300000, guid: 4e4032af55b4d4421b11e9132c5ebf85, type: 3}
+  engageMessage: '{0} awakens!'
+  splitMessage: '{0} splits off slimelings!'
+  volleyMessage: 
+  barrageMessage: 
+  defeatMessage: 
+  clearsLevel: 0
   slamCooldown: 6
   slamRange: 10
   slamRadius: 3
@@ -404,3 +410,21 @@ MonoBehaviour:
   minionPrefab: {fileID: 2314524965235775594, guid: c01eff839046d46b0a4541d13a9d6419, type: 3}
   minionCount: 3
   summonSound: {fileID: 8300000, guid: 45605ff7dd78f48a2bd72cece5d39619, type: 3}
+  boltPrefab: {fileID: 0}
+  volleyBolts: 5
+  volleyArc: 50
+  volleyCooldown: 7
+  volleyRange: 11
+  volleyWindup: 0.7
+  volleyDamage: 1
+  volleySound: {fileID: 0}
+  barrageImpactPrefab: {fileID: 0}
+  barrageShots: 4
+  barrageCooldown: 8
+  barrageRange: 12
+  barrageRadius: 1.8
+  barrageSeconds: 1.3
+  barrageStagger: 0.4
+  barrageSpread: 4
+  barrageDamage: 1
+  barrageSound: {fileID: 0}

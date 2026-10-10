@@ -1,0 +1,409 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &827630260769770395
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 978395459146080103}
+  - component: {fileID: 7601791244576306555}
+  - component: {fileID: 8579098520395143111}
+  - component: {fileID: 7439344192360227665}
+  m_Layer: 0
+  m_Name: Sprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &978395459146080103
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827630260769770395}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3435896403228389770}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &7601791244576306555
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827630260769770395}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 508527154, guid: 7e01e18ed60e74e998af11cb7deaaa3a, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 3, y: 3}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!114 &8579098520395143111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827630260769770395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 752f7aecbf0a145fe8f89f9b53b039e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::SpriteFlipbook
+  frames:
+  - {fileID: 508527154, guid: 7e01e18ed60e74e998af11cb7deaaa3a, type: 3}
+  - {fileID: -885886517, guid: 7e01e18ed60e74e998af11cb7deaaa3a, type: 3}
+  fps: 2
+  loop: 1
+  destroyWhenDone: 0
+  randomStart: 0
+  unscaledTime: 1
+--- !u!114 &7439344192360227665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827630260769770395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 502420a4bf9fa47588f60892af5832e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Billboard
+--- !u!1 &2619609253135799967
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1056453158405839267}
+  - component: {fileID: 3310222504166762075}
+  - component: {fileID: 865980832584521560}
+  m_Layer: 0
+  m_Name: Shadow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1056453158405839267
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2619609253135799967}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.049999993, y: 0.02, z: 0.08660254}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3435896403228389770}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &3310222504166762075
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2619609253135799967}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: -1
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 793777535, guid: c3cdb290b89e14562a818f48a0eca33f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 4, y: 4}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!114 &865980832584521560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2619609253135799967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caf46237c181847899153f7615269a67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::GroundShadow
+  lift: 0.02
+--- !u!1 &7669136077293923538
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3435896403228389770}
+  - component: {fileID: 898713257913788819}
+  - component: {fileID: 1556376049002585309}
+  m_Layer: 0
+  m_Name: OldMoss
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3435896403228389770
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7669136077293923538}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 978395459146080103}
+  - {fileID: 1056453158405839267}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &898713257913788819
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7669136077293923538}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.2, y: 2.2, z: 1}
+  m_Center: {x: 0, y: 1.1, z: 0}
+--- !u!114 &1556376049002585309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7669136077293923538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993d8d8b34a954049b05eb7b4bbba012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Npc
+  npcName: Old Moss
+  portrait: {fileID: 21300000, guid: 54206c283e3b3408797cdc46ae10ca6b, type: 3}
+  voice: {fileID: 8300000, guid: ddc2547c5cd8e4737ba1d7d7fd699ec9, type: 3}
+  giftSound: {fileID: 8300000, guid: a142d3c7adcfa46989d2fae3161d654d, type: 3}
+  conversations:
+  - requires: 
+    notIf: met:Old Moss
+    sets: met:Old Moss
+    giveGold: 0
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Mmm? Oh! A visitor. Pardon me, I was just watering the lupins. Old Moss, they call me. Gardener of the Whispering Woods.
+    - heroSpeaks: 1
+      text: The trees are all wearing nightcaps!
+    - heroSpeaks: 0
+      text: Aye. The Grey Gloom's drizzle sent the whole wood to sleep, three hundred years ago. They've been snoring ever since.
+    - heroSpeaks: 0
+      text: Give four of the sleepy ones a good zap of magic, {hero}. Nicely, mind. They wake up ever so cheerful.
+    - heroSpeaks: 0
+      text: Wake four, and come and tell me. I might have something for you.
+  - requires: trees_woken>=4
+    notIf: thanked:moss
+    sets: thanked:moss
+    giveGold: 25
+    giveItem: clover_charm
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Hear that? That's the sound of a wood waking up. Birdsong! I'd forgotten what it sounded like.
+    - heroSpeaks: 0
+      text: Here, a Lucky Clover Charm. It grew where the first tree woke. Wear it, and your magic will come back quicker.
+    - heroSpeaks: 0
+      text: 'Now, if you''re brave: the big red mushroom in the Grove, east of the meadow, is Mother Mushroom. She''s been guarding something precious since the Gloom came.'
+    - heroSpeaks: 0
+      text: She isn't wicked, just very cross. Dodge her red circles, and mind the spores.
+  - requires: cleared:Woods4
+    notIf: moss:cheered
+    sets: moss:cheered
+    giveGold: 0
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: You did it! I felt the whole wood sigh. Mother Mushroom is herself again.
+    - heroSpeaks: 0
+      text: And the Fairy Lantern! It's yours, {hero}. It lights up the dark places. There's a hollow south of the meadow that's been dark ever since the Gloom.
+  - requires: 
+    notIf: trees_woken>=4
+    sets: 
+    giveGold: 0
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Four sleepy trees, dear. Look for the ones in the blue nightcaps, and give each a good zap of magic.
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: 'A wood''s like a dragon: grumpy until it''s had its nap, and twice as grumpy if you wake it early.'
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Why did the mushroom get invited to every party?
+    - heroSpeaks: 1
+      text: Why?
+    - heroSpeaks: 0
+      text: Because he was a real FUNGI! Heh heh heh.
+  - requires: found:toilet_frog
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Is that a frog hat? Splendid. Frogs are the best gardeners. They eat the slugs.
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Pots! Folk leave them lying about the Woods. Break one and see what's inside. Gently, mind.
+  talkOffset: {x: 0, y: 0, z: 0}
+  flipbook: {fileID: 8579098520395143111}
+  idleFrames:
+  - {fileID: 508527154, guid: 7e01e18ed60e74e998af11cb7deaaa3a, type: 3}
+  - {fileID: -885886517, guid: 7e01e18ed60e74e998af11cb7deaaa3a, type: 3}
+  talkFrames:
+  - {fileID: 1155155591, guid: 7e01e18ed60e74e998af11cb7deaaa3a, type: 3}
+  - {fileID: -1718324002, guid: 7e01e18ed60e74e998af11cb7deaaa3a, type: 3}
+  idleFps: 2
+  talkFps: 6

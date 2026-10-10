@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // A spell projectile (the Fireball, the Tidal Orb, ...): flies forward, damages the first
-// enemy it touches, and bursts (spawning its impact effect) on hitting anything solid.
+// enemy it touches (or wakes/breaks an ISpellTarget), and bursts (spawning its impact effect) on hitting anything solid.
 // The spells differ only in their prefab's sprites, lights and impact effect.
 // Trigger events need a Rigidbody on at least one side, so the prefab
 // has a kinematic Rigidbody plus a trigger SphereCollider.
@@ -13,6 +13,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float lifetime = 2f;
     [SerializeField] private GameObject impactPrefab;
     [SerializeField] private AudioClip impactSound;
+    [SerializeField] private SpellElement element = SpellElement.Arcane; // Fire or Water: brambles and braziers care
 
     private bool exploded;
 
@@ -42,6 +43,9 @@ public class Projectile : MonoBehaviour
         var enemy = other.GetComponentInParent<EnemyAI>();
         if (enemy != null)
             enemy.GetComponent<Health>().TakeDamage(damage);
+        // Pots, sleepy trees, brambles, braziers and the like.
+        var target = other.GetComponentInParent<ISpellTarget>();
+        if (target != null) target.OnSpellHit(damage, element);
 
         // The impact is its own object, so it keeps playing after the projectile is gone.
         if (impactPrefab != null)

@@ -12,6 +12,7 @@ locked_hint: Something smells delicious
 open_hint: Something smells delicious
 minimap_floor: #C07858
 minimap_wall: #AAA4B8
+world: 46 -12
 ---
 ###T####T###
 #5..4...ox.#

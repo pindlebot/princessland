@@ -203,6 +203,7 @@ MonoBehaviour:
     notIf: met:Bonesy
     sets: met:Bonesy
     giveGold: 0
+    giveItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -219,6 +220,7 @@ MonoBehaviour:
     notIf: bonesy:key
     sets: bonesy:key
     giveGold: 0
+    giveItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -227,6 +229,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -239,6 +242,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -247,6 +251,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0

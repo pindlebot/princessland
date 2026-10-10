@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2961227e4e78746d69d8edc969fc2b4b, type: 3}
+  m_Name: CloverCharm
+  m_EditorClassIdentifier: Game::ItemDefinition
+  id: clover_charm
+  displayName: Lucky Clover Charm
+  description: A four-leaf clover on a gold ring. Your spells recharge a little faster.
+  icon: {fileID: 21300000, guid: ff42b2b3f7c0f4b2a8f4ddd154c405d7, type: 3}
+  slot: 7
+  keyItem: 0
+  spellDamageBonus: 0
+  maxHealthBonus: 0
+  maxManaBonus: 0
+  moveSpeedPercent: 5
+  spellRechargePercent: 10
+  healthRestore: 0
+  manaRestore: 0

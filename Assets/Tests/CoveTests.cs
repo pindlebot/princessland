@@ -133,14 +133,86 @@ public class CoveTests
     }
 
     [UnityTest]
+    public IEnumerator CaptainGrumblebeardGuardsTheSeaCaveFromTheBeachBelowIt()
+    {
+        yield return Load("Cove");
+        var captain = Object.FindAnyObjectByType<BossAbilities>();
+        Assert.AreEqual("Captain Grumblebeard", captain.BossName);
+        Assert.Less(Vector3.Distance(captain.transform.position, TileCenter(39, 18)), 2f, "on the beach below the cave mouth");
+
+        // He's the cove's biggest, toughest pirate, and the exit is sealed until he falls.
+        var pirate = Object.FindObjectsByType<EnemyAI>().First(e => e.name.StartsWith("Pirate") && e.GetComponent<BossAbilities>() == null);
+        Assert.Greater(captain.Health.Max, pirate.GetComponent<Health>().Max * 8, "far tougher than a deckhand");
+        int xp = captain.GetComponent<Loot>().Experience;
+        Assert.That(xp, Is.InRange(10 * pirate.GetComponent<Loot>().Experience, 50 * pirate.GetComponent<Loot>().Experience));
+        Assert.IsTrue(captain.HasBarrage, "he fires cannons");
+        Assert.IsFalse(captain.HasVolley);
+        Assert.IsFalse(Object.FindAnyObjectByType<ExitZone>().IsOpen);
+    }
+
+    [UnityTest]
+    public IEnumerator TheCaptainsCannonBarrageHitsWhereYouStandAndCallsForAllHands()
+    {
+        yield return Load("Cove");
+        GameSession.Settings.gentle = false; // full damage, so the hit is easy to count
+        var player = LevelBootstrap.Current.Player;
+        var captain = Object.FindAnyObjectByType<BossAbilities>();
+        var announced = new System.Collections.Generic.List<string>();
+        captain.Announced += announced.Add;
+        var health = player.GetComponent<Health>();
+
+        // Stand on the beach in front of him: the first cannonball falls right where you are.
+        Teleport(player, captain.transform.position + new Vector3(-6f, 0f, 0f));
+        yield return null;
+        yield return null;
+        Assert.IsTrue(captain.IsEngaged);
+        captain.StartBarrage();
+        Assert.IsTrue(captain.IsBarraging);
+        yield return new WaitForSeconds(0.2f);
+        Assert.Greater(Object.FindObjectsByType<SpriteRenderer>().Count(r => r.name.StartsWith("SlamWarning")), 0,
+            "a red circle warns where the first one will land");
+        CollectionAssert.Contains(announced, "Cannons ready... FIRE!");
+
+        int hits = 0;
+        health.Damaged += _ => hits++;
+        for (float t = 0f; t < 3f && hits == 0; t += Time.deltaTime) yield return null;
+        Assert.AreEqual(1, hits, "the cannonball hit the hero who stood in the circle");
+        Assert.IsTrue(Object.FindObjectsByType<SpriteFlipbook>().Any(f => f.name.StartsWith("FireballImpact")), "with a fiery flash");
+
+        // His moves take turns (a second barrage can't start on top of the first), and when it's over no
+        // warning circle is left lying about.
+        captain.StartBarrage();
+        Assert.IsTrue(captain.IsBarraging);
+        for (float t = 0f; t < 8f && captain.IsBarraging; t += Time.deltaTime) yield return null;
+        Assert.IsFalse(captain.IsBarraging, "the barrage ends");
+        yield return null;
+        Assert.AreEqual(0, Object.FindObjectsByType<SpriteRenderer>().Count(r => r.name.StartsWith("SlamWarning")));
+
+        // Hurt to half, he calls his crew.
+        int pirates = Object.FindObjectsByType<EnemyAI>().Count(e => e.name.StartsWith("Pirate") && e.GetComponent<BossAbilities>() == null);
+        captain.Health.TakeDamage(captain.Health.Max / 2);
+        Assert.AreEqual(pirates + 2, Object.FindObjectsByType<EnemyAI>().Count(e => e.name.StartsWith("Pirate") && e.GetComponent<BossAbilities>() == null));
+        CollectionAssert.Contains(announced, "Captain Grumblebeard: \"All hands on deck!\"");
+    }
+
+    [UnityTest]
     public IEnumerator ClearingTheCoveOpensTheSeaCaveStairAndPearlSaysThankYou()
     {
         yield return Load("Cove");
         var exit = Object.FindAnyObjectByType<ExitZone>();
         Assert.IsFalse(exit.IsOpen, "sealed while pirates and dark mermaids are about");
-        Assert.AreEqual(12, EnemyAI.AliveCount, "six pirates and six dark mermaids");
+        Assert.AreEqual(13, EnemyAI.AliveCount, "six pirates, six dark mermaids and Captain Grumblebeard");
 
-        foreach (var enemy in EnemyAI.Alive.ToList()) enemy.GetComponent<Health>().TakeDamage(100);
+        // The Captain is the cove's last boss: it takes him too to open the stair.
+        var captain = Object.FindAnyObjectByType<BossAbilities>();
+        foreach (var enemy in EnemyAI.Alive.Where(e => e.GetComponent<BossAbilities>() == null).ToList())
+            enemy.GetComponent<Health>().TakeDamage(100);
+        yield return null;
+        yield return null;
+        Assert.IsFalse(exit.IsOpen, "the Captain still guards the cave");
+        Assert.IsFalse(GameSession.Flags.Contains("cleared:Cove"));
+
+        captain.Health.TakeDamage(999);
         yield return null;
         yield return null;
         Assert.IsTrue(exit.IsOpen);

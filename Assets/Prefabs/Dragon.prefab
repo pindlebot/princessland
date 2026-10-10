@@ -77,6 +77,7 @@ MonoBehaviour:
     notIf: met:Amethyra
     sets: met:Amethyra
     giveGold: 0
+    giveItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -91,10 +92,114 @@ MonoBehaviour:
       text: Won't you come and help?
     - heroSpeaks: 0
       text: My fighting days are long behind me, little one. But I'll be right here in my cave, cheering you on. Go on, {hero}!
+  - requires: cleared:Level0
+    notIf: told:amethyst
+    sets: told:amethyst
+    giveGold: 0
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: The grounds are clear! Well done, {hero}. Now sit a moment, because I owe you the truth.
+    - heroSpeaks: 0
+      text: The Grey Gloom took the colour from this island when he stole the Amethyst, the heart of my crown. That's why everything is so grey. It's why I can't fly.
+    - heroSpeaks: 1
+      text: Who has it?
+    - heroSpeaks: 0
+      text: The Slime King, in the dungeon below. He's been sitting on it like a hen on an egg. Beat him, bring it back to me, and the colour will come home.
+    - heroSpeaks: 0
+      text: And {hero}... the Gloom took my five dragon eggs as well. One for each island. Keep your eyes open for them.
+  - requires: has:amethyst
+    notIf: thanked:amethyst
+    sets: thanked:amethyst
+    giveGold: 50
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: My Amethyst! Oh, {hero}, you brought it home! Hold it up. See how it glows?
+    - heroSpeaks: 1
+      text: Everything is turning colourful!
+    - heroSpeaks: 0
+      text: 'Yes! The colour is coming back to the castle grounds. And look at those boots you''re wearing: made from the Slime King''s jelly. Bouncy Boots!'
+    - heroSpeaks: 0
+      text: With them you can hop over gaps. There were places in the grounds and in the dungeon you couldn't cross. Do you remember them? Now you can!
+    - heroSpeaks: 0
+      text: Go on, have a look around. I have a feeling there are treasures waiting, and maybe even one of my eggs.
+  - requires: has:dragon_egg_castle
+    notIf: thanked:egg_castle
+    sets: thanked:egg_castle
+    giveGold: 30
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Is that... it IS! My egg! Oh, it's warm. It's wiggling!
+    - heroSpeaks: 1
+      text: It was behind a gap in the dungeon.
+    - heroSpeaks: 0
+      text: Clever {hero}! Keep it safe with you for now. When we've found all five, we'll hatch them together. Four more to go, in the other islands.
+  - requires: talks:Amethyra>=24
+    notIf: snored
+    sets: snored
+    giveGold: 0
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Oh, {hero}, you again! You do like chatting. I was just... just... *yawn*...
+    - heroSpeaks: 0
+      text: Zzzzz... snrrrk... mmm, pancakes... snrrrk... Zzzzz...
+    - heroSpeaks: 1
+      text: (She's fast asleep. Her snoring rumbles like a little thunderstorm.)
+    - heroSpeaks: 0
+      text: Zzzz... don't wake the dragon... Zzzz... Hoo... zzzz...
+  - requires: unwashed
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: ...{hero}. Did you wash your hands?
+    - heroSpeaks: 1
+      text: Um... maybe?
+    - heroSpeaks: 0
+      text: A dragon knows these things. Hands wash at the sink at home, dear. Soap first, then rinse. Off you go!
+  - requires: talks:Amethyra>=9
+    notIf: joked:ten
+    sets: joked:ten
+    giveGold: 10
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Ten chats! That deserves my VERY best joke. What do you call a dragon who never wakes up?
+    - heroSpeaks: 1
+      text: What?
+    - heroSpeaks: 0
+      text: A SNORE-asaurus! ...No wait, I'm a dragon, not a dinosaur. A snore-a-DRAGON! Hoo hoo hoo!
+    - heroSpeaks: 0
+      text: Here, a tip for listening. Dragons always pay for a good audience.
+  - requires: hands_washed>=5
+    notIf: praised:hands
+    sets: praised:hands
+    giveGold: 0
+    giveItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Is that lavender I smell? {hero}, your hands are squeaky clean!
+    - heroSpeaks: 1
+      text: I washed them five times!
+    - heroSpeaks: 0
+      text: Splendid. Cleanest hero in all of Gemhold. I'm so proud I could breathe sparkles.
   - requires: 
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -103,6 +208,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -119,6 +225,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -131,6 +238,7 @@ MonoBehaviour:
     notIf: 
     sets: 
     giveGold: 0
+    giveItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0

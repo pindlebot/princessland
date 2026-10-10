@@ -9,33 +9,42 @@
 // Hazards: spike traps (^) in the tunnel below the campfire room and in the corridor to the
 //   treasure room (they ripple from west to east, so follow the wave), and two lava pools (~)
 //   in the Slime King's hall: mind his Ground Slam's knockback!
-// No "exit:" here, so the stairs are the end of the adventure (for now).
+// The Slime King leaves the Amethyst (3) and the Bouncy Boots (4) where he fell; the stairs (X) behind
+//   his hall lead back up to the castle grounds (arriving by the stairs there).
+// A fake wall (0) in the east wall of the start room looks like the rest of the wall, but you can walk
+//   through it: behind it is Dad's Workshop, with a computer, a signed note and a star shard.
+// Gaps (5) you can't cross yet, so come back wearing the Bouncy Boots: a one-tile gap above the first corridor
+//   (a star shard), and a two-tile gap through the east wall of the Slime King's hall (an egg: one of
+//   Amethyra's five). Two braziers (6) in the mushroom grotto: light both with magic and a star shard appears.
 title: Escape the dungeon
 theme: Dungeon
 music: music_dungeon
 region: castle
 locked_hint: Beat the Slime King!
 open_hint: The stairs are open!
+exit: Level0
+exit_spawn: FromDungeon
 minimap_floor: #7A6E62
 minimap_wall: #AAA4B8
+world: -2 38
 ---
-####T####T####          ####T####T####         ####T###T####
-#P..........u#          #oo.......xC.#         #o........x.#
-#............#          #x..........o#         #........C..#
-#......I.....############...........x###########...........#
+####T####T#### ##T##    ####T####T####         ####T###T####
+#P..........u# #.9.#    #oo.......xC.#         #o........x.#
+#............# #...#    #x..........o#         #........C..#
+#......I.....####5#######...........x###########...........#
 #............d....E.....................^.^.^..k...........#
 #............#.j.....j...............###########...........#
 #............############......j.....#         #...........#
-#,,..........#          #............#         #...........#
-#,,,........o#          #............#         #u..u.2...o.#
-####..########          #ox.........o#         #############
-   #..#                 ######..######
+#,,..........0...!...?.##............#         #...........#
+#,,,........o#........x##............#         #u..u.2...o.#
+####..########o9......x##ox.........o#         #############
+   #..#       ################..######
 ####..###T##T###             #..#
 #ox...........u#   #####T#####..##T#######T#########T#######
 #..............#   #u..........................##.....o....#
 #..............#   #.......................E...##.u..u.....#
 #..............#   #........ppp................##........u.#
-#..............#####.....ppppppppp.............##..........#
+#..............#####.....ppppppppp.............##.6..7...6.#
 #.....cn.......d...#....pppLppppppppp..........##..........#
 #..............#####....pppppppppLppp...............pp.....#
 #..............#   #.....ppppppppppp...............pppp....#
@@ -51,16 +60,28 @@ minimap_wall: #AAA4B8
  #.# #....j.......# #.#  #u...............................u#
  #.# #.##########.# #.####............................j....#
  #.# #.#        #.# #.........~~~..........................#
- #.# #.######## #.# ######...~~~~..........................#
- #.# #........# #.#      #....~~...........................#
- #.# ########.# #.#      #.................................#
- #j#    #####.# #.#      #...............M.................#
- #.#    #.....# #.#      #........................~~.......#
- #.#    #.###E# #u#      #......................~~~~.......#
- #.#    #u# #.# #.###    #.......................~~~.......#
+ #.# #.######## #.# ######...~~~~..........................####T###
+ #.# #........# #.#      #....~~...........................##.....#
+ #.# ########.# #.#      #.................................##.....#
+ #j#    #####.# #.#      #...............M.................55..8..#
+ #.#    #.....# #.#      #........................~~.......##.....#
+ #.#    #.###E# #u#      #......................~~~~.......##.....#
+ #.#    #u# #.# #.###    #.............3...4.....~~~.......########
  #.#    ### #.# #.jy#    #.................................#
  #.##########.# #####    #.................................#
  #.........L..#          #j............#,X,#..............u#
  ##############          ###################################
 ---
 2 = item starlight_wand
+// Phase 2: the gates, and what the Slime King leaves behind.
+3 = item amethyst hidden
+4 = item bouncy_boots hidden
+5 = prop gap
+6 = prop brazier
+7 = prop starshard hidden braziers
+8 = item dragon_egg_castle
+9 = prop starshard
+// Dad's Workshop: a fake wall (0) in the start room's east wall hides a secret room.
+0 = prop fakewall
+! = prop workshopdesk
+? = prop workshopnote

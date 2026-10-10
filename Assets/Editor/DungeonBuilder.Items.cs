@@ -17,6 +17,7 @@ public static partial class DungeonBuilder
         public Color Glow;
         public int SpellDamage, Hearts, Magic, WalkPercent, RechargePercent;
         public int RestoreHearts, RestoreMagic; // food: what eating it gives back
+        public bool KeyItem;                    // a treasure: lives in the treasures tab
     }
 
     // Where each one lies: the Ember Ring in the dungeon's first room ('I'), the helm in the
@@ -113,6 +114,60 @@ public static partial class DungeonBuilder
             Glow = new Color(1f, 0.55f, 0.2f),
             SpellDamage = 1, Magic = 15,
         },
+        // The Whispering Woods and the easter eggs (art: Tools/make_woods_sprites.py).
+        new ItemSpec
+        {
+            Id = "frog_hat", Asset = "FrogHat", Name = "Frog Hat", Slot = EquipSlot.Hat, FloorSheet = "WoodsItems",
+            Description = "A little green frog hat with big round eyes. A frog gave it to you for flushing so much. Ribbit!",
+            Glow = new Color(0.5f, 0.9f, 0.4f),
+            Hearts = 1,
+        },
+        new ItemSpec
+        {
+            Id = "healing_apple", Asset = "HealingApple", Name = "Healing Apple", FloorSheet = "WoodsItems",
+            Description = "A crunchy red apple from the Whispering Woods.",
+            Glow = new Color(1f, 0.4f, 0.4f),
+            RestoreHearts = 2,
+        },
+        new ItemSpec
+        {
+            Id = "mana_berry", Asset = "ManaBerry", Name = "Mana Berry", FloorSheet = "WoodsItems",
+            Description = "Sparkly blue berries that taste like magic.",
+            Glow = new Color(0.45f, 0.55f, 1f),
+            RestoreMagic = 40,
+        },
+        new ItemSpec
+        {
+            Id = "fairy_lantern", Asset = "FairyLantern", Name = "Fairy Lantern", Slot = EquipSlot.None, FloorSheet = "WoodsItems",
+            Description = "A lantern with a tiny fairy light inside. It follows you and glows in the dark.",
+            Glow = new Color(1f, 0.9f, 0.5f), KeyItem = true,
+        },
+        // The first metroidvania abilities and gems (art: Tools/make_gate_sprites.py). Key items: the treasures tab.
+        new ItemSpec
+        {
+            Id = Abilities.BouncyBoots, Asset = "BouncyBoots", Name = "Bouncy Boots", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "Boots made from the Slime King's jelly! Walk into a gap and you'll hop right over it.",
+            Glow = new Color(0.5f, 1f, 0.7f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "amethyst", Asset = "Amethyst", Name = "The Amethyst", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "Amethyra's own gem, the heart of the crown. Take it to her, and the colour will come back.",
+            Glow = new Color(0.75f, 0.45f, 1f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "dragon_egg_castle", Asset = "DragonEgg", Name = "Amethyst Dragon Egg", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "One of Amethyra's five lost eggs. It's warm, and every so often it wiggles.",
+            Glow = new Color(0.8f, 0.55f, 1f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "clover_charm", Asset = "CloverCharm", Name = "Lucky Clover Charm", Slot = EquipSlot.Charm, FloorSheet = "WoodsItems",
+            Description = "A four-leaf clover on a gold ring. Your spells recharge a little faster.",
+            Glow = new Color(0.5f, 1f, 0.5f),
+            RechargePercent = 10, WalkPercent = 5,
+        },
     };
 
     // Items are ScriptableObject assets: pure data, shared by everything that refers to them.
@@ -127,6 +182,7 @@ public static partial class DungeonBuilder
         so.FindProperty("icon").objectReferenceValue =
             SpriteSheetImporter.ImportSingle(spec.IconPath ?? $"Assets/Art/UI/Icon{spec.Asset}.png", 16);
         so.FindProperty("slot").enumValueIndex = (int)spec.Slot;
+        so.FindProperty("keyItem").boolValue = spec.KeyItem;
         so.FindProperty("spellDamageBonus").intValue = spec.SpellDamage;
         so.FindProperty("maxHealthBonus").intValue = spec.Hearts;
         so.FindProperty("maxManaBonus").intValue = spec.Magic;

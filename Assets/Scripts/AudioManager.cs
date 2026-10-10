@@ -58,11 +58,6 @@ public class AudioManager : MonoBehaviour
     private void Update()
     {
         musicSource.volume = musicVolume * GameSession.Settings.Music01; // the pause menu's music setting
-        if (GameInput.MutePressed)
-        {
-            musicMuted = !musicMuted;
-            musicSource.mute = musicMuted;
-        }
     }
 
     // How loud effects are right now (the pause menu's sound setting), for sounds that play

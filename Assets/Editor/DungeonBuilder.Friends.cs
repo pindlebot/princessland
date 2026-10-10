@@ -111,6 +111,16 @@ public static partial class DungeonBuilder
         },
     };
 
+    // The tenth flush brings out a frog (HouseFixture.TrySurprise): hook the toilet up to him.
+    private static void AttachToiletFrog(SharedAssets assets)
+    {
+        string path = AssetDatabase.GetAssetPath(assets.Toilet);
+        var root = PrefabUtility.LoadPrefabContents(path);
+        SetRef(root.GetComponent<HouseFixture>(), "surprisePrefab", assets.Frog);
+        PrefabUtility.SaveAsPrefabAsset(root, path);
+        PrefabUtility.UnloadPrefabContents(root);
+    }
+
     // Everything here is built after the scenery (it changes the fountain prefab).
     private static void CreateFriendsAndDungeonProps(SharedAssets assets, Sprite shadow, GameObject sparkle)
     {
@@ -120,6 +130,7 @@ public static partial class DungeonBuilder
                                         "voice_bonesy", BonesyTalks(), new Vector3(0.8f, 2f, 0.8f), shadow, 1.4f);
         assets.Frog = CreateFrogPrefab(shadow);
         assets.FrogBush = CreateFrogBushPrefab(assets);
+        AttachToiletFrog(assets);
         AddWishing(assets.Fountain, sparkle);
 
         var props = SpriteSheetImporter.Import("DungeonProps");

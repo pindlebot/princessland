@@ -322,4 +322,100 @@ public class HudTests
         go.transform.position = pos;
         cc.enabled = true;
     }
+
+    private static void Hover(VisualElement slot)
+    {
+        using (var enter = PointerEnterEvent.GetPooled()) { enter.target = slot; slot.SendEvent(enter); }
+    }
+
+    private static void Unhover(VisualElement slot)
+    {
+        using (var leave = PointerLeaveEvent.GetPooled()) { leave.target = slot; slot.SendEvent(leave); }
+    }
+
+    [UnityTest]
+    public IEnumerator HoveringAnItemShowsATooltipWithItsDescriptionAndAttributes()
+    {
+        yield return Load("Dungeon");
+        var controller = Object.FindAnyObjectByType<HudController>();
+        GameSession.Inventory.Bag.Add("starlight_wand");
+        GameSession.Inventory.Bag.Add("pancakes");
+        GameSession.Inventory.KeyItems.Add("bouncy_boots");
+        controller.SetInventoryOpen(true);
+        player.GetComponent<Inventory>().Add("ember_ring"); // redraws the bag
+        yield return null;
+
+        Assert.IsFalse(controller.TooltipShown);
+        var tip = hud.Q("item-tooltip");
+        Assert.IsFalse(tip.ClassListContains("visible"));
+
+        Hover(hud.Q("bag-0"));
+        Assert.IsTrue(controller.TooltipShown);
+        StringAssert.Contains("Starlight Wand", controller.TooltipText);
+        StringAssert.Contains("fallen star", controller.TooltipText, "the description");
+        StringAssert.Contains("+1 spell damage", controller.TooltipText, "each attribute on its own line");
+        StringAssert.Contains("spells recharge 15% faster", controller.TooltipText);
+        StringAssert.Contains("Weapon", hud.Q<Label>("tip-kind").text);
+        StringAssert.Contains("Click to wear", hud.Q<Label>("tip-action").text);
+        StringAssert.DoesNotContain("fallen star", hud.Q<Label>("item-details").text, "no longer down at the bottom of the inventory");
+        Unhover(hud.Q("bag-0"));
+        Assert.IsFalse(controller.TooltipShown);
+
+        Hover(hud.Q("bag-1"));
+        StringAssert.Contains("+3 hearts", controller.TooltipText, "food says what it gives back");
+        Assert.AreEqual("Food", hud.Q<Label>("tip-kind").text);
+        Unhover(hud.Q("bag-1"));
+
+        controller.ShowTreasures(true);
+        Hover(hud.Q("key-0"));
+        StringAssert.Contains("Bouncy Boots", controller.TooltipText);
+        StringAssert.Contains("hop right over", controller.TooltipText);
+        Assert.AreEqual("Treasure", hud.Q<Label>("tip-kind").text);
+        controller.SetInventoryOpen(false);
+        Assert.IsFalse(controller.TooltipShown, "closing the inventory puts it away");
+    }
+
+    [UnityTest]
+    public IEnumerator EmptyAndWornSlotsOnTheDollHaveTooltipsToo()
+    {
+        yield return Load("Dungeon");
+        var controller = Object.FindAnyObjectByType<HudController>();
+        controller.SetInventoryOpen(true);
+        yield return null;
+
+        Hover(hud.Q("equip-helm"));
+        StringAssert.Contains("Empty slot", controller.TooltipText);
+        Unhover(hud.Q("equip-helm"));
+
+        var inventory = player.GetComponent<Inventory>();
+        inventory.Add("plumed_helm");
+        inventory.Equip(inventory.Bag[0]);
+        yield return null;
+        Hover(hud.Q("equip-helm"));
+        StringAssert.Contains("Plumed Helm", controller.TooltipText);
+        StringAssert.Contains("worn", hud.Q<Label>("tip-kind").text);
+        StringAssert.Contains("Click to take it off", controller.TooltipText);
+    }
+
+    [UnityTest]
+    public IEnumerator TheWornSlotsSitOnAPaperDollOfTheHero()
+    {
+        yield return Load("Dungeon");
+        var doll = hud.Q("doll");
+        Assert.IsNotNull(doll);
+        Assert.IsNotNull(doll.Q("doll-figure").resolvedStyle.backgroundImage.sprite, "the hero's own picture is the body");
+        foreach (var slot in new[] { "hat", "helm", "charm", "armor", "weapon", "ring", "boots" })
+            Assert.IsNotNull(doll.Q($"equip-{slot}"), $"{slot} is on the doll");
+        yield return null;
+        Object.FindAnyObjectByType<HudController>().SetInventoryOpen(true);
+        yield return null;
+        yield return null;
+        var head = doll.Q("equip-helm").worldBound;
+        var feet = doll.Q("equip-boots").worldBound;
+        var torso = doll.Q("equip-armor").worldBound;
+        Assert.Less(head.y, torso.y, "the helm is above the chest...");
+        Assert.Less(torso.y, feet.y, "...and the boots are at the bottom");
+        Assert.Less(doll.Q("equip-ring").worldBound.x, torso.x, "one hand each side of the body");
+        Assert.Greater(doll.Q("equip-weapon").worldBound.x, torso.x);
+    }
 }

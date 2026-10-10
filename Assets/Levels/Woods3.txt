@@ -1,0 +1,40 @@
+// Whispering Woods, room 3 of 4: the Mushroom Hollow, a side room the Grey Gloom left dark. The opening in the north
+// hedge (3) goes back to the Spore Meadow. Glowcaps (8) give a little blue light; the Fairy Lantern (from Mother
+// Mushroom) lights the whole hollow. A treasure chest (C) waits in the south-east corner, and there are pots (4),
+// berries (7) and an apple (6) about, and a few Spore Puffs (E) in the dark.
+title: Whispering Woods: The Mushroom Hollow
+theme: Outdoor
+music: music_woods
+mood: dark
+region: woods
+monsters: E=sporepuff M=mothermushroom
+minimap_floor: #6E9A5E
+minimap_wall: #4E7A50
+world: -84 34
+---
+HHHHHHHHHHHHHHH3HHHHHHHHHHHHHH
+H.......;......=....,.......eH
+Ht..,..........P....,t,......H
+H...8.,........=..8.....6....H
+H..............=.......,.8,..H
+H.,,...,.,.8...=,........,...H
+Hi.t..E..,.....=...,....,,...H
+H...........,,.=......E......H
+H..............=....,......4.H
+H......,..,t...=8............H
+H..4....8,,...........,..,.,.H
+H.......,,.....,.....,..8....H
+H..,.........4.....,.........H
+H,.it.....E..................H
+H......4,....,......E.,......H
+H.......,......,..,..,.......H
+H.,..8........8..,.....4,.8..H
+H,.7.............7.....,,..C.H
+H,.....,....................,H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+3 = edge Woods2
+4 = prop pot
+6 = item healing_apple
+7 = item mana_berry
+8 = prop glowcaps

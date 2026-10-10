@@ -104,14 +104,15 @@ public class Minimap : MonoBehaviour
             for (int col = 0; col < map.Width; col++)
             {
                 char c = map.At(col, row);
-                Color32 color = !explored[col, row] || c == ' ' ? Hidden
+                bool hiddenSecret = !map.SecretFound && map.IsSecretTile(col, row); // the room behind a fake wall
+                Color32 color = !explored[col, row] || c == ' ' || hiddenSecret ? Hidden
                               : c == 'H' ? Hedge
                               : c == 'K' ? Castle
                               : c == '=' || c == 'X' ? Path
                               : LevelMap.IsFence(c) ? Fence
                               : LevelMap.IsCobbles(c) ? Cobbles
                               : map.IsBuilding(c) ? Roof
-                              : LevelMap.IsWall(c) || map.IsWallProp(c) ? (Color32)map.WallColor
+                              : LevelMap.IsWall(c) || map.IsWallProp(c) || (map.IsFakeWall(c) && !map.SecretFound) ? (Color32)map.WallColor
                               : LevelMap.IsWater(c) ? Water
                               : LevelMap.IsSand(c) ? Sand
                               : LevelMap.IsPlanks(c) ? Planks

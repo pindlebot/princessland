@@ -90,11 +90,13 @@ public static partial class DungeonBuilder
     private static void AddWakeSpot(GameObject fountainPrefab)
     {
         var root = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(fountainPrefab));
-        var spot = new GameObject("WakeSpot").transform;
+        var spot = new GameObject(WakeFountain.SpawnName).transform; // also the arrival spot for fountain travel
         spot.SetParent(root.transform, false);
         spot.localPosition = new Vector3(0f, 0f, -2.2f); // toward the camera, clear of the basin
         spot.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        SetRef(root.AddComponent<WakeFountain>(), "wakeSpot", spot);
+        var wake = root.AddComponent<WakeFountain>();
+        SetRef(wake, "wakeSpot", spot);
+        SetRef(wake, "touchSound", Sound("fountain_touch"));
         PrefabUtility.SaveAsPrefabAsset(root, AssetDatabase.GetAssetPath(fountainPrefab));
         PrefabUtility.UnloadPrefabContents(root);
     }
