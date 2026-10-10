@@ -101,6 +101,27 @@ public class LevelFlowTests
     }
 
     [UnityTest]
+    public IEnumerator TheCastleAndTheVillageStandApartWithAMeadowBetween()
+    {
+        SceneManager.LoadScene("Level0");
+        yield return null;
+
+        var castle = BoundsOf(GameObject.Find("Castle"));
+        var cathedral = BoundsOf(GameObject.Find("Cathedral"));
+        float gap = cathedral.min.x - castle.max.x;
+        Assert.Greater(gap, 6f, "a few tiles of open ground between the castle and Hollyhock");
+        Assert.Less(gap, 20f, "but only a short walk");
+    }
+
+    private static Bounds BoundsOf(GameObject go)
+    {
+        var renderers = go.GetComponentsInChildren<Renderer>();
+        var bounds = renderers[0].bounds;
+        foreach (var r in renderers) bounds.Encapsulate(r.bounds);
+        return bounds;
+    }
+
+    [UnityTest]
     public IEnumerator TalkingToTheDragonPausesTheGameAndPlaysHerIntroduction()
     {
         SceneManager.LoadScene("Level0");

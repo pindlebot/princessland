@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 // A character's spell (the wizard's Fireball, the princess's Tidal Orb): a projectile with
 // a cooldown and a mana cost. No aiming needed: it flies at the nearest enemy that's on
 // screen (preferring ones it can actually reach), or straight ahead if there are none.
+// Tab / RB picks a different monster (the next nearest, wrapping round) and it stays the target
+// until it's defeated or leaves the screen; the HUD and a ring on the ground show which one it is.
 [RequireComponent(typeof(Mana))]
 public class SpellAbility : MonoBehaviour
 {
@@ -22,6 +25,9 @@ public class SpellAbility : MonoBehaviour
     private PlayerController movement;
     private Camera cam;
     private float readyAt;
+    private EnemyAI chosen;               // picked with Tab / RB; null = whoever's nearest
+    private EnemyAI cachedTarget;
+    private int cachedFrame = -1;
 
     // Raised every time the ability fires. CharacterAnimator listens to play the cast animation.
     public event Action Cast;
@@ -46,6 +52,7 @@ public class SpellAbility : MonoBehaviour
         inventory = GetComponent<Inventory>();       // optional: equipment can add damage and speed
         movement = GetComponent<PlayerController>(); // optional: lets us turn to face the target
         cam = Camera.main;
+        gameObject.AddComponent<TargetMarker>();
     }
 
     private void Update()
@@ -53,6 +60,8 @@ public class SpellAbility : MonoBehaviour
         if (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) return;
         if (GameInput.GameplayBlocked) return; // the buttons are for the conversation or menu
         if (movement != null && (movement.IsSeated || movement.IsSwimming)) return; // no spells from the toilet, or while swimming
+
+        if (GameInput.TargetPressed) CycleTarget();
 
         // Clicks on the HUD (e.g. the inventory) are for the UI, not for casting.
         bool click = GameInput.ClickHeld && !HudController.PointerOverUi;
@@ -90,10 +99,47 @@ public class SpellAbility : MonoBehaviour
         return true;
     }
 
-    // Nearest living enemy inside the camera's view. Enemies with a clear line of fire
-    // win over closer ones hiding behind a wall.
+    // The monster the spell will fly at right now (what the HUD shows), or null if none is on screen.
+    // Worked out once a frame: the HUD, the ground ring and the cast all ask.
+    public EnemyAI Target
+    {
+        get
+        {
+            if (cachedFrame != Time.frameCount)
+            {
+                cachedFrame = Time.frameCount;
+                cachedTarget = FindTarget();
+            }
+            return cachedTarget;
+        }
+    }
+
+    // Aim at the next monster on screen: nearest first, then each farther one, then back to the nearest.
+    public void CycleTarget()
+    {
+        var onScreen = new List<EnemyAI>();
+        foreach (var enemy in EnemyAI.Alive)
+            if (IsOnScreen(enemy.transform.position)) onScreen.Add(enemy);
+        if (onScreen.Count == 0)
+        {
+            chosen = null;
+            return;
+        }
+        onScreen.Sort((a, b) => Distance(a).CompareTo(Distance(b)));
+        int current = onScreen.IndexOf(FindTarget());
+        chosen = onScreen[(current + 1) % onScreen.Count]; // nothing aimed at yet (-1) starts at the nearest
+        cachedFrame = -1;
+    }
+
+    private float Distance(EnemyAI enemy) => Vector3.Distance(transform.position, enemy.transform.position);
+
+    // The monster picked with Tab / RB while it's still alive and on screen; otherwise the nearest living
+    // enemy inside the camera's view. Enemies with a clear line of fire win over closer ones hiding behind a wall.
     public EnemyAI FindTarget()
     {
+        if (EnemyAI.IsAlive(chosen) && IsOnScreen(chosen.transform.position)) return chosen;
+        chosen = null;
+
         EnemyAI bestClear = null, bestAny = null;
         float bestClearDistance = float.MaxValue, bestAnyDistance = float.MaxValue;
 

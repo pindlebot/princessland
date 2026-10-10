@@ -112,7 +112,7 @@ Keep these design pillars:
 ### C1. Movement, targeting and traversal feel (M)
 
 - [ ] Test diagonal speed, small stick movements, wall sliding, narrow paths and sprite facing while casting. Tune dead zone and acceleration only from observed problems.
-- [ ] Give auto-aim a clear target indication where helpful. Prefer visible/reachable threats and predictable behavior when multiple enemies/props compete; check attacks through walls.
+- [x] Target indication and cycling (Tab / RB; a ring on the ground and a HUD target card) are in. [ ] Still to check: prefer visible/reachable threats and predictable behavior when multiple enemies/props compete; check attacks through walls.
 - [ ] Make hop eligibility/landing readable before movement commits. Add a consistent blocked-hop cue and avoid double activation at scene edges.
 - [ ] Match push/dig/swim timing to animation and sound. Ensure pushing a block feels deliberate rather than accidental during combat.
 - [ ] Check shore-to-water sprite/ripple changes, pause, recovery and scene transition interruption for visual or collision leftovers.

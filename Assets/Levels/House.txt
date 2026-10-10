@@ -2,9 +2,10 @@
 // Inside the castle: the bedroom in the middle, a tiled bathroom on the right, and an open-air
 // courtyard on the left, through a doorway in the bedroom's west wall.
 // Bedroom: B bed (a tile out from the walls, so it doesn't poke into them: climb in and go to sleep
-// on its left pillow), r the rug at its foot, 4 the nursery crib with the baby mermaid in it (against
-// the north wall), N nightstand with a lamp, A wardrobe, U bookshelf, G toy chest, v a potted plant,
-// and 3 the spiral staircase down to the kitchen.
+// on its left pillow), r the rug at its foot, 4 the nursery crib with the baby mermaid in it, N nightstand
+// with a lamp, A wardrobe, U bookshelf, G toy chest, v a potted plant, and 3 the spiral staircase down to
+// the kitchen. The furniture is drawn facing the camera, so it's scattered about (corners, both back walls
+// and the open floor) rather than lined up along one wall, where it would form a single 45-degree row.
 // Bathroom: W toilet (you can sit on it), S sink (with hand soap: soap, then rinse), R paper
 // towel, 8 the big marble bath (three tiles wide, centred on its own: lie back in it in your
 // swimwear; turn its gold tap on and off from its east end), with a tall monstera ) west of it and
@@ -27,12 +28,12 @@ minimap_wall: #AAA4B8
 world: 13 -14
 ---
 ##############T###T####T#######
-#HHHHHHHHHH#N...4A.U#WRS_)_8_(#
-#H;,Y,;,Y;v#.B...2..#_________#
-#H,;,{,;,{,#.r.....G#________}#
+#HHHHHHHHHH#N......U#_S__)_8_(#
+#H;,Y,;,Y;v#.B..4...#__R______#
+#H,;,{,;,{,#.r....2A#W_______}#
 9===========....3...__________#
-#,,,[,,,,,,#........#________v#
-#;,,,0,,,,;#v....P..#v_______v#
+#,,,[,,,,,,#.G......#________v#
+#;,,,0,,,,;#.....P.v#v_______v#
 #,,,,,,7,,,######1#############
 #HH,b,,b,HH#
 #;;b{;;{b;;#

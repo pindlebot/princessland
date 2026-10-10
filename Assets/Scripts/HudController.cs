@@ -59,7 +59,8 @@ public class HudController : MonoBehaviour
     private readonly List<VisualElement> pips = new List<VisualElement>();
     private Progression progress;
     private BossAbilities boss;
-    private VisualElement bossBar, bossFill;
+    private VisualElement bossBar, bossFill, targetCard, targetFill;
+    private Label targetName, targetKey;
     private float toastHideAt;
     private VisualElement inventoryPanel;
     private readonly Dictionary<EquipSlot, VisualElement> equipSlots = new Dictionary<EquipSlot, VisualElement>();
@@ -169,6 +170,10 @@ public class HudController : MonoBehaviour
 
         bossBar = root.Q("boss-bar");
         bossFill = root.Q("boss-fill");
+        targetCard = root.Q("target-card");
+        targetFill = root.Q("target-fill");
+        targetName = root.Q<Label>("target-name");
+        targetKey = root.Q<Label>("target-key");
         boss = FindAnyObjectByType<BossAbilities>();
         if (boss != null)
         {
@@ -203,6 +208,8 @@ public class HudController : MonoBehaviour
         bossBar.EnableInClassList("visible", showBoss);
         if (showBoss) bossFill.style.width = Length.Percent(100f * boss.Health.Current / boss.Health.Max);
 
+        UpdateTarget(showBoss);
+
         toast.EnableInClassList("visible", Time.time < toastHideAt);
 
         var game = GameManager.Instance;
@@ -217,6 +224,19 @@ public class HudController : MonoBehaviour
             bannerSubtitle.text = GameInput.UsingGamepad ? "A: try again      Start: menu" : "R: try again      Esc: menu";
         }
         helpPill.text = $"{GameInput.HelpKey}: Help";
+    }
+
+    // The monster the spell is aimed at: its name and health, with the key that picks another. (A boss that's
+    // the target already has its own big bar just above, so the card sits that one out.)
+    private void UpdateTarget(bool bossBarShown)
+    {
+        var target = spell.Target;
+        bool show = target != null && !(bossBarShown && target.Health == boss.Health);
+        targetCard.EnableInClassList("visible", show);
+        if (!show) return;
+        targetName.text = target.DisplayName;
+        targetKey.text = GameInput.TargetKey;
+        targetFill.style.width = Length.Percent(100f * target.Health.Current / target.Health.Max);
     }
 
     private void HandleKeys()
