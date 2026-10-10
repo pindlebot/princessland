@@ -5,7 +5,7 @@
 // south-west corner rows down the river to Mermaid Cove. Easter eggs: one bush (f), in
 // the corner of the pine wood, hides Sir Hopsalot the frog, and the fountain (F) grants a wish
 // if you toss in enough coins.
-// Hollyhock, the village (fenced with '+', cobbled with '-'), sits east of the castle: a path
+// Hollyhock, the village (fenced with '+', cobbled with '-'), sits a short walk east of the castle, across an open meadow: a path
 // leads from the castle gate to its west gate, and another from its south gate down to the
 // fountain. Along the back: the cathedral (3), Barnaby's shop (4) with Barnaby Badger (6) at his
 // stall (7) selling bubble bath, and a thatched cottage (5). In front: the cobbled square with a
@@ -35,12 +35,12 @@ minimap_wall: #C4BEAA
 world: 0 0
 ---
 HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-Hf...t..t...e..KKKKKKK.+33333.4444.555.+...tt%%%%%%%%%%%%H
-H.t...t.t..e...KKKKKKK.+33333.4444.555Y+...t%%%%%%%%%%%%%H
-Ht.e.t...t.....KKKKKKK.+33333,4444.;-;.+...t%%%%u::::u%%%H
-H.t..tt....s...KKKKKKK.+33333..7.6o;-;.+....t%%%:::::::%%H
-H..t..,e.t.......Q=Q...+{.-{!.....?.-.!+.....%%%:::::D:%%H
-Ht...t............======---------------+.s.t.%%%:::::::%%H
+Hf...t..t..KKKKKKK...t.+33333.4444.555.+...tt%%%%%%%%%%%%H
+H.t...t.t..KKKKKKK..e..+33333.4444.555Y+...t%%%%%%%%%%%%%H
+Ht.e.t...t.KKKKKKK.t...+33333,4444.;-;.+...t%%%%u::::u%%%H
+H.t..tt....KKKKKKK.....+33333..7.6o;-;.+....t%%%:::::::%%H
+H..t..,e.t...Q=Q.......+{.-{!.....?.-.!+.....%%%:::::D:%%H
+Ht...t........==========---------------+.s.t.%%%:::::::%%H
 H.t.....e..t......=....+.--------!.....+.....%%%%::%%%%%%H
 H..e.t............=....+{----8---.++++++...t.t%%%::%%%t.bH
 H..........Y......=.,..+.--------.+0"<9+....t.Ot.e..t.t..H

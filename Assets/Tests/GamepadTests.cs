@@ -49,6 +49,14 @@ public class GamepadTests : InputTestFixture
         yield return null;
     }
 
+    private static void Teleport(GameObject go, Vector3 pos)
+    {
+        var cc = go.GetComponent<CharacterController>();
+        cc.enabled = false;
+        go.transform.position = pos;
+        cc.enabled = true;
+    }
+
     private static VisualElement Hud() =>
         Object.FindAnyObjectByType<HudController>().GetComponent<UIDocument>().rootVisualElement;
 
@@ -160,19 +168,49 @@ public class GamepadTests : InputTestFixture
     }
 
     [UnityTest]
-    public IEnumerator RbOpensHelpAndAFromTheBannerTriesAgain()
+    public IEnumerator RbCyclesTheTargetRbViewOpensHelpAndAFromTheBannerTriesAgain()
     {
         yield return Load("Dungeon");
-        foreach (var e in Object.FindObjectsByType<EnemyAI>()) e.enabled = false;
+        var player = LevelBootstrap.Current.Player;
+        var all = Object.FindObjectsByType<EnemyAI>()
+            .OrderBy(e => e.name.StartsWith("Skeleton") ? 0 : 1).ThenBy(e => e.transform.position.x).ToList();
+        foreach (var e in all) e.enabled = false;
+        for (int i = 2; i < all.Count; i++) Teleport(all[i].gameObject, new Vector3(500f + i * 10f, 0f, 500f));
+        Teleport(all[0].gameObject, player.transform.position + new Vector3(3f, 0f, 0f));
+        Teleport(all[1].gameObject, player.transform.position + new Vector3(0f, 0f, 5f));
+        yield return new WaitForSeconds(0.6f);
+
+        var spell = player.GetComponent<SpellAbility>();
+        var first = spell.Target;
+        Assert.IsNotNull(first);
+        Tap(pad.rightShoulder);
+        yield return null;
+        yield return null;
+        var second = spell.Target;
+        Assert.AreNotEqual(first, second, "RB picks the other one");
+        Tap(pad.rightShoulder);
+        yield return null;
+        yield return null;
+        Assert.AreEqual(first, spell.Target, "and wraps round");
+
         var hud = Object.FindAnyObjectByType<HudController>();
-        Tap(pad.rightShoulder);
+        Assert.IsFalse(hud.IsHelpOpen, "RB on its own isn't help any more");
+        Assert.AreEqual("RB", Hud().Q<Label>("target-key").text, "the card names the pad's button");
+
+        // Help: hold RB and press View. (View on its own is the skill tree.)
+        Press(pad.rightShoulder, queueEventOnly: true);
+        yield return null;
+        Tap(pad.selectButton);
         yield return null;
         yield return null;
-        Assert.IsTrue(hud.IsHelpOpen, "RB opens the help panel");
-        Assert.AreEqual("RB: Help", Hud().Q<Label>("help-pill").text, "and the pill names the pad's button");
-        Tap(pad.rightShoulder);
+        Assert.IsTrue(hud.IsHelpOpen, "RB + View opens the help panel");
+        Assert.AreEqual("RB+View: Help", Hud().Q<Label>("help-pill").text, "and the pill names the chord");
+        Tap(pad.selectButton);
+        yield return null;
         yield return null;
         Assert.IsFalse(hud.IsHelpOpen);
+        Release(pad.rightShoulder, queueEventOnly: true);
+        yield return null;
 
         GameSession.Settings.gentle = false; // Adventurer Mode, so there's a Game Over
         var health = LevelBootstrap.Current.Player.GetComponent<Health>();

@@ -22,7 +22,7 @@ Level 0 is a big island to explore: a pine wood, birches and autumn trees, a cam
 (warm up there), and a rocky hill in the far corner. **Amethyra the dragon** hides in the cave inside it; walk up and press **E** to talk (E / Space / Enter / click to continue).
 **Coralie the mermaid** sits in the pond and has lost her frog. Easter eggs: one bush hides **Sir Hopsalot** (find him
 and tell Coralie), the fountain takes wishes (1 coin each; the third comes true), and Amethyra tells jokes.
-**Hollyhock**, a little fenced village, sits just east of the castle (follow the path from the gate): a cathedral
+**Hollyhock**, a little fenced village, sits a short walk east of the castle, across a meadow (follow the path from the gate): a cathedral
 with a stained-glass rose window and a spire, a thatched cottage, a cobbled square with a well, benches, lampposts
 and a notice board, and a pen of hens and chicks pecking at corn. **Barnaby Badger** keeps a stall in front of his
 shop: talk to him once, then press **E** to buy **Bubble Bath** (10 coins; it goes in your bag, and the bath at
@@ -181,13 +181,14 @@ to its buttons as soon as you touch it.
 |---|---|---|
 | Walk | WASD / arrows | left stick / d-pad |
 | Magic (auto-aims) | Space / click | X / right trigger |
+| Aim at the next monster | Tab | RB |
 | Abilities (once learned) | Q · F | LB · LT |
 | Hop (Bouncy Boots) | walk into a gap, or Shift | walk into a gap, or B |
 | Talk, open, pick up | E | A |
 | Bag · skills | I · K | Y · View |
 | Pause menu · back | Esc | Start · B |
 | Menus | arrows · Enter | d-pad / stick · A |
-| Help | H | RB |
+| Help | H | hold RB, press View |
 | Try again | R | A (after a Game Over) |
 | World map | M | Start > World map |
 
@@ -259,7 +260,7 @@ to its buttons as soon as you touch it.
 | `DungeonBuilder.Home.cs` | The home's furniture and front door (prompts and messages live here) |
 | `DungeonBuilder.Bath.cs` | The sauna bath: its faucet and running water, steam, the bubble heap, the fern and monstera |
 | `DungeonBuilder.Cooking.cs` | **The recipes** (ingredients and messages; add a dish here) and the stove |
-| `DungeonBuilder.Castle.cs` | The castle from stacked wall blocks + a hand-built pyramid mesh for roofs |
+| `DungeonBuilder.Castle.cs` | The castle from stacked wall blocks, a hand-built pyramid mesh for the tower roofs, and the village's gable roof for the keep |
 | `DungeonBuilder.CharacterSelect.cs` | The select screen scene |
 | `DungeonBuilder.Title.cs` | The title screen scene |
 | `DungeonBuilder.Cove.cs` | Mermaid Cove: pirate and dark mermaid stats, Pearl's lines, the rowboat, waterfalls |
@@ -350,6 +351,10 @@ plays once with a fading flash of light (`FadeOutLight`) and then destroys itsel
 - **Auto-aim**: casting targets the nearest skeleton inside the camera's view, preferring ones with a clear line of
   fire; with none on screen it fires the way you're facing. The wizard faces his walking direction and turns to his
   target while casting. Clicks on pickable HUD elements (inventory slots, hotbar, bars) don't cast.
+- **Choosing a target**: **Tab** (RB on a gamepad) aims at the next monster in view, nearest first and then each farther
+  one, round and round; it stays picked until it's defeated or leaves the screen. A gold ring on the ground and a
+  target card at the top of the HUD (its name and health, under the boss bar) show which one it is.
+- **Monsters hit from afar** wake up and come for the hero, however far off they were (a stationary one just watches).
 - **Inventory** (**I**): five worn slots (weapon, helm, armor, boots, ring) and an 8-slot bag. Hover a slot for
   details; click (or tap, on a touch screen) to put an item on or take it off. Putting on something for a slot
   that's already filled swaps them. Extra hearts from gear arrive empty: a nap or a campfire fills them.

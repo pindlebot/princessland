@@ -17,6 +17,7 @@ public class EnemyAI : MonoBehaviour
     private static readonly HashSet<EnemyAI> alive = new HashSet<EnemyAI>();
     public static int AliveCount => alive.Count;
     public static IReadOnlyCollection<EnemyAI> Alive => alive; // read-only view, for the minimap
+    public static bool IsAlive(EnemyAI enemy) => enemy != null && alive.Contains(enemy);
 
     [SerializeField] private float moveSpeed = 3.2f;
     private const float AdventurerSpeedBoost = 1.15f;
@@ -37,6 +38,18 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private bool sidewaysOnly;
 
     public bool Stationary => stationary;
+    public Health Health => health;
+    // The prefab's name without "(Clone)": "Skeleton", "DarkMermaid". The sticker book counts defeats under it.
+    public string Kind => name.Replace("(Clone)", "").Trim();
+    // What the HUD calls it: a boss's own name, otherwise the kind with spaces ("Dark Mermaid").
+    public string DisplayName
+    {
+        get
+        {
+            var boss = GetComponent<BossAbilities>();
+            return boss != null ? boss.BossName : System.Text.RegularExpressions.Regex.Replace(Kind, "(?<=[a-z])(?=[A-Z])", " ");
+        }
+    }
 
     // Raised each time this enemy swings. CharacterAnimator listens to play the attack.
     public event Action Attacked;
@@ -60,7 +73,15 @@ public class EnemyAI : MonoBehaviour
         controller = GetComponent<CharacterController>();
         health = GetComponent<Health>();
         health.Died += _ => Die();
+        health.Damaged += _ => Provoke();
         alive.Add(this);
+    }
+
+    // Hit from afar (a fireball from beyond its sight, a meteor...): it rouses and goes after the hero,
+    // however far off they are. (A stationary monster just keeps watching.)
+    private void Provoke()
+    {
+        if (!stationary && !health.IsDead && state == State.Idle) state = State.Chase;
     }
 
     private void OnDestroy() => alive.Remove(this);
@@ -70,7 +91,7 @@ public class EnemyAI : MonoBehaviour
     private void Die()
     {
         alive.Remove(this);
-        GameSession.AddToCounter("defeated:" + name.Replace("(Clone)", "").Trim()); // the sticker book counts monsters you've beaten
+        GameSession.AddToCounter("defeated:" + Kind); // the sticker book counts monsters you've beaten
         StartCoroutine(Vanish());
         enabled = false;
         controller.enabled = false;

@@ -116,7 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6589707817594192499}
   - component: {fileID: 7437511453893411791}
-  - component: {fileID: 6914368997088505792}
+  - component: {fileID: 6558511347516459706}
   m_Layer: 0
   m_Name: Scarecrow
   m_TagString: Untagged
@@ -162,7 +162,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2.4, z: 0.6}
   m_Center: {x: 0, y: 1.2, z: 0}
---- !u!114 &6914368997088505792
+--- !u!114 &6558511347516459706
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -183,6 +183,7 @@ Label {
 
 .boss-row {
     top: var(--margin);
+    flex-direction: column; /* the target card stacks under the boss bar */
 }
 
 .boss-bar {
@@ -209,6 +210,42 @@ Label {
 .bar-fill.boss {
     background-color: rgb(150, 70, 200);
     border-top-color: rgb(210, 160, 240);
+}
+
+/* ---------- Target card (top middle, under the boss bar): the monster the spell is aimed at ---------- */
+
+.target-card {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+    padding: 6px 14px 8px 14px;
+    display: none;
+}
+
+.target-card.visible {
+    display: flex;
+}
+
+.target-name {
+    font-size: var(--text-body);
+    min-width: 96px;
+    margin-right: 10px;
+}
+
+.target-health {
+    width: 130px;
+    height: 14px;
+}
+
+.bar-fill.target {
+    background-color: var(--heart);
+    border-top-color: rgb(250, 160, 170);
+}
+
+.target-key {
+    font-size: var(--text-small);
+    color: var(--ink-soft);
+    margin-left: 10px;
 }
 
 /* ---------- Minimap (top right): small and round, framed like the rest ---------- */
@@ -698,7 +735,7 @@ Label {
 }
 
 .toast-row {
-    top: 88px; /* below the boss bar */
+    top: 134px; /* below the boss bar and the target card */
 }
 
 .toast {

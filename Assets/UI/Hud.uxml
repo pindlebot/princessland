@@ -58,6 +58,15 @@
                     <ui:VisualElement name="boss-fill" class="bar-fill boss" picking-mode="Ignore" />
                 </ui:VisualElement>
             </ui:VisualElement>
+            <!-- Just under it (or at the top when there's no boss bar): the monster the spell is aimed at.
+                 Tab / RB picks another; it has a ring on the ground too. -->
+            <ui:VisualElement name="target-card" class="panel target-card" picking-mode="Ignore">
+                <ui:Label name="target-name" class="target-name" text="Skeleton" picking-mode="Ignore" />
+                <ui:VisualElement class="bar target-health" picking-mode="Ignore">
+                    <ui:VisualElement name="target-fill" class="bar-fill target" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="target-key" class="target-key" text="Tab" picking-mode="Ignore" />
+            </ui:VisualElement>
         </ui:VisualElement>
 
         <!-- Top right: a small minimap. The map image is rotated to match the camera; the round frame
@@ -217,12 +226,13 @@
                 </ui:VisualElement>
                 <ui:Label class="help-line" text="W A S D or stick:  walk" />
                 <ui:Label class="help-line" text="Space, Click or X:  magic! (it aims by itself)" />
+                <ui:Label class="help-line" text="Tab or RB:  aim at a different monster" />
                 <ui:Label class="help-line" text="Q or LB,  F or LT:  abilities from the skill path" />
                 <ui:Label class="help-line" text="E or A:  open, talk, pick up" />
                 <ui:Label class="help-line" text="I or Y:  bag      K or View:  skills      J or R3:  quests" />
                 <ui:Label class="help-line" text="2 3 4 5 or right stick:  eat from the hotbar      T or L3:  fountain" />
                 <ui:Label class="help-line" text="M:  world map (also in the pause menu)" />
-                <ui:Label class="help-line" text="H or RB:  this help      R:  try again" />
+                <ui:Label class="help-line" text="H or hold RB + View:  this help      R:  try again" />
                 <ui:Label class="help-line" text="Esc or Start:  pause menu" />
             </ui:VisualElement>
         </ui:VisualElement>

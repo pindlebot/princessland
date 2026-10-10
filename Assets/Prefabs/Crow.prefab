@@ -137,7 +137,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4247778643796295997}
   - component: {fileID: 7646919027260251456}
-  - component: {fileID: 5939200718245303721}
+  - component: {fileID: 7235689414961080091}
   m_Layer: 0
   m_Name: Crow
   m_TagString: Untagged
@@ -183,7 +183,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.6, y: 0.6, z: 0.6}
   m_Center: {x: 0, y: 0.3, z: 0}
---- !u!114 &5939200718245303721
+--- !u!114 &7235689414961080091
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

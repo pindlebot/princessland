@@ -243,6 +243,7 @@ public static partial class DungeonBuilder
         mats["RainbowBridge"] = Mat("RainbowBridge", Color.white, new Color(0.9f, 0.9f, 0.9f), rainbow, emissionMap: rainbow);
         mats["Picket"] = Mat("Picket", new Color(0.97f, 0.94f, 0.88f)); // the village's white picket fence
         mats["Gold"] = Mat("Gold", new Color(1f, 0.8f, 0.35f), new Color(0.5f, 0.35f, 0.1f)); // the star on the spire
+        mats["Banner"] = Mat("Banner", new Color(0.27f, 0.74f, 0.72f)); // the castle's teal banners (the flag's colour)
         mats["Belfry"] = Mat("Belfry", new Color(0.2f, 0.11f, 0.21f)); // the dark openings at the top of the bell tower
         mats["Exit"] = Mat("Exit", new Color(0.2f, 0.9f, 0.3f), new Color(0.2f, 1.2f, 0.3f));
         // Lava lights itself: the texture is also its emission map, so the cracks glow and the crust stays dark.

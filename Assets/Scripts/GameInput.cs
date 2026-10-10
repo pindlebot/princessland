@@ -18,7 +18,8 @@ using UnityEngine.InputSystem.Controls;
 //   Quick slots     2 3 4 5                   right stick up / right / down / left
 //   Fountain menu   T                         left stick click
 //   World map       M                         Start > World map
-//   Help            H                         RB (right shoulder)
+//   Next target     Tab                       RB (right shoulder)
+//   Help            H                         hold RB, press View
 //   Pause menu      Esc                       Start
 //   Back            Esc                       B (east)
 //   Confirm         Enter                     A
@@ -56,7 +57,7 @@ public static class GameInput
     }
 
     public static string InteractKey => UsingGamepad ? "A" : "E";
-    public static string HelpKey => UsingGamepad ? "RB" : "H";
+    public static string HelpKey => UsingGamepad ? "RB+View" : "H";
 
     // ---------- Movement ----------
 
@@ -132,8 +133,14 @@ public static class GameInput
     public static string TravelKey => UsingGamepad ? "L3" : "T";
 
     public static bool InventoryPressed => Down(Keyboard.current?.iKey) || Down(Gamepad.current?.buttonNorth);
-    public static bool SkillTreePressed => Down(Keyboard.current?.kKey) || Down(Gamepad.current?.selectButton);
-    public static bool HelpPressed => Down(Keyboard.current?.hKey) || Down(Gamepad.current?.rightShoulder);
+    // View on its own is the skill tree; with RB held it's the help panel (RB is "next target" otherwise).
+    public static bool SkillTreePressed =>
+        Down(Keyboard.current?.kKey) || (Down(Gamepad.current?.selectButton) && !Held(Gamepad.current?.rightShoulder));
+    public static bool HelpPressed =>
+        Down(Keyboard.current?.hKey) || (Down(Gamepad.current?.selectButton) && Held(Gamepad.current?.rightShoulder));
+    // Cycle which monster the spell is aimed at (see SpellAbility.CycleTarget).
+    public static bool TargetPressed => Down(Keyboard.current?.tabKey) || Down(Gamepad.current?.rightShoulder);
+    public static string TargetKey => UsingGamepad ? "RB" : "Tab";
     public static bool MenuPressed => Down(Keyboard.current?.escapeKey) || Down(Gamepad.current?.startButton);
     public static bool BackPressed => Down(Keyboard.current?.escapeKey) || Down(Gamepad.current?.buttonEast);
     public static bool RestartPressed => Down(Keyboard.current?.rKey);
