@@ -190,7 +190,7 @@ public static partial class DungeonBuilder
         {
             ("npc:Coralie", "Assets/Art/UI/PortraitMermaid.png"), ("npc:Pearl", "Assets/Art/UI/PortraitPearl.png"),
             ("npc:Pippin", "Assets/Art/UI/PortraitPippin.png"), ("npc:Old Stitches", "Assets/Art/UI/PortraitStitches.png"),
-            ("npc:Old Moss", "Assets/Art/UI/PortraitOldMoss.png"), ("npc:Amethyra", "Assets/Art/UI/PortraitDragon.png"), ("icon:frog", "Assets/Art/UI/IconFrog.png"),
+            ("npc:Old Moss", "Assets/Art/UI/PortraitOldMoss.png"), ("npc:Digby", "Assets/Art/UI/PortraitDigby.png"), ("npc:Mr. Frost", "Assets/Art/UI/PortraitMrFrost.png"), ("npc:Granny Purl", "Assets/Art/UI/PortraitPurl.png"), ("npc:Captain Clamshell", "Assets/Art/UI/PortraitClamshell.png"), ("icon:fish", "Assets/Art/UI/IconFish.png"), ("icon:mole", "Assets/Art/UI/IconMole.png"), ("npc:Amethyra", "Assets/Art/UI/PortraitDragon.png"), ("icon:frog", "Assets/Art/UI/IconFrog.png"),
             ("icon:tree", "Assets/Art/UI/IconTree.png"), ("icon:monster", "Assets/Art/UI/IconMonster.png"),
         };
         var so = new SerializedObject(book);

@@ -16,6 +16,27 @@
       "frames": 1,
       "fps": 1,
       "loop": false
+    },
+    {
+      "name": "Mitts",
+      "row": 2,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Charm",
+      "row": 3,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
+    },
+    {
+      "name": "Chalk",
+      "row": 4,
+      "frames": 1,
+      "fps": 1,
+      "loop": false
     }
   ]
 }

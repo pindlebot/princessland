@@ -23,6 +23,97 @@
       "frames": 2,
       "fps": 3,
       "loop": true
+    },
+    {
+      "name": "MoleMitts",
+      "row": 3,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Topaz",
+      "row": 4,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "DragonEggMines",
+      "row": 5,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "BubbleCharm",
+      "row": 6,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Aquamarine",
+      "row": 7,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "FishingRod",
+      "row": 8,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "DragonEggLake",
+      "row": 9,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "RainbowChalk",
+      "row": 10,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Sapphire",
+      "row": 11,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "BallOfYarn",
+      "row": 12,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "WarmScarf",
+      "row": 13,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "SnowHat",
+      "row": 14,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "DragonEggFrost",
+      "row": 15,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
     }
   ]
 }

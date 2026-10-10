@@ -1,0 +1,45 @@
+// Frostpeak, room 4 of 4: the Yeti's Den. The east opening (1) goes back to the Frozen Pass. The whole den is ice (4): you slide.
+// The Snow Yeti (M) slams the ground (stay out of the red circle), sends lanes of rolling snowballs across the ice (the red lanes show
+// where, a moment before), and shakes loose Ice Slimes when he's hurt. Beat him and the Rainbow Chalk (5) and the Sapphire (6) appear.
+title: Frostpeak: The Yeti's Den
+theme: Outdoor
+music: music_frost
+mood: snow
+region: frost
+ground: snow
+walls: snow
+monsters: E=iceslime L=snowimp M=snowyeti
+minimap_floor: #DCE8F4
+minimap_wall: #8AA6C8
+world: 236 65
+---
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+H..................................H
+H..................................H
+H.............444444444............H
+H.........44444444844444444........H
+H.......444444444444444444444......H
+H......44444444444444444444444.....H
+H.....4444444444444444444444444....H
+H....444444844444444444448444444...H
+H...44444444444444444444444444444..H
+H...44444444444444444444444444444..H
+H...4445444444444444444444444444444H
+H..4444444444444444M44444444444P4441
+H...4446444444444444444444444444444H
+H...44444444444444444444444444444..H
+H...44444444444444444444844444444..H
+H....444444844444444444444444444...H
+H.....4444444444444444444444444....H
+H......44444444444444444444444.....H
+H.......444444444444444444444......H
+H.........44444444844444444........H
+H.............444444444............H
+H..................................H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Frost3
+4 = floor ice
+5 = item rainbow_chalk hidden
+6 = item sapphire hidden
+8 = prop icespire

@@ -17,7 +17,7 @@
 // Gaps and thorns (Phase 2, the Bouncy Boots loop): a thorny bramble (`) seals a little nook in the south-west
 // corner, behind the start: any spell clears it, and a chest waits inside. In the south-east corner a hedged
 // secret garden (heart piece) is cut off by a gap (\): you can't cross it until you have the Bouncy Boots from
-// the dungeon's Slime King. The world is grey until you bring Amethyra's Amethyst home, and the stairs
+// the dungeon's Slime King. Dark green crystals overrun the grounds until you bring Amethyra's Amethyst home, and the stairs
 // back up from the dungeon arrive east of the stairs (]).
 // Amethyra the dragon (D) is tucked away in her cave in the rocky hill (%) in the north-east
 // corner; its way in is on the south side, behind the pines. Someone has pitched a tent (V) by a
@@ -29,7 +29,7 @@ region: castle
 exit: Dungeon
 exit_needs: all_monsters
 open_hint: The stairs are open!
-grey_until: has:amethyst
+plague_until: has:amethyst
 minimap_floor: #7EA068
 minimap_wall: #C4BEAA
 world: 0 0

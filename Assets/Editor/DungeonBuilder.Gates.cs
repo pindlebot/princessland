@@ -27,6 +27,10 @@ public static partial class DungeonBuilder
         props["starshard"] = CreateCollectiblePrefab(collectibles, "StarShard", Collectible.Kind.StarShard,
                                                      new Color(1f, 0.85f, 0.4f), sparkle, "lantern_get");
 
+        var plague = SpriteSheetImporter.Import("PlagueCrystals");
+        assets.PlagueCrystals = new[] { "Small", "Cluster", "Spire" }
+            .Select(name => Scenic("Plague" + name, plague, name, null, null, 0f)).ToArray();
+
         assets.RoomEdge = CreateRoomEdgePrefab();
         CreateWorkshopPrefabs(assets, shadow, sparkle);
 
@@ -219,6 +223,7 @@ public static partial class DungeonBuilder
         foreach (var bramble in placed.GetComponentsInChildren<Bramble>()) SetString(bramble, "persistentId", id);
         foreach (var brazier in placed.GetComponentsInChildren<Brazier>()) SetString(brazier, "persistentId", id);
         foreach (var collectible in placed.GetComponentsInChildren<Collectible>()) SetString(collectible, "persistentId", id);
+        foreach (var dirt in placed.GetComponentsInChildren<SoftDirt>()) SetString(dirt, "persistentId", id);
     }
 
     // Everything standing in a secret room (behind a fake wall) goes under a SecretRoom, which keeps it out of sight
@@ -242,13 +247,26 @@ public static partial class DungeonBuilder
         }
     }
 
-    // The world is grey until the condition holds (the Castle Grounds, until you bring the Amethyst home).
-    private static void AddColorDrain(GameObject camera, string condition)
+    // The world is overrun with dark green crystals until the condition holds (the Castle Grounds, until you bring
+    // the Amethyst home). CrystalPlague owns the crystals: they are its children, so it can shatter them.
+    private static Transform CreatePlague(string condition)
     {
-        var drain = camera.AddComponent<ColorDrain>();
-        SetRef(drain, "shader", AssetDatabase.LoadAssetAtPath<Shader>("Assets/Shaders/Desaturate.shader"));
-        SetString(drain, "returnsWhen", condition);
-        SetRef(drain, "returnSound", Sound("color_return"));
+        var plague = new GameObject("Plague").AddComponent<CrystalPlague>();
+        SetString(plague, "clearedWhen", condition);
+        SetRef(plague, "clearSound", Sound("color_return"));
+        return plague.transform;
+    }
+
+    // Now and then, on open ground: a little cluster most often, a tall spire rarely. Walk-through decoration
+    // (no colliders), so the plague can never wall anything in. Hedges, water, doors and props are left alone.
+    private static void PlantPlagueCrystal(Transform plague, SharedAssets assets, char tile, Vector3 pos, System.Random rng)
+    {
+        if (tile != '.' && tile != ',' && tile != ';') return;
+        if (rng.Next(tile == '.' ? 6 : 9) != 0) return;
+        int kind = rng.Next(10);
+        var prefab = assets.PlagueCrystals[kind < 6 ? 0 : kind < 9 ? 1 : 2];
+        var crystal = Place(prefab, plague, pos + new Vector3(rng.Next(-3, 4) * 0.1f, 0f, rng.Next(-3, 4) * 0.1f));
+        crystal.transform.localScale = Vector3.one * (0.85f + rng.Next(0, 4) * 0.1f);
     }
 
     // ---------- Gaps ----------
@@ -285,7 +303,7 @@ public static partial class DungeonBuilder
         }
 
         var edge = new GameObject("Edge").AddComponent<BoxCollider>();
-        edge.gameObject.layer = LevelMap.WaterLayer;
+        edge.gameObject.layer = LevelMap.WaterRimLayer; // spells fly over it, and not even a swimmer may walk into the pit
         edge.transform.SetParent(gap.transform);
         edge.transform.position = pos + Vector3.up * 1.5f;
         edge.size = new Vector3(Tile, 3f, Tile);

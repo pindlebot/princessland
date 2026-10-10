@@ -93,7 +93,7 @@ public class HopAbility : MonoBehaviour
         landing = tile + lateral * Mathf.Clamp(side, -0.6f, 0.6f);
         landing.y = here.y;
         // Something solid there (a wall, a tree), or nothing underfoot?
-        if (Physics.CheckSphere(landing + Vector3.up * 1f, 0.4f, ~(1 << LevelMap.WaterLayer), QueryTriggerInteraction.Ignore)) return false;
-        return Physics.Raycast(landing + Vector3.up * 1f, Vector3.down, 3f, ~(1 << LevelMap.WaterLayer), QueryTriggerInteraction.Ignore);
+        if (Physics.CheckSphere(landing + Vector3.up * 1f, 0.4f, ~LevelMap.WaterMask, QueryTriggerInteraction.Ignore)) return false;
+        return Physics.Raycast(landing + Vector3.up * 1f, Vector3.down, 3f, ~LevelMap.WaterMask, QueryTriggerInteraction.Ignore);
     }
 }

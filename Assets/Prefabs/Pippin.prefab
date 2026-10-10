@@ -77,6 +77,7 @@ MonoBehaviour:
     sets: met:Pippin
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -105,6 +106,10 @@ MonoBehaviour:
   tooPoor: Oooh, it's {price} coins a mug. Come back when your pockets jingle!
   bagFull: Your bag's too full for a mug! Drink something first, maybe?
   saleSound: {fileID: 8300000, guid: c9f2232dc1a084e389e6c2fa8eabb14d, type: 3}
+  altWare: {fileID: 0}
+  altPrice: 12
+  altCondition: 
+  altThanks: Here you go!
 --- !u!1 &5263839322189731851
 GameObject:
   m_ObjectHideFlags: 0

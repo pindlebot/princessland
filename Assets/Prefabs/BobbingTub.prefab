@@ -116,7 +116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5472038533635701425}
   - component: {fileID: 6172057864243275340}
-  - component: {fileID: 4609078544917703574}
+  - component: {fileID: 7977609008696333945}
   m_Layer: 0
   m_Name: BobbingTub
   m_TagString: Untagged
@@ -162,7 +162,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.8, y: 1, z: 1.4}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &4609078544917703574
+--- !u!114 &7977609008696333945
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

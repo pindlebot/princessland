@@ -8,6 +8,7 @@
 // The sea cave in the north-east hides the pirates' treasure (a chest and a heap of gold) and a
 // secret stair down into the dungeon, which opens once every pirate and dark mermaid is beaten, and
 // Captain Grumblebeard (M), the cove's last boss, who guards the cave from the beach below it.
+// A tiny island in the sea, west of the beach (3), hides a heart piece for a swimmer (the Bubble Charm); a thought bubble (4) on the beach points the way.
 title: Mermaid Cove
 theme: Outdoor
 music: music_cove
@@ -34,7 +35,7 @@ wwwwwwwwwwww.......s...www..q......%%%:::%%%
 www&wwwwwwww..q.........www........%%%:X:%%%
 wwwwwwwwwwwww..........,www....J...%%%:::%%%
 wwwwwwwwwwwwww....o.x...www........%%%%::%%%
-wwwwwwwwwwwwww..c...J....www..s...q.%%%::%%%
+wwwwww3.wwwwww4.c...J....www..s...q.%%%::%%%
 wwwwwwwwwwwwww.o.........www......O..%%::%%%
 wwwwwwwwwwwww..V.........www...........::..%
 wwwwwwwwwwww.............hhh....,......;...%
@@ -51,3 +52,6 @@ wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 ---
 2 = item seashell_mail
 1 = door Level0
+// Backtracking: a tiny island out in the sea holds a heart piece. Swim there with the Bubble Charm (from Puddlebrook Lake).
+3 = prop heartpiece
+4 = prop swimhint

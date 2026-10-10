@@ -1,0 +1,53 @@
+// Glimmer Mines, room 2 of 4: the Mole Tunnels, dark winding tunnels (light them with the Fairy Lantern, or by the glow
+// of the crystals). The east opening (1) is the way back to the Entrance, the west opening (2) goes on to the Crystal
+// Cavern. Digby's three lost moles are hiding in the side chambers: Mo (7) in the north-west, Mortimer (8) in the south,
+// and Molly (9) in the north-east. Find all three. A mine cart station (4; 5 is where you arrive) is off the tunnel.
+// Bats (E) and Pebblins (L) roam. A mound in the side pocket () hides a heart piece (Mole Mitts), and something odd
+// sits beside it ({).
+title: Glimmer Mines: The Mole Tunnels
+theme: Dungeon
+music: music_mines
+mood: dark
+region: mines
+floor: cave
+walls: rock
+monsters: E=bat L=pebblin M=crystalgolem
+minimap_floor: #8A7A68
+minimap_wall: #54485E
+world: -133 52
+---
+############################################
+############################################
+########T#######################T#####T#####
+#######......################.0......0.#####
+#######.0..0.################.....9....#####
+#######..7...################.....E....#####
+#######......################..........#####
+#######......#############T#####..##########
+#######...E..########...4...####..##########
+#######......########...5...####L.##########
+##T####......#T#####T.......####..##########
+#....0............#........................#
+1..P..L.....#......L.0..##...LE..#.......0.2
+#.........#.....E.......................#..#
+#################....###############...#####
+#################....###############{..#####
+#################....###############.).#####
+#################.L..###############...#####
+#################....#######################
+#############.............##################
+#############.0.......E...##################
+#############..8........0.##################
+#############.............##################
+############################################
+---
+1 = edge Mines1
+2 = edge Mines3
+4 = prop minecart
+5 = spawn Cart
+7 = npc mo
+8 = npc mortimer
+9 = npc molly
+) = prop dirtheart
+{ = prop petrock
+0 = prop wallcrystal

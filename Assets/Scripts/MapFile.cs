@@ -42,7 +42,10 @@ using System.Linq;
 //   world: <x> <y>                    where the room's top-left corner sits on the world map (M), in tiles. Rooms
 //                                     without it aren't on the map.
 //   exit_spawn: <Name>                where to arrive through the stairs (X), a named spot in the exit's level
-//   grey_until: <condition>           the level is drained of colour until it holds, e.g. has:amethyst (Condition.cs)
+//   ground: sand | snow               the ground: Mermaid Cove's beach, or Frostpeak's snow ("floor ice" legend tiles are slippery ice)
+//   walls: rock | snow               the wall blocks: raw rock (the Mines), or snow drifts for an Outdoor level's hedges (Frostpeak)
+//   plague_until: <condition>         the level is overrun with dark green crystals until it holds, e.g. has:amethyst
+//                                     (Condition.cs, CrystalPlague)
 //   monsters: E=gourdling L=strawman M=pumpkinking
 //       which monster each of the map's monster markers stands for on this level. Without it, E is a
 //       skeleton, L a slime, J a pirate and M the Slime King (MonsterIds lists the others). M is always
@@ -69,6 +72,9 @@ public class MapFile
         "wisp", "mist", "signpost",
         "ciderstand", "pumpkinstack", "bunting", "festivalarch", "bobbingtub", "giantpumpkin", "cornwall",
         "pot", "sleepytree", "giantmushroom", "glowcaps",
+        "block", "softdirt", "dirtheart", "dirtshard", "wallcrystal", "minecart", "minesign", "moledoor", "petrock",
+        "fishingspot", "swimhint", "reeds", "anchor", "lakesign", "buoy",
+        "chasm", "rainbowpost", "snowman", "igloo", "icespire", "drift",
         "gap", "bramble", "brazier", "heartpiece", "starshard",
         "fakewall", "workshopdesk", "workshopnote",
     };
@@ -77,13 +83,13 @@ public class MapFile
     // "monsters:" header says otherwise. Keep in sync with DungeonBuilder.Monsters.cs.
     public const string MonsterMarkers = "ELJM";
     public static readonly string[] MonsterIds =
-        { "skeleton", "slime", "pirate", "slimeking", "gourdling", "strawman", "pumpkinking", "piratecaptain", "sporepuff", "mothermushroom" };
+        { "skeleton", "slime", "pirate", "slimeking", "gourdling", "strawman", "pumpkinking", "piratecaptain", "sporepuff", "mothermushroom", "bat", "pebblin", "crystalgolem", "crab", "jelly", "kingcrabbington", "iceslime", "snowimp", "snowyeti" };
     private static readonly Dictionary<char, string> DefaultMonsters =
         new Dictionary<char, string> { { 'E', "skeleton" }, { 'L', "slime" }, { 'J', "pirate" }, { 'M', "slimeking" } };
 
     // Legend kinds that lead to another scene: a door, or a spiral staircase.
     public static bool IsDoorKind(string kind) => kind == "door" || kind == "stairsdown" || kind == "stairsup" || kind == "gate" || kind == "edge";
-    public static readonly string[] NpcIds = { "barnaby", "stitches", "pippin", "oldmoss" };
+    public static readonly string[] NpcIds = { "barnaby", "stitches", "pippin", "oldmoss", "digby", "molly", "mortimer", "mo", "clamshell", "frost", "purl" };
 
     // Props that are walls (solid, drawn as walls on the minimap): the corn maze.
     public static readonly string[] WallPropKinds = { "cornwall" };
@@ -217,6 +223,15 @@ public class MapFile
     // Is this symbol a wall-like prop (a corn maze wall)?
     public bool IsWallProp(char c) =>
         Legend.TryGetValue(c, out var e) && e.Kind == "prop" && e.Args.Length > 0 && WallPropKinds.Contains(e.Args[0]);
+
+    // The symbols that are slippery ice ("<symbol> = floor ice" in the legend).
+    public string IceSymbols => new string(Legend.Values.Where(e => e.Kind == "floor" && e.Args.Length > 0 && e.Args[0] == "ice").Select(e => e.Symbol).ToArray());
+
+    // Is this symbol a chasm tile (too wide to hop: only a rainbow bridge crosses it)?
+    public bool IsChasm(char c) => Legend.TryGetValue(c, out var e) && e.Kind == "prop" && e.Args.Length > 0 && e.Args[0] == "chasm";
+
+    // Is this symbol one of a rainbow bridge's two posts?
+    public bool IsRainbowPost(char c) => Legend.TryGetValue(c, out var e) && e.Kind == "prop" && e.Args.Length > 0 && e.Args[0] == "rainbowpost";
 
     // Is this symbol a fake wall (looks like a wall, walks like air: a secret room's door)?
     public bool IsFakeWall(char c) =>

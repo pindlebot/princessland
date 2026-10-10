@@ -76,6 +76,13 @@ public static class MapValidator
                         else if (itemIds != null && !itemIds.Contains(entry.Args[0]))
                             Error($"{where}: there's no item '{entry.Args[0]}' (known: {string.Join(", ", itemIds)})");
                         break;
+                    case "floor":
+                        if (MapFile.BuiltInTiles.IndexOf(entry.Symbol) >= 0)
+                            Error($"{where}: '{entry.Symbol}' is already a built-in tile; pick another symbol (digits are good)");
+                        else if (!map.Find(entry.Symbol).Any())
+                            Error($"{where}: the floor isn't on the map");
+                        if (entry.Args.Length != 1 || entry.Args[0] != "ice") Error($"{where}: write 'floor ice'");
+                        break;
                     case "building":
                     case "prop":
                     case "npc":
@@ -94,7 +101,7 @@ public static class MapValidator
                             Error($"{where}: a building's tiles must fill a rectangle");
                         break;
                     default:
-                        Error($"{where}: unknown kind '{entry.Kind}' (door, stairsdown, stairsup, gate, edge, castle, spawn, item, building, prop or npc)");
+                        Error($"{where}: unknown kind '{entry.Kind}' (door, stairsdown, stairsup, gate, edge, castle, spawn, item, floor, building, prop or npc)");
                         break;
                 }
             }

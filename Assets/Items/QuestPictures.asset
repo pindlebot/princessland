@@ -23,6 +23,18 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 4bb4d9eb6413b4f2c9c9c0b1d0718cd9, type: 3}
   - key: npc:Old Moss
     sprite: {fileID: 21300000, guid: 54206c283e3b3408797cdc46ae10ca6b, type: 3}
+  - key: npc:Digby
+    sprite: {fileID: 21300000, guid: e8a1f26ccb5944f3d91026b2556c01c4, type: 3}
+  - key: npc:Mr. Frost
+    sprite: {fileID: 21300000, guid: 2b4559edf5c8e4127bd24c2716d92d08, type: 3}
+  - key: npc:Granny Purl
+    sprite: {fileID: 21300000, guid: 8df4a05a124954ba99977177d5853464, type: 3}
+  - key: npc:Captain Clamshell
+    sprite: {fileID: 21300000, guid: b14c20d4928f3443d99224b8e9916b9b, type: 3}
+  - key: icon:fish
+    sprite: {fileID: 21300000, guid: 080fdf284a61c46f2a8a7ad2e32d853b, type: 3}
+  - key: icon:mole
+    sprite: {fileID: 21300000, guid: 07eb4dd9a06644546b27af7a45118602, type: 3}
   - key: npc:Amethyra
     sprite: {fileID: 21300000, guid: 7f267f10f48ab4afe93f0f8e408f159c, type: 3}
   - key: icon:frog

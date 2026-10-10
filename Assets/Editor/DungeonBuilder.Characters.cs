@@ -76,6 +76,11 @@ public static partial class DungeonBuilder
         SetRef(hop, "hopSound", Sound("hop"));
         SetRef(hop, "landSound", Sound("hop_land"));
 
+        var swim = go.AddComponent<SwimAbility>(); // ...nor does the Bubble Charm (swimming)
+        SetRef(swim, "ripplePrefab", AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Ripple.prefab"));
+        SetRef(swim, "splashSound", Sound("splash"));
+        go.AddComponent<PushAbility>(); // ...and neither do the Mole Mitts, until they're in the treasures tab
+
         var castPoint = new GameObject("CastPoint").transform;
         castPoint.SetParent(go.transform, false);
         castPoint.localPosition = new Vector3(0f, 0.2f, 0.9f);

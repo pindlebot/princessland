@@ -44,6 +44,10 @@ public static partial class DungeonBuilder
         public GameObject Mermaid, Bonesy, Frog, FrogBush;
         public GameObject Campfire, Barrel, Crate, Bones, Mushrooms, Door, LockedDoor, Key, Ripple, Lily;
         public GameObject SpikeTrap, LavaBubble, Ember;
+        public GameObject[] PlagueCrystals; // small, cluster, spire (DungeonBuilder.Gates.cs)
+        public GameObject Bat, Pebblin, CrystalGolem, Digby, Molly, Mortimer, Mo, HintMitts; // DungeonBuilder.Mines.cs
+        public GameObject Crab, Jelly, KingCrabbington, Clamshell, HintCharm; // DungeonBuilder.Lake.cs
+        public GameObject IceSlime, SnowImp, SnowYeti, MrFrost, Purl, HintChalk; // DungeonBuilder.Frost.cs
         public GameObject Gourdling, Strawman, PumpkinKing, PirateCaptain; // DungeonBuilder.Monsters.cs
         public GameObject Pirate, DarkMermaid, Pearl, Palm, Treasure, Rowboat, Ship, Splash, Shell, Starfish, Foam;
         public GameObject Barnaby, Stitches, FarmGate, Pippin;
@@ -132,6 +136,9 @@ public static partial class DungeonBuilder
         CreateMonsterPrefabs(assets, coin, sparkle);
         CreateWoodsPrefabs(assets, wizardArt.Shadow, coin, sparkle);
         CreateGatePrefabs(assets, wizardArt.Shadow, sparkle);
+        CreateMinesPrefabs(assets, wizardArt.Shadow, coin, sparkle);
+        CreateLakePrefabs(assets, wizardArt.Shadow, coin, sparkle);
+        CreateFrostPrefabs(assets, wizardArt.Shadow, coin, sparkle);
         assets.Props = props;
         return assets;
     }
@@ -222,6 +229,7 @@ public static partial class DungeonBuilder
                      "Sand_0", "Sand_1", "Sea", "SandBank", "Planks", "Waterfall",
                      "Cobble_0", "Cobble_1", "Plaster", "RoofTiles", "Thatch", "Window", "TownDoor", "Awning", "ShopSign",
                      "WallSideIvy", "KitchenTile", "Soil", "BarnSide", "BarnDoor", "BarnRoof", "CornSide", "CornTop", "Pit",
+                     "Snow_0", "Snow_1", "Ice", "SnowSide", "SnowTop", "SnowBank",
                  })
             mats[name] = Mat(name, Color.white, texture: PixelTexture(name));
         // The cathedral's stained glass glows a little, as if lit from inside.
@@ -230,6 +238,9 @@ public static partial class DungeonBuilder
             var glass = PixelTexture(name);
             mats[name] = Mat(name, Color.white, new Color(0.45f, 0.45f, 0.45f), glass, emissionMap: glass);
         }
+        // A rainbow bridge glows: the texture is also its emission map.
+        var rainbow = PixelTexture("RainbowBridge");
+        mats["RainbowBridge"] = Mat("RainbowBridge", Color.white, new Color(0.9f, 0.9f, 0.9f), rainbow, emissionMap: rainbow);
         mats["Picket"] = Mat("Picket", new Color(0.97f, 0.94f, 0.88f)); // the village's white picket fence
         mats["Gold"] = Mat("Gold", new Color(1f, 0.8f, 0.35f), new Color(0.5f, 0.35f, 0.1f)); // the star on the spire
         mats["Belfry"] = Mat("Belfry", new Color(0.2f, 0.11f, 0.21f)); // the dark openings at the top of the bell tower

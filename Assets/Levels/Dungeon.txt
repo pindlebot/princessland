@@ -16,6 +16,7 @@
 // Gaps (5) you can't cross yet, so come back wearing the Bouncy Boots: a one-tile gap above the first corridor
 //   (a star shard), and a two-tile gap through the east wall of the Slime King's hall (an egg: one of
 //   Amethyra's five). Two braziers (6) in the mushroom grotto: light both with magic and a star shard appears.
+// A crack in the south wall of the Slime King's hall (() leads out to Puddlebrook Lake.
 title: Escape the dungeon
 theme: Dungeon
 music: music_dungeon
@@ -70,7 +71,7 @@ world: -2 38
  #.#    ### #.# #.jy#    #.................................#
  #.##########.# #####    #.................................#
  #.........L..#          #j............#,X,#..............u#
- ##############          ###################################
+ ##############          #########################(#########
 ---
 2 = item starlight_wand
 // Phase 2: the gates, and what the Slime King leaves behind.
@@ -85,3 +86,5 @@ world: -2 38
 0 = prop fakewall
 ! = prop workshopdesk
 ? = prop workshopnote
+// A crack in the south wall of the Slime King's hall leads out to the shores of Puddlebrook Lake.
+( = edge Lake1

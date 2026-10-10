@@ -120,9 +120,101 @@ public static class QuestCatalog
                 new QuestStep { Text = "Take the Fairy Lantern she was guarding.", Done = "has:fairy_lantern", Icon = "item:fairy_lantern" },
             },
         },
+        new QuestDefinition
+        {
+            Id = "moles", Title = "Lost Moles", Giver = "Digby", Start = "met:Digby",
+            Steps = new[]
+            {
+                new QuestStep
+                {
+                    Text = "Find Digby's three lost moles in the dark tunnels.", Done = "moles_found>=" + LostMoleGoal,
+                    Icon = "icon:mole", Counter = "moles_found", Goal = LostMoleGoal,
+                },
+                new QuestStep { Text = "Tell Digby.", Done = "thanked:digby", Icon = "npc:Digby" },
+            },
+        },
+        new QuestDefinition
+        {
+            Id = "golem", Title = "The Crystal Golem", Giver = "Digby", Start = "thanked:digby",
+            Steps = new[]
+            {
+                new QuestStep { Text = "Beat the Crystal Golem when his crystals glow.", Done = "cleared:Mines4", Icon = "icon:monster" },
+                new QuestStep { Text = "Take the Mole Mitts he left behind.", Done = "has:mole_mitts", Icon = "item:mole_mitts" },
+            },
+        },
+        new QuestDefinition
+        {
+            Id = "fishing", Title = "Fishing Lesson", Giver = "Captain Clamshell", Start = "met:Clamshell",
+            Steps = new[]
+            {
+                new QuestStep
+                {
+                    Text = "Catch fish at a fishing spot: cast, wait for the bobber to dip, then press again.", Done = "fish_caught>=" + FishingGoal,
+                    Icon = "icon:fish", Counter = "fish_caught", Goal = FishingGoal,
+                },
+                new QuestStep { Text = "Tell Captain Clamshell.", Done = "thanked:clamshell", Icon = "npc:Captain Clamshell" },
+            },
+        },
+        new QuestDefinition
+        {
+            Id = "king", Title = "King Crabbington", Giver = "Captain Clamshell", Start = "thanked:clamshell",
+            Steps = new[]
+            {
+                new QuestStep { Text = "Beat King Crabbington when he peeks out of his shell.", Done = "cleared:Lake4", Icon = "icon:monster" },
+                new QuestStep { Text = "Take the Bubble Charm he was guarding.", Done = "has:bubble_charm", Icon = "item:bubble_charm" },
+            },
+        },
+        new QuestDefinition
+        {
+            Id = "egg_lake", Title = "The Aquamarine Egg", Giver = "Amethyra", Start = "has:bubble_charm",
+            Steps = new[]
+            {
+                new QuestStep { Text = "Swim out to the island in the middle of the Murky Reeds, and find one of Amethyra's eggs.", Done = "has:dragon_egg_lake", Icon = "item:dragon_egg_lake" },
+                new QuestStep { Text = "Show it to Amethyra.", Done = "thanked:egg_lake", Icon = "npc:Amethyra" },
+            },
+        },
+        new QuestDefinition
+        {
+            Id = "scarf", Title = "A Scarf for Mr. Frost", Giver = "Mr. Frost", Start = "met:Mr. Frost",
+            Steps = new[]
+            {
+                new QuestStep { Text = "Buy a ball of yarn from Barnaby Badger, in Hollyhock by the castle.", Done = "bought:ball_of_yarn>=1", Icon = "item:ball_of_yarn" },
+                new QuestStep { Text = "Give the yarn to Granny Purl, by the campfire.", Done = "purl:knit", Icon = "npc:Granny Purl" },
+                new QuestStep { Text = "Take the scarf to Mr. Frost.", Done = "thanked:frost", Icon = "npc:Mr. Frost" },
+            },
+        },
+        new QuestDefinition
+        {
+            Id = "yeti", Title = "The Snow Yeti", Giver = "Granny Purl", Start = "met:Granny Purl",
+            Steps = new[]
+            {
+                new QuestStep { Text = "Beat the Snow Yeti, high on the mountain.", Done = "cleared:Frost4", Icon = "icon:monster" },
+                new QuestStep { Text = "Take the Rainbow Chalk he was guarding.", Done = "has:rainbow_chalk", Icon = "item:rainbow_chalk" },
+            },
+        },
+        new QuestDefinition
+        {
+            Id = "egg_frost", Title = "The Sapphire Egg", Giver = "Amethyra", Start = "has:rainbow_chalk",
+            Steps = new[]
+            {
+                new QuestStep { Text = "Draw a rainbow bridge in the Frozen Pass, and find one of Amethyra's eggs.", Done = "has:dragon_egg_frost", Icon = "item:dragon_egg_frost" },
+                new QuestStep { Text = "Show it to Amethyra.", Done = "thanked:egg_frost", Icon = "npc:Amethyra" },
+            },
+        },
+        new QuestDefinition
+        {
+            Id = "egg_mines", Title = "The Topaz Egg", Giver = "Amethyra", Start = "has:mole_mitts",
+            Steps = new[]
+            {
+                new QuestStep { Text = "Find one of Amethyra's eggs in the Glimmer Mines. It's behind something heavy.", Done = "has:dragon_egg_mines", Icon = "item:dragon_egg_mines" },
+                new QuestStep { Text = "Show it to Amethyra.", Done = "thanked:egg_mines", Icon = "npc:Amethyra" },
+            },
+        },
     };
 
     public const int SleepyTreeGoal = 4;
+    public const int LostMoleGoal = 3;
+    public const int FishingGoal = 3;
 
     public static QuestDefinition Find(string id) => All.FirstOrDefault(q => q.Id == id);
 

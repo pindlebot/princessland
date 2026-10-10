@@ -12,6 +12,8 @@ public class LevelMap : MonoBehaviour
     [SerializeField] private string buildings = "";
     [Tooltip("The map's wall-like prop symbols (the corn maze's walls): solid, drawn as walls on the minimap.")]
     [SerializeField] private string walls = "";
+    [Tooltip("The map's ice-floor symbols (\"floor ice\" in its legend): slippery ground.")]
+    [SerializeField] private string ice = "";
     [Tooltip("The map's fake-wall symbols: drawn as walls on the minimap until you walk through one (FakeWall).")]
     [SerializeField] private string fakeWalls = "";
     [Tooltip("The tiles of the secret room behind a fake wall, as \"col,row\": the minimap keeps them hidden until it's found.")]
@@ -22,6 +24,17 @@ public class LevelMap : MonoBehaviour
     public int Height => rows.Length;
     public int Width => rows[0].Length;
     public float TileSize => tileSize;
+
+    public bool IsIce(char c) => c != ' ' && ice.IndexOf(c) >= 0;
+    public bool IsIceAt(Vector3 world) => IsIce(TileAt(world));
+
+    // The tile under a point in the world (' ' off the edge of the map).
+    public char TileAt(Vector3 world)
+    {
+        int col = Mathf.RoundToInt(world.x / tileSize);
+        int row = rows.Length - 1 - Mathf.RoundToInt(world.z / tileSize);
+        return row >= 0 && row < rows.Length && col >= 0 && col < rows[row].Length ? rows[row][col] : ' ';
+    }
     public Color FloorColor => floorColor;
     public Color WallColor => wallColor;
 
@@ -75,6 +88,10 @@ public class LevelMap : MonoBehaviour
     // bolts and line-of-sight checks ignore it, so you can fight across the water.
     // (Layer 4 is Unity's built-in "Water" layer.)
     public const int WaterLayer = 4;
+    public const int SwimmerLayer = 8;   // the hero: with the Bubble Charm, the hero's layer stops colliding with the Water layer
+    public const int WaterRimLayer = 9;  // water on the island's rim: even a swimmer stays out of it (there's nothing beyond)
+    public const int WaterMask = (1 << WaterLayer) | (1 << WaterRimLayer);
+    public static bool IsWaterLayer(int layer) => layer == WaterLayer || layer == WaterRimLayer;
 
     // Hazards: walkable, but they hurt. '~' lava, '^' a spike trap (see Hazard.cs).
     public static bool IsLava(char c) => c == '~';

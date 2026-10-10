@@ -8,8 +8,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 // Play Mode tests for the metroidvania loop (Phase 2): the Bouncy Boots and the gaps they hop, the spell
-// gates (brambles and braziers) that either hero can open, the Slime King's rewards, the colour that
-// returns to the castle grounds, heart pieces and star shards, and Amethyra's story. Plus a check on
+// gates (brambles and braziers) that either hero can open, the Slime King's rewards, the crystal plague that
+// clears from the castle grounds, heart pieces and star shards, and Amethyra's story. Plus a check on
 // the map files themselves: the gaps really do seal their treasures until you have the boots.
 public class GatesTests
 {
@@ -354,34 +354,37 @@ public class GatesTests
         Assert.Less(Vector3.Distance(Player.transform.position, stairs), 5f, "you step out beside the stairs, not back at the start");
     }
 
-    // ---------- Colour ----------
+    // ---------- The crystal plague ----------
 
     [UnityTest]
-    public IEnumerator TheCastleGroundsAreGreyUntilYouBringHomeTheAmethyst()
+    public IEnumerator TheCastleGroundsAreOverrunWithCrystalsUntilYouBringHomeTheAmethyst()
     {
         yield return Load("Level0");
-        var drain = Object.FindAnyObjectByType<Camera>().GetComponent<ColorDrain>();
-        Assert.IsNotNull(drain);
-        Assert.Less(drain.Saturation, 0.2f, "grey");
+        var plague = Object.FindAnyObjectByType<CrystalPlague>();
+        Assert.IsNotNull(plague);
+        Assert.Greater(plague.CrystalCount, 50, "crystals all over the grounds");
         yield return new WaitForSeconds(0.5f);
-        Assert.Less(drain.Saturation, 0.2f, "and staying grey without the Amethyst");
+        Assert.IsFalse(plague.IsGone, "and they stay without the Amethyst");
+        Assert.AreEqual(plague.CrystalCount, plague.GetComponentsInChildren<SpriteRenderer>().Length, "every one is drawn");
+        Assert.AreEqual(0, plague.GetComponentsInChildren<Collider>().Length, "you can walk through them: they never wall anything in");
 
         GameSession.Inventory.KeyItems.Add("amethyst");
         yield return new WaitForSeconds(6f);
-        Assert.AreEqual(1f, drain.Saturation, 0.01f, "the colour floods back");
-        Assert.IsTrue(GameSession.Flags.Contains(ColorDrain.SeenFlag("Level0")));
+        Assert.IsTrue(plague.IsGone, "the crystals shatter away");
+        Assert.IsTrue(GameSession.Flags.Contains(CrystalPlague.SeenFlag("Level0")));
 
         yield return Load("Level0");
-        Assert.AreEqual(1f, Object.FindAnyObjectByType<Camera>().GetComponent<ColorDrain>().Saturation, "and stays");
+        var again = Object.FindAnyObjectByType<CrystalPlague>();
+        Assert.IsTrue(again == null || again.IsGone, "and stay gone");
     }
 
     [UnityTest]
-    public IEnumerator OtherPlacesAreInFullColour()
+    public IEnumerator OtherPlacesAreFreeOfCrystals()
     {
         yield return Load("Dungeon");
-        Assert.IsNull(Object.FindAnyObjectByType<Camera>().GetComponent<ColorDrain>());
+        Assert.IsNull(Object.FindAnyObjectByType<CrystalPlague>());
         yield return Load("Woods1");
-        Assert.IsNull(Object.FindAnyObjectByType<Camera>().GetComponent<ColorDrain>());
+        Assert.IsNull(Object.FindAnyObjectByType<CrystalPlague>());
     }
 
     // ---------- Amethyra's story ----------

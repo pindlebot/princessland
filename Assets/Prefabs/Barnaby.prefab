@@ -312,6 +312,7 @@ MonoBehaviour:
     sets: met:Barnaby
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -342,3 +343,7 @@ MonoBehaviour:
   tooPoor: Ah, that's {price} coins, I'm afraid. Monsters drop lots of coins. Come back when your purse jingles!
   bagFull: Goodness, your bag is full to bursting! Make a little room and come back.
   saleSound: {fileID: 8300000, guid: c9f2232dc1a084e389e6c2fa8eabb14d, type: 3}
+  altWare: {fileID: 11400000, guid: d745c400146514c0489e992d3e532437, type: 2}
+  altPrice: 12
+  altCondition: met:Mr. Frost,!has:ball_of_yarn,!purl:knit
+  altThanks: A ball of my best red wool! Granny Purl will knit wonders with that. Give her my regards!

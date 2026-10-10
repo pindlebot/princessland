@@ -1,0 +1,14 @@
+{
+  "frameSize": 64,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Shell",
+      "row": 0,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    }
+  ]
+}

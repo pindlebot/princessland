@@ -1,0 +1,51 @@
+// Frostpeak, room 2 of 4: the Icy Slopes. The west opening (1) goes back to the Camp, the east opening (2) on to the Frozen Pass.
+// A great sheet of ice (4) fills the middle: you slide on it. Ice Slimes (E) and Snow Imps (L) patrol it; boulders (O) are good for
+// bumping off. A star shard (3) sits on a little island of snow in the ice, and a heart piece (6) in a nook of boulders in the north-east.
+// Drifts (7), ice spires (8) and a snowman (5) are scenery.
+title: Frostpeak: The Icy Slopes
+theme: Outdoor
+music: music_frost
+mood: snow
+region: frost
+ground: snow
+walls: snow
+monsters: E=iceslime L=snowimp M=snowyeti
+minimap_floor: #DCE8F4
+minimap_wall: #8AA6C8
+world: 152 65
+---
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+H..........................................H
+H...............t......t...................H
+H..5t...t......t...t....................O..H
+H....t................L................O6O.H
+H......7.......444444...444444..8..........H
+H.......L...444444444.3.444444444....7.....H
+H.........44444444E44...44444444444........H
+H.......44444444444444444444444444O44...t..H
+H......4444444OO4444444444444444444444.....H
+H.....4444444444444444444444444E4444444..t.H
+H.......4444444444444444444444444444.......H
+1...P....4444444444444OO44444444444........2
+H.......44444444444444O4444444444444.......H
+H.t...4444444E4444444444444444444444444....H
+H.....444444444444444444444444444444444....H
+H.....444444444444444444444444OO4444444....H
+H......444O444444444444444444444444444.....H
+H.......444444444444444444E4444444444......H
+H.........4444444444444444444444444.L......H
+H.....7.....844444444444444444444........t.H
+H..............444444444444444........7....H
+H.....................4........t...........H
+H...............tt.......t.......tt....t...H
+H..........................................H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Frost1
+2 = edge Frost3
+3 = prop starshard
+4 = floor ice
+5 = prop snowman
+6 = prop heartpiece
+7 = prop drift
+8 = prop icespire

@@ -37,7 +37,7 @@ public class Projectile : MonoBehaviour
         if (exploded) return;
         if (other.GetComponentInParent<PlayerController>() != null) return;
         if (other.isTrigger) return;
-        if (other.gameObject.layer == LevelMap.WaterLayer) return; // flies over the pond and the sea
+        if (LevelMap.IsWaterLayer(other.gameObject.layer)) return; // flies over the pond and the sea
         exploded = true;
 
         var enemy = other.GetComponentInParent<EnemyAI>();

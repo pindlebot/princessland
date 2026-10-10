@@ -33,6 +33,8 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private Transform throwPoint;   // where bolts leave from (default: the middle)
     [SerializeField] private float throwDelay = 0.3f; // the wind-up: arms raised, so you can see it coming
     [SerializeField] private bool stationary;
+    [Tooltip("A crab: it only ever scuttles across the screen, never up or down it, so you can sidestep it.")]
+    [SerializeField] private bool sidewaysOnly;
 
     public bool Stationary => stationary;
 
@@ -68,6 +70,7 @@ public class EnemyAI : MonoBehaviour
     private void Die()
     {
         alive.Remove(this);
+        GameSession.AddToCounter("defeated:" + name.Replace("(Clone)", "").Trim()); // the sticker book counts monsters you've beaten
         StartCoroutine(Vanish());
         enabled = false;
         controller.enabled = false;
@@ -115,7 +118,9 @@ public class EnemyAI : MonoBehaviour
         {
             // Adventurer Mode's monsters are a little quicker.
             float speed = moveSpeed * (GameSession.Settings.gentle ? 1f : AdventurerSpeedBoost);
-            Vector3 move = ChaseDirection(toPlayer, dist) * speed + Vector3.down;
+            var heading = ChaseDirection(toPlayer, dist);
+            if (sidewaysOnly) heading = AcrossScreen(heading);
+            Vector3 move = heading * speed + Vector3.down;
             controller.Move(move * Time.deltaTime);
         }
         else if (state == State.Attack && Time.time >= nextAttackTime)
@@ -148,6 +153,16 @@ public class EnemyAI : MonoBehaviour
         var step = path[pathIndex] - transform.position;
         step.y = 0f;
         return step.normalized;
+    }
+
+    // Only the part of a heading that runs left and right on the screen (nothing at all if it's nearly straight up or down).
+    private static Vector3 AcrossScreen(Vector3 heading)
+    {
+        var cam = Camera.main;
+        if (cam == null) return heading;
+        var right = Vector3.ProjectOnPlane(cam.transform.right, Vector3.up).normalized;
+        float along = Vector3.Dot(heading, right);
+        return Mathf.Abs(along) < 0.15f ? Vector3.zero : right * Mathf.Sign(along);
     }
 
     private float FlatDistance(Vector3 point)
@@ -186,7 +201,7 @@ public class EnemyAI : MonoBehaviour
     {
         Vector3 eye = transform.position + Vector3.up * 0.5f;
         Vector3 target = player.position + Vector3.up * 0.5f;
-        int blockers = sightBlockers & ~(1 << LevelMap.WaterLayer);
+        int blockers = sightBlockers & ~LevelMap.WaterMask;
         if (Physics.Linecast(eye, target, out RaycastHit hit, blockers, QueryTriggerInteraction.Ignore))
             return hit.transform == player;
         return true;

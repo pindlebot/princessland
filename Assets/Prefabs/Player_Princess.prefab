@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 271330307666185899}
   - component: {fileID: 5045990088509368578}
   - component: {fileID: 7793889422771712568}
+  - component: {fileID: 6572381310925326733}
+  - component: {fileID: 8274093909319913185}
   - component: {fileID: 6186371430112500066}
   - component: {fileID: 4787561401253090087}
   - component: {fileID: 8044685178245564100}
@@ -105,6 +107,7 @@ MonoBehaviour:
   moveSpeed: 6
   gravity: -20
   turnSpeed: 900
+  iceAcceleration: 7
 --- !u!114 &7701201717497211794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,6 +182,35 @@ MonoBehaviour:
   puffPrefab: {fileID: 397231879088370502, guid: a902f4d8f13304ebab7e30de3775a73a, type: 3}
   hopSound: {fileID: 8300000, guid: ad97e8ab830ce4b68a76f9cebbe25f5b, type: 3}
   landSound: {fileID: 8300000, guid: c2bce4a3be3254fc0a37e2af11186741, type: 3}
+--- !u!114 &6572381310925326733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847039487741128333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b136f69722b6a471d88f5c6ee5bca95b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::SwimAbility
+  ripplePrefab: {fileID: 8138015116294841601, guid: 3b4cdb1ae6fb24bcfb9a5b7176bf2500, type: 3}
+  splashSound: {fileID: 8300000, guid: 600f8a87e7d03425e9fb310d5b380f0a, type: 3}
+  sink: 0.28
+--- !u!114 &8274093909319913185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847039487741128333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb3304395e6140869fd2ef3245e4b64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::PushAbility
+  pushSeconds: 0.25
+  reach: 2.1
 --- !u!114 &6186371430112500066
 MonoBehaviour:
   m_ObjectHideFlags: 0

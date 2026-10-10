@@ -1,0 +1,53 @@
+// Puddlebrook Lake, room 1 of 4: the Shore. The opening in the north hedge (1) leads back to the Dungeon; the opening in
+// the east hedge (2) goes on to the Murky Reeds. A fountain (F) is a save point. Captain Clamshell (3) stands by the
+// dock and teaches fishing: cast at a fishing spot (4), wait for the bobber to dip, then press again. Crabs (E) only
+// scuttle sideways; jellyfish (L) drift and spit bubbles.
+// Backtracking, needing the Bubble Charm (from King Crabbington): the dock stops short of a little island with a heart
+// piece (<), and another island in the east hides a star shard ()). Thought bubbles (() say "come back with something
+// to float on". Reeds (6), a sign (7) and an old anchor (8) are scenery.
+title: Puddlebrook Lake: The Shore
+theme: Outdoor
+music: music_lake
+region: lake
+monsters: E=crab L=jelly M=kingcrabbington
+minimap_floor: #8CB88A
+minimap_wall: #4E7A6A
+world: 28 81
+---
+HHHHHHHHHHHHHHHHHHHH1HHHHHHHHHHHHHHHHHHH
+H..........,.,..,....,;.,..;...........H
+H.....,......;.....,...,...,.,,.,....,.H
+H,.b.........,......,,www..........,...H
+H........,;...wwwww...wwwwwwwww.,.,....H
+H...;..,,..,wwwwwww.<.wwwwwwwwwww...6;;H
+H...;.....wwwwwwwww,..wwwwwwwwwwwww....H
+H........6wwwwwwwwwwwwwwwwwwwwww..ww...H
+H,.......wwwwwwwwwwwwwwwwwwwwwww.)ww(.;H
+H........wwwwwwwwwwwwwwwwwwwwwwwwwww;..H
+H.,......6wwwwwwwwwwhwwwwwwwwwwwwwww...H
+H.....,...wwwwwwwwwwhwwwwwwwwwwwwww.6.,H
+H..........,wwwwwwwwhwwwwwwwwwwww;E,...H
+H.;,.;..,E....wwwwwwhwwwwwwwwww.....,;.H
+H.,it.......,.6,4..(hwwww.4.6..........H
+H......i,....;.,.,..,,.......,E........H
+H.......F..i.E....3..,......,........,.H
+H;......,.,........,......7....Lb....,.H
+H..,t..,..;.P..,.....,,;.b.,.....,,....H
+H....;..t.i..,.;t.........t............H
+H,..;................;....,..,....8....H
+H,..,.,.,..,...........;.,,i...,..,....H
+H........,...,.,............,..........2
+H.....;,.i.,.,,.i.......,,........ii...H
+H...,.,,.....,..,....,...,.............H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Dungeon
+2 = edge Lake2
+3 = npc clamshell
+4 = prop fishingspot
+( = prop swimhint
+< = prop heartpiece
+) = prop starshard
+6 = prop reeds
+7 = prop lakesign
+8 = prop anchor

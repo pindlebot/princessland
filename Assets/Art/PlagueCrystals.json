@@ -1,0 +1,28 @@
+{
+  "frameSize": 48,
+  "pixelsPerUnit": 16,
+  "pivot": "bottom",
+  "animations": [
+    {
+      "name": "Small",
+      "row": 0,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Cluster",
+      "row": 1,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    },
+    {
+      "name": "Spire",
+      "row": 2,
+      "frames": 2,
+      "fps": 2,
+      "loop": true
+    }
+  ]
+}

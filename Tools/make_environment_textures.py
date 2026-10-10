@@ -49,6 +49,13 @@ Out:  Assets/Art/Environment/
         CornSide.png / CornTop.png   32x20 / 32x32  the corn maze's walls: dense dry stalks, and their
                                      leafy tops with tassels, seen from above
 
+      Frostpeak (the snowy mountain):
+        Snow_0.png / Snow_1.png      32x32  the snow underfoot: broad white-blue, with a few sparkles (Snow_1 has drifts)
+        Ice.png                      32x32  slippery blue ice: pale streaks and cracks (the hero slides on it)
+        SnowSide.png / SnowTop.png   32x13 / 32x32  the snow-drift walls round the mountain's rooms, scalloped like the hedges
+        SnowBank.png                 32x4   the bank of a frozen pond: a snowy lip over blue ice
+        RainbowBridge.png            32x32  a rainbow bridge across a chasm: six bright stripes along its length, glowing
+
 Every texture is seamless: mortar lines sit on the left/top edge only, so two
 tiles placed side by side share a single 1px joint.
 
@@ -999,6 +1006,103 @@ def corn_top():
     return img
 
 
+# ---------- Frostpeak ----------
+SNOW, SNOW_SH, SNOW_HI = (232, 240, 250), (200, 216, 238), (252, 254, 255)
+ICE_BASE, ICE_HI, ICE_SH = (176, 218, 240), (226, 246, 255), (130, 188, 224)
+
+
+def snow_tile(seed, drifts):
+    """Soft white-blue snow with three or four sparkles; Snow_1 also has a couple of shallow drifts (a darker crescent)."""
+    rng = random.Random(seed)
+    img = Image.new("RGB", (32, 32), SNOW)
+    px = img.load()
+    if drifts:
+        for _ in range(2):
+            cx, cy = rng.randrange(4, 28), rng.randrange(4, 28)
+            for dx in range(-5, 6):
+                y = cy + round(2 * (1 - (dx / 5) ** 2) ** 0.5)
+                px[(cx + dx) % 32, y % 32] = SNOW_SH
+                px[(cx + dx) % 32, (y + 1) % 32] = SNOW_SH
+    for _ in range(rng.randint(3, 4)):
+        x, y = rng.randrange(32), rng.randrange(32)
+        px[x, y] = SNOW_HI
+        px[(x + 1) % 32, y] = SNOW_HI
+    return img
+
+
+def ice_tile():
+    """Pale glassy ice: broad light streaks running diagonally, a few thin cracks. Seamless."""
+    rng = random.Random(401)
+    img = Image.new("RGB", (32, 32), ICE_BASE)
+    px = img.load()
+    for k in range(4):                                              # glossy streaks
+        x0, y0 = rng.randrange(32), rng.randrange(32)
+        for t in range(rng.randint(8, 14)):
+            px[(x0 + t) % 32, (y0 - t // 2) % 32] = ICE_HI
+            px[(x0 + t + 1) % 32, (y0 - t // 2) % 32] = ICE_HI
+    for k in range(2):                                              # cracks
+        x, y = rng.randrange(32), rng.randrange(32)
+        for t in range(rng.randint(5, 9)):
+            px[(x + t) % 32, (y + (t * 7) % 3) % 32] = ICE_SH
+    return img
+
+
+def snow_side():
+    """32x13: a snow-drift wall face: white, a scalloped lip at the top, blue shadow along the ground."""
+    img = Image.new("RGB", (32, 13), SNOW)
+    px = img.load()
+    scallops(px, 32, 0, 2, SNOW_HI)
+    for x in range(32):
+        px[x, 12] = SNOW_SH
+        px[x, 11] = shade(SNOW, -8)
+    for x in range(3, 32, 9):
+        px[x, 6] = SNOW_SH
+        px[(x + 1) % 32, 6] = SNOW_SH
+    return img
+
+
+def snow_top():
+    """32x32, the top of a snow drift from above: soft white with a few blue-shadowed clumps."""
+    rng = random.Random(402)
+    img = Image.new("RGB", (32, 32), SNOW_HI)
+    px = img.load()
+    for cx, cy in ((6, 6), (22, 4), (14, 16), (27, 22), (7, 26)):
+        for dx in range(-3, 4):
+            for dy in range(-2, 2):
+                if dx * dx / 9 + dy * dy / 4 <= 1:
+                    px[(cx + dx) % 32, (cy + dy + 1) % 32] = SNOW_SH if dy > 0 else SNOW
+    return img
+
+
+RAINBOW_BANDS = [(224, 70, 80), (250, 150, 60), (250, 220, 80), (90, 200, 110), (80, 150, 240), (160, 100, 220)]
+
+
+def rainbow_bridge():
+    """32x32: six broad stripes running left-right (the bridge's length), with a light edge; rotated in game for the other way."""
+    img = Image.new("RGB", (32, 32))
+    px = img.load()
+    for y in range(32):
+        band = RAINBOW_BANDS[min(5, (y * 6) // 32)]
+        for x in range(32):
+            c = band
+            if y % 5 == 0:
+                c = shade(band, 22)
+            if (x + y * 2) % 16 == 0:
+                c = shade(band, 34)                                        # a glint
+            px[x, y] = c
+    return img
+
+
+def snow_bank():
+    """32x4: a frozen pond's bank: a snowy lip over blue ice."""
+    img = Image.new("RGB", (32, 4), ICE_SH)
+    px = img.load()
+    for x in range(32):
+        px[x, 0] = SNOW_HI
+        px[x, 1] = SNOW
+    return img
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     floor_tile(1).save(OUT / "Floor_0.png")
@@ -1006,6 +1110,13 @@ def main():
     floor_tile(3, moss=True).save(OUT / "Floor_2.png")
     wall_side().save(OUT / "WallSide.png")
     wall_top().save(OUT / "WallTop.png")
+    snow_tile(81, False).save(OUT / "Snow_0.png")
+    snow_tile(82, True).save(OUT / "Snow_1.png")
+    ice_tile().save(OUT / "Ice.png")
+    snow_side().save(OUT / "SnowSide.png")
+    snow_top().save(OUT / "SnowTop.png")
+    snow_bank().save(OUT / "SnowBank.png")
+    rainbow_bridge().save(OUT / "RainbowBridge.png")
     grass_tile(61, pal.SAGE).save(OUT / "Grass_0.png")
     grass_tile(62, pal.SAGE_COOL).save(OUT / "Grass_1.png")
     grass_tile(63, pal.SAGE_WARM).save(OUT / "Grass_2.png")

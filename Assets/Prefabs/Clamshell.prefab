@@ -1,0 +1,417 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &407274268033382598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6771873647940086876}
+  - component: {fileID: 231450604361912561}
+  - component: {fileID: 4125423581867706203}
+  m_Layer: 0
+  m_Name: Shadow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6771873647940086876
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 407274268033382598}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.049999993, y: 0.02, z: 0.08660254}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3324955906362999938}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &231450604361912561
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 407274268033382598}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: -1
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 793777535, guid: c3cdb290b89e14562a818f48a0eca33f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 4, y: 4}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!114 &4125423581867706203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 407274268033382598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caf46237c181847899153f7615269a67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::GroundShadow
+  lift: 0.02
+--- !u!1 &3888792102260780838
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4344575203846817512}
+  - component: {fileID: 1594326853172970030}
+  - component: {fileID: 1104443384206948268}
+  - component: {fileID: 1289892122300715693}
+  m_Layer: 0
+  m_Name: Sprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4344575203846817512
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3888792102260780838}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3324955906362999938}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1594326853172970030
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3888792102260780838}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: -1304493026, guid: 43c203371ba5f4ac1b5d30a45fb2bcd6, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 3, y: 3}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!114 &1104443384206948268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3888792102260780838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 752f7aecbf0a145fe8f89f9b53b039e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::SpriteFlipbook
+  frames:
+  - {fileID: -1304493026, guid: 43c203371ba5f4ac1b5d30a45fb2bcd6, type: 3}
+  - {fileID: 65479398, guid: 43c203371ba5f4ac1b5d30a45fb2bcd6, type: 3}
+  fps: 2
+  loop: 1
+  destroyWhenDone: 0
+  randomStart: 0
+  unscaledTime: 1
+--- !u!114 &1289892122300715693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3888792102260780838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 502420a4bf9fa47588f60892af5832e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Billboard
+--- !u!1 &6141992389135737836
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3324955906362999938}
+  - component: {fileID: 8969684386387717581}
+  - component: {fileID: 342699559898032609}
+  m_Layer: 0
+  m_Name: Clamshell
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3324955906362999938
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6141992389135737836}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4344575203846817512}
+  - {fileID: 6771873647940086876}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8969684386387717581
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6141992389135737836}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.4, y: 2, z: 0.9}
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &342699559898032609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6141992389135737836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993d8d8b34a954049b05eb7b4bbba012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Npc
+  npcName: Captain Clamshell
+  portrait: {fileID: 21300000, guid: b14c20d4928f3443d99224b8e9916b9b, type: 3}
+  voice: {fileID: 8300000, guid: 397528b6828dd4d03bd108ad55a300de, type: 3}
+  giftSound: {fileID: 8300000, guid: a142d3c7adcfa46989d2fae3161d654d, type: 3}
+  conversations:
+  - requires: 
+    notIf: met:Clamshell
+    sets: met:Clamshell
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Harr! A landlubber on my shore! Captain Clamshell, retired, of the good ship Pinch. Welcome to Puddlebrook.
+    - heroSpeaks: 1
+      text: Why is the lake so murky?
+    - heroSpeaks: 0
+      text: The Grey Gloom stirred it up three hundred years ago, and the merfolk sank away to get out of the muck. Nothing but crabs and jellies about now.
+    - heroSpeaks: 0
+      text: But there's still fish, if you've the patience. Come, I'll teach you. Press the button at a fishing spot, wait for the bobber to dip, then PRESS AGAIN before he gets away. Not too early, mind!
+    - heroSpeaks: 0
+      text: Catch three fish, {hero}, and I'll give you a proper rod.
+  - requires: fish_caught>=3
+    notIf: thanked:clamshell
+    sets: thanked:clamshell
+    giveGold: 20
+    giveItem: fishing_rod
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Three fish! Shipshape! You've the hands of a born angler.
+    - heroSpeaks: 0
+      text: 'Here: my old rod, and twenty coins for the bait. With it you get a bit longer to react, and the big fish like it better.'
+    - heroSpeaks: 0
+      text: Keep an eye out for the Golden Carp. Legend says one lives in the lake. Never caught him myself. Harr!
+  - requires: cleared:Lake4
+    notIf: clamshell:cheered
+    sets: clamshell:cheered
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: The whole lake just sighed! King Crabbington's himself again. He's my old first mate, you know. Gets crabby when the Gloom's about.
+    - heroSpeaks: 0
+      text: 'And you''ve the Bubble Charm! Wear it and you can swim, {hero}: out over the deep water, where the heavy things hide. There''s islands in this lake no boat ever reached.'
+    - heroSpeaks: 0
+      text: 'The old castle pond, the cove, and the sea: there''s treasure where only swimmers go.'
+  - requires: 
+    notIf: fish_caught>=3
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Three fish, {hero}. Cast, wait for the bobber to dip, then press again. Patience is half of fishing, and the other half is fish.
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Why don't crabs share their toys?
+    - heroSpeaks: 1
+      text: Why?
+    - heroSpeaks: 0
+      text: Because they're SHELL-fish! Harr harr harr!
+  - requires: found:goldencarp
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: You caught the GOLDEN CARP?! In all my years! Take a bow, {hero}. Take two.
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: That anchor on the beach? Mine. Lost it in '94. It's still a good anchor. Just not a good boat.
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: A crab can only walk sideways, you know. Doesn't matter. I get where I'm going eventually.
+  talkOffset: {x: 0, y: 0, z: 0}
+  flipbook: {fileID: 1104443384206948268}
+  idleFrames:
+  - {fileID: -1304493026, guid: 43c203371ba5f4ac1b5d30a45fb2bcd6, type: 3}
+  - {fileID: 65479398, guid: 43c203371ba5f4ac1b5d30a45fb2bcd6, type: 3}
+  talkFrames:
+  - {fileID: -1740211786, guid: 43c203371ba5f4ac1b5d30a45fb2bcd6, type: 3}
+  - {fileID: 1480320085, guid: 43c203371ba5f4ac1b5d30a45fb2bcd6, type: 3}
+  idleFps: 2
+  talkFps: 6

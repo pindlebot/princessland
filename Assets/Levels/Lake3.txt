@@ -1,0 +1,51 @@
+// Puddlebrook Lake, room 3 of 4: the Sunken Dock. The west opening (1) goes back to the Murky Reeds; the east opening
+// (2) leads to King Crabbington's Court. Two ponds with islands: a chest (C) on one and a heart piece (<) on the other,
+// both for swimmers with the Bubble Charm. A buoy (5), a sign (7) and an old anchor (8) are for looking at.
+// The water route to Frostpeak: a pond in the north-east has a little landing at its far end with a doorway (9) in the hedge above it.
+// You can only get there by swimming across (the Bubble Charm).
+title: Puddlebrook Lake: The Sunken Dock
+theme: Outdoor
+music: music_lake
+region: lake
+monsters: E=crab L=jelly M=kingcrabbington
+minimap_floor: #8CB88A
+minimap_wall: #4E7A6A
+world: 112 91
+---
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHH9HHHHHHHHHH
+H;,..,,..,..,....,;.....wwww...wwww;...H
+H......,..........,...,.wwww...wwwwi..,H
+H,.,....wwwwwwwww......bwwwwwwwwwww;..,H
+H,,.,.wwwwwwwwwwwww.E...wwwwwwwwwww,...H
+H..,.wwwwww,.,wwwwww...twwwwwwwwwwwbL..H
+H....wwwwww.C,wwwwww4...wwwwwwwwwww....H
+H....wwwwww..,wwwwww.........(.......,.H
+H....,wwwwwwwwwwwww...,,E,...,;........H
+H.,,.,..wwwwwwwww......;............,..H
+H.,.........(....,.,....,,....hhhhhhh.,H
+H...............,.,...5.,...,.........,H
+1.,.....E,...,,...,,t.,..,L.,;,5.......2
+H......,.;...,.E,....,..........b..,.t.H
+H..,.8.....;........,....7...;...,..P..H
+H.....,.....,.,.........,.,,.,,,E..,...H
+H,,.........ttt.....,..wwwwwwwwwww.....H
+H,....t...,......t...wwwwwwwwwwwwwww.;.H
+H.......,.....,.L...wwwwwww.;.wwwwwww..H
+H.t..i......b,......wwwwwww.<;wwwwwww,.H
+H.....E.,...,.,....4wwwwwww...wwwwwww..H
+H....;...........;...wwwwwwwwwwwwwww...H
+H.....,.6.....,,;...,..wwwwwwwwwww.....H
+H.;.......i..,...i.......(.,.,....,.,.;H
+H...,..,....,,...,,..;.......,.........H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Lake2
+2 = edge Lake4
+4 = prop fishingspot
+( = prop swimhint
+< = prop heartpiece
+5 = prop buoy
+6 = prop reeds
+7 = prop lakesign
+8 = prop anchor
+9 = edge Frost1

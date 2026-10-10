@@ -17,6 +17,8 @@ Out:  Assets/Art/GateProps.png / .json      48x48 frames, bottom pivot:
         StarShard (a golden star: collected for the wardrobe at home)
       Assets/Art/EdgeArrow.png / .json      32x32, center pivot, 2-frame pulse: the arrow at a room's edge (RoomEdge)
       Assets/Art/Environment/Pit.png        32x32 the dark floor of a gap
+      Assets/Art/PlagueCrystals.png / .json 48x48 frames, bottom pivot, 2-frame glints: the dark green crystals that
+        overrun the Castle Grounds until the Amethyst comes home (CrystalPlague): Small, Cluster, Spire
 
 Same conventions as make_woods_sprites.py.
 """
@@ -48,6 +50,8 @@ CUFF = pal.rgba(pal.BUTTER)
 SOLE, SOLE_SH = pal.rgba(pal.HONEY), pal.rgba(pal.HONEY_SHADE)
 AM, AM_HI, AM_SH, AM_DEEP = (176, 110, 220, 255), (222, 176, 250, 255), (122, 66, 176, 255), (84, 40, 136, 255)
 GLINT = (255, 255, 235, 255)
+CR, CR_HI, CR_SH, CR_DEEP = (34, 104, 66, 255), (80, 168, 104, 255), (20, 66, 48, 255), (10, 38, 34, 255)
+CR_GLOW = (150, 255, 170, 255)
 FIRE_GLOW = (255, 210, 120, 255)
 
 
@@ -244,6 +248,18 @@ def lantern_small():
     return fairy_lantern(False)
 
 
+def mitts_small():
+    return mole_mitts(False)
+
+
+def charm_small():
+    return bubble_charm(False)
+
+
+def chalk_small():
+    return rainbow_chalk(False)
+
+
 # ---------- Items ----------
 
 def bouncy_boots(big):
@@ -307,8 +323,10 @@ def amethyst(big):
     return c.img
 
 
-def dragon_egg(big):
-    """One of Amethyra's lost eggs: an amethyst-purple egg with cream spots and a gold glint."""
+def dragon_egg(big, colors=None):
+    """One of Amethyra's lost eggs: an amethyst-purple egg with cream spots and a gold glint.
+    `colors` = (body, highlight, shadow) paints it for another island's gem."""
+    AM, AM_HI, AM_SH = colors or (globals()["AM"], globals()["AM_HI"], globals()["AM_SH"])
     n = 20 if big else 13
     c = Canvas(n)
     cx = (n - 1) / 2
@@ -330,7 +348,182 @@ def dragon_egg(big):
     return c.img
 
 
-ITEMS = {"BouncyBoots": bouncy_boots, "Amethyst": amethyst, "DragonEgg": dragon_egg}
+# ---------- Region two-and-a-half: the Mines' treasures ----------
+TOPAZ, TOPAZ_HI, TOPAZ_SH, TOPAZ_DEEP = (244, 176, 52, 255), (255, 226, 130, 255), (196, 118, 36, 255), (140, 78, 30, 255)
+
+
+def faceted_gem(big, colors):
+    """A faceted gem, the same cut as the Amethyst, in (body, highlight, shade, deep) colours."""
+    body, hi, sh, deep = colors
+    n = 18 if big else 12
+    c = Canvas(n)
+    for y in range(n):
+        v = (y + 0.5) / n
+        if v < 0.1:
+            continue
+        half = 0.5 + 0.5 * (v - 0.1) / 0.28 if v < 0.38 else 0.98 * (1 - (v - 0.38) / 0.62)
+        for x in range(n):
+            u = ((x + 0.5) / n) * 2 - 1
+            if abs(u) <= half:
+                if v < 0.38:
+                    col = hi if abs(u) < 0.45 and v < 0.22 else body if u < 0.35 else sh
+                else:
+                    col = body if u < -0.12 else sh if u < 0.4 else deep
+                    if abs(u) < 0.08:
+                        col = hi
+                c.dot(x, y, col)
+    c.dot(round(n * 0.3), round(n * 0.18), GLINT)
+    if big:
+        c.dot(round(n * 0.3), round(n * 0.18) + 1, GLINT)
+        c.dot(round(n * 0.72), round(n * 0.62), hi)
+    return c.img
+
+
+def topaz(big):
+    """A faceted amber gem."""
+    return faceted_gem(big, (TOPAZ, TOPAZ_HI, TOPAZ_SH, TOPAZ_DEEP))
+
+
+# ---------- Puddlebrook Lake's treasures ----------
+AQUA, AQUA_HI, AQUA_SH, AQUA_DEEP = (96, 214, 204, 255), (190, 250, 240, 255), (46, 150, 164, 255), (28, 96, 124, 255)
+
+
+def aquamarine(big):
+    """A faceted sea-green gem."""
+    return faceted_gem(big, (AQUA, AQUA_HI, AQUA_SH, AQUA_DEEP))
+
+
+def bubble_charm(big):
+    """A pearly soap bubble in a little silver loop, on a short chain: it shimmers pink and blue."""
+    n = 20 if big else 14
+    c = Canvas(n)
+    cx, cy = (n - 1) / 2, n * 0.58
+    r = n * 0.36
+    c.ellipse(cx, cy, r + 0.8, r + 0.8, (110, 130, 190, 255))
+    c.ellipse(cx, cy, r, r, (206, 232, 252, 255))
+    c.ellipse(cx + 0.8, cy + 0.8, r * 0.7, r * 0.7, (236, 214, 248, 255))
+    c.ellipse(cx - r * 0.35, cy - r * 0.4, r * 0.3, r * 0.22, (255, 255, 255, 255))
+    c.dot(round(cx + r * 0.5), round(cy + r * 0.45), (255, 200, 226, 255))
+    top = round(cy - r)
+    c.rect(round(cx) - 1, top - 2, round(cx), top, (214, 218, 232, 255))              # the silver clasp
+    c.line(round(cx), top - 2, round(cx) + 2, top - 4, (214, 218, 232, 255))
+    c.line(round(cx), top - 2, round(cx) - 2, top - 4, (214, 218, 232, 255))
+    return c.img
+
+
+def fishing_rod(big):
+    """A bamboo rod with a little reel and a red-and-white float on the line."""
+    n = 20 if big else 14
+    c = Canvas(n)
+    c.line(1, n - 2, n - 4, 2, (190, 150, 90, 255))
+    c.line(2, n - 2, n - 3, 2, (150, 104, 70, 255))
+    c.rect(4, n - 6, 6, n - 4, (150, 154, 168, 255))
+    c.dot(5, n - 5, (230, 230, 240, 255))
+    c.line(n - 4, 2, n - 2, 4, (230, 230, 240, 255))
+    c.line(n - 2, 4, n - 2, n - 7, (230, 230, 240, 255))
+    c.ellipse(n - 2, n - 5, 1.6, 1.6, (255, 252, 244, 255))
+    c.dot(n - 2, n - 4, (214, 80, 96, 255))
+    return c.img
+
+
+# ---------- Frostpeak's treasures ----------
+SAPPH, SAPPH_HI, SAPPH_SH, SAPPH_DEEP = (84, 126, 232, 255), (170, 200, 255, 255), (50, 80, 176, 255), (30, 48, 118, 255)
+
+
+def sapphire(big):
+    """A faceted deep-blue gem."""
+    return faceted_gem(big, (SAPPH, SAPPH_HI, SAPPH_SH, SAPPH_DEEP))
+
+
+def rainbow_chalk(big):
+    """A fat stick of chalk wrapped in rainbow stripes, with a smudged white tip."""
+    n = 20 if big else 14
+    c = Canvas(n)
+    bands = [(224, 70, 80, 255), (250, 150, 60, 255), (250, 220, 80, 255), (90, 200, 110, 255), (80, 150, 240, 255), (160, 100, 220, 255)]
+    w = 5 if big else 4
+    for i in range(n - 4):
+        x0 = 2 + i
+        y0 = n - 3 - i
+        col = bands[(i // (2 if big else 2)) % len(bands)]
+        for k in range(w):
+            c.dot(x0 + k - w // 2, y0 - k // 2, col)
+    c.dot(n - 3, 2, (255, 255, 255, 255))
+    c.dot(n - 4, 2, (240, 240, 240, 255))
+    c.dot(n - 3, 3, (240, 240, 240, 255))
+    return c.img
+
+
+def ball_of_yarn(big):
+    """A ball of red wool with a loose end and a trailing loop."""
+    n = 20 if big else 14
+    c = Canvas(n)
+    cx, cy, r = (n - 1) / 2, n * 0.5, n * 0.36
+    c.ellipse(cx, cy, r + 0.8, r + 0.8, (160, 50, 78, 255))
+    c.ellipse(cx, cy, r, r, (214, 80, 96, 255))
+    for k in range(-2, 3):                                                   # wound strands
+        c.line(round(cx - r), round(cy + k * 2), round(cx + r * 0.8), round(cy + k * 2 - 3), (240, 130, 140, 255))
+    c.dot(round(cx - r * 0.4), round(cy - r * 0.5), (255, 190, 196, 255))
+    c.line(round(cx + r * 0.6), round(cy + r * 0.8), n - 2, n - 2, (214, 80, 96, 255))
+    return c.img
+
+
+def warm_scarf(big):
+    """A long red-and-cream striped scarf, folded, with fringe."""
+    n = 20 if big else 14
+    c = Canvas(n)
+    stripes = [(214, 80, 96, 255), (250, 238, 214, 255)]
+    for x in range(2, n - 2):
+        col = stripes[(x // 2) % 2]
+        for y in range(n // 2 - 3, n // 2 + 3):
+            c.dot(x, y, col)
+    for x in range(3, n - 3, 2):                                             # fringe
+        c.dot(x, n // 2 + 3, (250, 238, 214, 255))
+        c.dot(x, n // 2 + 4, (214, 80, 96, 255))
+    c.dot(3, n // 2 - 2, (255, 255, 255, 255))
+    return c.img
+
+
+def snow_hat(big):
+    """A woolly white bobble hat with a blue stripe and a fluffy pom-pom."""
+    n = 20 if big else 14
+    c = Canvas(n)
+    cx = (n - 1) / 2
+    c.ellipse(cx, n * 0.58, n * 0.36, n * 0.3, (170, 196, 230, 255))
+    c.ellipse(cx - 0.4, n * 0.56, n * 0.33, n * 0.27, (240, 246, 252, 255))
+    c.rect(round(cx - n * 0.36), round(n * 0.62), round(cx + n * 0.36), round(n * 0.7), (84, 126, 232, 255))
+    c.rect(round(cx - n * 0.38), round(n * 0.72), round(cx + n * 0.38), round(n * 0.8), (200, 220, 244, 255))
+    c.ellipse(cx, n * 0.2, 2.4 if big else 1.8, 2.4 if big else 1.8, (255, 255, 255, 255))
+    return c.img
+
+
+def mole_mitts(big):
+    """A pair of big pink digging paws (mittens) with long dark claws, a cuff of brown fur at the wrist."""
+    n = 20 if big else 14
+    c = Canvas(n)
+    PINK, PINK_HI, PINK_SH = (244, 160, 164, 255), (255, 206, 204, 255), (200, 110, 128, 255)
+    FUR_, FUR_SH_ = (150, 112, 92, 255), (100, 72, 66, 255)
+    CLAW = (70, 56, 74, 255)
+    paws = [(n * 0.3, n * 0.55), (n * 0.7, n * 0.5)]
+    for k, (px, py) in enumerate(paws):
+        r = n * 0.24
+        c.rect(round(px - r * 0.8), round(py + r * 0.5), round(px + r * 0.8), n - 1, FUR_)       # the cuff
+        c.rect(round(px + r * 0.4), round(py + r * 0.5), round(px + r * 0.8), n - 1, FUR_SH_)
+        c.ellipse(px, py, r, r * 1.05, PINK_SH)
+        c.ellipse(px - 0.4, py - 0.4, r - 0.7, r * 1.05 - 0.7, PINK)
+        c.dot(round(px - r * 0.4), round(py - r * 0.5), PINK_HI)
+        for dx in (-0.55, 0, 0.55):                                                               # the claws
+            cx_ = round(px + dx * r)
+            c.line(cx_, round(py - r), cx_, round(py - r) - (3 if big else 2), CLAW)
+    return c.img
+
+
+ITEMS = {"BouncyBoots": bouncy_boots, "Amethyst": amethyst, "DragonEgg": dragon_egg,
+         "MoleMitts": mole_mitts, "Topaz": topaz,
+         "DragonEggMines": lambda big: dragon_egg(big, (TOPAZ, TOPAZ_HI, TOPAZ_SH)),
+         "BubbleCharm": bubble_charm, "Aquamarine": aquamarine, "FishingRod": fishing_rod,
+         "DragonEggLake": lambda big: dragon_egg(big, (AQUA, AQUA_HI, AQUA_SH)),
+         "RainbowChalk": rainbow_chalk, "Sapphire": sapphire, "BallOfYarn": ball_of_yarn, "WarmScarf": warm_scarf,
+         "SnowHat": snow_hat, "DragonEggFrost": lambda big: dragon_egg(big, (SAPPH, SAPPH_HI, SAPPH_SH))}
 
 
 # ---------- Collectibles ----------
@@ -425,6 +618,55 @@ def pit_tile():
     return img
 
 
+# ---------- The plague: dark green crystals ----------
+
+def crystal(c, x, base, w, h, lean=0):
+    """One six-sided crystal standing on row `base`: a tapering shaft with a pointed tip, lit from the left."""
+    for dy in range(h):
+        y = base - dy
+        t = dy / h
+        half = w / 2 if t < 0.6 else w / 2 * (1 - (t - 0.6) / 0.4)   # straight sides, then a sharp point
+        cx = x + lean * t
+        left, right = round(cx - half), round(cx + half - 0.01)
+        for px in range(left, right + 1):
+            u = (px - left) / max(1, right - left)
+            col = CR_HI if u < 0.3 else CR if u < 0.55 else CR_SH
+            if t > 0.6 and u > 0.45:                                  # the tip's far facet is darker
+                col = CR_SH
+            if dy < 2:
+                col = CR_DEEP
+            c.dot(px, y, col)
+    c.dot(round(x + lean * 0.5 - w * 0.2), base - h // 2, CR_HI)
+
+
+def plague_crystal(kind, frame=0):
+    """A little cluster, a bigger cluster, or one tall spire. Frame 1 moves the glint."""
+    c = Canvas(S)
+    g = S - 4
+    c.ellipse(24, g, {"Small": 7, "Cluster": 12, "Spire": 9}[kind], 2.5, CR_DEEP)   # dark stain on the ground
+    if kind == "Small":
+        crystal(c, 21, g, 4, 9, -1)
+        crystal(c, 27, g, 3, 6, 1)
+        glint = (21, g - 7)
+    elif kind == "Cluster":
+        crystal(c, 14, g, 5, 12, -2)
+        crystal(c, 33, g, 5, 11, 2)
+        crystal(c, 22, g, 7, 21, -1)
+        crystal(c, 28, g, 5, 15, 2)
+        glint = (21, g - 17)
+    else:
+        crystal(c, 24, g, 9, 36, 1)
+        crystal(c, 15, g, 5, 14, -3)
+        crystal(c, 33, g, 5, 11, 3)
+        glint = (23, g - 28)
+    if frame:
+        c.dot(glint[0], glint[1], CR_GLOW)
+        c.dot(glint[0], glint[1] + 1, CR_HI)
+    else:
+        c.dot(glint[0] + 1, glint[1] + 4, CR_GLOW)
+    return c.img
+
+
 if __name__ == "__main__":
     write_sheet("GateProps", None, [
         ("Bramble", 1, False, [bramble()]),
@@ -434,9 +676,14 @@ if __name__ == "__main__":
         ("BrazierFire", 6, True, [brazier("fire", i) for i in range(4)]),
         ("BrazierWater", 4, True, [brazier("water", i) for i in range(2)]),
     ], frame_size=S)
+    write_sheet("PlagueCrystals", None, [(kind, 2, True, [plague_crystal(kind, i) for i in range(2)])
+                                         for kind in ("Small", "Cluster", "Spire")], frame_size=S)
     write_sheet("HintBubbles", None, [
         ("Boots", 1, False, [bubble(boots_small)]),
         ("Lantern", 1, False, [bubble(lantern_small)]),
+        ("Mitts", 1, False, [bubble(mitts_small)]),
+        ("Charm", 1, False, [bubble(charm_small)]),
+        ("Chalk", 1, False, [bubble(chalk_small)]),
     ], pivot="center", frame_size=32)
     write_sheet("GateItems", None, [(name, 3, True, [floor_frame(draw, glint=i == 1) for i in range(2)])
                                     for name, draw in ITEMS.items()])

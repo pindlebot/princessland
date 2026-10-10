@@ -1,0 +1,52 @@
+// Glimmer Mines, room 1 of 4: the Entrance. The opening in the north wall (1) leads back up to the Mushroom Hollow; the
+// opening in the west wall (2) goes on to the Mole Tunnels. A fountain (F) is a save point. Digby the mole foreman (3)
+// stands by it: he has lost three of his crew in the dark tunnels. A mine cart (4) waits at its station (5 is where you
+// arrive by cart); the line is jammed with rubble until Digby has his moles back.
+// Bats (E) swoop and Pebblins (L) plod. Backtracking, all of it needing the Mole Mitts from the Crystal Golem: a heavy
+// stone block (6) seals a corridor to a heart piece (<), a mound of soil (9) hides a star shard, and a plug of soil (()
+// closes a tunnel to a chest (C). A sign ([), a tiny mole door (]) and glowing crystals (0) are for looking at.
+title: Glimmer Mines: The Entrance
+theme: Dungeon
+music: music_mines
+mood: mines
+region: mines
+floor: cave
+walls: rock
+monsters: E=bat L=pebblin M=crystalgolem
+minimap_floor: #8A7A68
+minimap_wall: #54485E
+world: -89 54
+---
+##########T######T##1###T######T####
+#########..........................#
+#########.0.......[.....0.....0....#
+#########...........P..............#
+#########...F.3.............4......#
+###T#####............#......5......#
+#...#####..........................#
+#.C.....(.......##.................#
+#...#####.......#..................#
+#########...............L........0.#
+2...........##.E...................#
+#########..........................#
+#.<...###................##........#
+#.....###.....#..........#.......].#
+#........6....#....................#
+#.....###...E.........9...E...##...#
+#.....###..0.......................#
+#########...........0..............#
+#########..........................#
+####################################
+---
+1 = edge Woods3
+2 = edge Mines2
+3 = npc digby
+4 = prop minecart
+5 = spawn Cart
+6 = prop block
+9 = prop dirtshard
+( = prop softdirt
+< = prop heartpiece
+0 = prop wallcrystal
+[ = prop minesign
+] = prop moledoor

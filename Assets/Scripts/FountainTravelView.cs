@@ -17,7 +17,7 @@ public class FountainTravelView : MonoBehaviour
     [SerializeField] private AudioClip travelSound;
 
     // The scene names a fountain can take you to, in the order they appear in the menu.
-    private static readonly string[] Places = { "Level0", "Woods1" };
+    private static readonly string[] Places = { "Level0", "Woods1", "Mines1", "Lake1", "Frost1" };
 
     public static FountainTravelView Instance { get; private set; }
     public static bool BlocksInput => Instance != null && (Instance.IsOpen || Time.frameCount == Instance.closedFrame);
