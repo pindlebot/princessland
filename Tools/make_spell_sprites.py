@@ -3,7 +3,10 @@
 Run:  Tools/.venv/bin/python Tools/make_spell_sprites.py
 Out:  Assets/Art/Fireball.png / Fireball.json, Assets/Art/TidalOrb.png / TidalOrb.json,
       Assets/Art/DarkBolt.png / DarkBolt.json (the dark mermaids' bolt, thrown at the hero),
-      Assets/Art/SporeBolt.png / SporeBolt.json (Mother Mushroom's spore volley)
+      Assets/Art/SporeBolt.png / SporeBolt.json (Mother Mushroom's spore volley),
+      Assets/Art/ShardBolt.png / ShardBolt.json (the Crystal Golem's volley of topaz shards),
+      Assets/Art/BubbleBolt.png / BubbleBolt.json (the Lake jellyfish's spat bubbles),
+      Assets/Art/SnowBolt.png / SnowBolt.json (the snow imps' snowballs)
         Fly     4 frames, looping   the projectile, drawn pointing RIGHT (the game rotates it)
         Impact  5 frames, once      the burst where it hits something
 
@@ -58,6 +61,36 @@ SPORE = [
     (0.10, (44, 96, 60, 255)),
 ]
 SPORE_MIST = [(0.5, (176, 214, 128, 200)), (0.2, (120, 170, 100, 140))]
+
+# The Glimmer Mines' topaz shards: amber glass with a pale-yellow heart (the Crystal Golem's volley)
+SHARD = [
+    (0.80, (255, 250, 214, 255)),
+    (0.62, (255, 226, 130, 255)),
+    (0.42, (244, 176, 52, 255)),
+    (0.24, (186, 112, 38, 255)),
+    (0.10, (112, 66, 40, 255)),
+]
+SHARD_MIST = [(0.5, (214, 186, 140, 200)), (0.2, (160, 132, 104, 140))]
+
+# Puddlebrook Lake's bubbles: a pearly pink-white sheen over pale blue (the jellyfish's spit)
+BUBBLE = [
+    (0.80, (255, 250, 255, 255)),
+    (0.62, (255, 214, 236, 255)),
+    (0.42, (196, 176, 240, 255)),
+    (0.24, (120, 150, 220, 255)),
+    (0.10, (70, 100, 170, 255)),
+]
+BUBBLE_MIST = [(0.5, (200, 220, 244, 200)), (0.2, (150, 176, 214, 140))]
+
+# Frostpeak's snowballs: white with a pale-blue edge
+SNOWB = [
+    (0.80, (255, 255, 255, 255)),
+    (0.62, (232, 244, 255, 255)),
+    (0.42, (196, 222, 248, 255)),
+    (0.24, (150, 186, 226, 255)),
+    (0.10, (104, 140, 196, 255)),
+]
+SNOWB_MIST = [(0.5, (226, 238, 250, 210)), (0.2, (180, 204, 232, 150))]
 
 # Royal slime goo, for the Slime King's ground-slam shockwave
 GOO = [
@@ -175,6 +208,9 @@ if __name__ == "__main__":
     write_spell("TidalOrb", WATER, MIST)
     write_spell("DarkBolt", INK, INK_MIST)
     write_spell("SporeBolt", SPORE, SPORE_MIST)
+    write_spell("ShardBolt", SHARD, SHARD_MIST)
+    write_spell("BubbleBolt", BUBBLE, BUBBLE_MIST)
+    write_spell("SnowBolt", SNOWB, SNOWB_MIST)
     # Not a spell, but the same expanding-ring burst suits the King's landing.
     # Drawn at 96px (three tiles across) rather than scaled up in game, so its pixels match.
     write_sheet("Shockwave", None, [("Impact", 14, False, [impact_frame(i, GOO, GOO_SPLATS, 96) for i in range(5)])],

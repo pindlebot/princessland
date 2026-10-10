@@ -1,0 +1,54 @@
+// Puddlebrook Lake, room 2 of 4: the Murky Reeds. The west opening (1) is the way back to the Shore; the east opening
+// (2) goes on to the Sunken Dock. Paths run along the north and south banks. Crabs (E) and jellyfish (L) haunt the reeds.
+// Fishing spots (4) sit on the banks.
+// Backtracking, needing the Bubble Charm: a long swim across the lake to the island in the middle, where one of
+// Amethyra's five eggs (9) waits; a smaller island holds a heart piece (<), and another a star shard ()).
+// Backtracking: a deep chasm in the south-west corner (7) seals a little pocket with a star shard (5). Draw a rainbow bridge between
+// its two rainbow posts (8) with the Rainbow Chalk (from the Snow Yeti on Frostpeak).
+title: Puddlebrook Lake: The Murky Reeds
+theme: Outdoor
+music: music_lake
+region: lake
+monsters: E=crab L=jelly M=kingcrabbington
+minimap_floor: #8CB88A
+minimap_wall: #4E7A6A
+world: 68 91
+---
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+H,.........;..,...,....;..,..,.,......;....H
+H......,...........;,...........,.....,,...H
+H.......t.E...,,...i,...,,...bEt...;i......H
+H...b.;i.;........L,,(.,..,....,....,....;.H
+H,i,....,.......,6.....6.,..4..,,,....;....H
+H..,...........wwwwwwwwwwwwwww,............H
+H..b...;...,wwwwwwwwwwwwwwwwwwwww.,....,b..H
+H....(...,wwwwwwwwwwwwwwwwwwwwwwwww...6....H
+H..,....;ww...wwwwwwwwwwwwwwwwwwwwwwL.;...;H
+H.,...6,www.<.wwwwwwwwwwwwwwwwwwwwwww,..t..H
+H..b;.,wwww...wwwwwwwwwwwwwwwwwwwwwwww.,...H
+1......wwwwwwwwwwwww..,,.wwwwwwwwwwwww...,;2
+H...,,.wwwwwwwwwwwww..9..wwwwwwwwwwwww,..,.H
+H..,P.,wwwwwwwwwwwww.....wwwwwwwwwwwww.....H
+H....;.wwwwwwwwwwwwwwwwwwwwwwwwwwwwwww..b.,H
+H......6wwwwwwwwwwwwwwwwwwwwwwwww..ww.,.,..H
+H.,;..;..wwwwwwwwwwwwwwwwwwwwwwww,)...,....H
+H.....E...wwwwwwwwwwwwwwwwwwwwwww;......(.;H
+H.........,.wwwwwwwwwwwwwwwwwwwww.......b..H
+H77777..,..,..4wwwwwwwwwwwwwww.....t.....,,H
+H77777.................;..6..,.6....,.E...,H
+H77777..,Lb,.....;.....;E.....,....,.....,.H
+H5.777.,............b......;...............H
+H.87778........,....................,.,;,..H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Lake1
+2 = edge Lake3
+4 = prop fishingspot
+( = prop swimhint
+< = prop heartpiece
+) = prop starshard
+9 = item dragon_egg_lake
+6 = prop reeds
+7 = prop chasm
+8 = prop rainbowpost
+5 = prop starshard

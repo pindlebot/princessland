@@ -838,6 +838,247 @@ def woods_theme():
     return out[: int(eighths * beat * RATE)]
 
 
+# ---------- The Glimmer Mines ----------
+
+def bat_squeak():  # a high, quick, wobbly squeak
+    a = envelope(tone(3200, 0.06, "triangle", freq_end=4400), curve=2)
+    b = envelope(tone(4200, 0.07, "triangle", freq_end=3000), curve=2)
+    return place(list(a), b, 0.08)
+
+
+def rock_hit():  # a dull stony "tok" with a little grit
+    tok = envelope(tone(190, 0.09, "square", duty=0.4, freq_end=110), curve=3)
+    grit = envelope(lowpass(noise(0.1, seed=201), 2500), curve=3)
+    return mix([x * 0.6 for x in tok], grit)
+
+
+def rock_death():  # a tumble of pebbles: clacks falling in pitch
+    out = []
+    rng = random.Random(202)
+    t = 0.0
+    for k in range(6):
+        place(out, [x * (1 - k * 0.12) for x in rock_hit()], t)
+        t += rng.uniform(0.04, 0.09)
+    return out
+
+
+def clunk():  # a heavy stone block grinding one step along the floor, then settling
+    grind = envelope(lowpass(noise(0.28, seed=203), 700, 300), attack=0.04, curve=1.3)
+    thud = envelope(tone(80, 0.18, freq_end=45), curve=2.5)
+    return place([x * 0.7 for x in grind], thud, 0.22)
+
+
+def dig():  # a scrabbling scoop through soil, then a pebble clink
+    out = []
+    for k in range(4):
+        scoop = envelope(highpass(lowpass(noise(0.1, seed=204 + k), 2200, 900), 250), attack=0.02, curve=2)
+        place(out, scoop, k * 0.1)
+    return place(out, [x * 0.3 for x in envelope(tone(2100, 0.05), curve=3)], 0.42)
+
+
+def voice_digby():  # Digby: a gruff, friendly little "hrmm" with a squeak on top
+    hum = envelope(lowpass(tone(150, 0.07, "triangle", freq_end=135, vibrato=0.05), 900), attack=0.006, curve=1.5)
+    squeak = envelope(tone(620, 0.05, "square", duty=0.3, freq_end=700), curve=2)
+    return mix(hum, [x * 0.2 for x in squeak])
+
+
+def voice_mole():  # a lost mole: a higher, shorter, snuffly blip
+    blip = envelope(lowpass(tone(330, 0.06, "triangle", freq_end=380, vibrato=0.04), 1500), attack=0.005, curve=1.5)
+    sniff = envelope(highpass(noise(0.05, seed=208), 2500), curve=2)
+    return mix(blip, [x * 0.15 for x in sniff])
+
+
+def golem_glow():  # the crystals lighting up: a rising, ringing shimmer
+    out = []
+    for k, note in enumerate(["D5", "A5", "D6", "F6"]):
+        place(out, [x * 0.5 for x in envelope(tone(midi(n(note)), 0.5, "sine", vibrato=0.01), curve=1.5)], k * 0.07)
+    return out
+
+
+def golem_dim():  # the crystals going dark: a falling hum and a low thump
+    fall = envelope(tone(420, 0.5, "triangle", freq_end=90), attack=0.02, curve=1.5)
+    thump = envelope(tone(70, 0.25, freq_end=40), curve=2)
+    return mix([x * 0.6 for x in fall], thump)
+
+
+def clink():  # a hit that bounced off dark crystal: a bright "tink"
+    return mix(envelope(tone(2600, 0.08, "triangle"), curve=3), [x * 0.4 for x in envelope(tone(3900, 0.06), curve=3)])
+
+
+def cart_ride():  # a clattering mine cart on rails, rumbling away
+    out = []
+    for k in range(14):
+        place(out, [x * (1 - k * 0.03) for x in envelope(tone(150 + (k % 2) * 40, 0.05, "square", duty=0.3), curve=4)], k * 0.07)
+    rumble = envelope(lowpass(noise(1.0, seed=209), 500), attack=0.1, curve=1.2)
+    return mix(out, [x * 0.6 for x in rumble])
+
+
+def mines_theme():
+    """Glimmer Mines: a swaggering little D-dorian march, 112 bpm, 8 bars: Dm - Dm - Bb - C, twice, over a
+    plodding bass, with picks tapping on the off-beat and a glint of high crystal bells."""
+    beat = 60 / 112
+    melody = [
+        ("D4", 1), ("F4", 1), ("A4", 1), ("D5", 1),             # Dm
+        ("C5", 1.5), ("A4", .5), ("F4", 2),                     # Dm
+        ("Bb4" if False else "A#4", 1), ("D5", 1), ("F5", 1), ("D5", 1),   # Bb
+        ("C5", 2), ("G4", 1), ("E4", 1),                        # C
+        ("D4", 1), ("F4", 1), ("A4", 1), ("D5", 1),             # Dm
+        ("E5", 1.5), ("D5", .5), ("A4", 2),                     # Dm
+        ("A#4", 1), ("C5", 1), ("D5", 1), ("F5", 1),            # Bb
+        ("E5", 2), ("D5", 2),                                   # C -> home
+    ]
+    bass = []
+    for root, fifth in [("D2", "A2"), ("D2", "A2"), ("A#1", "F2"), ("C2", "G2")] * 2:
+        bass += [(root, 1), (fifth, 1), (root, 1), (fifth, 1)]
+    beats = 32
+    out = mix(render_part(melody, beat, "square", 0.22, gap=0.8),
+              render_part(bass, beat, "triangle", 0.6, gap=0.7))
+    for b in range(beats):                                     # picks tapping on the off-beat
+        place(out, [x * 0.16 for x in envelope(tone(1700, 0.03, "square", duty=0.2), curve=4)], (b + 0.5) * beat)
+    rng = random.Random(210)
+    for b in range(1, beats, 5):                               # crystal bells
+        place(out, [x * 0.12 for x in envelope(tone(midi(n(rng.choice(["D6", "F6", "A6", "C7"]))), 0.4), curve=2)],
+              (b + rng.uniform(0, 1)) * beat)
+    return out[: int(beats * beat * RATE)]
+
+
+# ---------- Puddlebrook Lake ----------
+
+def crab_click():  # a dry double "clack" of claws
+    return place(bone_clack(1500, 301), bone_clack(1150, 302), 0.07)
+
+
+def jelly_bloop():  # a soft wet "bloop" that rises
+    return envelope(lowpass(tone(240, 0.2, "sine", freq_end=520, vibrato=0.06), 1400), attack=0.01, curve=1.8)
+
+
+def voice_clamshell():  # Captain Clamshell: a gravelly sailor's "harr", with a little clack
+    harr = envelope(lowpass(tone(110, 0.08, "saw", freq_end=95, vibrato=0.08), 700), attack=0.008, curve=1.5)
+    clack = envelope(tone(1400, 0.02, "square", duty=0.3), curve=4)
+    return place(list(harr), [x * 0.2 for x in clack], 0.04)
+
+
+def shell_close():  # King Crabbington clamming up: a big hollow thunk
+    thunk = envelope(tone(130, 0.2, freq_end=60), curve=2.2)
+    clack = envelope(tone(900, 0.05, "square", duty=0.3, freq_end=500), curve=4)
+    return mix(thunk, [x * 0.5 for x in clack])
+
+
+def tide_wave():  # a great wave rolling in: a long rising wash
+    wash = envelope(lowpass(noise(1.2, seed=303), 400, 3200), attack=0.4, curve=1.2)
+    rumble = envelope(tone(70, 1.2, freq_end=110), attack=0.3, curve=1.5)
+    return mix(wash, [x * 0.5 for x in rumble])
+
+
+def fish_bite():  # a little "plip" and a ring: the bobber dipped!
+    plip = envelope(tone(700, 0.06, "sine", freq_end=300), curve=3)
+    ring = envelope(tone(1500, 0.25, "triangle", vibrato=0.02), attack=0.01, curve=2)
+    return place(list(plip), [x * 0.4 for x in ring], 0.05)
+
+
+def fish_catch():  # a happy splash and a rising chime
+    out = list(envelope(highpass(noise(0.25, seed=304), 800), curve=2.5))
+    return place(out, arpeggio(["C6", "E6", "G6", "C7"], 0.07, 0.3, "triangle", 0.4), 0.12)
+
+
+def lake_theme():
+    """Puddlebrook Lake: a calm 6/8 barcarolle in A mixolydian, 80 bpm, 8 bars: A - G - D - E, twice, over a
+    rocking bass, with the odd high plink of a water-drop. (An eighth note is `beat`; six to a bar.)"""
+    beat = 60 / 80 / 3
+    melody = [
+        ("C#5", 2), ("E5", 1), ("A5", 3),                       # A
+        ("B5", 2), ("G5", 1), ("D5", 3),                        # G
+        ("F#5", 2), ("A5", 1), ("D6", 3),                       # D
+        ("B5", 2), ("G#5", 1), ("E5", 3),                       # E
+        ("A5", 2), ("C#6", 1), ("E6", 2), ("C#6", 1),            # A
+        ("D6", 3), ("B5", 2), ("G5", 1),                        # G
+        ("A5", 2), ("F#5", 1), ("D5", 3),                       # D
+        ("E5", 3), ("A4", 3),                                    # E -> home
+    ]
+    bass = []
+    for root, fifth in [("A2", "E3"), ("G2", "D3"), ("D3", "A3"), ("E3", "B3")] * 2:
+        bass += [(root, 3), (fifth, 3)]
+    eighths = 48
+    out = mix(render_part(melody, beat, "triangle", 0.5, gap=0.9),
+              render_part(bass, beat, "sine", 0.5, gap=0.85))
+    rng = random.Random(305)
+    for b in range(3, eighths, 6):                              # water-drops, high and glassy
+        f = rng.choice([1760, 1976, 2349, 2637])
+        place(out, [x * 0.09 for x in envelope(tone(f, 0.12, "sine", freq_end=f * 0.8), curve=3)], (b + rng.uniform(0, 1)) * beat)
+    return out[: int(eighths * beat * RATE)]
+
+
+# ---------- Frostpeak ----------
+
+def voice_frost():  # Mr. Frost: a shivery, chattering "b-b-brr", teeth clicking
+    brr = envelope(lowpass(tone(190, 0.07, "triangle", freq_end=170, vibrato=0.25), 1100), attack=0.006, curve=1.5)
+    teeth = envelope(tone(2200, 0.012, "square", duty=0.3), curve=4)
+    out = list(brr)
+    for k in range(3):
+        place(out, [x * 0.2 for x in teeth], 0.01 + k * 0.018)
+    return out
+
+
+def voice_purl():  # Granny Purl: a warm, creaky little "hmm hm" with a knitting-needle click
+    hum = envelope(lowpass(tone(250, 0.07, "triangle", freq_end=270, vibrato=0.05), 1300), attack=0.006, curve=1.5)
+    click = envelope(tone(1800, 0.015, "square", duty=0.3), curve=4)
+    return place(list(hum), [x * 0.18 for x in click], 0.05)
+
+
+def imp_hit():  # a small, squeaky "eek"
+    return envelope(tone(900, 0.1, "triangle", freq_end=1400, vibrato=0.1), attack=0.01, curve=2)
+
+
+def snowball_throw():  # a soft whump of packed snow
+    return mix(envelope(lowpass(noise(0.18, seed=401), 1200, 400), attack=0.01, curve=2),
+               [x * 0.4 for x in envelope(tone(150, 0.12, freq_end=80), curve=3)])
+
+
+def snowball_roll():  # a long, low, crunchy rumble
+    crunch = envelope(highpass(lowpass(noise(1.0, seed=402), 1500), 300), attack=0.2, curve=1.3)
+    rumble = envelope(tone(60, 1.0, freq_end=90), attack=0.2, curve=1.4)
+    return mix(crunch, [x * 0.5 for x in rumble])
+
+
+def chalk_draw():  # chalk on slate, then a shimmering rainbow arpeggio
+    scratch = envelope(highpass(lowpass(noise(0.5, seed=403), 6000), 2500), attack=0.05, curve=1.4)
+    out = [x * 0.4 for x in scratch]
+    return place(out, arpeggio(["C6", "E6", "G6", "B6", "D7", "G7"], 0.09, 0.4, "triangle", 0.4), 0.2)
+
+
+def ice_skid():  # a quick glassy "zzzip"
+    return envelope(highpass(lowpass(noise(0.3, seed=404), 5000, 2000), 1500), attack=0.02, curve=2)
+
+
+def frost_theme():
+    """Frostpeak: sparse, twinkly 4/4 in E minor, 76 bpm, 8 bars: Em - C - G - D, twice, over a slow bass, with
+    glassy sleigh-bell ticks and the odd high chime."""
+    beat = 60 / 76
+    melody = [
+        ("E5", 1), ("G5", 1), ("B5", 2),                         # Em
+        ("A5", 1), ("G5", 1), ("E5", 2),                         # C
+        ("D5", 1), ("G5", 1), ("B5", 1), ("D6", 1),              # G
+        ("C#6", 2), ("A5", 2),                                   # D
+        ("B5", 1), ("E6", 1), ("G6", 2),                         # Em
+        ("E6", 1), ("C6", 1), ("G5", 2),                         # C
+        ("D6", 1), ("B5", 1), ("G5", 1), ("B5", 1),              # G
+        ("A5", 2), ("F#5", 2),                                   # D
+    ]
+    bass = []
+    for root, fifth in [("E2", "B2"), ("C2", "G2"), ("G2", "D3"), ("D2", "A2")] * 2:
+        bass += [(root, 2), (fifth, 2)]
+    beats = 32
+    out = mix(render_part(melody, beat, "triangle", 0.42, gap=0.95),
+              render_part(bass, beat, "sine", 0.55, gap=0.9))
+    rng = random.Random(405)
+    for b in range(beats * 2):                                   # sleigh-bell ticks, a little jingle on the off-beat
+        place(out, [x * 0.07 for x in envelope(highpass(noise(0.05, seed=410 + b), 5000), curve=3)], (b / 2 + 0.25) * beat)
+    for b in range(2, beats, 5):                                 # glassy chimes
+        f = rng.choice([1568, 1760, 2093, 2349])
+        place(out, [x * 0.1 for x in envelope(tone(f, 0.5, "sine"), curve=2)], (b + rng.uniform(0, 1)) * beat)
+    return out[: int(beats * beat * RATE)]
+
+
 SOUNDS = {
     "ribbit": ribbit, "plink": plink, "wish": wish, "voice_mermaid": voice_mermaid,
     "voice_bonesy": voice_bonesy, "door_locked": door_locked,
@@ -865,6 +1106,13 @@ SOUNDS = {
     "quest_new": quest_new, "quest_done": quest_done,
     "hop": hop, "hop_land": hop_land, "bramble_burn": bramble_burn, "bramble_bloom": bramble_bloom,
     "brazier_light": brazier_light, "hint": hint, "secret_found": secret_found, "amethyst_get": amethyst_get, "color_return": color_return,
+    "bat_squeak": bat_squeak, "rock_hit": rock_hit, "rock_death": rock_death, "clunk": clunk, "dig": dig,
+    "voice_digby": voice_digby, "voice_mole": voice_mole, "golem_glow": golem_glow, "golem_dim": golem_dim,
+    "clink": clink, "cart_ride": cart_ride,
+    "crab_click": crab_click, "jelly_bloop": jelly_bloop, "voice_clamshell": voice_clamshell, "shell_close": shell_close,
+    "tide_wave": tide_wave, "fish_bite": fish_bite, "fish_catch": fish_catch,
+    "voice_frost": voice_frost, "voice_purl": voice_purl, "imp_hit": imp_hit, "snowball_throw": snowball_throw,
+    "snowball_roll": snowball_roll, "chalk_draw": chalk_draw, "ice_skid": ice_skid,
 }
 
 if __name__ == "__main__":
@@ -876,6 +1124,9 @@ if __name__ == "__main__":
     save("music_cove", cove_theme(), peak=0.65)
     save("music_farm", farm_theme(), peak=0.65)
     save("music_woods", woods_theme(), peak=0.65)
+    save("music_mines", mines_theme(), peak=0.65)
+    save("music_lake", lake_theme(), peak=0.65)
+    save("music_frost", frost_theme(), peak=0.65)
     for f in sorted(OUT.glob("*.wav")):
         with wave.open(str(f)) as w:
             print(f"{f.name:20} {w.getnframes() / w.getframerate():5.2f}s")

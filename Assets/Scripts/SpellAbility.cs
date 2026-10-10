@@ -52,7 +52,7 @@ public class SpellAbility : MonoBehaviour
     {
         if (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) return;
         if (GameInput.GameplayBlocked) return; // the buttons are for the conversation or menu
-        if (movement != null && movement.IsSeated) return; // no spells from the toilet
+        if (movement != null && (movement.IsSeated || movement.IsSwimming)) return; // no spells from the toilet, or while swimming
 
         // Clicks on the HUD (e.g. the inventory) are for the UI, not for casting.
         bool click = GameInput.ClickHeld && !HudController.PointerOverUi;
@@ -130,7 +130,7 @@ public class SpellAbility : MonoBehaviour
         from.y = castPoint.position.y;
         Vector3 to = enemy.transform.position;
         to.y = from.y;
-        if (!Physics.Linecast(from, to, out RaycastHit hit, ~(1 << LevelMap.WaterLayer), QueryTriggerInteraction.Ignore))
+        if (!Physics.Linecast(from, to, out RaycastHit hit, ~LevelMap.WaterMask, QueryTriggerInteraction.Ignore))
             return true;
         return hit.collider.GetComponentInParent<EnemyAI>() == enemy;
     }

@@ -61,6 +61,15 @@ public static partial class DungeonBuilder
             case "piratecaptain": return assets.PirateCaptain;
             case "sporepuff": return assets.SporePuff;
             case "mothermushroom": return assets.MotherMushroom;
+            case "bat": return assets.Bat;
+            case "pebblin": return assets.Pebblin;
+            case "crystalgolem": return assets.CrystalGolem;
+            case "crab": return assets.Crab;
+            case "jelly": return assets.Jelly;
+            case "kingcrabbington": return assets.KingCrabbington;
+            case "iceslime": return assets.IceSlime;
+            case "snowimp": return assets.SnowImp;
+            case "snowyeti": return assets.SnowYeti;
             default: throw new System.Exception($"[DungeonBuilder] unknown monster '{id}'");
         }
     }

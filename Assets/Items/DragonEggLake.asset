@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2961227e4e78746d69d8edc969fc2b4b, type: 3}
+  m_Name: DragonEggLake
+  m_EditorClassIdentifier: Game::ItemDefinition
+  id: dragon_egg_lake
+  displayName: Aquamarine Dragon Egg
+  description: One of Amethyra's five lost eggs, sea-green and cool. It sloshes a little.
+  icon: {fileID: 21300000, guid: 975877b1514af412fbb99a8680d091e2, type: 3}
+  slot: 0
+  keyItem: 1
+  spellDamageBonus: 0
+  maxHealthBonus: 0
+  maxManaBonus: 0
+  moveSpeedPercent: 0
+  spellRechargePercent: 0
+  healthRestore: 0
+  manaRestore: 0

@@ -1,0 +1,53 @@
+// Frostpeak, room 3 of 4: the Frozen Pass. The west opening (1) goes back to the Icy Slopes, the east opening (2) on to the Yeti's Den.
+// Drifts narrow the pass; the middle is slippery ice (4). Ice Slimes (E) and Snow Imps (L). A chest (C) hides in a nook, and a mound of
+// soil (9) hides a heart piece (the Mole Mitts).
+// Backtracking, needing the Rainbow Chalk (from the Snow Yeti): a chasm in the north-east corner (() seals a pocket with one of Amethyra's
+// five eggs (5): draw a bridge between its two rainbow posts ()).
+title: Frostpeak: The Frozen Pass
+theme: Outdoor
+music: music_frost
+mood: snow
+region: frost
+ground: snow
+walls: snow
+monsters: E=iceslime L=snowimp M=snowyeti
+minimap_floor: #DCE8F4
+minimap_wall: #8AA6C8
+world: 196 65
+---
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+H................................)((().H
+H....................t............(((.5H
+H.................................(((((H
+H.............HHHHHHHHHHHH........(((((H
+H.............HHHHHHHHHHHH........(((((H
+H...t.......................t..........H
+H.....t8...............................H
+H..........E............L.......7......H
+H.........44444444444444444444.........H
+H.........444444444O4444444444..t......H
+H.........44444444444444444444.........H
+1..P......4444O444444444444444.........2
+H......t..444444444444444O4444.........H
+H.........44444444444444444444.....t...H
+H.........4444444444O444444444.........H
+H.........44444444444444444444.........H
+H.............t..E..........E..........H
+H............L.........................H
+H.............HHHHHHHHHHHH.............H
+H.............HHHHHHHHHHHH.......8.....H
+H.....t.......HHHHHHHHHHHH......t......H
+H.......C..9...tt..........t....t......H
+H......................................H
+H......................................H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Frost2
+2 = edge Frost4
+4 = floor ice
+5 = item dragon_egg_frost
+9 = prop dirtheart
+7 = prop drift
+8 = prop icespire
+( = prop chasm
+) = prop rainbowpost

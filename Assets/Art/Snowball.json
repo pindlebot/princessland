@@ -1,0 +1,14 @@
+{
+  "frameSize": 32,
+  "pixelsPerUnit": 16,
+  "pivot": "center",
+  "animations": [
+    {
+      "name": "Roll",
+      "row": 0,
+      "frames": 4,
+      "fps": 8,
+      "loop": true
+    }
+  ]
+}

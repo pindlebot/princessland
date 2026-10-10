@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 6f;
     [SerializeField] private float gravity = -20f;
     [SerializeField] private float turnSpeed = 900f; // degrees per second
+    [SerializeField] private float iceAcceleration = 7f; // on ice you speed up and slow down slowly: you slide
 
     private CharacterController controller;
     private Inventory inventory; // optional: boots make you faster
@@ -20,6 +21,9 @@ public class PlayerController : MonoBehaviour
     private float holdFacingUntil;
     private Vector3 standingPosition; // where the hero stood before sitting down
     private float spriteHeight;       // the sprite's usual height above the root
+    private Vector3 slide;            // the hero's actual velocity on ice (otherwise it just follows the keys)
+    private LevelMap map;
+    private bool searchedForMap;
 
     // What the hero is sitting on (null when standing).
     public Transform Seat { get; private set; }
@@ -27,6 +31,8 @@ public class PlayerController : MonoBehaviour
     public bool IsBathing { get; private set; } // seated in the bath, in their swimwear
     public bool IsSleeping { get; private set; } // tucked up in bed
     public bool IsHopping { get; private set; }  // mid-air over a gap (HopAbility)
+    public bool IsSwimming { get; set; }         // in the water with the Bubble Charm (SwimAbility): no spells
+    public bool IsOnIce { get; private set; }    // on an ice tile or a slime's ice patch: keep your momentum
     public Vector3 MoveDirection { get; private set; } // where the stick/keys point now, on the ground (zero when still)
 
     private void Awake()
@@ -145,9 +151,24 @@ public class PlayerController : MonoBehaviour
         Vector3 right = Vector3.ProjectOnPlane(cam.transform.right, Vector3.up).normalized;
         Vector3 move = (forward * input.y + right * input.x) * moveSpeed * (inventory != null ? inventory.MoveSpeedFactor : 1f);
 
+        IsOnIce = OnIce();
+        Vector3 moving = move;
+        if (IsOnIce)
+        {
+            slide = Vector3.MoveTowards(slide, move, iceAcceleration * Time.deltaTime);
+            moving = slide;
+        }
+        else slide = move;
+
         verticalVelocity = controller.isGrounded ? -1f : verticalVelocity + gravity * Time.deltaTime;
-        controller.Move((move + Vector3.up * verticalVelocity) * Time.deltaTime);
+        controller.Move((moving + Vector3.up * verticalVelocity) * Time.deltaTime);
         return move;
+    }
+
+    private bool OnIce()
+    {
+        if (!searchedForMap) { map = FindAnyObjectByType<LevelMap>(); searchedForMap = true; }
+        return (map != null && map.IsIceAt(transform.position)) || (IceZone.Count > 0 && IceZone.Covers(transform.position));
     }
 
     private void FaceTowards(Vector3 direction)

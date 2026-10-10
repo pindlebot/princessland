@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game::ItemDefinition
   id: amethyst
   displayName: The Amethyst
-  description: Amethyra's own gem, the heart of the crown. Take it to her, and the colour will come back.
+  description: Amethyra's own gem, the heart of the crown. Take it to her, and the crystals will crumble away.
   icon: {fileID: 21300000, guid: de1cd23370c60476ca533fc73516860a, type: 3}
   slot: 0
   keyItem: 1

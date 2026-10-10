@@ -214,7 +214,8 @@ public class FarmTests
         }
         Assert.AreEqual(5, bolts, "a fan of five bolts");
         var directions = Object.FindObjectsByType<EnemyBolt>().Select(b => b.transform.forward).ToList();
-        Assert.Greater(Vector3.Angle(directions.First(), directions.Last()), 20f, "fanned out, so you can step between them");
+        // (FindObjectsByType gives them in no particular order, so compare the widest pair, not the first and last.)
+        Assert.Greater(directions.Max(a => directions.Max(b => Vector3.Angle(a, b))), 20f, "fanned out, so you can step between them");
 
         // Hurt to half, he shakes loose Gourdlings.
         int gourdlings = Object.FindObjectsByType<EnemyAI>().Count(e => e.name.StartsWith("Gourdling"));

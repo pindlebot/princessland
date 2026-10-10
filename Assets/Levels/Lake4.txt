@@ -1,0 +1,43 @@
+// Puddlebrook Lake, room 4 of 4: King Crabbington's Court. The plank bridge from the west opening (1) leads across the
+// moat to the sandy court. King Crabbington (M) hides in his great shell, where spells just tink off, while a tide sweeps
+// the court in red-warned bands (step out of the band!), then peeks out and slams the ground; hit him only while he
+// peeks out. Beat him and the Bubble Charm (5) and the Aquamarine (6) appear.
+title: Puddlebrook Lake: King Crabbington's Court
+theme: Outdoor
+music: music_lake
+region: lake
+monsters: E=crab L=jelly M=kingcrabbington
+minimap_floor: #8CB88A
+minimap_wall: #4E7A6A
+ground: sand
+world: 152 91
+---
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+H..................................H
+H.................7................H
+H.............wwwwwwwww............H
+H.........wwwwwwwwwwwwwwwww........H
+H.....7.wwwwwwwwwww.wwwwwwwww.7....H
+H.....wwwwwwww...........wwwwww....H
+H....wwwwwwww.............wwwwww...H
+H...wwwwwww.................wwwww..H
+H...wwwwww...................wwww..H
+H..wwwwwww...................wwwww.H
+H..wwwwwww...................wwwww.H
+1hPhhhhhhh....5.....M.........wwww.H
+H..wwwwwww...................wwwww.H
+H..wwwwwww....6..............wwwww.H
+H...wwwwww...................wwww..H
+H...wwwwwww.................wwwww..H
+H....wwwwwwww.............wwwwww...H
+H....7wwwwwwww....7......wwwwww7...H
+H.......wwwwwwwwwww.wwwwwwwww......H
+H.........wwwwwwwwwwwwwwwww........H
+H.............wwwwwwwww............H
+H..................................H
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+---
+1 = edge Lake3
+5 = item bubble_charm hidden
+6 = item aquamarine hidden
+7 = prop reeds

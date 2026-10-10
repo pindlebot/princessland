@@ -2,6 +2,9 @@
 // opening (5) to Mother Mushroom's Grove, and the south opening (3) to the dark Mushroom Hollow.
 // Spore Puffs (E) sit rooted in the meadow and cough spores when you come close: zap them from afar.
 // Pots (4), healing apples (6) and a mana berry (7) are scattered about; glowcaps (8) light the way south.
+// Backtracking: a mound of loose soil (() hides a star shard. Dig it with the Mole Mitts (from the Glimmer Mines).
+// Backtracking: a deep chasm in the north-west corner (2) seals a little pocket with a heart piece (0). Draw a rainbow bridge between
+// its two rainbow posts (9) with the Rainbow Chalk (from the Snow Yeti on Frostpeak).
 title: Whispering Woods: The Spore Meadow
 theme: Outdoor
 music: music_woods
@@ -13,14 +16,14 @@ minimap_wall: #4E7A50
 world: -90 5
 ---
 HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-H.et,i..t.......t..,..............e..,i..H
-H.....,..i.....t.......t,....,ii..t......H
-H............i.t,...t.,.....t..,......,..H
-Hi.....i....,e.....,...........,.........H
-H....i,......et.i.e.....E....t...4.......H
-Ht.....t.,E,..,.........,..,t........e..,H
+H.92229.t.......t..,..............e..,i..H
+H0.222...i.....t.......t,....,ii..t......H
+H22222.......i.t,...t.,.....t..,......,..H
+H22222.i....,e.....,...........,.........H
+H22222.......et.i.e.....E....t...4.......H
+H......t.,E,..,.........,..,t........e..,H
 Hi...,.....,,e..,...t................;...H
-H............i..,....i..t........e.......H
+H............i..,....i..t.....(..e.......H
 H......4......,.........t..e..E.,......e.H
 H.t....,,.......E,.;,.t...........t.t;...H
 H......,..................,.....,,..,....H
@@ -46,3 +49,7 @@ HHHHHHHHHHHHHHHHHHHHH3HHHHHHHHHHHHHHHHHHHH
 6 = item healing_apple
 7 = item mana_berry
 8 = prop glowcaps
+( = prop dirtshard
+2 = prop chasm
+9 = prop rainbowpost
+0 = prop heartpiece

@@ -17,11 +17,20 @@ public class Merchant : Npc
     [TextArea] [SerializeField] private string bagFull = "Your bag is full!";
     [SerializeField] private AudioClip saleSound;
 
-    public ItemDefinition Ware => ware;
-    public int Price => price;
-    public int Sold => GameSession.GetCounter("bought:" + ware.Id); // saved with the other counters
+    [Header("A second ware, for sale while its condition holds (Barnaby's yarn, once Mr. Frost has asked for a scarf)")]
+    [SerializeField] private ItemDefinition altWare;
+    [SerializeField] private int altPrice = 12;
+    [Tooltip("A Condition (Condition.cs). While it holds, the shop sells the second ware instead of the first.")]
+    [SerializeField] private string altCondition = "";
+    [TextArea] [SerializeField] private string altThanks = "Here you go!";
 
-    public override string Prompt => HasMet ? $"Buy {ware.DisplayName} ({price} coins)" : base.Prompt;
+    private bool UsesAlt => altWare != null && !string.IsNullOrEmpty(altCondition) && Condition.Met(altCondition);
+
+    public ItemDefinition Ware => UsesAlt ? altWare : ware;
+    public int Price => UsesAlt ? altPrice : price;
+    public int Sold => GameSession.GetCounter("bought:" + Ware.Id); // saved with the other counters
+
+    public override string Prompt => HasMet ? $"Buy {Ware.DisplayName} ({Price} coins)" : base.Prompt;
 
     public override string Interact(GameObject player)
     {
@@ -34,12 +43,15 @@ public class Merchant : Npc
     public string Buy(Inventory inventory)
     {
         if (inventory.Bag.Count >= inventory.Capacity) return bagFull;
-        if (!GameSession.Progress.SpendGold(price)) return tooPoor.Replace("{price}", price.ToString());
+        var item = Ware;
+        int cost = Price;
+        string said = UsesAlt ? altThanks : thanks;
+        if (!GameSession.Progress.SpendGold(cost)) return tooPoor.Replace("{price}", cost.ToString());
 
-        inventory.Add(ware);
+        inventory.Add(item);
         AudioManager.Play(saleSound);
-        int sold = GameSession.AddToCounter("bought:" + ware.Id);
-        var answers = thanks.Split('|');
+        int sold = GameSession.AddToCounter("bought:" + item.Id);
+        var answers = said.Split('|');
         return answers[(sold - 1) % answers.Length].Trim();
     }
 }

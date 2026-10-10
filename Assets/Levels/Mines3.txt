@@ -1,0 +1,53 @@
+// Glimmer Mines, room 3 of 4: the Crystal Cavern, a great glittering cave full of blue crystals (0). The east opening
+// (1) goes back to the Mole Tunnels; the west opening (2) leads on to the Golem's Chamber. A mine cart station (4; 5 is
+// where you arrive). Bats (E) and Pebblins (L) lurk among the pillars.
+// Backtracking, needing the Mole Mitts: a stone block (6) at the mouth of a narrow corridor in the north-east seals the
+// egg chamber: push it all the way up the corridor and into the chamber, and the egg (9) is yours. A mound ()) in the
+// south-east hides a heart piece, and a plug of soil (() closes a little room with a pet rock ({).
+title: Glimmer Mines: The Crystal Cavern
+theme: Dungeon
+music: music_mines
+mood: mines
+region: mines
+floor: cave
+walls: rock
+monsters: E=bat L=pebblin M=crystalgolem
+minimap_floor: #8A7A68
+minimap_wall: #54485E
+world: -173 52
+---
+###########################T####T#######
+##########################...........###
+##########################....9......###
+##########################...........###
+##T####T#######################.########
+##........##T####T##0#T########.########
+##...4....##.................##.########
+##...5.........0.......0.......6########
+##........0........0..............######
+##......................#..........#####
+#####.......##....E........0........####
+####........#.........L..............T##
+#.......0...................L.0........#
+2.............E.....##..............P..1
+#...................#..................#
+####...0..L..........................###
+#####.....................##.....0..####
+##......................E..........#####
+##..............#.................######
+##.{....(...0.............0.)...########
+##.....#####..........0......###########
+##.....#############.###################
+########################################
+########################################
+---
+1 = edge Mines2
+2 = edge Mines4
+4 = prop minecart
+5 = spawn Cart
+6 = prop block
+9 = item dragon_egg_mines
+( = prop softdirt
+) = prop dirtheart
+{ = prop petrock
+0 = prop wallcrystal

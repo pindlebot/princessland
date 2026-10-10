@@ -152,7 +152,7 @@ public static partial class DungeonBuilder
         new ItemSpec
         {
             Id = "amethyst", Asset = "Amethyst", Name = "The Amethyst", Slot = EquipSlot.None, FloorSheet = "GateItems",
-            Description = "Amethyra's own gem, the heart of the crown. Take it to her, and the colour will come back.",
+            Description = "Amethyra's own gem, the heart of the crown. Take it to her, and the crystals will crumble away.",
             Glow = new Color(0.75f, 0.45f, 1f), KeyItem = true,
         },
         new ItemSpec
@@ -160,6 +160,88 @@ public static partial class DungeonBuilder
             Id = "dragon_egg_castle", Asset = "DragonEgg", Name = "Amethyst Dragon Egg", Slot = EquipSlot.None, FloorSheet = "GateItems",
             Description = "One of Amethyra's five lost eggs. It's warm, and every so often it wiggles.",
             Glow = new Color(0.8f, 0.55f, 1f), KeyItem = true,
+        },
+        // The Glimmer Mines' treasures: the Mole Mitts (an ability), the Topaz (the region's gem) and its egg.
+        new ItemSpec
+        {
+            Id = Abilities.MoleMitts, Asset = "MoleMitts", Name = "Mole Mitts", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "Big, strong digging paws! Lean on a stone block to shove it along, and press E at loose soil to dig.",
+            Glow = new Color(1f, 0.65f, 0.7f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "topaz", Asset = "Topaz", Name = "The Topaz", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "A golden gem from the heart of the Mines. It was keeping the island's lamps lit.",
+            Glow = new Color(1f, 0.75f, 0.3f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "dragon_egg_mines", Asset = "DragonEggMines", Name = "Topaz Dragon Egg", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "One of Amethyra's five lost eggs, golden as honey. It hums when you hold it.",
+            Glow = new Color(1f, 0.75f, 0.3f), KeyItem = true,
+        },
+        // Puddlebrook Lake's treasures: the Bubble Charm (an ability), the Aquamarine, its egg and the Fishing Rod.
+        new ItemSpec
+        {
+            Id = Abilities.BubbleCharm, Asset = "BubbleCharm", Name = "Bubble Charm", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "A shimmering bubble on a silver chain. Wear it and you can swim: walk right into deep water.",
+            Glow = new Color(0.7f, 0.85f, 1f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "aquamarine", Asset = "Aquamarine", Name = "The Aquamarine", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "A sea-green gem from the Lake's heart. The merfolk say it keeps the water clear.",
+            Glow = new Color(0.45f, 0.95f, 0.85f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "dragon_egg_lake", Asset = "DragonEggLake", Name = "Aquamarine Dragon Egg", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "One of Amethyra's five lost eggs, sea-green and cool. It sloshes a little.",
+            Glow = new Color(0.45f, 0.95f, 0.85f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "fishing_rod", Asset = "FishingRod", Name = "Fishing Rod", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "Captain Clamshell's old rod. You get longer to catch a bite, and the big fish like it better.",
+            Glow = new Color(1f, 0.85f, 0.5f), KeyItem = true,
+        },
+        // Frostpeak's treasures: the Rainbow Chalk (an ability), the Sapphire, its egg, and Mr. Frost's scarf chain.
+        new ItemSpec
+        {
+            Id = Abilities.RainbowChalk, Asset = "RainbowChalk", Name = "Rainbow Chalk", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "A fat stick of rainbow chalk. Press E at a rainbow post and it draws a bridge across the chasm.",
+            Glow = new Color(1f, 0.8f, 0.9f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "sapphire", Asset = "Sapphire", Name = "The Sapphire", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "A deep-blue gem from the mountain's heart. It's been keeping the snow from falling for three hundred years.",
+            Glow = new Color(0.5f, 0.65f, 1f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "dragon_egg_frost", Asset = "DragonEggFrost", Name = "Sapphire Dragon Egg", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "One of Amethyra's five lost eggs, deep blue and frosty. It's cold on the outside and warm on the inside.",
+            Glow = new Color(0.5f, 0.65f, 1f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "ball_of_yarn", Asset = "BallOfYarn", Name = "Ball of Yarn", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "A ball of soft red wool from Barnaby's stall. Granny Purl, on Frostpeak, will want this.",
+            Glow = new Color(1f, 0.4f, 0.5f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "warm_scarf", Asset = "WarmScarf", Name = "Warm Scarf", Slot = EquipSlot.None, FloorSheet = "GateItems",
+            Description = "A long, soft red-and-cream scarf, knitted by Granny Purl. Mr. Frost will be thrilled.",
+            Glow = new Color(1f, 0.5f, 0.5f), KeyItem = true,
+        },
+        new ItemSpec
+        {
+            Id = "snow_hat", Asset = "SnowHat", Name = "Snow Hat", Slot = EquipSlot.Hat, FloorSheet = "GateItems",
+            Description = "A woolly white bobble hat from Mr. Frost. Toasty warm, with a big pom-pom.",
+            Glow = new Color(0.8f, 0.9f, 1f),
+            Hearts = 1, Magic = 10,
         },
         new ItemSpec
         {

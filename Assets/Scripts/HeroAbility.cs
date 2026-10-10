@@ -49,7 +49,7 @@ public abstract class HeroAbility : MonoBehaviour
         if (!Unlocked) return;
         if (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) return;
         if (GameInput.GameplayBlocked) return;
-        if (movement != null && movement.IsSeated) return; // no abilities from the toilet either
+        if (movement != null && (movement.IsSeated || movement.IsSwimming)) return; // no abilities from the toilet either, or while swimming
         if (GameInput.AbilityPressed(slot)) TryUse();
     }
 

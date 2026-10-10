@@ -1,0 +1,45 @@
+// Glimmer Mines, room 4 of 4: the Crystal Golem's Chamber. The east opening (1) goes back to the Crystal Cavern.
+// The Crystal Golem (M) guards the chamber: he slams the ground (stay out of the red circle), throws a fan of topaz
+// shards, and shakes loose Pebblins when he's hurt. His crystals take turns GLOWING and going dark, and the cave goes
+// dark with them: he can only be hurt while they glow. Beat him and the Mole Mitts (5) and the Topaz (6) appear.
+title: Glimmer Mines: The Golem's Chamber
+theme: Dungeon
+music: music_mines
+mood: mines
+region: mines
+floor: cave
+walls: rock
+monsters: E=bat L=pebblin M=crystalgolem
+minimap_floor: #8A7A68
+minimap_wall: #54485E
+world: -209 52
+---
+####################################
+####################################
+################T#.###T#############
+##########T#.............###########
+#########...................T#######
+#######.......................######
+######............#..........0.#####
+####T...........................####
+####.......##....................###
+###........#......................##
+###...............................T#
+###.....5...........M..............#
+##...0.........................P...1
+###.....6..........................#
+###...............................##
+###.......#.............##........##
+####......#.............#........###
+#####...........................####
+######............#..........0.#####
+#######.0.....................######
+#########...................########
+############.............###########
+##################.#################
+####################################
+---
+1 = edge Mines3
+5 = item mole_mitts hidden
+6 = item topaz hidden
+0 = prop wallcrystal

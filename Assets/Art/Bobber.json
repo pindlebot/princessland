@@ -1,0 +1,21 @@
+{
+  "frameSize": 16,
+  "pixelsPerUnit": 16,
+  "pivot": "center",
+  "animations": [
+    {
+      "name": "Float",
+      "row": 0,
+      "frames": 2,
+      "fps": 3,
+      "loop": true
+    },
+    {
+      "name": "Dip",
+      "row": 1,
+      "frames": 2,
+      "fps": 6,
+      "loop": true
+    }
+  ]
+}

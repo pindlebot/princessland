@@ -78,6 +78,7 @@ MonoBehaviour:
     sets: met:Old Stitches
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -95,6 +96,7 @@ MonoBehaviour:
     sets: 
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -108,6 +110,7 @@ MonoBehaviour:
     sets: 
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -117,6 +120,7 @@ MonoBehaviour:
     sets: 
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -126,6 +130,7 @@ MonoBehaviour:
     sets: 
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0

@@ -117,6 +117,11 @@ public static partial class DungeonBuilder
                     "Ah, that's {price} coins, I'm afraid. Monsters drop lots of coins. Come back when your purse jingles!");
                 SetString(npc, "bagFull", "Goodness, your bag is full to bursting! Make a little room and come back.");
                 SetRef(npc, "saleSound", Sound("purchase"));
+                // Once Mr. Frost has asked for a scarf (and until Granny Purl has the yarn), the stall sells wool instead.
+                SetRef(npc, "altWare", AssetDatabase.LoadAssetAtPath<ItemDefinition>("Assets/Items/BallOfYarn.asset"));
+                SetInt(npc, "altPrice", 12);
+                SetString(npc, "altCondition", "met:Mr. Frost,!has:ball_of_yarn,!purl:knit");
+                SetString(npc, "altThanks", "A ball of my best red wool! Granny Purl will knit wonders with that. Give her my regards!");
                 SetVector3(npc, "talkOffset", new Vector3(0f, 0f, -1f)); // talk to him from the street
             });
     }
@@ -173,7 +178,10 @@ public static partial class DungeonBuilder
         if (entry.Kind == "npc")
         {
             return Place(kind == "stitches" ? assets.Stitches : kind == "pippin" ? assets.Pippin
-                       : kind == "oldmoss" ? assets.OldMoss : assets.Barnaby, parent, pos);
+                       : kind == "oldmoss" ? assets.OldMoss : kind == "digby" ? assets.Digby
+                       : kind == "molly" ? assets.Molly : kind == "mortimer" ? assets.Mortimer
+                       : kind == "mo" ? assets.Mo : kind == "clamshell" ? assets.Clamshell
+                       : kind == "frost" ? assets.MrFrost : kind == "purl" ? assets.Purl : assets.Barnaby, parent, pos);
         }
         if (kind == "grain")
         {

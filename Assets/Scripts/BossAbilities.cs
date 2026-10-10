@@ -79,6 +79,8 @@ public class BossAbilities : MonoBehaviour
     public bool IsSlamming { get; private set; }
     public bool IsVolleying { get; private set; }
     public bool IsBarraging { get; private set; }
+    // Another component (King Crabbington's ShellCycle) can stop the special moves for a while.
+    public bool HoldSpecials { get; set; }
     public float SlamRadius => slamRadius;
     public bool HasVolley => boltPrefab != null;
     public bool HasBarrage => barrageImpactPrefab != null;
@@ -130,7 +132,7 @@ public class BossAbilities : MonoBehaviour
 
         float distance = FlatDistance(player.position);
         if (!IsEngaged && distance <= engageRange) Engage();
-        if (!IsEngaged || Busy) return;
+        if (!IsEngaged || Busy || HoldSpecials) return;
 
         if (Time.time >= nextSlamAt && distance <= slamRange) StartSlam();
         else if (HasVolley && Time.time >= nextVolleyAt && distance <= volleyRange) StartVolley();

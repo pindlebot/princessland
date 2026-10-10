@@ -4,6 +4,7 @@
 // touch it and it remembers you (and fountain travel takes you between it and the castle's).
 // Old Moss (2) is by the path. Four sleepy trees (3) wear nightcaps: zap each with magic to wake it
 // ("Wake the Trees"). Clay pots (4) can be broken for coins. A healing apple (6) lies in the grass.
+// Backtracking: a mound of loose soil (() hides a heart piece. Dig it with the Mole Mitts (from the Glimmer Mines).
 title: Whispering Woods: The Sleepy Glade
 theme: Outdoor
 music: music_woods
@@ -24,7 +25,7 @@ H...t......,..,e......,..............H
 He..,.......t...............t.....,.,H
 Ht.t.....2...i..,.i......,.....3.....H
 H...t.......i..ee.....4.,;...........H
-H.........,.......,.................,H
+H.........,.......,.....(...........,H
 H......,.............................H
 1==P=======================E=========5
 H.......,....F....,..............E...H
@@ -45,3 +46,4 @@ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 3 = prop sleepytree
 4 = prop pot
 6 = item healing_apple
+( = prop dirtheart

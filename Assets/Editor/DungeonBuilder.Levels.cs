@@ -55,11 +55,12 @@ public static partial class DungeonBuilder
         public bool ExitNeedsAllEnemiesDefeated;
         public Color MinimapFloor, MinimapWall;
         public bool Sea, SandGround;       // "water: sea", "ground: sand" (Mermaid Cove)
+        public bool Snow;                  // "ground: snow": Frostpeak (and its "walls: snow" drifts)
         public string Floor;               // "floor: kitchen": indoors, '.' is tiled (the kitchen)
         public bool Dusk;                  // "mood: dusk": low orange sun, a violet sky (Hollow Farm)
-        public string Mood = "";           // "woods": a green dapple; "dark": a dark hollow (the Fairy Lantern lights it)
+        public string Mood = "";           // "snow": a bright cold day; "woods": a green dapple; "dark": a dark hollow (the Fairy Lantern lights it); "mines": warm lamp-lit tunnels
         public string ExitSpawn = "";      // "exit_spawn": the named spot to arrive at through the exit
-        public string GreyUntil = "";      // "grey_until": the level is drained of colour until this condition holds
+        public string PlagueUntil = "";    // "plague_until": the level is overrun with dark green crystals until this condition holds
     }
 
     private const string LevelsFolder = "Assets/Levels";
@@ -91,13 +92,14 @@ public static partial class DungeonBuilder
             OpenHint = file.Get("open_hint", "The stairs are open!"),
             NextScene = file.Get("exit"),
             ExitSpawn = file.Get("exit_spawn"),
-            GreyUntil = file.Get("grey_until"),
+            PlagueUntil = file.Get("plague_until"),
             ExitNeedsAllEnemiesDefeated = file.Get("exit_needs") == "all_monsters",
             ShowEnemyCount = file.Get("enemy_count", "show") != "hide",
             MinimapFloor = HexColor(file.Get("minimap_floor", "#7A6E62")),
             MinimapWall = HexColor(file.Get("minimap_wall", "#AAA4B8")),
             Sea = file.Get("water") == "sea",
             SandGround = file.Get("ground") == "sand",
+            Snow = file.Get("ground") == "snow",
             Floor = file.Get("floor"),
             Dusk = file.Get("mood") == "dusk",
             Mood = file.Get("mood"),
@@ -128,10 +130,13 @@ public static partial class DungeonBuilder
         SetString(levelMap, "buildings", spec.File.BuildingSymbols);
         SetString(levelMap, "walls", spec.File.WallSymbols);
         SetString(levelMap, "fakeWalls", spec.File.FakeWallSymbols);
+        SetString(levelMap, "ice", spec.File.IceSymbols);
         SetStrings(levelMap, "secretTiles", spec.File.SecretTiles().Select(t => $"{t.col},{t.row}").ToArray());
 
         var enemies = new GameObject("Enemies").transform;
         var decor = new GameObject("Decor").transform;
+        var plague = spec.PlagueUntil.Length > 0 ? CreatePlague(spec.PlagueUntil) : null;
+        ClearChasmBookkeeping();
         var spawn = new GameObject("PlayerSpawn").transform;
         Health boss = null;
         ExitZone exit = null;
@@ -162,9 +167,10 @@ public static partial class DungeonBuilder
                     // Ivy climbs the home courtyard's walls (any wall beside its grass or hedge).
                     bool ivy = spec.Theme == Theme.Home && new[] { (1, 0), (-1, 0), (0, 1), (0, -1) }
                         .Any(d => ",;H".IndexOf(MapAt(map, col + d.Item1, row + d.Item2)) >= 0);
+                    bool rockWalls = spec.File.Get("walls") == "rock"; // the Mines are cut from raw rock
                     var wall = Block("Wall", level, pos + Vector3.up * WallHeight * 0.5f,
-                                     new Vector3(Tile, WallHeight, Tile), mats[ivy ? "WallSideIvy" : "WallSide"]);
-                    AddCap(wall, mats["WallTop"]);
+                                     new Vector3(Tile, WallHeight, Tile), mats[rockWalls ? "RockSideLow" : ivy ? "WallSideIvy" : "WallSide"]);
+                    AddCap(wall, mats[rockWalls ? "RockTop" : "WallTop"]);
                     if (c == 'T') PlaceTorch(assets.Torch, decor, map, col, row, pos);
                     continue;
                 }
@@ -176,9 +182,10 @@ public static partial class DungeonBuilder
                 }
                 if (c == 'H')
                 {
+                    bool snowWalls = spec.File.Get("walls") == "snow"; // Frostpeak: snow drifts instead of hedges
                     var hedge = Block("Hedge", level, pos + Vector3.up * HedgeHeight * 0.5f,
-                                      new Vector3(Tile, HedgeHeight, Tile), mats["HedgeSide"]);
-                    AddCap(hedge, mats["HedgeTop"]);
+                                      new Vector3(Tile, HedgeHeight, Tile), mats[snowWalls ? "SnowSide" : "HedgeSide"]);
+                    AddCap(hedge, mats[snowWalls ? "SnowTop" : "HedgeTop"]);
                     if (spec.Theme == Theme.Outdoor) AddCliff(level, pos, mats["EarthSide"]); // the floating island's earthy edge
                     continue;
                 }
@@ -205,6 +212,11 @@ public static partial class DungeonBuilder
                 if (IsGapTile(spec.File, c))
                 {
                     BuildGap(level, decor, assets, spec, pos, $"{sceneName}/{col},{row}");
+                    continue;
+                }
+                if (spec.File.IsChasm(c))
+                {
+                    BuildChasm(level, decor, assets, spec, pos, col, row, $"{sceneName}/{col},{row}");
                     continue;
                 }
 
@@ -298,6 +310,8 @@ public static partial class DungeonBuilder
                     case '+': BuildFence(level, map, col, row, pos, mats["Picket"]); break;
                 }
 
+                if (plague != null) PlantPlagueCrystal(plague, assets, c, pos, new System.Random(row * 1000 + col + 777777));
+
                 // Now and then a shell or a starfish on the beach.
                 if (spec.SandGround && c == '.' && rng.Next(18) == 0)
                     Place(rng.Next(2) == 0 ? assets.Shell : assets.Starfish, decor,
@@ -327,13 +341,20 @@ public static partial class DungeonBuilder
                                           byBraziers: entry.Args.Length > 2 && entry.Args[2] == "braziers");
                     else if (entry.Kind == "prop" || entry.Kind == "npc")
                     {
-                        var placed = PlaceProp(entry, assets, decor, pos, rng); // buildings are built below, whole
+                        var placed = entry.Kind == "prop" && entry.Args[0] is "dirtheart" or "dirtshard"
+                            ? PlaceBuriedReward(entry.Args[0], assets, decor, pos, $"{sceneName}/{col},{row}", decor) // a mound with a treasure under it
+                            : PlaceProp(entry, assets, decor, pos, rng); // buildings are built below, whole
                         // Pots, sleepy trees, brambles, braziers and treasures remember what happened to them, by where they stand.
                         AssignPersistentIds(placed, $"{sceneName}/{col},{row}");
+                        if (spec.File.IsRainbowPost(c)) RegisterPost(col, row, placed);
+                        foreach (var spot in placed.GetComponentsInChildren<FishingSpot>()) // the bobber floats on the nearest water
+                            SetVector3(spot, "bobberOffset", WaterDirection(map, col, row) * Tile);
                     }
                 }
             }
         }
+
+        BuildRainbowBridges(spec.File, level, assets, sceneName); // a bridge between each pair of posts across a chasm
 
         // A boss guards the exit: it stays sealed until the boss is dead.
         if (boss != null && exit != null)
@@ -350,8 +371,7 @@ public static partial class DungeonBuilder
         var outsideGate = BuildCastle(map, level, assets, castleDoor);
         if (outsideGate != null) namedSpawns.Add(outsideGate);
         var camera = CreateCamera(spec.Theme, spec.Dusk, spec.Mood == "dark");
-        if (spec.GreyUntil.Length > 0) AddColorDrain(camera.gameObject, spec.GreyUntil);
-        var gameManager = new GameObject("GameManager").AddComponent<GameManager>();
+                var gameManager = new GameObject("GameManager").AddComponent<GameManager>();
         SetRef(gameManager, "winSound", Sound("victory"));
         SetRef(gameManager, "loseSound", Sound("defeat"));
         SetRef(gameManager, "sleepSound", Sound("rest"));
@@ -418,7 +438,8 @@ public static partial class DungeonBuilder
         water.isStatic = false; // its texture drifts
         water.AddComponent<WaterScroll>();
         var bank = new GameObject("Bank").AddComponent<BoxCollider>();
-        bank.gameObject.layer = LevelMap.WaterLayer;
+        // Water on the island's rim stays a wall even to a swimmer (there's nothing beyond it): SwimAbility.
+        bank.gameObject.layer = OnMapEdge(map, col, row) ? LevelMap.WaterRimLayer : LevelMap.WaterLayer;
         bank.transform.SetParent(water.transform, false);
         bank.transform.position = pos + Vector3.up;
         bank.size = new Vector3(1f, 4f, 1f); // in the water block's scaled space (2 x 0.5 x 2): a 2m-tall wall
@@ -493,6 +514,8 @@ public static partial class DungeonBuilder
         // The cave floor, and anything standing on it (Amethyra, mushrooms): a marker with cave floor
         // on two sides is inside the cave too.
         if (c == ':' || (c != '.' && CountAround(map, col, row, ':') >= 2)) return "CaveFloor";
+        if (spec.Floor == "cave") return "CaveFloor"; // the Mines: a dusty cave floor
+        if (spec.File.Legend.TryGetValue(c, out var iceEntry) && iceEntry.Kind == "floor") return "Ice";
         if (theme == Theme.Dungeon)
             return roll < 65 ? "Floor_0" : roll < 85 ? "Floor_1" : "Floor_2";
         if (c == '=' || c == 'X') return roll < 80 ? "Path" : "Path_1"; // now and then, a stone
@@ -503,6 +526,14 @@ public static partial class DungeonBuilder
         if (LevelMap.IsCobbles(c) || (town && (thing.Kind == "building" || CountAround(map, col, row, '-') >= 2)))
             return roll < 85 ? "Cobble_0" : "Cobble_1";
         if (spec.SandGround) return roll < 92 ? "Sand_0" : "Sand_1"; // the beach (now and then, a shell)
+        if (spec.Snow)
+        {
+            // Anything standing on the ice (a monster, an item) has ice under it too: a marker with ice on two sides is on the ice.
+            int ice = new[] { (1, 0), (-1, 0), (0, 1), (0, -1) }.Count(d =>
+                spec.File.Legend.TryGetValue(MapAt(map, col + d.Item1, row + d.Item2), out var n) && n.Kind == "floor");
+            if (c != '.' && ice >= 2) return "Ice";
+            return roll < 85 ? "Snow_0" : "Snow_1";                  // Frostpeak: snow underfoot (and now and then a drift)
+        }
         return GrassPatch(col, row);
     }
 
@@ -566,6 +597,20 @@ public static partial class DungeonBuilder
             RenderSettings.ambientLight = new Color(0.40f, 0.50f, 0.44f);
             sun.color = new Color(0.9f, 1f, 0.8f);
             sun.intensity = 0.6f;
+        }
+        else if (mood == "mines")
+        {
+            // Lamp-lit tunnels: a warm, dim amber, so the crystals' glow and the torches show.
+            RenderSettings.ambientLight = new Color(0.30f, 0.25f, 0.24f);
+            sun.color = new Color(1f, 0.82f, 0.62f);
+            sun.intensity = 0.4f;
+        }
+        else if (mood == "snow")
+        {
+            // A bright, cold mountain day: pale blue ambient and a crisp white sun.
+            RenderSettings.ambientLight = new Color(0.50f, 0.54f, 0.64f);
+            sun.color = new Color(0.94f, 0.97f, 1f);
+            sun.intensity = 0.8f;
         }
         else if (mood == "dark")
         {
@@ -744,6 +789,7 @@ public static partial class DungeonBuilder
         SetRef(quests, "openSound", Sound("ui_select"));
         SetRef(quests, "newQuestSound", Sound("quest_new"));
         SetRef(quests, "doneSound", Sound("quest_done"));
+        SetRef(hud.AddComponent<StickerWatcher>(), "earnedSound", Sound("quest_done"));
         var travel = hud.AddComponent<FountainTravelView>();
         SetRef(travel, "openSound", Sound("ui_select"));
         SetRef(travel, "travelSound", Sound("fountain_touch"));

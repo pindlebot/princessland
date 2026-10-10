@@ -52,10 +52,10 @@ public static partial class DungeonBuilder
         EditorUtility.SetDirty(data);
     }
 
-    // The kind of ground a tile is on the world map (see WorldMapData): a fake wall looks like a wall, a gap like nothing.
+    // The kind of ground a tile is on the world map (see WorldMapData): a fake wall looks like a wall, a gap (or a chasm) like nothing.
     private static char WorldTile(MapFile file, char c)
     {
-        if (c == ' ' || IsGapTile(file, c)) return ' ';
+        if (c == ' ' || IsGapTile(file, c) || file.IsChasm(c)) return ' ';
         if (file.IsFakeWall(c)) return '#';
         if (c == 'K' || file.IsBuilding(c)) return 'b';
         if (c == 'H') return 'H';

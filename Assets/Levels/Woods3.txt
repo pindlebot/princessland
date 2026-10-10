@@ -1,7 +1,8 @@
 // Whispering Woods, room 3 of 4: the Mushroom Hollow, a side room the Grey Gloom left dark. The opening in the north
 // hedge (3) goes back to the Spore Meadow. Glowcaps (8) give a little blue light; the Fairy Lantern (from Mother
 // Mushroom) lights the whole hollow. A treasure chest (C) waits in the south-east corner, and there are pots (4),
-// berries (7) and an apple (6) about, and a few Spore Puffs (E) in the dark.
+// berries (7) and an apple (6) about, and a few Spore Puffs (E) in the dark. The opening in the south hedge (9) leads
+// down into the Glimmer Mines.
 title: Whispering Woods: The Mushroom Hollow
 theme: Outdoor
 music: music_woods
@@ -31,10 +32,11 @@ H.......,......,..,..,.......H
 H.,..8........8..,.....4,.8..H
 H,.7.............7.....,,..C.H
 H,.....,....................,H
-HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+HHHHHHHHHHHHHHH9HHHHHHHHHHHHHH
 ---
 3 = edge Woods2
 4 = prop pot
 6 = item healing_apple
 7 = item mana_berry
 8 = prop glowcaps
+9 = edge Mines1

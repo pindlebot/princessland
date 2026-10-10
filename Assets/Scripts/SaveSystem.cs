@@ -65,6 +65,18 @@ public static class SaveSystem
         ["Woods2"] = "Spore Meadow",
         ["Woods3"] = "Mushroom Hollow",
         ["Woods4"] = "Mother Mushroom's Grove",
+        ["Mines1"] = "Glimmer Mines",
+        ["Mines2"] = "Mole Tunnels",
+        ["Mines3"] = "Crystal Cavern",
+        ["Mines4"] = "The Golem's Chamber",
+        ["Lake1"] = "Puddlebrook Shore",
+        ["Lake2"] = "The Murky Reeds",
+        ["Lake3"] = "The Sunken Dock",
+        ["Lake4"] = "King Crabbington's Court",
+        ["Frost1"] = "Frostpeak Camp",
+        ["Frost2"] = "The Icy Slopes",
+        ["Frost3"] = "The Frozen Pass",
+        ["Frost4"] = "The Yeti's Den",
     };
 
     public static string PlaceName(string scene) =>

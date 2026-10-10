@@ -267,6 +267,7 @@ MonoBehaviour:
   throwPoint: {fileID: 3463084739484193760}
   throwDelay: 0.3
   stationary: 1
+  sidewaysOnly: 0
 --- !u!114 &5872207110338750459
 MonoBehaviour:
   m_ObjectHideFlags: 0

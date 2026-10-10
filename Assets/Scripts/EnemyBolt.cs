@@ -24,7 +24,7 @@ public class EnemyBolt : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (exploded || other.isTrigger) return;
-        if (other.gameObject.layer == LevelMap.WaterLayer) return;     // skims over the sea
+        if (LevelMap.IsWaterLayer(other.gameObject.layer)) return;     // skims over the sea
         if (other.GetComponentInParent<EnemyAI>() != null) return;     // never hits its own side
         exploded = true;
 

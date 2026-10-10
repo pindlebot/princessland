@@ -1,421 +1,265 @@
-# Tidecrown Roadmap
+# Tidecrown — polish roadmap
 
-The plan for growing Tidecrown from a three-scene demo into a small, complete metroidvania that a
-5-year-old can play on her own, and that's still fun for a grown-up.
+Updated **October 10, 2026**. This is the active plan for making the existing game feel coherent, readable, dependable and delightful. The [current-state snapshot](Docs/CURRENT_STATE-2026-10-10.md) inventories implemented content. The [previous roadmap](Docs/ROADMAP-legacy-2026-10-10.md) is preserved verbatim for its lore, expansion ideas and historical checkboxes; its introductory state description is obsolete.
 
----
+## Baseline and direction
 
-## 1. Where the game is today
+The working tree contains 18 playable map scenes, two menu scenes, two heroes, six combat abilities, four traversal tools, 27 item definitions, 15 quests and six bosses. Saving, inventory persistence, gamepad input, Gentle Mode, map files, generic NPC conversations, fountain travel, cooking and fishing are already implemented. Mines and Lake content is present, including untracked files. These are source-audited implementation statuses, not claims that every experience has been playtested or every test currently passes.
 
-| Area | State |
-|---|---|
-| **Scenes** | Character Select → Castle Grounds (Level 0) ↔ Home → Dungeon (Slime King) → win |
-| **Heroes** | Aldric the Wizard (Fireball), Princess Marina (Tidal Orb). One spell each, auto-aim |
-| **Enemies** | Skeleton, Slime, Slime King (Ground Slam + Royal Split) |
-| **NPCs** | Amethyra the dragon (an intro and a "later" chat) |
-| **Items** | Ember Ring (one Ring slot, 8-slot bag), chest, coins |
-| **Progression** | XP/levels (level 2 at 400 XP), gold, one 4-step skill path per hero ending in two abilities each |
-| **Systems** | `IInteractable` registry, `GameSession` static flags, typewriter dialogue, UI Toolkit HUD, minimap with fog of war, synthesized audio, Python sprite generators |
-| **Pipeline** | Every scene is generated from ASCII maps in `Editor/DungeonBuilder.Levels.cs` |
+The immediate goal is **a polished, independently playable version of the existing adventure**. Further regions should wait until the first session, full existing progression loop, recovery and return visits work well. For a child, polish means understanding what to do, seeing why something did not work, and recovering without losing confidence. For an adult, it also means responsive movement, satisfying combat, coherent rewards and respect for time.
 
-### Gaps that block a bigger game
-These go first because everything after depends on them:
+Keep these design pillars:
 
-1. **No git repository.** There's a `.gitignore` but no `.git`. Before a big expansion, `git init` and
-   commit, so a bad Rebuild All Scenes or a refactor can always be undone.
-2. **No saving.** Everything lives in static fields and is gone when the app quits. A metroidvania needs a
-   save file, and a 5-year-old needs autosave (sessions end suddenly).
-3. **The inventory doesn't survive scene changes.** `Inventory` is a component on the player prefab, so
-   anything you pick up is lost at the next door. Today nobody notices because the ring is found in the last
-   level. Once you can backtrack, this becomes a real bug.
-4. **Gold has nothing to buy.**
-5. **Maps live in C#, and the map legend is running out of characters.** Fine for 4 scenes; painful for ~30
-   rooms with doors that need named destinations.
-6. **Old Input Manager, keyboard and mouse only.** A gamepad is much easier for small hands than WASD + mouse.
-7. **Losing means a Game Over screen and pressing R.** Too harsh for a 5-year-old (see §6, Gentle Mode).
+1. Pictures, motion and sound carry essential meaning; text adds detail.
+2. Both heroes can complete every required encounter and gate.
+3. Discovering a tool makes an earlier obstacle memorable and worth revisiting.
+4. Gentle Mode is a complete experience with kind recovery and clear guidance.
+5. Rooms have personality and small discoveries; decoration must preserve navigation.
+6. Save reliability and a clear ending matter more than the number of regions.
 
----
+## How to use this plan
 
-## 2. Design pillars
+- **P0:** blocks reliable play, progress, recovery or preservation of work.
+- **P1:** directly improves understanding, controls, feedback or the main loop.
+- **P2:** adds depth, completion goals or finishing touches after the loop is sound.
+- **P3:** expansion and optional features; defer until the polish gates pass.
+- Tasks below are unchecked work proposals. Existing features are listed in the snapshot; an unchecked audit task does not mean its underlying feature is missing.
+- Work one milestone at a time. Record a short result, test evidence and remaining issues as each task is completed. Split large tasks into reviewable changes.
+- Effort sizes are planning estimates: **S** ≈ half a day, **M** ≈ 1–3 days, **L** ≈ 4–7 days of focused implementation/verification. Art, iteration and child playtests can extend these; there are no committed calendar dates.
+- Each milestone ends with a build and a playtest. Capture the scene, hero, mode, input device, what happened and whether a hint was needed. Address repeated confusion before adding more features.
 
-1. **Readable without reading.** Icons, colors, sounds and pictures carry the meaning, and text is a
-   bonus. If she can't work out what to do without help, the design is wrong.
-2. **Gates you can see before you can open them.** The metroidvania rule: show the bramble wall, the dark
-   cave or the river early, then hand out the tool that opens it later, so coming back pays off.
-3. **Kindness over killing.** Enemies already *poof into stars*. Lean into that: the big bad gets cheered
-   up rather than destroyed, and some "enemies" turn out to be friends.
-4. **Every room hides something.** A coin under a bush, a cat, a joke. Easter eggs aren't a final phase;
-   each content phase includes a few.
-5. **Two heroes, both complete.** Every gate must be passable by both the Wizard and the Princess.
+## Milestone A — establish a trustworthy build (P0)
 
----
+**Outcome:** the existing adventure can be built, resumed and traversed without lost progress or soft locks. **Estimate:** L. **Dependency:** none.
 
-## 3. Lore
+### A1. Preserve and validate the content baseline (M)
 
-### The Kingdom of Gemhold
-Gemhold is a kingdom of **floating islands** (that's why the castle grounds have earthy cliff edges)
-joined by rainbow bridges. Long ago the **Prism Crown** held six gems, and each gem kept one island bright,
-alive and connected to the others.
+- [ ] Review the current modified/untracked Mines, Lake, art, prefab, map and builder files; preserve a coherent revision in version control when ready.
+- [ ] Identify generated versus authored assets and document the rebuild order. Confirm rebuilding does not overwrite intended manual content edits.
+- [ ] Build from a clean checkout using Unity 6000.6.4f1; verify all 20 enabled scenes and their dependencies are included.
+- [ ] Run the existing relevant Unity test suites and record date, editor version, totals and failures. Resolve compile errors and progression failures first; do not infer success from old logs.
+- [ ] Check map links, named spawns, item IDs, quest conditions, prefab references and scene/build registration. Extend the validator only where existing coverage misses real content mistakes.
+- [ ] Classify `InitTestScene` artifacts; remove/exclude generated leftovers after confirming they are not needed. Keep player content out of test-only scenes.
 
-**Amethyra**, last of the amethyst dragons, was the crown's guardian. Three hundred years ago she
-grew old and sleepy, and while she napped **the Grey Gloom** drifted in: a lonely storm cloud who didn't
-like how cheerful everyone was. He blew the gems out of the crown and scattered them across the islands.
-Each island lost its color, the rainbow bridges faded, and Gloom's helpers moved in: the Slime King in the
-dungeon below, and the skeletons, who honestly just wanted somewhere to belong.
+**Done when:** a fresh checkout produces a launchable build, no missing-reference/compile errors occur, all intended maps load, and the preserved revision contains the dependencies needed to reproduce it.
 
-The Gloom also took Amethyra's **five dragon eggs** and hid them, one per island, which is the real reason
-she never leaves the castle. She's been waiting.
+### A2. Save durability and recovery (M)
 
-### The heroes
-- **Aldric the Wizard**, an apprentice with more enthusiasm than skill. Fire magic.
-- **Princess Marina**, the aquamarine princess, whose family has guarded the crown's water gem for
-  generations. Water magic.
+- [ ] Exercise three independent slots: new game → equipment/food/quest progress → door → close application → Continue. Repeat after each boss/tool reward, digging, a fish catch and an NPC gift.
+- [ ] Document the actual save moments. Decide whether critical rewards, skill purchases and quit/suspend should save immediately; implement missing moments so long rooms do not lose valuable progress.
+- [ ] Test full-disk/write-denied/interrupted-save behavior using isolated test data. Handle failures without crashing or presenting success; retain the last valid save.
+- [ ] Distinguish an unreadable save from an empty slot. Offer a recoverable backup if feasible and avoid silently encouraging overwrite of a damaged slot.
+- [ ] Add explicit schema version handling and defensive defaults for absent fields, unknown items/skills, missing scene/spawn and a removed hero. Preserve compatible old data.
+- [ ] Verify old IsoDungeon migration leaves originals intact and does not mix slots. Add Kitchen/Farm friendly save-location names.
+- [ ] Decide/document whether Continue restores resources or refills them; the current saved schema does not record current health/mana. Match the menu promise to actual behavior.
 
-Whichever hero you choose, the castle is your home (the Home scene already says "{hero}'s Home").
+**Done when:** completed critical actions survive a restart, slots remain isolated, interrupted/corrupt data does not destroy the last usable state, and save/recovery feedback is understandable.
 
-### The arc
-| Act | Region | Gem | What's been lost |
-|---|---|---|---|
-| 1 | Castle Grounds & Dungeon | **Amethyst** (Slime King has it) | The castle is grey; Amethyra can't fly |
-| 2 | Whispering Woods | **Emerald** | The trees fell asleep; the fairies are hiding |
-| 3 | Glimmer Mines | **Topaz** | The lights went out; the moles are lost |
-| 4 | Puddlebrook Lake | **Aquamarine** | The lake turned murky; the merfolk sank away |
-| 5 | Frostpeak | **Sapphire** | It's been winter for 300 years |
-| 6 | The Storm Spire | **Ruby** (the Gloom wears it) | The Gloom himself |
+### A3. Traversal, gates and soft-lock audit (M)
 
-**Ending:** the Gloom isn't defeated, he's *cheered up*. With the crown restored, the heroes
-invite him to a party in the castle garden, he rains gently on the flowers, and a rainbow appears.
-Amethyra's eggs hatch and a baby dragon follows you around the post-game.
+- [ ] Walk every declared connection in both directions with Wizard and Princess, before and after room clear. Include Cove’s alternate Dungeon entrance and Dungeon → Lake.
+- [ ] Test entry/return spawn alignment, repeated door activation and scene-edge crossings during movement/hop/swim; prevent transition loops and spawning inside collision.
+- [ ] Verify a boss defeated before accepting its quest, leaving before picking up its reward, a full bag, returning after clear and reloading all retain a viable progression route.
+- [ ] Test one- and two-tile gaps at different approach angles; reject invalid landings safely. Check water borders, shore exits and no casting while swimming.
+- [ ] Attempt to strand the hero with push blocks or undug soil. Provide local reset/recovery for irreversible puzzle configurations if necessary.
+- [ ] Explore Mines/Lake before obtaining earlier traversal tools. Choose intentional flexible exploration or explicit region gates; align maps, hints and narrative with that decision.
+- [ ] Verify Gentle recovery at arrival spawns and fountains, including rooms without fountains. Decide whether cross-scene last-fountain recovery is desired; do not advertise it until implemented.
 
-**Gems restore color as a visible reward.** Each region starts desaturated, and recovering its gem brings
-the color back with a sweep across the screen. That gives her a progress meter she can see without reading
-anything. (Implementation: a saturation value per theme in `SetUpLighting` plus a palette lerp on the
-floor/wall materials, driven by a `gem:<name>` flag.)
+**Done when:** every route has a safe return, neither hero can lose a required tool/reward, and recovery or local resets resolve failed attempts without sacrificing progression.
 
----
+## Milestone B — make the first 15 minutes understandable (P1)
 
-## 4. World map and metroidvania structure
+**Outcome:** a first-time player can start, move, cast, interact, find a goal and understand an obstacle. **Estimate:** L. **Dependency:** A’s playable baseline; final acceptance follows A.
 
-### Traversal abilities (the "keys")
-Isometric top-down means no jumping, so gates are Zelda-style. Each ability opens one obstacle type on
-the map. Both heroes get every ability; their spells only change how it looks.
+### B1. First-session flow (M)
 
-| # | Ability | Where you get it | Opens | Map tile (proposed) |
-|---|---|---|---|---|
-| 1 | **Bouncy Boots** (made from the Slime King's jelly) | Dungeon boss | Small gaps and low fences: hop on **Space** | `~` gap, `f` fence |
-| 2 | **Fairy Lantern** | Woods boss | Dark rooms; reveals hidden paths and ghost platforms | `d` dark area, `g` ghost tile |
-| 3 | **Mole Mitts** | Mines boss | Push/pull big blocks; dig up soft dirt (secrets) | `o` block, `s` soft dirt |
-| 4 | **Bubble Charm** | Lake boss | Swim through deep water | `w` water |
-| 5 | **Rainbow Chalk** | Frostpeak boss | Draw rainbow bridges between rainbow posts | `r` post, `c` chasm |
-| — | **Spell gates** (from the start) | — | Brambles: Fireball burns them, Tidal Orb makes them bloom and part. Braziers: fire lights them, water fills the basins. Either spell works, so neither hero gets stuck | `v` bramble, `z` brazier |
+- [ ] Observe a new player from Title through CharacterSelect and Castle Grounds without coaching. Note hesitation, missed prompts, aim confusion and unnoticed paths.
+- [ ] Make Continue visually primary when a save exists; clearly distinguish slot selection, new game and replacement. Ensure first focus is visible on gamepad.
+- [ ] Present hero differences with hearts, magic and spell demonstrations rather than only stat prose. Explain that both heroes have complete traversal access.
+- [ ] Teach one action at a time: movement → talk → spell → first chest/food → first obstacle. Reuse existing world interactions rather than adding a long mandatory tutorial.
+- [ ] Make the first immediate objective visible on HUD/map and in dialogue. Clarify why Castle Dungeon stairs remain closed when all monsters are required.
+- [ ] Give an optional help/hint path after inactivity or repeated unsuccessful interaction; make it dismissible and avoid covering combat.
+- [ ] Ensure skipping/replaying tutorials or starting a second save does not trap the player in stale tutorial state.
 
-### Region graph
-```
-                        ┌──────────── Storm Spire (6) ────────────┐
-                        │   needs Rainbow Chalk + all 5 gems      │
-                        └──────────────────▲──────────────────────┘
-                                           │ rainbow bridge
-  Whispering Woods (2) ◀── gap ──  CASTLE GROUNDS (hub) ── chasm ──▶ Frostpeak (5)
-     │  dark hollow                │      │      │                    ▲
-     │  (Lantern) ─────────────┐   │    Home   Village                │ water route
-     ▼                         │   ▼                                  │ (Bubble)
-  Glimmer Mines (3) ◀──────────┘  Dungeon (1) ── water ──▶ Puddlebrook Lake (4)
-     │  blocks (Mitts) ─── shortcut ──▶ Dungeon back room (secret)
-```
-- Each region is **3–5 rooms** (scenes) plus one boss room. That's ~25 scenes in total.
-- Each region contains **gates for abilities you don't have yet** (backtracking payoffs: eggs, star shards,
-  heart containers, shortcuts, jokes).
-- **Fountains** (one per region, and there's already one in the castle grounds) are save points, full heals
-  and fast-travel stations once you've touched them.
-- **Shortcuts** open from the far side (one-way doors, levers), so walks back to the hub stay short.
+**Done when:** a new player reaches a meaningful objective and can explain or demonstrate what to do next, with essential instructions understandable through pictures/actions.
 
-### Backtracking payoff budget per region (rough)
-- 1 dragon egg (needs that region's ability **or a later one**)
-- 2–3 heart pieces (4 pieces = +1 max health)
-- 5 star shards (collectible currency for cosmetics; see §5)
-- 1 secret room
-- 2+ easter eggs
+### B2. Interactions and nonreader support (M)
 
----
+- [ ] Establish one visual language for talkable NPCs, readable props, cooking, healing, shopping, loot and traversal obstacles. Highlight only the interaction that will activate.
+- [ ] Use portraits and objective/item pictures for critical dialogue. Break long exchanges into shorter beats; show the reward and next destination clearly at completion.
+- [ ] Add optional replay of important quest instructions. Reserve voice/read-aloud work for high-value instructions after text and pictures are correct.
+- [ ] Explain unsuccessful actions: full bag, insufficient coins/magic, missing tool, closed boss shell, unlit brazier and locked door. Pair short text with an icon and distinct cue.
+- [ ] Give the House courtyard’s inaccessible door a clear “future adventure” or intentional secret message, or remove its misleading interaction until it has a purpose.
+- [ ] Separate decorative sparkle from collectible/interactable sparkle. Ensure cliffs, walkable bridges and blocked deep water read consistently.
 
-## 5. Content catalog
+**Done when:** the player can distinguish action targets and reasons for failure without repeated adult explanation; locked future content feels intentional.
 
-### NPCs and quests
-| NPC | Where | Role / quest | Reward |
-|---|---|---|---|
-| **Amethyra** (exists) | Castle Grounds | Mentor. Comments on each gem as you return it. **"The Lost Eggs"**: find all 5 | Baby dragon companion; she flies you to the Spire |
-| **Barnaby Badger** | Village shop | Sells potions, hats, the world map, a bigger bag | — |
-| **Pip the Baker** | Village | **"Berry Pie"**: bring 3 Glow Berries from the Woods | Pie (full heal), then a pie every visit |
-| **Whiskers the Cat** | Hidden in every region | **"Where's Whiskers?"**: a cat who keeps wandering off. Find her in each region and she goes home | A cat follows you around the house; final reward is a cat hat |
-| **Bonesy** | Dungeon | A friendly skeleton who doesn't want to fight. **"A Lonely Skeleton"**: introduce him to someone (Amethyra) | Skeletons in later areas wave instead of attacking (Gentle Mode only) or drop extra coins |
-| **Old Moss** | Woods | Gardener. **"Wake the Trees"**: use your spell on 4 sleepy trees | Fairy Lantern hint + heart piece |
-| **Queen Twinkle** | Woods | Fairy queen, tells the Gloom's story | Lore + the Woods gem's location |
-| **Digby & the Mole Crew** | Mines | **"Lost Moles"**: find 3 lost moles in dark tunnels | Mine cart fast travel |
-| **Captain Clamshell** | Lake | Retired crab sailor. **"Fishing Lesson"**: catch 3 fish | Fishing rod (mini-game) |
-| **Mr. Frost** | Frostpeak | A snowman who's cold. **"A Scarf for Mr. Frost"**: trade chain (yarn from Village → knitting granny → scarf) | Snow Hat; he sings a song |
-| **The Grey Gloom** | Storm Spire | Final "boss": a puzzle fight where you make him laugh (hit the joke bells) rather than hurt him | The Ruby, the ending |
+### B3. Quest and map guidance (M)
 
-### Bosses
-Same pattern as `BossAbilities.cs`: a normal enemy plus a component with telegraphed attack coroutines.
-Every attack is **telegraphed for at least a second** with a big red circle (the `SlamWarning` that exists).
+- [ ] Show current objective, giver portrait, progress count and return destination together; make the active goal easy to reopen.
+- [ ] Add optional objective tracking/map hints without revealing every secret. Use visited destinations and discovered obstacles; avoid sending players to inaccessible objectives without explaining the tool.
+- [ ] Add explicit Topaz/Aquamarine return objectives or unify gem-return tracking. Make the five-egg counter display honest current progress and future scope.
+- [ ] Show new → active → return to giver → complete feedback once per change. Verify repeated dialogue/reload does not replay rewards.
+- [ ] Audit catalog conditions against every dialogue branch, including completing objectives before meeting the giver, out-of-order eggs and full-bag gifts.
+- [ ] On world/fountain maps, distinguish current location, visited destination, selected destination, unlocked route and unvisited area. Validate gamepad selection order.
 
-| Boss | Region | Gimmick |
+**Done when:** players know where their chosen task is, whom to return to, and why a return visit is useful; map hints do not expose unexplored secrets unnecessarily.
+
+## Milestone C — improve feel, fairness and interface consistency (P1)
+
+**Outcome:** controls respond predictably, combat reads clearly, and menus work comfortably on keyboard and controller. **Estimate:** L–2L. **Dependency:** A; informed by B observations.
+
+### C1. Movement, targeting and traversal feel (M)
+
+- [ ] Test diagonal speed, small stick movements, wall sliding, narrow paths and sprite facing while casting. Tune dead zone and acceleration only from observed problems.
+- [ ] Give auto-aim a clear target indication where helpful. Prefer visible/reachable threats and predictable behavior when multiple enemies/props compete; check attacks through walls.
+- [ ] Make hop eligibility/landing readable before movement commits. Add a consistent blocked-hop cue and avoid double activation at scene edges.
+- [ ] Match push/dig/swim timing to animation and sound. Ensure pushing a block feels deliberate rather than accidental during combat.
+- [ ] Check shore-to-water sprite/ripple changes, pause, recovery and scene transition interruption for visual or collision leftovers.
+- [ ] Add reduced-motion control for camera shake and large effects; avoid shake making warning shapes unreadable.
+
+**Done when:** movement and targeting feel consistent across frame rates and both devices; traversal actions communicate start, success and failure clearly.
+
+### C2. Combat feedback and boss fairness (L)
+
+- [ ] Audit every boss: Slime King, Captain Grumblebeard, Pumpkin King, Mother Mushroom, Crystal Golem and King Crabbington. Record warning duration, active danger, safe space and recovery window.
+- [ ] Use shape/motion/sound as well as color for slam circles, tide bands, projectiles and vulnerability. Keep warnings visible under water, scenery and player spell effects.
+- [ ] Give Golem glow and Crabbington shell states distinct hit feedback: vulnerable impact versus deflection. Teach the timing safely before requiring mastery.
+- [ ] Review spikes/lava, knockback, enemy spawn fans and stacked damage for unavoidable hits. Keep safe routes identifiable, especially in Gentle Mode.
+- [ ] Distinguish low mana, cooldown and invalid target failures in HUD/audio. Keep the hero responsive while waiting and avoid repeated warning spam when cast is held.
+- [ ] Tune hero output and survivability using completion attempts and resource use, rather than assuming equal cooldown means equal power. Include equipment and all learned abilities.
+- [ ] Test Bubble Shield against enemy hits and hazards; test area abilities versus walls, boss invulnerability, pots, brambles and braziers.
+- [ ] Make defeat, reward appearance and collection a satisfying sequence with clear tool demonstration and a nearby backtracking suggestion.
+
+**Done when:** a player can recognize each dangerous attack and vulnerability window before reacting; failed attempts teach a solution and neither hero faces unfair required damage.
+
+### C3. Menu, inventory and hotbar polish (L)
+
+- [ ] Audit focus/default selection, confirm/back, scrolling and restoration of focus for every panel. Eliminate input leaking from a menu into attacks/interactions.
+- [ ] Test controller disconnect/reconnect and keyboard ↔ controller switches while a panel is open. Update prompts consistently; verify actual left-click casting versus the input documentation.
+- [ ] Resolve ambiguity between ability slots 2/3 and consumable slots 2–5 using distinct layout and button labels. Keep learned abilities discoverable without displacing food unexpectedly.
+- [ ] Show item type, slot, equipped comparison and restoration values. Explain Helm versus Hat; decide whether the distinction benefits players enough to keep.
+- [ ] Make full-bag behavior and reward waiting explicit. Check equipment swaps/unequipping with a full bag and consuming only when appropriate.
+- [ ] Review eight-entry capacity with normal gathering/cooking/food use; adjust capacity or stacking if friction repeatedly interrupts exploration. Include save migration if storage changes.
+- [ ] Increase minimum readable text and selection outlines. Check long item names, quest instructions, numeric changes, different aspect ratios and handheld-size UI.
+- [ ] Keep pause/settings accessible during ordinary play; confirm time-based fishing, spell zones and dialogue behave correctly around pause.
+
+**Done when:** the main loop and every menu can be completed using only a controller or only keyboard/mouse, with clear focus, readable content and no accidental actions.
+
+## Milestone D — make the existing world feel cohesive (P1/P2)
+
+**Outcome:** current regions have deliberate composition, consistent presentation and rewarding return visits. **Estimate:** 2L. **Dependency:** A–C for final sign-off; art inventory can begin earlier.
+
+### D1. Room composition, readability and camera (L)
+
+- [ ] Capture representative screenshots for every room at arrival, combat, secret entrance and reward. Evaluate on the actual target screen size.
+- [ ] Define palette, light level and silhouette rules for castle, home, Cove, Farm, Woods, Mines and Lake. Preserve regional identities with consistent prop scale, shadows and outlines.
+- [ ] Remove visual noise along critical paths. Verify trees, rocks, buildings and effects do not obscure the hero, NPC approach positions, loot or hazards.
+- [ ] Audit sorting/billboards, character animation transitions, prop intersections, wall/cliff seams, water edges and camera bounds. Fix conspicuous artifacts before adding decoration.
+- [ ] Ensure dark rooms are atmospheric yet navigable before Lantern acquisition if early entry remains allowed. Make the lantern upgrade visibly valuable.
+- [ ] Review world-map layout against actual connectivity and route direction so the displayed geography helps rather than confuses.
+
+**Done when:** every room has a readable entry, route and focal point; essential gameplay remains visible during crowded combat and dark scenes.
+
+### D2. Sound and transitions (M)
+
+- [ ] Normalize levels across music, voice blips, pickups, combat and ambience. Prevent rapid impacts or multi-target abilities from overwhelming the mix.
+- [ ] Add consistent success/failure sounds for traversal, shopping, quest progression, boss deflection and save confirmation; avoid using the same cue for conflicting meanings.
+- [ ] Smooth scene music changes and fade timing. Check repeat transitions, pause, recovery and fountain travel for overlapping loops or abrupt silence.
+- [ ] Verify separate music/effect volumes persist per slot and no essential information depends on audio alone.
+- [ ] Favor a few bespoke region/boss cues over expanding the entire audio library immediately.
+
+**Done when:** transitions feel intentional, frequent effects are comfortable, and muted play remains understandable.
+
+### D3. Backtracking and reward economy (L)
+
+- [ ] Inventory every gap/block/dirt/water secret with its required tool, reward and travel distance. Ensure each tool unlock has a memorable nearby payoff.
+- [ ] Place a visual reminder or map annotation when an obstacle is discovered. On acquiring its tool, suggest one earlier location without listing all secrets.
+- [ ] Measure travel time between boss, giver, fountain and return treasure. Add shortcuts or travel access only where repeated walks are dull.
+- [ ] Audit gold sources against bubble bath/cider/wishes, heart-piece placement and available food. Avoid plentiful rewards with no understandable purpose.
+- [ ] Give Star Shards a modest, finished purpose: a small home wardrobe with a few cosmetics, previews and clear prices. Prefer completing this loop to adding another currency.
+- [ ] Examine skill unlock pacing, especially the 400-XP first level versus cheaper subsequent levels. Make the first new ability arrive at a satisfying point in normal play.
+- [ ] Decide what happens after four skills: stop unused skill-point accrual, provide a modest repeatable upgrade or clearly mark the completed path. Avoid creating a large tree solely to fill the level cap.
+
+**Done when:** each traversal tool produces a visible return reward, currencies have communicated uses, and normal progression exposes the hero’s abilities without grinding.
+
+## Milestone E — resolve the current adventure’s story (P2)
+
+**Outcome:** players know what they have accomplished and receive a satisfying stopping point. **Estimate:** L–2L for current-scope closure; full campaign is separate. **Dependency:** A–D core loop.
+
+- [ ] Reconcile the narrative promise with implemented content: three eggs, three obtainable crown gems and no final region. Choose a clearly framed chapter ending for the current release or commit to completing the full campaign before presenting it as finished.
+- [ ] Replace fixed “two of five / three of five” egg dialogue with counter-aware lines so early Lake/Mines collection does not contradict the actual order.
+- [ ] Align Amethyst restoration dialogue and `has:amethyst` plague trigger. Either acknowledge immediate restoration or change the trigger to match the return scene.
+- [ ] Add visible Topaz/Aquamarine restoration if promised, or revise dialogue so it describes the action the player actually sees. Do not reintroduce a global desaturation effect without checking readability/art goals.
+- [ ] Give each current boss/region a short resolution beat and clear next destination. Check Pearl, Stitches, Moss, Digby, Clamshell and Amethyra after relevant milestones.
+- [ ] Add a short chapter-complete celebration, credits and Continue Exploring choice. Preserve save state and explain any future regions honestly.
+- [ ] Add a compact discovered-treasures/quests summary. Count only obtainable current content in current-release completion; do not require absent eggs/gems.
+
+**Done when:** the release has a clear beginning, progression and satisfying ending; dialogue is correct under different collection orders and does not imply unavailable actions can be completed now.
+
+## Milestone F — release and regression pass (P0/P1)
+
+**Outcome:** a reproducible, tested build that is comfortable to share and easy to diagnose. **Estimate:** L. **Dependency:** A–E, or a deliberately reduced release scope recorded here.
+
+- [ ] Select actual release platforms and minimum target hardware. Keep Steam Deck/handheld verification if it is a real target; defer touch/tablet work otherwise.
+- [ ] Profile the busiest rooms and effects on target hardware: lights, shadows, transparent sprites, enemy pathfinding, allocations, loads and repeated scene travel. Fix measured bottlenecks before architectural rewrites.
+- [ ] Set performance budgets after measurement; proposed baseline for a 60 Hz target is stable 60 FPS with ordinary gameplay p95 frame time ≤16.7ms. Record intentional exceptions and lower-hardware targets separately.
+- [ ] Run the full relevant regression suite once the release candidate is stable; add focused tests for actual fixes, especially save migration and irreversible progression changes.
+- [ ] Play an uninterrupted fresh-save route and a resumed-save route; test alternate order, both heroes, both modes and both input types. Use the matrix below.
+- [ ] Verify launch, quit, audio, controller reconnect, resolution/fullscreen, resume and data paths in a standalone build, not just editor play mode.
+- [ ] Write player-facing controls, build version, current scope and known issues; include a simple way to identify the save slot/build in bug reports.
+- [ ] Run one child/nonreader session and one adult session without coaching. Address every repeated navigation/control misunderstanding and serious loss-of-progress issue.
+
+**Done when:** no known blocker remains, release scope is honest, normal and alternate routes pass, saves survive restart, and performance/usability results are recorded for target devices.
+
+## Verification matrix and evidence
+
+Use risk-based automated coverage and representative manual combinations; do not blindly multiply every test by every configuration. Full route checks must cover both heroes, while visual/controller checks must run in standalone builds.
+
+| Scenario | Required variations | Evidence / pass condition |
 |---|---|---|
-| Slime King (exists) | Dungeon | Slam, split. **Change:** drops the Amethyst + Bouncy Boots |
-| Mother Mushroom | Woods | Puffs spore clouds you dodge; small mushrooms you bounce over |
-| Crystal Golem | Mines | Only hurt when his crystals glow; lights go out between phases (Lantern) |
-| King Crabbington | Lake | Hides in his shell; waves push you; hit him when he peeks out |
-| The Snow Yeti | Frostpeak | Throws snowballs that roll across the ice; slippery floor |
-| The Grey Gloom | Spire | Joke-bell puzzle + rain clouds to step out of |
+| Start and resume | All three slots; fresh/old save; both heroes | Correct slot/hero/location, understandable first focus, retained progress |
+| Main route | Both heroes; Gentle and Adventurer represented | All six existing bosses, rewards, return visits and safe exits |
+| Out-of-order exploration | Early Woods/Mines/Lake; eggs in different orders | Reachable recovery; correct dialogue and quest states |
+| Persistence | Door, fountain, quit, boss reward, gift, food, skill, dig | Restart retains intended state; no reward duplication or lost required item |
+| Bag pressure | Full bag; equip/unequip; cooking; NPC gift; quick slots | Clear feedback; no item loss; treasures never blocked by capacity |
+| Controls/UI | Keyboard/mouse, controller, device switch/reconnect | Every panel actionable; no leaked inputs; accurate prompts |
+| Traversal | Gaps, blocks, dirt, water, edges; with/without tools | Safe collision/landings; no soft lock; consistent hint language |
+| Combat | All bosses/hazards; base and upgraded heroes | Warnings visible, vulnerability understandable, fair recovery |
+| Presentation | Every playable room; target aspect ratios/screen sizes | Essential actors/loot/hazards visible, readable menus, coherent sound |
+| Long session | Repeated travel, deaths/recovery, menus and reloads | No growing errors/leaked audio/effects; stable performance |
 
-### Regular enemies (one or two new per region)
-Bats (swoop, Mines), Spore Puffs (stationary, Woods), Ghosts (only visible with the Lantern), Crabs
-(sideways only, Lake), Ice Slimes (leave a slippery trail), Bouncing Slimes, and Gloomlings (tiny
-clouds, Spire). Swap chasing for a **NavMeshAgent** (README exercise #4) before adding these, since
-blocks and water make straight-line chasing look broken.
+Track issues with: ID, priority, scene/system, reproduction steps, expected/actual result, hero/mode/device, screenshot if useful, fix revision and verification result. Keep save fixtures isolated from family saves.
 
-### Items
-- **Equipment slots**: Ring (exists), **Hat**, **Charm**. Hats are partly cosmetic and *very*
-  important to a 5-year-old: Party Hat, Crown (from the Slime King), Frog Hat, Snow Hat, Cat Hat,
-  Wizard Hat (Princess) and Tiara (Wizard).
-- **Consumables** on hotbar slots 2–5 (placeholders today): Healing Apple, Mana Berry, Pie (full heal),
-  Bomb Flower (breaks cracked walls, an extra early gate type).
-- **Key items** (separate "treasures" tab, can't be dropped): abilities, gems, eggs, keys, quest items.
-- **Collectibles**: Heart Pieces (4 = +1 max health), Star Shards (spend at a wardrobe in the Home on
-  cosmetics), plus a **Sticker Book**: every enemy type, NPC, region and secret you find earns a
-  sticker. Pre-readers love this, and it doubles as a completion tracker.
+Suggested usability measures (targets to confirm through playtesting): first meaningful objective within 10–15 minutes; no repeated adult intervention for the same control; a player can recognize a blocked route’s tool; return travel is purposeful; no essential clue relies on color or reading alone. These are goals, not current measured results.
 
-### New mechanics
-| Mechanic | Notes |
-|---|---|
-| **Hop** (Bouncy Boots) | A short scripted arc over a gap tile; no physics jumping |
-| **Push blocks** | Grid-snapped, slide one tile per push, a "clunk" sound |
-| **Pressure plates and levers** | Generic `Switch` + `Door` pair wired by an ID in the map file |
-| **Swimming** | Water tiles become walkable with the Bubble Charm; spells disabled while swimming |
-| **Ice** | Slippery floor (keep your momentum) in Frostpeak |
-| **Darkness** | Rooms with no ambient light; the Lantern increases the player's torch radius and shows `g` tiles |
-| **Breakables** | Pots and crates using `Health` + `Loot` (the comment in `Loot.cs` already suggests this) |
-| **Shops** | A dialogue choice that opens a buy panel |
-| **Fishing** (optional) | Timing mini-game at the Lake: press when the bobber dips |
-| **Second spell per hero** | Wizard: Flame Wave (a short cone). Princess: Bubble Shield. Hotbar slot 2 |
-| **Skill tree tiers 2–3** | Implement Twin Cast, Meteor, Mana Shield, Second Wind, Blink and Treasure Sense. Keep them *optional*: never gate progress behind a skill |
-| **Companion** | The baby dragon (post-game) or Whiskers: follows you and picks up nearby coins |
+## Deferred expansion (P3)
 
----
+Preserve the original Gemhold, Prism Crown, Amethyra and Grey Gloom direction. Expansion should reuse polished systems and end with complete region loops rather than isolated assets.
 
-## 6. Playing with a 5-year-old (and a spouse)
+| Work | Scope / dependencies | Completion bar |
+|---|---|---|
+| Emerald / Woods story completion | Decide Emerald acquisition/restoration and placement of the remaining egg(s); avoid conflicting with the existing Lantern loop | Gem, quest, visible restoration and return payoff are coherent |
+| Frostpeak | Maps, ice, Snow Yeti, Mr. Frost scarf chain, Sapphire, Rainbow Chalk, egg, secrets; depends on polished traversal/save pipeline | Both heroes finish; new gate has an earlier visible payoff; no slippery soft locks |
+| Storm Spire / full ending | Rainbow bridge prerequisites, Ruby, Gloomlings, joke-bell Gloom fight, five-egg completion, garden party, credits | Complete campaign from a fresh save; kindness theme and nonreader goal are clear |
+| Sticker Book | Discovery tracking, illustrated book, completion data and migration | Existing discoveries backfill where possible; obtainable targets only |
+| Companions / Whiskers | Regional appearances and post-game baby dragon; navigation/interaction rules | Never blocks the player, steals interaction focus or exposes secrets unintentionally |
+| Larger shop / village | More wares, purchase preview, optional Baker quest; only if current economy benefits | Useful spending, full-bag handling, controller-friendly UI |
+| Helper fairy co-op | Second controller, limited helper actions, disconnect rules, one-camera design | Supports the child without compromising solo play or save ownership |
+| Voice, holidays, Dream Level, secret hero, tablet | Optional delight/platform work after release stability | Small isolated additions with clear maintenance cost and no required progression |
 
-- **Gentle Mode** (default for her): no Game Over. At 0 hearts the hero "gets sleepy," the screen fades,
-  and she wakes at the last fountain with everything kept. Enemies hit for half damage. Bosses' telegraphs
-  last longer.
-- **Adventurer Mode** for grown-ups: today's rules, plus faster enemies and fewer heals.
-- **Gamepad first.** Migrate to the **Input System** package: left stick to move, **A** to talk, open or
-  hop, **X** to cast, **Y** for item, **Start** for the map and menu. Keep keyboard and mouse working.
-- **Pictures over words.** Quest log entries show a picture of the NPC + the item they want. Signs show
-  icons. Arrows on the minimap point toward the current objective (optional, toggle in Gentle Mode).
-- **Read-aloud** (stretch goal): macOS has built-in text-to-speech, and you could record your own voice
-  for key lines, which would be its own easter egg.
-- **Short sessions**: autosave on every door and fountain. "Continue" is the first button on the title screen.
-- **Two-player "Helper" mode** (stretch goal, but probably the most fun one for your family): a second gamepad
-  controls a **fairy sprite** that flies freely, collects coins, can stun enemies for a second and
-  points at secrets. It's much simpler than full co-op (one camera, one HUD, one save) and it's great for a
-  parent helping a kid, or a kid "helping" a parent. Full two-hero co-op is possible later but means
-  reworking the camera, HUD and `GameSession` (which assume a single player).
+Do not treat rainbow bridges, ghost platforms, pullable blocks, trade chains, wardrobe, Sticker Book or the full garden-party ending as already available merely because they were proposed in the legacy roadmap.
 
----
+## Recommended next work package
 
-## 7. Easter eggs
+1. Complete A1 baseline validation and A2 critical-save audit; record the first reproducible build/test result.
+2. Run one fresh controller playtest through Castle → Dungeon → boots → return secret, and one early-entry Mines/Lake check. Turn observed confusion into a short P0/P1 issue list.
+3. Fix the most frequent blockers and comprehension problems, then implement B3 quest/map guidance and C3 hotbar clarity.
+4. Polish combat telegraphs and region presentation with a chapter ending as the current-scope release target.
+5. Reassess expansion only after the release verification gate passes.
 
-Personal ones (fill in the blanks):
-- A statue in the village garden: **"Princess ____, Bravest in All of Gemhold."**
-- Your family pet as an NPC who follows you around one room.
-- A shop in the village named after your spouse, run by someone who looks suspiciously like them.
-- **Birthday mode**: on her birthday (checked against the system date) every enemy wears a party hat and
-  there's a cake in the Home. Also Halloween (pumpkin slimes) and December (snow on the castle grounds).
-- **Dad's Workshop**: a secret room behind a fake wall in the Dungeon with a tiny desk, a computer
-  showing a picture of the Unity editor, and a signed note from you.
-- Credits with a family "cast list."
+## Progress log
 
-Game ones:
-- **Wash your hands** already exists. Extend it: forget to wash and Amethyra says "...did you wash your hands?"
-- **Flush the toilet 10 times**: a frog pops out and gives you the Frog Hat.
-- **Sleep in the bed 3 times in a row**: the **Dream Level**, a short candy-colored room where the
-  enemies are marshmallows. Wake up with a sticker.
-- **Talk to Amethyra 10 times**: she tells a dragon joke. 25 times: she falls asleep and snores in
-  the dialogue box.
-- **Throw a coin in the fountain**: a random wish message; the 100th coin grants a heart piece.
-- **Konami code** (↑↑↓↓←→←→BA) on the character select screen unlocks a secret hero: **Whiskers the
-  Cat** (casts hairballs).
-- **The 7-hit tree**: one tree in the castle grounds drops a golden apple after 7 spell hits.
-- **Bonesy's xylophone**: hit his ribs with spells in the order of the castle music's first notes for a song.
-- **Poke the sheep**: a field of sheep that follow you after you've talked to each one (a gentle cucco
-  homage).
-- **The mirror** in the Home shows the hero you *didn't* pick, waving.
-- **Fake walls** that don't show on the minimap until you've walked through them.
-- **A dance button** (hold Y): if you dance next to Amethyra, she dances too. Dance next to the Gloom in the
-  final fight and he laughs (a secret alternate way to win).
-- **The Slime King's Crown** as a wearable hat after you beat him.
-- **The "you're not supposed to be here" room** off the edge of the map, reached by an out-of-bounds
-  hop with the Bouncy Boots, containing a sign: "Hi! You found the edge of the world."
-
----
-
-## 8. Technical plan
-
-### 8.1 Save system
-- A `SaveData` class (plain C#) holding: hero id, flags, `Progression` state, inventory (item ids),
-  equipped items, current scene + spawn, visited rooms (for the world map), counters
-  (e.g. `toilet_flushes`), settings (mode, volume).
-- `JsonUtility` to `Application.persistentDataPath/save<N>.json`, with **3 slots** (one per family member)
-  shown as big portraits on the title screen.
-- Items need a stable id: add `[SerializeField] string id` to `ItemDefinition` and an `ItemDatabase`
-  ScriptableObject that lists them all (built by `DungeonBuilder`).
-- **Move the inventory's data into `GameSession`** (like `Progression`), so the component on the player
-  becomes a view over session data. That fixes the lost-items bug and makes saving easy.
-- Add **counters** next to flags: `GameSession.Counters["toilet_flushes"]++`. Many easter eggs need these.
-
-### 8.2 Map files instead of C# arrays
-Move maps into text files (`Assets/Levels/<Region>_<Room>.txt`) so adding a room means writing a text
-file. A legend section maps digits and letters to anything, which solves the shortage of characters:
-
-```
-title: The Sleepy Glade
-theme: Forest
-music: music_woods
-region: woods
----
-HHHHHHH1HHHHHHH
-H.....;;......H
-H..v.....2....H
-H..v..........3
-HHHHHHHHHHHHHHH
----
-1 = door Woods_Hollow FromGlade
-2 = npc OldMoss
-3 = door CastleGrounds FromWoods
-```
-`DungeonBuilder` parses these, generates one scene per file, auto-creates the named spawn points from
-the `door` entries, and adds every scene to Build Settings. Also add a validator that checks every door's
-target exists and has a matching return spawn, and run it from a Play Mode test.
-
-### 8.3 Dialogue and NPCs
-- Generalize `DragonNpc` into **`Npc`** (portrait, flipbook frames, voice clip) plus a **conversation
-  list** where each conversation has a **condition** (`flag`, `!flag`, `counter>=n`, `has:item`) and
-  **effects** (`set flag`, `give item`, `take item`, `start quest`, `open shop`). The first conversation
-  whose condition is true plays. That one rule covers intros, "later" chats, quest steps and easter eggs.
-- Add **choices** (2–3 icon buttons) to `DialogueController` for shops and yes/no questions.
-- Keep the dialogue as data in the builder (like `DragonIntroduction`), or move it to text files next to
-  the maps. Text files are easier to write in bulk.
-
-### 8.4 Quests
-`QuestDefinition` data: id, title, picture, steps (each step = a description + a completion
-condition using the same condition language as dialogue). A quest log panel (**J**, or a tab on the
-inventory) shows active quests with pictures. No separate quest state is needed: progress is derived from
-flags and counters, so saving it is free.
-
-### 8.5 Abilities and gates
-- `GameSession.Abilities` (a set of ids), `PlayerAbilities` component with one method per ability.
-- Gate components (`GapTile`, `Bramble`, `PushBlock`, `DarkZone`, `WaterTile`, `RainbowPost`) each
-  check `GameSession.Abilities.Contains(...)`. When you don't have the ability yet, show a **hint bubble
-  with the ability's icon and a "?"**, so she knows it's a "come back later" spot rather than a dead end.
-- Spells hitting brambles and braziers: give `Projectile` an element (`Fire`/`Water`) and let it call an
-  `ISpellTarget` interface on what it hits.
-
-### 8.6 Rooms and the world map
-- **Room edges**: walking off a marked edge loads the neighbor room (`SceneDoor` without the E press).
-  Fade out and in over ~0.3 s to hide the load.
-- **Enemy respawn policy**: regular enemies come back when you leave the region; bosses and "cleared"
-  rooms with exits stay cleared. In Gentle Mode, cleared rooms stay cleared. (Today `ClearedFlag` removes
-  enemies on every revisit, which suits Gentle Mode.)
-- **World map screen** (**M**/Start; move mute to the options menu): reuse `Minimap`'s texture
-  painting to draw every visited room at its world offset (add `worldX/worldY` to the map file
-  header), with icons for fountains, uncollected eggs (once you've seen them) and the current objective.
-
-### 8.7 Content pipeline (keeps the existing style)
-- Each new enemy, NPC and boss gets a `Tools/make_<name>_sprites.py` using `sprite_common.py`, same as now.
-- Each region gets a music track in `make_sounds.py` (Woods: flute-y 6/8; Mines: plucky pentatonic;
-  Lake: slow arpeggios; Frost: celesta; Spire: minor that resolves to major at the end).
-- Each region gets a `Theme` (floors, walls, lighting, saturation).
-- **Tests**: keep extending the Play Mode tests per feature (there are 6 test files and ~47 tests
-  now). Specifically: the save round-trip, every door's target exists, every gate is reachable *after*
-  its ability is obtained (a simple flood fill over the map files with ability sets), and dialogue
-  conditions.
-
----
-
-## 9. Phases
-
-Each phase ends with something playable. **Acceptance criterion for every phase: a playtest with her.**
-Watch where she gets stuck without saying anything, and fix that before moving on.
-
-### Phase 0: Foundations (no new content)
-- [x] `git init`, first commit, and a `.gitattributes` for Unity YAML (`*.unity`, `*.prefab`, `*.asset` → `merge=unityyamlmerge`)
-- [x] Move the inventory into `GameSession`; persist it across scenes (with a test)
-- [x] Save/load (3 slots, autosave on every door), title screen with Continue / New / slot pictures
-- [x] Input System + gamepad
-- [x] Pause menu (resume, options, mode, quit to title)
-- [x] Gentle Mode (wake at the fountain instead of Game Over)
-- [x] Map text files + parser + door validator; port Level 0, Dungeon and House to the new format
-
-### Phase 1: The systems content needs
-- [ ] Generic `Npc` + condition/effect dialogue + choices; port Amethyra to it
-- [x] Quest data + quest log with pictures
-- [x] Counters, and the first easter eggs that use them (toilet frog, dragon jokes, washed hands)
-- [x] Hat and Charm slots, consumables on quick slots (keys 2–5), key-item tab ("Treasures")
-- [ ] The Village (2 rooms off the castle grounds): Barnaby's shop and Pip the Baker
-  (started: Hollyhock is a fenced village beside the castle on Level 0, and Barnaby sells bubble bath at his stall;
-  still to come: a buy panel with several wares, Pip the Baker)
-- [x] Fountains as save points / fast travel
-- [x] Breakable pots
-
-### Phase 2: Metroidvania vertical slice (the most important phase)
-Prove one full loop with **one** ability before building five regions:
-- [x] Ability + gate framework, `ISpellTarget`, brambles/braziers
-- [x] Slime King drops the Amethyst + Bouncy Boots; color returns to the castle grounds
-- [x] Gaps placed in the Castle Grounds and Dungeon *before* you have the boots
-- [x] Bonesy in the Dungeon; Dad's Workshop secret room
-- [x] Whispering Woods: 4 rooms, Spore Puffs, Old Moss, Mother Mushroom, Fairy Lantern
-- [x] Room-edge transitions, world map screen, NavMesh enemies (a tile-grid pathfinder: the AI Navigation package doesn't compile on this Unity)
-- [x] The first dragon egg, heart pieces and star shards
-- [ ] **Checkpoint:** does she *remember* the gap and want to go back to it once she has the boots? If not,
-  make the hint bubbles stronger before continuing.
-
-### Phase 3: Regions 3–5
-For each of Mines, Lake and Frostpeak: map files, theme, music, 1–2 enemies, 1–2 NPCs and quests, a boss,
-an ability, an egg, heart pieces, 2+ easter eggs and a sticker set. Build them in this order, because each
-ability unlocks backtracking in the regions before it.
-- [ ] Glimmer Mines (Mole Mitts, Crystal Golem, lost moles, a mine-cart fast-travel line)
-- [ ] Puddlebrook Lake (Bubble Charm, King Crabbington, fishing)
-- [ ] Frostpeak (Rainbow Chalk, Snow Yeti, ice, Mr. Frost's trade chain)
-
-### Phase 4: Depth and collecting
-- [x] Skill paths: one linear path per hero (2 enhancements, then 2 abilities)
-- [x] Second (and third) spell per hero: Flame Wave + Meteor, Bubble Shield + Whirlpool
-- [ ] Sticker Book screen
-- [ ] Wardrobe in the Home (star shards → hats)
-- [ ] Whiskers appearances in every region
-- [ ] Dream Level
-
-### Phase 5: The ending
-- [ ] Storm Spire (rainbow bridges, Gloomlings, the Grey Gloom joke-bell fight + the dance secret)
-- [ ] Ending sequence: color returns everywhere, the eggs hatch, the garden party
-- [ ] Credits with your family's names
-- [ ] Post-game: baby dragon companion, completion % on the save slot
-
-### Phase 6: Polish and stretch goals
-- [ ] Two-player Helper fairy
-- [ ] Birthday/holiday modes
-- [ ] Recorded voice lines for key moments
-- [ ] Konami-code secret hero
-- [ ] An iPad/tablet build with touch controls, if it turns out she'd rather play there
-
----
-
-## 10. Suggested first steps
-1. `git init` and commit what exists.
-2. Fix the inventory persistence (small, and it unblocks everything).
-3. Save system + Gentle Mode, then a playtest, so she can start playing "her" save slot right away while
-   the rest gets built.
-4. Map text files, because every later phase adds rooms.
-5. Then the Phase 2 vertical slice. If the Bouncy Boots → gap → secret loop is fun, the rest of the plan is
-   just more of it.
+| Date | Milestone | Evidence / decision | Remaining work |
+|---|---|---|---|
+| 2026-10-10 | Planning baseline | Source/asset snapshot created; prior roadmap preserved; polish roadmap refreshed. No Unity runtime/test certification performed. | All verification and implementation tasks above remain proposed work |

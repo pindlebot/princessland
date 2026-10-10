@@ -78,6 +78,7 @@ MonoBehaviour:
     sets: met:Amethyra
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -97,16 +98,17 @@ MonoBehaviour:
     sets: told:amethyst
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
       text: The grounds are clear! Well done, {hero}. Now sit a moment, because I owe you the truth.
     - heroSpeaks: 0
-      text: The Grey Gloom took the colour from this island when he stole the Amethyst, the heart of my crown. That's why everything is so grey. It's why I can't fly.
+      text: 'The Grey Gloom stole the Amethyst, the heart of my crown, and without it a plague of dark crystals is spreading over this island. You''ve seen them: they''re everywhere. It''s why I can''t fly.'
     - heroSpeaks: 1
       text: Who has it?
     - heroSpeaks: 0
-      text: The Slime King, in the dungeon below. He's been sitting on it like a hen on an egg. Beat him, bring it back to me, and the colour will come home.
+      text: The Slime King, in the dungeon below. He's been sitting on it like a hen on an egg. Beat him, bring it back to me, and the crystals will crumble away.
     - heroSpeaks: 0
       text: And {hero}... the Gloom took my five dragon eggs as well. One for each island. Keep your eyes open for them.
   - requires: has:amethyst
@@ -114,14 +116,15 @@ MonoBehaviour:
     sets: thanked:amethyst
     giveGold: 50
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
       text: My Amethyst! Oh, {hero}, you brought it home! Hold it up. See how it glows?
     - heroSpeaks: 1
-      text: Everything is turning colourful!
+      text: The crystals are all breaking up!
     - heroSpeaks: 0
-      text: 'Yes! The colour is coming back to the castle grounds. And look at those boots you''re wearing: made from the Slime King''s jelly. Bouncy Boots!'
+      text: 'Yes! The crystals are crumbling away across the castle grounds. And look at those boots you''re wearing: made from the Slime King''s jelly. Bouncy Boots!'
     - heroSpeaks: 0
       text: With them you can hop over gaps. There were places in the grounds and in the dungeon you couldn't cross. Do you remember them? Now you can!
     - heroSpeaks: 0
@@ -131,6 +134,7 @@ MonoBehaviour:
     sets: thanked:egg_castle
     giveGold: 30
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -139,11 +143,100 @@ MonoBehaviour:
       text: It was behind a gap in the dungeon.
     - heroSpeaks: 0
       text: Clever {hero}! Keep it safe with you for now. When we've found all five, we'll hatch them together. Four more to go, in the other islands.
+  - requires: has:topaz
+    notIf: thanked:topaz
+    sets: thanked:topaz
+    giveGold: 60
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: The Topaz! Oh, {hero}, the Glimmer Mines' own gem. I can feel the lamps lighting up under the island from here.
+    - heroSpeaks: 1
+      text: The Crystal Golem was only grumpy.
+    - heroSpeaks: 0
+      text: 'The Gloom got into him, poor lad. And look at those paws: Mole Mitts! They shove blocks and dig up soil. This island is full of heavy stones and loose mounds that you couldn''t deal with before.'
+    - heroSpeaks: 0
+      text: Go on, have another look around. Treasure loves to hide where only a mole would dig.
+  - requires: has:dragon_egg_mines
+    notIf: thanked:egg_mines
+    sets: thanked:egg_mines
+    giveGold: 30
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: A golden egg! That's two of my five, {hero}. Oh, it's warm. It hums!
+    - heroSpeaks: 1
+      text: It was behind a big stone block in the Crystal Cavern.
+    - heroSpeaks: 0
+      text: 'Of course it was. Three more islands to go: the lake, the snowy mountain, and the Spire. Keep them safe.'
+  - requires: has:aquamarine
+    notIf: thanked:aquamarine
+    sets: thanked:aquamarine
+    giveGold: 60
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: The Aquamarine! I can hear the lake singing from here. Clear water, at last.
+    - heroSpeaks: 1
+      text: King Crabbington was only hiding in his shell.
+    - heroSpeaks: 0
+      text: Crabs do that when the world gets too loud. And the Bubble Charm! Wear it, and you can swim over any deep water, {hero}. The castle pond, the cove, the sea. Islands no boat ever found.
+  - requires: has:dragon_egg_lake
+    notIf: thanked:egg_lake
+    sets: thanked:egg_lake
+    giveGold: 30
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: A sea-green egg! Three of five now, {hero}. It's cool to the touch, and it sloshes.
+    - heroSpeaks: 1
+      text: It was on an island in the middle of the Murky Reeds. I had to swim.
+    - heroSpeaks: 0
+      text: You swam! Of course you did. Two more, up the snowy mountain and in the clouds. Take care.
+  - requires: has:sapphire
+    notIf: thanked:sapphire
+    sets: thanked:sapphire
+    giveGold: 80
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: The Sapphire! Snow is falling gently, for the first time in three hundred years. Can you feel it?
+    - heroSpeaks: 1
+      text: The Snow Yeti was only lonely.
+    - heroSpeaks: 0
+      text: 'Aren''t we all, from time to time? And look: the Rainbow Chalk. Draw a bridge between two rainbow posts and you can cross any chasm in Gemhold. There are chasms all over this island, and some in the others.'
+    - heroSpeaks: 0
+      text: Only the Ruby is left now, {hero}, and the Grey Gloom wears it. He lives in the Storm Spire, above the clouds.
+  - requires: has:dragon_egg_frost
+    notIf: thanked:egg_frost
+    sets: thanked:egg_frost
+    giveGold: 30
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: A blue egg, frosty on the outside! That's four of my five, {hero}. Oh, it's warm underneath. It's purring!
+    - heroSpeaks: 1
+      text: It was across a rainbow bridge in the Frozen Pass.
+    - heroSpeaks: 0
+      text: One more, in the clouds. When we have them all, we'll hatch them together. I can hardly wait.
   - requires: talks:Amethyra>=24
     notIf: snored
     sets: snored
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -159,6 +252,7 @@ MonoBehaviour:
     sets: 
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -172,6 +266,7 @@ MonoBehaviour:
     sets: joked:ten
     giveGold: 10
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -187,6 +282,7 @@ MonoBehaviour:
     sets: praised:hands
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 0
     lines:
     - heroSpeaks: 0
@@ -200,6 +296,7 @@ MonoBehaviour:
     sets: 
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -209,6 +306,7 @@ MonoBehaviour:
     sets: 
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -226,6 +324,7 @@ MonoBehaviour:
     sets: 
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0
@@ -239,6 +338,7 @@ MonoBehaviour:
     sets: 
     giveGold: 0
     giveItem: 
+    takeItem: 
     smallTalk: 1
     lines:
     - heroSpeaks: 0

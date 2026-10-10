@@ -8,9 +8,11 @@ using UnityEngine;
 //   requires   a condition that must hold ("" = always ok): a flag like "found:frog", a counter like
 //              "talks:Amethyra>=9", or an item like "has:fairy_lantern" (see Condition.cs)
 //   notIf      a condition that must NOT hold, e.g. "met:Coralie" (so an introduction plays once)
-//   sets       flags to set when the conversation ends, e.g. "met:Coralie" (comma-separated)
+//   sets       flags to set when the conversation ends, e.g. "met:Coralie" (comma-separated); a name with a
+//              "+" in front counts up a counter instead, e.g. "+moles_found"
 //   giveGold   coins handed over when it ends (a thank-you present)
 //   giveItem   an item id handed over when it ends (a reward: it goes in the bag, or the treasures tab)
+//   takeItem   an item id handed in when it ends (a quest item, like Granny Purl's yarn: it leaves the hero)
 //   smallTalk  if the first match is small talk, the NPC takes turns through *all* the
 //              matching small-talk conversations, one per visit (counted in GameSession,
 //              starting from the first)
@@ -28,6 +30,7 @@ public class Npc : MonoBehaviour, IInteractable
         public string sets = "";
         public int giveGold;
         public string giveItem = "";
+        public string takeItem = "";       // an item id handed in (a quest item: it leaves the hero)
         public bool smallTalk;
         public DialogueLine[] lines;
 
@@ -102,11 +105,20 @@ public class Npc : MonoBehaviour, IInteractable
         GameSession.AddToCounter("talks:" + npcName);
         if (conversation.smallTalk) GameSession.AddToCounter("smalltalk:" + npcName);
         foreach (var flag in (conversation.sets ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
-            GameSession.Flags.Add(flag.Trim());
+        {
+            string name = flag.Trim();
+            if (name.StartsWith("+", StringComparison.Ordinal)) GameSession.AddToCounter(name.Substring(1));
+            else GameSession.Flags.Add(name);
+        }
         if (conversation.giveGold > 0)
         {
             GameSession.Progress.AddGold(conversation.giveGold);
             AudioManager.Play(giftSound);
+        }
+        if (!string.IsNullOrEmpty(conversation.takeItem))
+        {
+            GameSession.Inventory.Bag.Remove(conversation.takeItem);
+            GameSession.Inventory.KeyItems.Remove(conversation.takeItem);
         }
         if (!string.IsNullOrEmpty(conversation.giveItem))
         {

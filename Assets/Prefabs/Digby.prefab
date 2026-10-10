@@ -1,0 +1,433 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1146136851396709427
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7056944600898319296}
+  - component: {fileID: 1755189328813188489}
+  - component: {fileID: 3669984664585661365}
+  - component: {fileID: 7072859989981700687}
+  m_Layer: 0
+  m_Name: Sprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7056944600898319296
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1146136851396709427}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7975320594213082154}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1755189328813188489
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1146136851396709427}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 250808276, guid: acec5bb4086234be18d6166be98d6196, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 3, y: 3}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!114 &3669984664585661365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1146136851396709427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 752f7aecbf0a145fe8f89f9b53b039e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::SpriteFlipbook
+  frames:
+  - {fileID: 250808276, guid: acec5bb4086234be18d6166be98d6196, type: 3}
+  - {fileID: -833592835, guid: acec5bb4086234be18d6166be98d6196, type: 3}
+  fps: 2
+  loop: 1
+  destroyWhenDone: 0
+  randomStart: 0
+  unscaledTime: 1
+--- !u!114 &7072859989981700687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1146136851396709427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 502420a4bf9fa47588f60892af5832e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Billboard
+--- !u!1 &2112612984793089729
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7975320594213082154}
+  - component: {fileID: 6539178334423211988}
+  - component: {fileID: 880386515935185847}
+  m_Layer: 0
+  m_Name: Digby
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7975320594213082154
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112612984793089729}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7056944600898319296}
+  - {fileID: 6478667254401725474}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6539178334423211988
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112612984793089729}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.8, y: 2, z: 0.8}
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &880386515935185847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112612984793089729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 993d8d8b34a954049b05eb7b4bbba012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Npc
+  npcName: Digby
+  portrait: {fileID: 21300000, guid: e8a1f26ccb5944f3d91026b2556c01c4, type: 3}
+  voice: {fileID: 8300000, guid: cb0ce38f252a041c3baec6a8bc0c658c, type: 3}
+  giftSound: {fileID: 8300000, guid: a142d3c7adcfa46989d2fae3161d654d, type: 3}
+  conversations:
+  - requires: 
+    notIf: met:Digby
+    sets: met:Digby
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: Well, dig me sideways! A visitor! Digby's the name, foreman of the Glimmer Mines. Mind the bats, they've no manners.
+    - heroSpeaks: 1
+      text: Why is it so dark in here?
+    - heroSpeaks: 0
+      text: The Grey Gloom's gloom, that's why. It put out every lamp in the mine, and moles can't see a thing without a lamp.
+    - heroSpeaks: 0
+      text: 'Three of my crew wandered off into the tunnels when the lights went out: Molly, Mortimer and Mo. They''ll be lost and a bit scared.'
+    - heroSpeaks: 0
+      text: Find all three and tell them to come home, {hero}, and I'll have a surprise for you. Try the dark tunnels, east of here.
+  - requires: moles_found>=3
+    notIf: thanked:digby
+    sets: thanked:digby
+    giveGold: 40
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: There they are! Molly, Mortimer and Mo, safe and sound! I could hug you, {hero}. And I'd better, with these paws.
+    - heroSpeaks: 1
+      text: Is everyone all right?
+    - heroSpeaks: 0
+      text: Right as rain, and twice as muddy. Here, a little something for your trouble. Forty coins!
+    - heroSpeaks: 0
+      text: 'And I''ve cleared the rubble off the old mine-cart line. Climb in any cart and press E: it rattles you down the line from the Entrance to the Tunnels to the Crystal Cavern, and round again.'
+  - requires: thanked:digby
+    notIf: digby:golem
+    sets: digby:golem
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: 'Now, listen. Past the Crystal Cavern is the Golem''s Chamber, and Rocky lives there. He''s a lovely lad, really, only grumpy: the Gloom got into his crystals.'
+    - heroSpeaks: 0
+      text: 'His crystals glow, then go dark, then glow again. Hit him while they GLOW: when they''re dark, his hide is like a mountain.'
+    - heroSpeaks: 0
+      text: And when it goes dark, the whole cave does. That Fairy Lantern of yours would be handy, if you have one.
+  - requires: cleared:Mines4
+    notIf: digby:cheered
+    sets: digby:cheered
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: 'The mine''s gone quiet! You did it! Rocky''s himself again. Oh, and look: he left the Mole Mitts.'
+    - heroSpeaks: 0
+      text: Wear 'em and lean on a big stone block, and you can shove it along. Press E at a mound of loose soil to dig it up.
+    - heroSpeaks: 0
+      text: Plenty of those about the island, I'd wager. Blocks too. Funny how you only spot 'em when you can do something about 'em.
+  - requires: 
+    notIf: moles_found>=3
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 0
+    lines:
+    - heroSpeaks: 0
+      text: 'Three of them, {hero}: Molly, Mortimer and Mo. Try the tunnels, east of the entrance. Bring a light!'
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Why did the mole bring a ladder to work?
+    - heroSpeaks: 1
+      text: Why?
+    - heroSpeaks: 0
+      text: To get to the top soil! Heh heh heh. Oh, I'm good.
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: A mole's favourite music? Anything with a good BASS-ment. Haha!
+  - requires: dirt_dug>=3
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Dug up three mounds already? You've a natural talent, {hero}. Ever think of a career in the soil trade?
+  - requires: 
+    notIf: 
+    sets: 
+    giveGold: 0
+    giveItem: 
+    takeItem: 
+    smallTalk: 1
+    lines:
+    - heroSpeaks: 0
+      text: Mind the carts. Last week one rolled off on its own. Nobody was in it. Spooky, eh?
+  talkOffset: {x: 0, y: 0, z: 0}
+  flipbook: {fileID: 3669984664585661365}
+  idleFrames:
+  - {fileID: 250808276, guid: acec5bb4086234be18d6166be98d6196, type: 3}
+  - {fileID: -833592835, guid: acec5bb4086234be18d6166be98d6196, type: 3}
+  talkFrames:
+  - {fileID: 493651777, guid: acec5bb4086234be18d6166be98d6196, type: 3}
+  - {fileID: 1351821173, guid: acec5bb4086234be18d6166be98d6196, type: 3}
+  idleFps: 2
+  talkFps: 6
+--- !u!1 &3566236784773208879
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6478667254401725474}
+  - component: {fileID: 232068040303707148}
+  - component: {fileID: 3259954461243506222}
+  m_Layer: 0
+  m_Name: Shadow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6478667254401725474
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3566236784773208879}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.049999993, y: 0.02, z: 0.08660254}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7975320594213082154}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &232068040303707148
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3566236784773208879}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: -1
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: -958550709, guid: c3cdb290b89e14562a818f48a0eca33f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 4, y: 4}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!114 &3259954461243506222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3566236784773208879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caf46237c181847899153f7615269a67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::GroundShadow
+  lift: 0.02

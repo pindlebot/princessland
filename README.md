@@ -66,10 +66,54 @@ fountain, **Old Moss** and four sleepy trees to wake with your magic; room 2, th
 room 3, the Mushroom Hollow, is dark (glowcaps, a chest, and the Fairy Lantern lights it); room 4 is **Mother Mushroom's Grove**.
 Beating her makes the **Fairy Lantern** appear. Art: `Tools/make_woods_sprites.py`.
 
-**The Bouncy Boots loop (Phase 2).** The castle grounds start **grey**: the Grey Gloom drained the colour when he stole
-Amethyra's **Amethyst**. After you clear the grounds she tells you the Slime King has it. Beat him (his stairs now lead back
+**The Glimmer Mines** (`Levels/Mines1-4.txt`, the third region): the Mushroom Hollow's south hedge leads down into them. Room 1, the
+Entrance, has a fountain and **Digby**, the mole foreman, who has lost three of his crew (**Molly, Mortimer and Mo**) in the dark
+**Mole Tunnels** (room 2): find all three, tell Digby, and the **mine-cart line** opens (a cart at each of the first three rooms:
+press **E** and it rattles you to the next station; the rails are jammed with rubble until then). Room 3 is the **Crystal Cavern**;
+room 4 is the **Crystal Golem**'s chamber. The Golem's topaz crystals take turns **glowing**: he can only be hurt while they glow, and the
+whole cave goes dark when they dim. Beating him drops the **Mole Mitts** and the **Topaz**. The Mitts let you **push stone blocks** (lean on one:
+it slides a tile, with a clunk; `PushBlock`, `PushAbility`) and **dig soft dirt** (**E**; `SoftDirt`). Blocks and mounds are
+everywhere you couldn't deal with them before (the Mines have heart pieces, a star shard, a chest and the **Topaz Dragon Egg**
+behind them, all marked with a "come back later" bubble). New monsters: **Bats** (fast fliers) and **Pebblins** (slow, tough rocks).
+Easter eggs: Digby's jokes, a "no bats" sign, a tiny mole door, a pet rock with googly eyes. Art: `Tools/make_mines_sprites.py`; builder:
+`DungeonBuilder.Mines.cs` (rooms: `Levels/Mines*.txt`; header keys `floor: cave` and `walls: rock`, `mood: mines`).
+
+**Puddlebrook Lake** (`Levels/Lake1-4.txt`, the fourth region): a crack in the south wall of the Slime King's hall in the dungeon leads out to
+its shore. Room 1, the Shore, has a fountain and **Captain Clamshell**, a retired crab sailor, who teaches **fishing**: stand at a
+fishing spot and press **E** to cast, wait for the bobber to dip (a plip and a ring), then press **E** again before the fish gets away (too
+early scares it off; `FishingSpot`). Catch three fish for his **Fishing Rod** (a longer window, and the big fish like it better); fish sell for
+coins, and a Golden Carp is worth a lot. Room 2 is the **Murky Reeds**, room 3 the **Sunken Dock**, and room 4 is **King Crabbington's Court**: he
+hides in a great shell (spells tink off) while a **tide** sweeps the court in red-warned bands (`TideWaves`: step out of the band), then peeks out and
+slams the ground; hit him only while he peeks out (`ShellCycle`). Beating him drops the **Bubble Charm** and the **Aquamarine**. The Charm lets you
+**swim**: walk right into deep water (`SwimAbility`; no spells while swimming; the water on an island's rim stays a wall). Islands in the
+lake, the castle's cove and (later) elsewhere hold heart pieces, a star shard, a chest and the **Aquamarine Dragon Egg**, all marked by a
+"come back later" bubble. New monsters: **Crabs** (they only ever walk sideways across the screen, so sidestep them) and **Jellyfish** (they drift
+and spit bubbles). Easter eggs: Clamshell's jokes, the Golden Carp, a "fishing / no fishing" sign, a buoy that is not a toy. Art:
+`Tools/make_lake_sprites.py`; builder: `DungeonBuilder.Lake.cs`.
+
+**Frostpeak** (`Levels/Frost1-4.txt`, the fifth region): the way in is a **water route**: a pond in the Sunken Dock (Lake room 3) has a landing at its
+far end with a doorway to the mountain, so you have to **swim** there (Bubble Charm). Room 1, the Camp, has a fountain, **Mr. Frost**, a shivering
+snowman who wants a scarf, and **Granny Purl** knitting by her campfire. The trade chain: Mr. Frost sends you to **Barnaby Badger** (his stall in
+Hollyhock sells a ball of **yarn** once Mr. Frost has asked; `Merchant`'s second ware) > Granny Purl knits it into a **Warm Scarf** (`Npc` conversations can now *take* an item
+too) > Mr. Frost is so pleased he sings you a song and gives you a **Snow Hat** (a hat: +1 heart, +10 magic). The mountain is **slippery**: ice tiles
+(`floor ice` in a map's legend) and the patches an **Ice Slime** leaves behind (`IceTrail`, `IceZone`) make the hero keep their momentum
+(`PlayerController.IsOnIce`). **Snow Imps** lob snowballs. Room 4 is the **Snow Yeti**'s den, an arena of ice: he slams the ground, and rolls **snowballs**
+along red lanes that light up first (`SnowballLanes`); he shakes loose ice slimes when hurt. Beating him drops the **Rainbow Chalk** and the **Sapphire**.
+The Chalk draws **rainbow bridges**: a **chasm** (`prop chasm`, too wide to hop) with a **rainbow post** (`prop rainbowpost`) at each end; stand
+at a post and press **E** and a bridge of rainbow planks appears (`RainbowPost`, `RainbowBridge`; builders pair up posts that face each other
+across chasm tiles). Chasms with a heart piece, a star shard or the **Sapphire Dragon Egg** behind them are in the Camp, the Frozen Pass, the Whispering
+Woods (north-west of the Spore Meadow) and the Murky Reeds. Easter eggs: Mr. Frost's song and jokes, a plain snowman, a drift with a ski pole.
+Art: `Tools/make_frost_sprites.py` (it recolours the slime, so run `make_slime_sprites.py` first); builder: `DungeonBuilder.Frost.cs`;
+header keys `ground: snow`, `walls: snow`, `mood: snow`.
+
+**Stickers** (`StickerBook`, `StickerWatcher`): each of the Mines, the Lake and Frostpeak has a set of stickers (every monster, friend, treasure and secret:
+beat a Bat, meet Digby, catch the Golden Carp, draw a rainbow bridge...). A sticker is earned when its condition holds (the same little language as quests),
+and a toast tells you once ("New sticker: Bat! (2/11)"). The Sticker Book screen that shows them all is still to come (Phase 4).
+
+**The Bouncy Boots loop (Phase 2).** The castle grounds start **overrun with dark green crystals**, a plague the Grey Gloom let loose when he stole
+Amethyra's **Amethyst** (`CrystalPlague`; they are walk-through scenery). After you clear the grounds she tells you the Slime King has it. Beat him (his stairs now lead back
 up to the grounds instead of ending the game) and he leaves two treasures where he fell: **the Amethyst** and the **Bouncy
-Boots** (made from his jelly). Bring the Amethyst to Amethyra and the colour floods back. The boots let you **hop over gaps**: walk
+Boots** (made from his jelly). Bring the Amethyst to Amethyra and the crystals shatter away. The boots let you **hop over gaps**: walk
 into a pit tile (or press **Shift** / **B**) and you spring over it, one or two tiles wide. Gaps are placed *before* you have the boots,
 each with a thought bubble showing the boots and a "?" (`HintBubble`) so you remember to come back: a secret garden with a
 **heart piece** in the castle grounds' south-east corner, a star-shard alcove above the dungeon's first corridor, and an
@@ -79,7 +123,7 @@ Both heroes also open the **spell gates** from the start: **brambles** (a thorny
 thorn nook with a chest sits beside your start) and **braziers** (fire lights them, water fills the basin: light both in the
 dungeon's mushroom grotto and a star shard appears). Four **heart pieces** make one more heart; **star shards** are kept for the
 wardrobe at home (coming later). Art: `Tools/make_gate_sprites.py`; code: `Gap`, `HopAbility`, `HintBubble`, `Bramble`,
-`Brazier`, `Collectible`, `ColorDrain`; builder: `DungeonBuilder.Gates.cs`.
+`Brazier`, `Collectible`, `CrystalPlague`; builder: `DungeonBuilder.Gates.cs`. Abilities so far: Bouncy Boots, Fairy Lantern, **Mole Mitts**, **Bubble Charm**, **Rainbow Chalk**.
 
 **Rooms, the world map, secrets and smarter monsters.** In the Whispering Woods (and the castle grounds' west side) the
 rooms connect by **room edges** (`<symbol> = edge <Scene>` in the map): an arrow on the floor, and walking onto it crosses into
@@ -219,7 +263,10 @@ to its buttons as soon as you touch it.
 | `DungeonBuilder.CharacterSelect.cs` | The select screen scene |
 | `DungeonBuilder.Title.cs` | The title screen scene |
 | `DungeonBuilder.Cove.cs` | Mermaid Cove: pirate and dark mermaid stats, Pearl's lines, the rowboat, waterfalls |
-| `DungeonBuilder.Gates.cs` | The gates: gaps (pits), brambles, braziers, hint bubbles, heart pieces and star shards, the grey-world effect, room edges, Dad's Workshop |
+| `DungeonBuilder.Gates.cs` | The gates: gaps (pits), brambles, braziers, hint bubbles, heart pieces and star shards, the crystal plague, room edges, Dad's Workshop |
+| `DungeonBuilder.Mines.cs` | The Glimmer Mines: bat, pebblin and Crystal Golem stats, Digby's and the moles' lines, blocks, soft dirt, the mine cart, the signs |
+| `DungeonBuilder.Lake.cs` | Puddlebrook Lake: crab, jellyfish and King Crabbington stats, Captain Clamshell's lines, the fishing spot, scenery |
+| `DungeonBuilder.Frost.cs` | Frostpeak: ice slime, snow imp and Snow Yeti stats, Mr. Frost's and Granny Purl's lines, rainbow posts, chasms and bridges |
 | `DungeonBuilder.WorldMap.cs` | The world map's data (every room's place, tiles and markers) |
 
 **Levels are text files** in `Assets/Levels/<Scene>.txt`: a header (`title`, `theme`: Outdoor/Dungeon/Home, `music`,
@@ -250,7 +297,7 @@ The gates: `\ = prop gap` (a pit tile: hop it with the boots), `` ` = prop bramb
 `9 = prop starshard` (add `hidden braziers` to make it wait for the braziers), and `item <id> hidden [braziers]` for a treasure
 that waits for the boss or the braziers (`MapFile.cs` has the full list; `GatesTests` checks that every gap really seals its treasure
 until you have the boots).
-Header extras: `exit_spawn: <Name>` (where the stairs arrive), `grey_until: <condition>` (a level drained of colour until e.g.
+Header extras: `exit_spawn: <Name>` (where the stairs arrive), `plague_until: <condition>` (a level overrun with dark green crystals until e.g.
 `has:amethyst` holds), `water: sea` (the sea instead of the pond), `ground: sand` (`.` and the markers are beach sand). On an
 Outdoor level, a door is a **rowboat** at the end of a jetty, and water on the map's edge spills off the island.
 
