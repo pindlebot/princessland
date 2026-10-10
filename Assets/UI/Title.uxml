@@ -12,11 +12,13 @@
         <ui:Label class="select-subtitle" text="Pick your adventure" />
 
         <ui:Button name="continue" class="start-button continue-button" text="Continue  [Enter]" />
+        <ui:Label name="status" class="title-status" text="" />
 
         <ui:VisualElement class="cards slots">
             <ui:VisualElement name="slot-0" class="frame card slot">
                 <ui:Label class="card-key" text="1" />
                 <ui:VisualElement name="slot-portrait" class="slot-portrait" />
+                <ui:Label name="slot-tag" class="slot-tag" text="" />
                 <ui:Label name="slot-name" class="card-name" text="New adventure" />
                 <ui:Label name="slot-place" class="slot-place" />
                 <ui:Label name="slot-stats" class="slot-stats" />
@@ -25,6 +27,7 @@
             <ui:VisualElement name="slot-1" class="frame card slot">
                 <ui:Label class="card-key" text="2" />
                 <ui:VisualElement name="slot-portrait" class="slot-portrait" />
+                <ui:Label name="slot-tag" class="slot-tag" text="" />
                 <ui:Label name="slot-name" class="card-name" text="New adventure" />
                 <ui:Label name="slot-place" class="slot-place" />
                 <ui:Label name="slot-stats" class="slot-stats" />
@@ -33,6 +36,7 @@
             <ui:VisualElement name="slot-2" class="frame card slot">
                 <ui:Label class="card-key" text="3" />
                 <ui:VisualElement name="slot-portrait" class="slot-portrait" />
+                <ui:Label name="slot-tag" class="slot-tag" text="" />
                 <ui:Label name="slot-name" class="card-name" text="New adventure" />
                 <ui:Label name="slot-place" class="slot-place" />
                 <ui:Label name="slot-stats" class="slot-stats" />

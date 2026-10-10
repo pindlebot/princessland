@@ -74,12 +74,14 @@ Keep these design pillars:
 ### B1. First-session flow (M)
 
 - [ ] Observe a new player from Title through CharacterSelect and Castle Grounds without coaching. Note hesitation, missed prompts, aim confusion and unnoticed paths.
-- [ ] Make Continue visually primary when a save exists; clearly distinguish slot selection, new game and replacement. Ensure first focus is visible on gamepad.
-- [ ] Present hero differences with hearts, magic and spell demonstrations rather than only stat prose. Explain that both heroes have complete traversal access.
-- [ ] Teach one action at a time: movement → talk → spell → first chest/food → first obstacle. Reuse existing world interactions rather than adding a long mandatory tutorial.
-- [ ] Make the first immediate objective visible on HUD/map and in dialogue. Clarify why Castle Dungeon stairs remain closed when all monsters are required.
-- [ ] Give an optional help/hint path after inactivity or repeated unsuccessful interaction; make it dismissible and avoid covering combat.
-- [ ] Ensure skipping/replaying tutorials or starting a second save does not trap the player in stale tutorial state.
+- [x] Make Continue visually primary when a save exists; clearly distinguish slot selection, new game and replacement. Ensure first focus is visible on gamepad.
+- [x] Present hero differences with hearts, magic and spell demonstrations rather than only stat prose. Explain that both heroes have complete traversal access.
+- [x] Teach one action at a time: movement → talk → spell → first chest/food → first obstacle. Reuse existing world interactions rather than adding a long mandatory tutorial.
+- [x] Make the first immediate objective visible on HUD/map and in dialogue. Clarify why Castle Dungeon stairs remain closed when all monsters are required.
+- [x] Give an optional help/hint path after inactivity or repeated unsuccessful interaction; make it dismissible and avoid covering combat.
+- [x] Ensure skipping/replaying tutorials or starting a second save does not trap the player in stale tutorial state.
+
+**Result (2026-10-10):** implemented in `FirstSteps.cs`, `HudController`, `TitleController`, `CharacterSelectController`. Full Play Mode suite (minus `ZzVisualCheck`): 260/260 pass. Remaining: the unobserved playtest (first item) and a minimap/world-map marker for the current goal.
 
 **Done when:** a new player reaches a meaningful objective and can explain or demonstrate what to do next, with essential instructions understandable through pictures/actions.
 

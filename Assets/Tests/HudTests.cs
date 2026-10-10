@@ -58,7 +58,8 @@ public class HudTests
         var pips = hud.Q("objective-pips").Children().ToList();
         Assert.AreEqual(6, pips.Count, "one marker per monster");
         Assert.AreEqual(0, pips.Count(p => p.ClassListContains("defeated")));
-        Assert.AreEqual(DisplayStyle.None, hud.Q<Label>("objective-hint").style.display.value, "no extra words needed yet");
+        Assert.AreEqual("The stairs open when every monster is beaten", hud.Q<Label>("objective-hint").text,
+                        "the card says why the stairs are shut");
 
         var enemies = Object.FindObjectsByType<EnemyAI>();
         enemies[0].GetComponent<Health>().TakeDamage(99);

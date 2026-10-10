@@ -20,7 +20,7 @@ public static partial class DungeonBuilder
     {
         PrefabName = "Player_Wizard",
         DisplayName = "Aldric the Wizard",
-        Description = "Hurls blazing Fireballs.\nHealth 5 · Mana 50 · casts every 0.6s",
+        Description = "Hurls blazing Fireballs.",
         Portrait = "PortraitWizard",
         Health = 5, Mana = 50f, ManaRegen = 8f,
         Spell = "Fireball", SpellIcon = "IconFireball", CastSound = "cast_fire", ImpactSound = "impact_fire",
@@ -33,7 +33,7 @@ public static partial class DungeonBuilder
     {
         PrefabName = "Player_Princess",
         DisplayName = "Princess Marina",
-        Description = "Casts swift Tidal Orbs.\nHealth 6 · Mana 40 · casts every 0.45s",
+        Description = "Casts swift Tidal Orbs.",
         Portrait = "PortraitPrincess",
         Health = 6, Mana = 40f, ManaRegen = 9f,
         Spell = "TidalOrb", SpellIcon = "IconTidalOrb", CastSound = "cast_water", ImpactSound = "impact_water",

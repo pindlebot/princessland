@@ -31,6 +31,7 @@ public static partial class DungeonBuilder
                 N("Say, {hero}... have you seen my friend Sir Hopsalot? He's a little green frog with a tiny crown."),
                 N("He LOVES hiding in bushes. If you find him, will you tell me?"),
                 H("I'll keep my eyes open!"),
+                N("Oh, and those stairs by the fountain? They stay shut until every skeleton and slime in the grounds is beaten. Zap them with your magic!"),
             },
         },
         new Talk

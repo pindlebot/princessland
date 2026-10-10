@@ -86,6 +86,7 @@
                 <ui:Label name="enemies-left" class="enemies-left" text="6 monsters left" />
             </ui:VisualElement>
             <ui:VisualElement name="objective-pips" class="objective-pips" picking-mode="Ignore" />
+            <ui:Label name="objective-goal" class="objective-goal" text="" />
             <ui:Label name="objective-hint" class="objective-hint" text="" />
         </ui:VisualElement>
 

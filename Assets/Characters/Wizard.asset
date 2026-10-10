@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Wizard
   m_EditorClassIdentifier: Game::CharacterDefinition
   displayName: Aldric the Wizard
-  description: "Hurls blazing Fireballs.\nHealth 5 \xB7 Mana 50 \xB7 casts every 0.6s"
+  description: Hurls blazing Fireballs.
   portrait: {fileID: 21300000, guid: c90b734d21b5f404c88eb2b43356f20c, type: 3}
   prefab: {fileID: 2322335324994381703, guid: ed7d8b94bdd5e41d895ec73c0e7c02ce, type: 3}

@@ -28,6 +28,7 @@ music: music_castle
 region: castle
 exit: Dungeon
 exit_needs: all_monsters
+locked_hint: The stairs open when every monster is beaten
 open_hint: The stairs are open!
 plague_until: has:amethyst
 minimap_floor: #7EA068

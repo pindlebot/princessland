@@ -43,6 +43,7 @@ public class Bramble : MonoBehaviour, ISpellTarget
         ClearedBy = element == SpellElement.Water ? SpellElement.Water : SpellElement.Fire;
         if (!string.IsNullOrEmpty(persistentId)) GameSession.MarkUsed(persistentId);
         GameSession.AddToCounter(ClearedCounter);
+        FirstSteps.Complete(FirstStep.Obstacle);
         if (solid != null) solid.enabled = false; // the way is open straight away
         NavGrid.MarkDirty(); // and monsters can path through it
         AudioManager.Play(ClearedBy == SpellElement.Water ? bloomSound : burnSound);

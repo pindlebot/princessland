@@ -8,22 +8,36 @@
 
     <ui:VisualElement class="select-screen">
         <ui:Label class="select-title" text="Choose your hero" />
-        <ui:Label class="select-subtitle" text="Click a hero or press 1 / 2   (Esc: back)" />
+        <ui:Label class="select-subtitle" text="Click a hero or press 1 / 2   (Esc: back)   Hearts = health, orbs = magic" />
 
         <ui:VisualElement class="cards">
             <ui:VisualElement name="card-0" class="frame card">
                 <ui:Label class="card-key" text="1" />
                 <ui:VisualElement name="card-portrait" class="card-portrait" />
                 <ui:Label name="card-name" class="card-name" text="Hero" />
+                <ui:VisualElement name="card-hearts" class="stat-row" picking-mode="Ignore" />
+                <ui:VisualElement name="card-magic" class="stat-row" picking-mode="Ignore" />
+                <ui:VisualElement class="spell-demo" picking-mode="Ignore">
+                    <ui:VisualElement name="card-spell-icon" class="spell-demo-icon" picking-mode="Ignore" />
+                    <ui:Label name="card-spell-name" class="spell-demo-name" text="" />
+                </ui:VisualElement>
                 <ui:Label name="card-description" class="card-description" text="" />
             </ui:VisualElement>
             <ui:VisualElement name="card-1" class="frame card">
                 <ui:Label class="card-key" text="2" />
                 <ui:VisualElement name="card-portrait" class="card-portrait" />
                 <ui:Label name="card-name" class="card-name" text="Hero" />
+                <ui:VisualElement name="card-hearts" class="stat-row" picking-mode="Ignore" />
+                <ui:VisualElement name="card-magic" class="stat-row" picking-mode="Ignore" />
+                <ui:VisualElement class="spell-demo" picking-mode="Ignore">
+                    <ui:VisualElement name="card-spell-icon" class="spell-demo-icon" picking-mode="Ignore" />
+                    <ui:Label name="card-spell-name" class="spell-demo-name" text="" />
+                </ui:VisualElement>
                 <ui:Label name="card-description" class="card-description" text="" />
             </ui:VisualElement>
         </ui:VisualElement>
+
+        <ui:Label name="both-heroes" class="both-heroes" text="Both heroes can go everywhere and open every door." />
 
         <ui:Button name="start" class="start-button" text="Start  [Enter]" />
     </ui:VisualElement>

@@ -169,6 +169,14 @@ Label {
     background-image: url("project://database/Assets/Art/UI/PipStar.png");
 }
 
+/* The first-session goal: what to do right now, in the gold of the "open" hint so the eye finds it. */
+.objective-goal {
+    font-size: var(--text-title);
+    color: var(--honey-shade);
+    white-space: normal;
+    margin-top: 4px;
+}
+
 .objective-hint {
     font-size: var(--text-body);
     margin-top: 4px;

@@ -38,6 +38,7 @@ public class Chest : MonoBehaviour, IInteractable
         if (IsOpen) return null;
         IsOpen = true;
         if (!string.IsNullOrEmpty(persistentId)) GameSession.MarkUsed(persistentId);
+        FirstSteps.Complete(FirstStep.Treasure);
 
         StartCoroutine(PlayOpening());
         AudioManager.Play(openSound);

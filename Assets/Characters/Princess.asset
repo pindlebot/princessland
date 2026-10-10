@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Princess
   m_EditorClassIdentifier: Game::CharacterDefinition
   displayName: Princess Marina
-  description: "Casts swift Tidal Orbs.\nHealth 6 \xB7 Mana 40 \xB7 casts every 0.45s"
+  description: Casts swift Tidal Orbs.
   portrait: {fileID: 21300000, guid: 425d71343761f45538a7fa76faeecf6c, type: 3}
   prefab: {fileID: 847039487741128333, guid: 85a2b6cf2e829459c855c7b992ede188, type: 3}

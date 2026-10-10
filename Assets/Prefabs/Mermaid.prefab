@@ -84,6 +84,8 @@ MonoBehaviour:
       text: He LOVES hiding in bushes. If you find him, will you tell me?
     - heroSpeaks: 1
       text: I'll keep my eyes open!
+    - heroSpeaks: 0
+      text: Oh, and those stairs by the fountain? They stay shut until every skeleton and slime in the grounds is beaten. Zap them with your magic!
   - requires: 
     notIf: found:frog
     sets: 

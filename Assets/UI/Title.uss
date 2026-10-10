@@ -4,8 +4,52 @@
     font-size: 52px;
 }
 
+/* Continue is the main thing on the screen when there is a save: bigger than anything else, with a glow. */
 .continue-button {
-    margin: 0 0 26px 0;
+    margin: 0 0 8px 0;
+    padding: 14px 40px;
+    font-size: 24px;
+    border-width: 3px;
+    border-color: rgb(255, 240, 190);
+    border-radius: 6px;
+}
+
+.continue-button.selected {
+    background-color: rgb(255, 222, 130);
+}
+
+/* One line saying what Enter (A) will do for the highlighted card. */
+.title-status {
+    font-size: 15px;
+    color: rgba(236, 228, 210, 0.85);
+    margin: 0 0 18px 0;
+    min-height: 20px;
+}
+
+.title-status.warning {
+    color: rgb(255, 150, 150);
+}
+
+/* A little badge: "Continue" on a saved adventure, "New" on an empty slot. */
+.slot-tag {
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(46, 140, 70);
+}
+
+.slot.empty .slot-tag {
+    color: rgb(164, 112, 40);
+}
+
+/* Erase asked once: the card goes red and waits for the second click. */
+.slot.erasing {
+    border-width: 3px;
+    border-color: rgb(190, 50, 70);
+    border-radius: 6px;
+}
+
+.slot.erasing .slot-tag {
+    color: rgb(190, 50, 70);
 }
 
 .slot {

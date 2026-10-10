@@ -87,3 +87,47 @@
 .start-button:hover {
     background-color: rgb(255, 222, 130);
 }
+
+/* Hero differences as pictures: a row of hearts, a row of magic orbs, and the spell flashing at its own speed. */
+.stat-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-height: 24px;
+    margin-bottom: 4px;
+}
+
+.stat-row .magic-icon {
+    margin: 0 2px 0 0;
+}
+
+.spell-demo {
+    flex-direction: row;
+    align-items: center;
+    margin: 4px 0 8px 0;
+}
+
+.spell-demo-icon {
+    width: 48px; /* 24px icon at 2x */
+    height: 48px;
+    margin-right: 8px;
+    scale: 1 1;
+    transition-property: scale;
+    transition-duration: 0.1s;
+}
+
+.spell-demo-icon.cast {
+    scale: 1.3 1.3;
+}
+
+.spell-demo-name {
+    font-size: 16px;
+    color: rgb(164, 112, 40);
+}
+
+/* "Both heroes can go everywhere": the one line that stops a child worrying about picking wrong. */
+.both-heroes {
+    margin-top: 20px;
+    font-size: 15px;
+    color: rgb(232, 196, 104);
+}

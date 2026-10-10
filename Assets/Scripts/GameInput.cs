@@ -139,6 +139,10 @@ public static class GameInput
     public static bool HelpPressed =>
         Down(Keyboard.current?.hKey) || (Down(Gamepad.current?.selectButton) && Held(Gamepad.current?.rightShoulder));
     // Cycle which monster the spell is aimed at (see SpellAbility.CycleTarget).
+    // G (or LB + View): hide the first-steps tips, or bring them back (see FirstSteps).
+    public static bool TipsPressed =>
+        Down(Keyboard.current?.gKey) || (Down(Gamepad.current?.selectButton) && Held(Gamepad.current?.leftShoulder));
+    public static string TipsKey => UsingGamepad ? "LB+View" : "G";
     public static bool TargetPressed => Down(Keyboard.current?.tabKey) || Down(Gamepad.current?.rightShoulder);
     public static string TargetKey => UsingGamepad ? "RB" : "Tab";
     public static bool MenuPressed => Down(Keyboard.current?.escapeKey) || Down(Gamepad.current?.startButton);

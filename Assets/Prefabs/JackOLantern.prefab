@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2588978093928759837
+--- !u!1 &2686335537123435556
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7176065233713894935}
-  - component: {fileID: 613571879627036664}
-  - component: {fileID: 9123702840471415310}
+  - component: {fileID: 7345369006470187523}
+  - component: {fileID: 4409834848013714408}
+  - component: {fileID: 863399821360380734}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -18,13 +18,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7176065233713894935
+--- !u!4 &7345369006470187523
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2588978093928759837}
+  m_GameObject: {fileID: 2686335537123435556}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.6, z: -0.3}
@@ -33,13 +33,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3907972594259513828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!108 &613571879627036664
+--- !u!108 &4409834848013714408
 Light:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2588978093928759837}
+  m_GameObject: {fileID: 2686335537123435556}
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 2
@@ -98,13 +98,13 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &9123702840471415310
+--- !u!114 &863399821360380734
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2588978093928759837}
+  m_GameObject: {fileID: 2686335537123435556}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48724c393adf344a089352e54c96a074, type: 3}
@@ -377,7 +377,7 @@ Transform:
   m_Children:
   - {fileID: 3285466760830118926}
   - {fileID: 4495110332001480543}
-  - {fileID: 7176065233713894935}
+  - {fileID: 7345369006470187523}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &5067757489983418302

@@ -103,6 +103,7 @@ public class Npc : MonoBehaviour, IInteractable
     private void Finish(Conversation conversation)
     {
         GameSession.AddToCounter("talks:" + npcName);
+        FirstSteps.Complete(FirstStep.Talk);
         if (conversation.smallTalk) GameSession.AddToCounter("smalltalk:" + npcName);
         foreach (var flag in (conversation.sets ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
         {

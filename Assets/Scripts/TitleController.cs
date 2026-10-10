@@ -10,6 +10,9 @@ using UnityEngine.UIElements;
 // Keys: 1/2/3 open that slot. Left/Right (d-pad, stick) move the highlight, which starts on
 // the most recent save, and Enter (A) opens the highlighted slot, so Enter alone continues.
 // "Quit game" at the bottom closes the game; Down (d-pad, stick) moves the highlight onto it.
+// Continue is the big gold button (shown when any save exists) and says who and where. A line under it
+// says what Enter will do for the highlighted card: continue it, start a new adventure, or (after one
+// click on Erase) warn that erasing is for good. Moving away or waiting a few seconds takes the erase back.
 [RequireComponent(typeof(UIDocument))]
 public class TitleController : MonoBehaviour
 {
@@ -22,6 +25,9 @@ public class TitleController : MonoBehaviour
 
     private VisualElement root;
     private Button continueButton, quitButton;
+    private Label status;
+    private const float EraseArmedSeconds = 4f;
+    private float eraseDisarmAt = float.MaxValue;
     private readonly int[] eraseArmed = { 0, 0, 0 }; // erasing takes two clicks
     private bool leaving;
     public int Highlighted { get; private set; }
@@ -36,6 +42,7 @@ public class TitleController : MonoBehaviour
         root = GetComponent<UIDocument>().rootVisualElement;
         continueButton = root.Q<Button>("continue");
         continueButton.clicked += Continue;
+        status = root.Q<Label>("status");
         quitButton = root.Q<Button>("quit");
         quitButton.clicked += AppQuit.Quit;
         for (int i = 0; i < SaveSystem.SlotCount; i++)
@@ -54,6 +61,7 @@ public class TitleController : MonoBehaviour
 
     private void Update()
     {
+        if (Time.unscaledTime >= eraseDisarmAt && DisarmErase()) Refresh();
         if (GameInput.ConfirmPressed)
         {
             if (QuitHighlighted) AppQuit.Quit();
@@ -77,11 +85,14 @@ public class TitleController : MonoBehaviour
     {
         index = Mathf.Clamp(index, 0, QuitIndex);
         if (sound && index != Highlighted) AudioManager.Play(selectSound);
+        bool moved = index != Highlighted;
         Highlighted = index;
         if (!QuitHighlighted) lastSlot = index;
         for (int i = 0; i < SaveSystem.SlotCount; i++)
             root.Q($"slot-{i}").EnableInClassList("selected", i == Highlighted);
         quitButton.EnableInClassList("selected", QuitHighlighted);
+        if (moved && DisarmErase()) Refresh();
+        UpdateStatus();
     }
 
     // Redraw the cards from the save files.
@@ -94,6 +105,8 @@ public class TitleController : MonoBehaviour
             var data = SaveSystem.Peek(i);
             var hero = data == null ? null : System.Array.Find(heroes, h => h != null && h.name == data.hero);
             card.EnableInClassList("empty", data == null);
+            card.EnableInClassList("erasing", eraseArmed[i] > 0);
+            card.Q<Label>("slot-tag").text = eraseArmed[i] > 0 ? "Erase for good?" : data == null ? "+ New adventure" : "Continue";
 
             var portrait = card.Q("slot-portrait");
             portrait.style.backgroundImage = hero != null ? new StyleBackground(hero.Portrait) : new StyleBackground();
@@ -105,6 +118,45 @@ public class TitleController : MonoBehaviour
             erase.style.display = data == null ? DisplayStyle.None : DisplayStyle.Flex;
             erase.text = eraseArmed[i] > 0 ? "Really erase?" : "Erase";
         }
+        if (continueButton.style.display == DisplayStyle.Flex) continueButton.text = ContinueText();
+        UpdateStatus();
+    }
+
+    // "Continue: Aldric the Wizard, Castle Grounds". Continue always picks up the most recent save.
+    private string ContinueText()
+    {
+        var data = SaveSystem.Peek(SaveSystem.MostRecentSlot());
+        var hero = data == null ? null : System.Array.Find(heroes, h => h != null && h.name == data.hero);
+        string who = hero != null ? hero.DisplayName : data?.hero;
+        return $"Continue: {who}, {SaveSystem.PlaceName(data?.scene)}   [Enter]";
+    }
+
+    // What Enter (A) does right now, in words, for the highlighted card.
+    private void UpdateStatus()
+    {
+        if (status == null) return;
+        bool warn = Highlighted < SaveSystem.SlotCount && eraseArmed[Highlighted] > 0;
+        string text;
+        if (QuitHighlighted) text = "Enter closes the game. Your adventures are already saved.";
+        else if (warn) text = $"Adventure {Highlighted + 1} will be gone for good. Click Erase again to be sure, or move away to keep it.";
+        else if (SaveSystem.Peek(Highlighted) != null) text = $"Enter continues adventure {Highlighted + 1}. (Nothing is lost.)";
+        else text = $"Enter starts a new adventure in slot {Highlighted + 1}.";
+        status.text = text;
+        status.EnableInClassList("warning", warn);
+        continueButton.EnableInClassList("selected", !QuitHighlighted && Highlighted == SaveSystem.MostRecentSlot());
+    }
+
+    // Take back any armed "Really erase?". True if there was one.
+    private bool DisarmErase()
+    {
+        bool any = false;
+        for (int i = 0; i < eraseArmed.Length; i++)
+        {
+            any |= eraseArmed[i] > 0;
+            eraseArmed[i] = 0;
+        }
+        eraseDisarmAt = float.MaxValue;
+        return any;
     }
 
     public void Continue()
@@ -128,11 +180,12 @@ public class TitleController : MonoBehaviour
         StartCoroutine(LeaveAfterSound(scene));
     }
 
-    private void Erase(int slot)
+    public void Erase(int slot)
     {
         if (eraseArmed[slot] == 0)
         {
             eraseArmed[slot] = 1;
+            eraseDisarmAt = Time.unscaledTime + EraseArmedSeconds;
             AudioManager.Play(selectSound);
         }
         else

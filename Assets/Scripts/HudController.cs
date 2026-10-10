@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 // Keeps the HUD (Assets/UI/Hud.uxml + Hud.uss) in sync with the game.
@@ -95,6 +96,19 @@ public class HudController : MonoBehaviour
     private bool lastHalf;
     private float nextHeartbeat;
     private bool usedMouseLast, hasWalked;
+
+    // First-session coach (see FirstSteps): when the player last made progress or got hurt, the idle
+    // help that is showing, and the last failed interaction (the same message three times is "stuck").
+    public static float IdleSeconds = 40f; // (tests shorten it)
+    private const float HelpSeconds = 12f, HelpEvery = 120f, CombatQuietSeconds = 8f;
+    private float lastProgressAt, lastHurtAt = -999f, helpUntil, nextHelpAt;
+    private string helpText = "", lastFailMessage = "";
+    private float lastFailAt;
+    private int failCount;
+    private Label objectiveGoal;
+    private Npc[] friends;
+    private Chest[] chests;
+    private Bramble[] brambles;
     private Vector3 startPosition;
     private float startTime;
 
@@ -128,6 +142,7 @@ public class HudController : MonoBehaviour
         enemiesLeft = root.Q<Label>("enemies-left");
         pipsRow = root.Q("objective-pips");
         objectiveHint = root.Q<Label>("objective-hint");
+        objectiveGoal = root.Q<Label>("objective-goal");
         banner = root.Q("banner");
         sleepFade = root.Q("sleep-fade");
         bannerTitle = root.Q<Label>("banner-title");
@@ -151,6 +166,7 @@ public class HudController : MonoBehaviour
         prompt.parent.Add(contextHint);
 
         interactor.Interacted += ShowToast;
+        interactor.Interacted += OnInteracted;
         playerHealth.Damaged += OnPlayerHurt;
         spell.Cast += OnCast;
         progress = GameSession.Progress;
@@ -186,6 +202,11 @@ public class HudController : MonoBehaviour
         lastAlive = EnemyAI.AliveCount;
         startPosition = playerHealth.transform.position;
         startTime = Time.time;
+        lastProgressAt = Time.time;
+        friends = FindObjectsByType<Npc>();
+        chests = FindObjectsByType<Chest>();
+        brambles = FindObjectsByType<Bramble>();
+        FirstSteps.SkipIfExperienced();
     }
 
     private void Update()
@@ -200,6 +221,7 @@ public class HudController : MonoBehaviour
         UpdateAbilitySlots();
         UpdateQuickSlots();
         UpdateObjective();
+        UpdateGoal();
         UpdateSecondary();
         UpdateHints();
 
@@ -252,6 +274,7 @@ public class HudController : MonoBehaviour
             SetHelpOpen(!IsHelpOpen);
             AudioManager.Play(clickSound, 0.6f);
         }
+        if (GameInput.TipsPressed) ToggleTips();
         HandleQuickKeys();
         // Which button does this player cast with? Show that one on the spell slot.
         if (GameInput.ClickPressed && !PointerOverUi) usedMouseLast = true;
@@ -314,11 +337,17 @@ public class HudController : MonoBehaviour
     }
 
     // Any hit, even a Gentle Mode bump that costs no heart: the screen's edges flash red.
-    private void OnPlayerHurt(Health _) => Pop(hurtFlash, "visible", 140);
+    private void OnPlayerHurt(Health _)
+    {
+        lastHurtAt = Time.time;
+        Pop(hurtFlash, "visible", 140);
+    }
 
     // The spell went off: the slot dips and a four-point star flashes over it, briefly.
     private void OnCast()
     {
+        lastProgressAt = Time.time;
+        FirstSteps.Complete(FirstStep.Spell);
         Pop(spellSlot, "cast", 90);
         Pop(spellFlash, "visible", 90);
     }
@@ -449,6 +478,7 @@ public class HudController : MonoBehaviour
     private bool EatFromBag(ItemDefinition item)
     {
         if (!inventory.Eat(item)) return false;
+        FirstSteps.Complete(FirstStep.Treasure);
         itemDetails.text = $"Yum! You eat the {item.DisplayName}. {item.FoodText}!";
         ShowToast($"Yum! {item.DisplayName}! {item.FoodText}");
         AudioManager.Play(eatSound != null ? eatSound : clickSound);
@@ -469,7 +499,7 @@ public class HudController : MonoBehaviour
     {
         // Count defeats as the number alive drops (a boss's slimelings add to the total).
         int alive = EnemyAI.AliveCount;
-        if (alive < lastAlive) defeated += lastAlive - alive;
+        if (alive < lastAlive) { defeated += lastAlive - alive; lastProgressAt = Time.time; }
         lastAlive = alive;
         int total = defeated + alive;
 
@@ -549,6 +579,7 @@ public class HudController : MonoBehaviour
         if (!hasWalked)
             hasWalked = Vector3.Distance(playerHealth.transform.position, startPosition) > 2f
                         || Time.time - startTime > 10f;
+        if (hasWalked) FirstSteps.Complete(FirstStep.Walk);
 
         string hint = null;
         if (usable == null && !DialogueController.IsOpen && GameManager.Instance != null && !GameManager.Instance.IsGameOver)
@@ -557,9 +588,103 @@ public class HudController : MonoBehaviour
                 hint = GameInput.UsingGamepad ? "Stick: Walk" : "W A S D: Walk";
             else if (Time.time - spell.LastCastTime > 6f && spell.CanAfford && spell.FindTarget() != null)
                 hint = $"{SpellKey}: Magic!";
+            else
+                hint = CoachHint();
         }
         contextHint.text = hint ?? "";
         contextHint.EnableInClassList("visible", hint != null);
+    }
+
+    // ---------- First-session coach (see FirstSteps) ----------
+
+    private bool InCastle => SceneManager.GetActiveScene().name == "Level0";
+
+    // Any monster in reach of the spell, or a recent hit: the player is fighting, so the coach stays quiet.
+    private bool InCombat => Time.time - lastHurtAt < CombatQuietSeconds || spell.Target != null;
+
+    // G hides the tips for good (it's saved); pressing it again brings them back from the first step.
+    public void ToggleTips()
+    {
+        bool turnOn = !FirstSteps.Enabled;
+        FirstSteps.SetEnabled(turnOn);
+        helpUntil = 0f;
+        lastProgressAt = Time.time;
+        ShowToast(turnOn ? "Tips are back on." : $"Tips hidden. {GameInput.TipsKey} brings them back.");
+    }
+
+    // A failed interaction (a locked door says the same thing every time) three times in 20 seconds.
+    private void OnInteracted(string message)
+    {
+        if (string.IsNullOrEmpty(message)) { lastProgressAt = Time.time; failCount = 0; return; }
+        failCount = message == lastFailMessage && Time.time - lastFailAt < 20f ? failCount + 1 : 1;
+        lastFailMessage = message;
+        lastFailAt = Time.time;
+        if (failCount >= 3) StartHelp("Can't open it yet? Look for a picture bubble, or try somewhere else first.");
+        else lastProgressAt = Time.time;
+    }
+
+    private void StartHelp(string text)
+    {
+        if (!FirstSteps.Enabled || Time.time < nextHelpAt) return;
+        helpText = $"{text}   ({GameInput.TipsKey}: hide tips)";
+        helpUntil = Time.time + HelpSeconds;
+        nextHelpAt = helpUntil + HelpEvery;
+    }
+
+    // The one line the coach has for right now, or null: idle help first, then a nudge for the step the
+    // player is on once they're near the thing to do it with. Never while fighting.
+    private string CoachHint()
+    {
+        if (!FirstSteps.Enabled || InCombat) return null;
+        if (Time.time >= helpUntil && Time.time - lastProgressAt > IdleSeconds)
+            StartHelp(InCastle && FirstSteps.Current != FirstStep.Done
+                ? "Not sure what to do? " + FirstSteps.Goal(FirstSteps.Current, NearestUnmetFriend())
+                : $"Stuck? {GameInput.QuestLogKeyName}: your quests   {GameInput.MapKey}: the map");
+        if (Time.time < helpUntil) return helpText;
+        if (!InCastle) return null;
+
+        var here = playerHealth.transform.position;
+        switch (FirstSteps.Current)
+        {
+            case FirstStep.Talk:
+                return NearestUnmetFriend() != "" ? $"{GameInput.InteractKey}: Say hello to a friend" : null;
+            case FirstStep.Treasure:
+                return chests.Any(c => c != null && !c.IsOpen && Near(c.transform.position, here, 8f))
+                    ? $"{GameInput.InteractKey}: Open the chest" : null;
+            case FirstStep.Obstacle:
+                return brambles.Any(b => b != null && !b.IsCleared && Near(b.transform.position, here, 6f))
+                    ? $"{SpellKey}: Zap the thorns!" : null;
+        }
+        return null;
+    }
+
+    private static bool Near(Vector3 a, Vector3 b, float range)
+    {
+        a.y = b.y;
+        return (a - b).sqrMagnitude <= range * range;
+    }
+
+    // The closest friend the hero hasn't met yet ("" if there's nobody left to meet in this scene).
+    private string NearestUnmetFriend()
+    {
+        var here = playerHealth.transform.position;
+        Npc best = null;
+        float bestDistance = float.MaxValue;
+        foreach (var n in friends)
+        {
+            if (n == null || n.HasMet) continue;
+            float d = (n.transform.position - here).sqrMagnitude;
+            if (d < bestDistance) { best = n; bestDistance = d; }
+        }
+        return best != null ? best.Name : "";
+    }
+
+    // The objective card's first line: what to do right now. Only in the castle grounds, while the tips are on.
+    private void UpdateGoal()
+    {
+        string goal = FirstSteps.Enabled && InCastle ? FirstSteps.Goal(FirstSteps.Current, NearestUnmetFriend()) : "";
+        objectiveGoal.text = goal;
+        objectiveGoal.style.display = goal.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
     }
 
     // Progression outlives this scene's HUD, so stop listening when the HUD goes away.
