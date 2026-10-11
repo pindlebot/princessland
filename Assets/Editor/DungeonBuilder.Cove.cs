@@ -158,7 +158,7 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = glow;
         light.range = 4f;
-        light.intensity = 2.5f;
+        light.intensity = 2.5f * LightBoost;
         return SavePrefab<EnemyBolt>(go, name);
     }
 

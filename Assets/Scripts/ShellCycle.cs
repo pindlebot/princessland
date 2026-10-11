@@ -13,7 +13,7 @@ public class ShellCycle : MonoBehaviour
     [SerializeField] private SpriteRenderer body;       // his own sprite, hidden while he hides
     [SerializeField] private AudioClip hideSound;
     [SerializeField] private AudioClip peekSound;
-    [SerializeField] private AudioClip clinkSound;
+    [SerializeField] private AudioClip clinkSound;   // (the old "tink"; HitFeedback now rings the deflect sound. Kept so the builder's reference stays valid.)
 
     private Health health;
     private BossAbilities boss;
@@ -30,7 +30,10 @@ public class ShellCycle : MonoBehaviour
         boss = GetComponent<BossAbilities>();
         ai = GetComponent<EnemyAI>();
         health.AdjustDamage = amount => IsPeeking ? amount : 0;    // a hit on the shell costs him nothing
-        health.Damaged += _ => { if (!IsPeeking && !health.IsDead) AudioManager.Play(clinkSound, 0.7f); };
+        // A hit on the shell bounces (a grey shield and a "ting", no flash); a hit while he peeks lands (a gold burst).
+        // The cue also keeps a picture over him: a shield while he hides, a star while he peeks.
+        health.DeflectsNoDamageHits = true;
+        gameObject.AddComponent<VulnerabilityCue>().Bind(health, () => IsPeeking, "Wait till he peeks out!", shell != null ? shell.transform : null);
         health.Died += _ => { if (shell != null) shell.SetActive(false); if (body != null) body.enabled = true; };
     }
 

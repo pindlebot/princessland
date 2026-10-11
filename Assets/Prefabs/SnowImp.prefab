@@ -110,6 +110,7 @@ MonoBehaviour:
   maxHealth: 2
   hurtSound: {fileID: 8300000, guid: b6becd997ce7a45cda350bb9d979a912, type: 3}
   deathSound: {fileID: 8300000, guid: b6becd997ce7a45cda350bb9d979a912, type: 3}
+  DeflectsNoDamageHits: 0
   PlayDeathSound: 1
   InvulnerableUntil: 0
 --- !u!114 &5262830673986232523
@@ -232,7 +233,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 71993a945e78548ac8729a90af31a328, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -339,7 +340,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 71993a945e78548ac8729a90af31a328, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

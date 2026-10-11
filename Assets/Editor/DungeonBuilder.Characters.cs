@@ -103,7 +103,7 @@ public static partial class DungeonBuilder
         torch.type = LightType.Point;
         torch.color = new Color(1f, 0.85f, 0.6f);
         torch.range = 10f;
-        torch.intensity = 1.5f;
+        torch.intensity = 1.5f * LightBoost;
 
         AddSpriteVisuals(go, art);
         return SavePrefab(go, stats.PrefabName);
@@ -198,7 +198,7 @@ public static partial class DungeonBuilder
         flash.type = LightType.Point;
         flash.color = new Color(0.7f, 0.4f, 1f);
         flash.range = 4f;
-        flash.intensity = 4f;
+        flash.intensity = 4f * LightBoost;
         flash.gameObject.AddComponent<FadeOutLight>();
         var shockwavePrefab = SavePrefab(shockwave, "SlamShockwave");
 
@@ -280,7 +280,7 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = lightColor;
         light.range = 5f;
-        light.intensity = 3f;
+        light.intensity = 3f * LightBoost;
 
         return SavePrefab<Projectile>(go, spell);
     }
@@ -299,7 +299,7 @@ public static partial class DungeonBuilder
         flash.type = LightType.Point;
         flash.color = lightColor;
         flash.range = 7f;
-        flash.intensity = 4f;
+        flash.intensity = 4f * LightBoost;
         flash.gameObject.AddComponent<FadeOutLight>();
 
         return SavePrefab(go, spell + "Impact");

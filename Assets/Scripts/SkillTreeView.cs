@@ -99,6 +99,7 @@ public class SkillTreeView : MonoBehaviour
         if (System.Array.IndexOf(path, skill) < 0) return false; // another hero's skill
         if (!progress.Learn(skill)) return false;
         AudioManager.Play(learnSound);
+        SaveSystem.AutosaveSoon(); // a bought skill isn't lost if the game closes
         details.text = Describe(skill);
         return true;
     }

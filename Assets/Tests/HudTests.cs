@@ -114,7 +114,15 @@ public class HudTests
 
         // Walk over near a monster: now it suggests magic.
         var skeleton = Object.FindObjectsByType<EnemyAI>().First(e => e.name.StartsWith("Skeleton"));
-        Teleport(player, skeleton.transform.position + new Vector3(-4f, 0f, 0f));
+        // Stand where nothing is in the way (a monster behind a wall is not a target, so no hint for it).
+        foreach (var side in new[] { Vector3.left, Vector3.right, Vector3.back, Vector3.forward })
+        {
+            var spot = skeleton.transform.position + side * 4f;
+            if (Physics.Linecast(spot + Vector3.up, skeleton.transform.position + Vector3.up, out var hit, ~0, QueryTriggerInteraction.Ignore)
+                && hit.collider.GetComponentInParent<EnemyAI>() != skeleton) continue;
+            Teleport(player, spot);
+            break;
+        }
         yield return new WaitForSeconds(0.6f); // let the camera catch up
         Assert.AreEqual("Space: Magic!", hint.text);
 

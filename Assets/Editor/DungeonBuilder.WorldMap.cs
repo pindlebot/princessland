@@ -33,6 +33,17 @@ public static partial class DungeonBuilder
                         markers.Add(new WorldMapData.Marker { kind = "egg", col = col, row = row, id = e.Args[0] });
                 }
             }
+            // The ways out: a mark on each door or room edge, and on the stairs (the 'X' tile) when the room has an exit. The
+            // stairs of a room that has to be cleared first are "lockedexit": the map shows them waiting until it is.
+            foreach (var door in file.Doors())
+                markers.Add(new WorldMapData.Marker { kind = "exit", col = door.Col, row = door.Row, id = door.TargetScene });
+            if (!string.IsNullOrEmpty(spec.NextScene))
+                foreach (var (col, row) in file.Find('X'))
+                    markers.Add(new WorldMapData.Marker
+                    {
+                        kind = spec.ExitNeedsAllEnemiesDefeated || !string.IsNullOrEmpty(spec.LockedHint) ? "lockedexit" : "exit",
+                        col = col, row = row, id = spec.NextScene,
+                    });
             rooms.Add(new WorldMapData.Room
             {
                 scene = file.Name,

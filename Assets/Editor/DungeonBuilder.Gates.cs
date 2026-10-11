@@ -82,11 +82,11 @@ public static partial class DungeonBuilder
         glow.transform.localPosition = new Vector3(0f, 1.7f, 0f);
         glow.type = LightType.Point;
         glow.range = 6f;
-        glow.intensity = 1.8f;
+        glow.intensity = 1.8f * LightBoost;
         glow.shadows = LightShadows.None;
         glow.enabled = false;
         var flicker = glow.gameObject.AddComponent<FlickerLight>();
-        SetFloat(flicker, "baseIntensity", 1.8f);
+        SetFloat(flicker, "baseIntensity", 1.8f * LightBoost);
         SetFloat(flicker, "flickerAmount", 0.4f);
 
         var brazier = go.AddComponent<Brazier>();
@@ -117,7 +117,7 @@ public static partial class DungeonBuilder
         glow.type = LightType.Point;
         glow.color = glowColor;
         glow.range = 3f;
-        glow.intensity = 1.6f;
+        glow.intensity = 1.6f * LightBoost;
         glow.shadows = LightShadows.None;
 
         var collectible = go.AddComponent<Collectible>();

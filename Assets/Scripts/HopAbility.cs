@@ -22,13 +22,17 @@ public class HopAbility : MonoBehaviour
 
     public int Hops { get; private set; }
 
-    private void Awake() => player = GetComponent<PlayerController>();
+    private void Awake()
+    {
+        player = GetComponent<PlayerController>();
+        if (!TryGetComponent<GateBumps>(out _)) gameObject.AddComponent<GateBumps>(); // says "need a tool" at a gate you can't pass
+    }
 
     private void Update()
     {
         if (player.IsHopping || !Abilities.Has(Abilities.BouncyBoots)) { pushing = 0f; return; }
         if (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) return;
-        if (GameInput.GameplayBlocked || player.IsSeated) { pushing = 0f; return; }
+        if (GameInput.ActionsBlocked || player.IsSeated) { pushing = 0f; return; }
 
         if (GameInput.HopPressed)
         {

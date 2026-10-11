@@ -675,6 +675,49 @@ Label {
     border-radius: 5px;
 }
 
+/* The hotbar has three parts: the one spell, the learned abilities (warm paper, spell keys) and food (smaller,
+   greener, number keys). Each group has a little gap and a stitched divider before it, so Q / F are never
+   mistaken for 2 / 3. */
+.hotbar-group {
+    display: none; /* shown once a slot in it is in use */
+    flex-direction: row;
+    align-items: flex-end;
+    margin-left: 10px;
+    padding-left: 10px;
+    border-left-width: 2px;
+    border-left-color: var(--ink-soft);
+}
+
+.hotbar-group.unlocked {
+    display: flex;
+}
+
+.abilities-group .slot {
+    -unity-background-image-tint-color: rgb(255, 232, 160);
+}
+
+.items-group .hotbar-item {
+    margin: 0 4px;
+}
+
+.items-group .slot {
+    width: 54px;
+    height: 54px;
+    -unity-background-image-tint-color: rgb(206, 238, 206);
+}
+
+.items-group .slot-icon {
+    left: 3px;
+    top: 3px;
+    width: 48px;
+    height: 48px;
+}
+
+.items-group .spell-key {
+    background-color: rgb(206, 238, 206);
+    border-radius: 10px;
+}
+
 /* The ability slots (2 and 3) stay hidden until their skill is learned */
 .future-slot {
     display: none;
@@ -1648,4 +1691,153 @@ Label {
 
 .world-egg {
     background-color: rgb(176, 110, 220);
+}
+
+/* Doors on the world map: a small ring. Gold = leads somewhere not visited yet; grey with a cross = stairs still waiting */
+.world-exit {
+    background-color: rgb(255, 255, 255);
+}
+
+.world-exit.new {
+    background-color: rgb(255, 214, 90);
+    border-width: 2px;
+}
+
+.world-exit.locked {
+    background-color: rgb(190, 190, 200);
+}
+
+/* The star on the room the followed quest points to */
+.world-goal {
+    background-color: rgb(255, 240, 140);
+    border-width: 2px;
+    border-color: rgb(190, 90, 40);
+    color: rgb(190, 90, 40);
+}
+
+/* ---------- The quest tracker: who gave it, what to do, how far along, where to go ---------- */
+
+.tracker {
+    display: none;
+    position: absolute;
+    right: var(--margin);
+    top: 310px; /* under the objective card */
+    width: 250px;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 10px 10px 8px;
+}
+
+.tracker.visible {
+    display: flex;
+}
+
+.tracker-portrait {
+    width: 44px;
+    height: 44px;
+    margin-right: 8px;
+}
+
+.tracker-body {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.tracker-title {
+    font-size: var(--text-label);
+    color: var(--ink-soft);
+}
+
+.tracker-step {
+    font-size: var(--text-label);
+    white-space: normal;
+}
+
+.tracker-pips {
+    flex-direction: row;
+    margin-top: 3px;
+}
+
+.tracker-pip {
+    width: 9px;
+    height: 9px;
+    margin-right: 4px;
+    border-radius: 50%;
+    border-width: 1px;
+    border-color: var(--ink);
+    background-color: var(--cream-shade);
+}
+
+.tracker-pip.done {
+    background-color: var(--honey-light);
+}
+
+.tracker-where {
+    font-size: var(--text-small);
+    color: var(--good);
+    margin-top: 2px;
+}
+
+.tracker-next {
+    width: 30px;
+    height: 30px;
+    margin-left: 6px;
+}
+
+.quest-card.tracked {
+    border-width: 2px;
+    border-color: var(--honey);
+}
+
+/* ---------- "Why it didn't work": a picture and a few words above the hint line ---------- */
+
+.fail-row {
+    bottom: 178px; /* above the interact prompt */
+}
+
+.fail-badge {
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 16px 8px 8px;
+    opacity: 0;
+    translate: 0 8px;
+    transition-property: opacity, translate;
+    transition-duration: 0.25s;
+}
+
+.fail-badge.visible {
+    opacity: 1;
+    translate: 0 0;
+    transition-duration: 0.06s;
+}
+
+/* A shake when it lands, so it catches the eye without sound */
+.fail-badge.shake {
+    translate: 6px 0;
+}
+
+.fail-icon-frame {
+    width: 52px;
+    height: 52px;
+    margin-right: 10px;
+}
+
+.fail-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 48px;
+    height: 48px;
+}
+
+.fail-no {
+    position: absolute;
+    right: -4px;
+    bottom: -2px;
+    width: 24px;
+    height: 24px;
+}
+
+.fail-text {
+    font-size: var(--text-body);
 }

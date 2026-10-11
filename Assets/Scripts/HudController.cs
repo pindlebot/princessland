@@ -63,6 +63,14 @@ public class HudController : MonoBehaviour
     private VisualElement bossBar, bossFill, targetCard, targetFill;
     private Label targetName, targetKey;
     private float toastHideAt;
+    private VisualElement failBadge, failIcon, abilitiesGroup, itemsGroup;
+    private Label failText;
+    private float failHideAt;
+    private QuestLogView questLog;
+    private VisualElement tracker, trackerPortrait, trackerPips, trackerNext;
+    private Label trackerTitle, trackerStep, trackerWhere;
+    private string trackerShown = "";
+    private SkillTreeView skillTree;
     private VisualElement inventoryPanel;
     private readonly Dictionary<EquipSlot, VisualElement> equipSlots = new Dictionary<EquipSlot, VisualElement>();
     private VisualElement[] bagSlots, keySlots;
@@ -157,6 +165,22 @@ public class HudController : MonoBehaviour
         pointsHint = root.Q<Label>("points-hint");
         goldIcon = root.Q(className: "gold-icon");
         hurtFlash = root.Q("hurt-flash");
+        failBadge = root.Q("fail-badge");
+        failIcon = root.Q("fail-icon");
+        failText = root.Q<Label>("fail-text");
+        root.Q("fail-no").style.backgroundImage = new StyleBackground(FeedbackArt.NoBadge());
+        abilitiesGroup = root.Q("abilities-group");
+        itemsGroup = root.Q("items-group");
+        questLog = GetComponent<QuestLogView>();
+        tracker = root.Q("tracker");
+        trackerPortrait = root.Q("tracker-portrait");
+        trackerPips = root.Q("tracker-pips");
+        trackerNext = root.Q("tracker-next");
+        trackerTitle = root.Q<Label>("tracker-title");
+        trackerStep = root.Q<Label>("tracker-step");
+        trackerWhere = root.Q<Label>("tracker-where");
+        tracker.RegisterCallback<ClickEvent>(_ => { if (questLog != null) questLog.SetOpen(true); }); // click it for the whole log
+        skillTree = GetComponent<SkillTreeView>();
 
         // Contextual hints ("Space: Magic!") share the prompt's spot but are their own label,
         // so they never get mixed up with "E: Open chest".
@@ -166,6 +190,8 @@ public class HudController : MonoBehaviour
         prompt.parent.Add(contextHint);
 
         interactor.Interacted += ShowToast;
+        ActionFeedback.Failed += OnActionFailed;
+        SaveSystem.SaveFailed += OnSaveFailed;
         interactor.Interacted += OnInteracted;
         playerHealth.Damaged += OnPlayerHurt;
         spell.Cast += OnCast;
@@ -213,6 +239,9 @@ public class HudController : MonoBehaviour
     {
         HandleKeys();
         PointerOverUi = IsPointerOverUi();
+        // Floating panels aren't for fighting: GameInput.ActionsBlocked keeps clicks and buttons out of the spells.
+        GameInput.OverlayOpen = IsInventoryOpen || IsHelpOpen || (questLog != null && questLog.IsOpen) || (skillTree != null && skillTree.IsOpen);
+        failBadge.EnableInClassList("visible", Time.time < failHideAt);
         statDamage.text = $"{spell.SpellName} damage: {spell.Damage}";
 
         UpdateHearts();
@@ -222,6 +251,7 @@ public class HudController : MonoBehaviour
         UpdateQuickSlots();
         UpdateObjective();
         UpdateGoal();
+        UpdateTracker();
         UpdateSecondary();
         UpdateHints();
 
@@ -275,7 +305,8 @@ public class HudController : MonoBehaviour
             AudioManager.Play(clickSound, 0.6f);
         }
         if (GameInput.TipsPressed) ToggleTips();
-        HandleQuickKeys();
+        // 2-5 on the bag (hovering an item) assigns it; with another panel open they're not for eating.
+        if (!GameInput.OverlayOpen || IsInventoryOpen) HandleQuickKeys();
         // Which button does this player cast with? Show that one on the spell slot.
         if (GameInput.ClickPressed && !PointerOverUi) usedMouseLast = true;
         if (GameInput.CastPressed) usedMouseLast = false;
@@ -405,6 +436,7 @@ public class HudController : MonoBehaviour
             s.Slot.EnableInClassList("no-mana", !a.CanAfford);
             s.Key.text = GameInput.AbilityKey(a.Slot);
         }
+        abilitiesGroup.EnableInClassList("unlocked", abilitySlots.Exists(s => s.Ability.Unlocked));
     }
 
     // ---------- Quick slots (hotbar slots 2-5: consumables) ----------
@@ -444,6 +476,7 @@ public class HudController : MonoBehaviour
             q.Slot.EnableInClassList("no-mana", count == 0);
             q.Key.text = GameInput.QuickKey(i);
         }
+        itemsGroup.EnableInClassList("unlocked", quickSlots.Exists(q => q.Item.ClassListContains("unlocked")));
     }
 
     // 2-5 eats what's on that slot. With the bag open and the mouse over a consumable, 2-5 puts it
@@ -698,6 +731,9 @@ public class HudController : MonoBehaviour
         foreach (var s in abilitySlots)
             if (s.Ability != null) s.Ability.Used -= s.OnUsed;
         if (playerHealth != null) playerHealth.Damaged -= OnPlayerHurt;
+        ActionFeedback.Failed -= OnActionFailed;
+        SaveSystem.SaveFailed -= OnSaveFailed;
+        GameInput.OverlayOpen = false;
         if (spell != null) spell.Cast -= OnCast;
     }
 
@@ -917,6 +953,59 @@ public class HudController : MonoBehaviour
         var screen = new Vector2(mouse.x, Screen.height - mouse.y);
         var picked = panel.Pick(RuntimePanelUtils.ScreenToPanel(panel, screen));
         return picked != null; // decorative elements use picking-mode="Ignore", so they don't count
+    }
+
+    // ---------- The quest tracker ----------
+
+    // The followed quest, always on screen: who gave it (their portrait), what to do next with its progress, how far
+    // along (a dot per step), where to go (the place, or "You're here!"), and a picture of the thing to find or the
+    // person to see. It stays hidden until some quest has started.
+    public bool TrackerShown => tracker != null && tracker.ClassListContains("visible");
+
+    private void UpdateTracker()
+    {
+        var quest = QuestCatalog.Tracked();
+        var step = quest != null ? QuestCatalog.CurrentStep(quest) : null;
+        tracker.EnableInClassList("visible", quest != null && step != null);
+        if (quest == null || step == null) { trackerShown = ""; return; }
+
+        string here = SceneManager.GetActiveScene().name;
+        string where = step.Where.Length == 0 ? "" : step.Where == here ? "You're here!" : $"Go to: {SaveSystem.PlaceName(step.Where)}";
+        string signature = $"{quest.Id}|{QuestCatalog.StepText(step)}|{where}|{QuestCatalog.StepsDone(quest)}";
+        if (signature == trackerShown) return;
+        trackerShown = signature;
+
+        trackerTitle.text = quest.Title;
+        trackerStep.text = QuestCatalog.StepText(step);
+        trackerWhere.text = where;
+        trackerWhere.style.display = where.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+        var giver = questLog != null ? questLog.PictureFor(quest.Giver.Length > 0 ? "npc:" + quest.Giver : quest.Steps[0].Icon) : null;
+        trackerPortrait.style.backgroundImage = giver != null ? new StyleBackground(giver) : new StyleBackground();
+        var next = questLog != null ? questLog.PictureFor(step.Icon) : null;
+        trackerNext.style.backgroundImage = next != null ? new StyleBackground(next) : new StyleBackground();
+        trackerPips.Clear();
+        for (int i = 0; i < quest.Steps.Length; i++)
+        {
+            var pip = new VisualElement { pickingMode = PickingMode.Ignore };
+            pip.AddToClassList("tracker-pip");
+            pip.EnableInClassList("done", Condition.Met(quest.Steps[i].Done));
+            trackerPips.Add(pip);
+        }
+    }
+
+    // ---------- Failed actions ----------
+
+    // A save that didn't go through says so (and that the last one is safe): never a silent "success".
+    private void OnSaveFailed(string reason) => ShowToast("Couldn't save your adventure just now. Your last save is safe.");
+
+    // "That didn't work, and here's why": the reason's picture with a red "no" on it, and a few words.
+    private void OnActionFailed(FailReason reason, string message, Sprite icon)
+    {
+        failIcon.style.backgroundImage = new StyleBackground(icon);
+        failText.text = message;
+        failHideAt = Time.time + 1.8f;
+        failBadge.EnableInClassList("visible", true);
+        Pop(failBadge, "shake", 70);
     }
 
     // ---------- Toast ----------

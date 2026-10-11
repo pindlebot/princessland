@@ -219,7 +219,7 @@ public static partial class DungeonBuilder
         light.range = 9f;
         light.shadows = LightShadows.None;
         var flicker = light.gameObject.AddComponent<FlickerLight>();
-        SetFloat(flicker, "baseIntensity", 2f);
+        SetFloat(flicker, "baseIntensity", 2f * LightBoost);
 
         var fire = go.AddComponent<HouseFixture>();
         SetString(fire, "prompt", "Warm up by the fire");
@@ -256,7 +256,7 @@ public static partial class DungeonBuilder
             light.type = LightType.Point;
             light.color = glow.Value;
             light.range = 3.5f;
-            light.intensity = 1.2f;
+            light.intensity = 1.2f * LightBoost;
             light.shadows = LightShadows.None;
         }
         return SavePrefab(go, name);
@@ -298,7 +298,7 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = new Color(1f, 0.85f, 0.4f);
         light.range = 3f;
-        light.intensity = 1.5f;
+        light.intensity = 1.5f * LightBoost;
         light.shadows = LightShadows.None;
         SetRef(go.AddComponent<KeyPickup>(), "pickupSound", Sound("pickup"));
         return SavePrefab(go, "RustyKey");

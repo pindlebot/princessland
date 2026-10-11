@@ -127,6 +127,7 @@ public class Npc : MonoBehaviour, IInteractable
             if (player != null && player.TryGetComponent(out Inventory bag) && bag.Add(conversation.giveItem))
                 AudioManager.Play(giftSound);
         }
+        SaveSystem.AutosaveSoon(); // a conversation can hand over a reward, a quest step or a flag: keep it
     }
 
     private void Update()

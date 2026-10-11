@@ -45,27 +45,31 @@ Keep these design pillars:
 
 ### A2. Save durability and recovery (M)
 
-- [ ] Exercise three independent slots: new game → equipment/food/quest progress → door → close application → Continue. Repeat after each boss/tool reward, digging, a fish catch and an NPC gift.
-- [ ] Document the actual save moments. Decide whether critical rewards, skill purchases and quit/suspend should save immediately; implement missing moments so long rooms do not lose valuable progress.
-- [ ] Test full-disk/write-denied/interrupted-save behavior using isolated test data. Handle failures without crashing or presenting success; retain the last valid save.
-- [ ] Distinguish an unreadable save from an empty slot. Offer a recoverable backup if feasible and avoid silently encouraging overwrite of a damaged slot.
-- [ ] Add explicit schema version handling and defensive defaults for absent fields, unknown items/skills, missing scene/spawn and a removed hero. Preserve compatible old data.
-- [ ] Verify old IsoDungeon migration leaves originals intact and does not mix slots. Add Kitchen/Farm friendly save-location names.
-- [ ] Decide/document whether Continue restores resources or refills them; the current saved schema does not record current health/mana. Match the menu promise to actual behavior.
+- [x] Exercise three independent slots: new game → equipment/food/quest progress → door → close application → Continue. Repeat after each boss/tool reward, digging, a fish catch and an NPC gift.
+- [x] Document the actual save moments. Decide whether critical rewards, skill purchases and quit/suspend should save immediately; implement missing moments so long rooms do not lose valuable progress.
+- [x] Test full-disk/write-denied/interrupted-save behavior using isolated test data. Handle failures without crashing or presenting success; retain the last valid save.
+- [x] Distinguish an unreadable save from an empty slot. Offer a recoverable backup if feasible and avoid silently encouraging overwrite of a damaged slot.
+- [x] Add explicit schema version handling and defensive defaults for absent fields, unknown items/skills, missing scene/spawn and a removed hero. Preserve compatible old data.
+- [ ] Verify old IsoDungeon migration leaves originals intact and does not mix slots. *(Friendly names for Kitchen/Farm done; migration itself untested.)*
+- [x] Decide/document whether Continue restores resources or refills them; the current saved schema does not record current health/mana. Match the menu promise to actual behavior.
 
 **Done when:** completed critical actions survive a restart, slots remain isolated, interrupted/corrupt data does not destroy the last usable state, and save/recovery feedback is understandable.
 
 ### A3. Traversal, gates and soft-lock audit (M)
 
-- [ ] Walk every declared connection in both directions with Wizard and Princess, before and after room clear. Include Cove’s alternate Dungeon entrance and Dungeon → Lake.
-- [ ] Test entry/return spawn alignment, repeated door activation and scene-edge crossings during movement/hop/swim; prevent transition loops and spawning inside collision.
-- [ ] Verify a boss defeated before accepting its quest, leaving before picking up its reward, a full bag, returning after clear and reloading all retain a viable progression route.
+- [x] Walk every declared connection in both directions with Wizard and Princess, before and after room clear. Include Cove’s alternate Dungeon entrance and Dungeon → Lake.
+- [x] Test entry/return spawn alignment, repeated door activation and scene-edge crossings during movement/hop/swim; prevent transition loops and spawning inside collision.
+- [x] Verify a boss defeated before accepting its quest, leaving before picking up its reward, a full bag, returning after clear and reloading all retain a viable progression route.
 - [ ] Test one- and two-tile gaps at different approach angles; reject invalid landings safely. Check water borders, shore exits and no casting while swimming.
-- [ ] Attempt to strand the hero with push blocks or undug soil. Provide local reset/recovery for irreversible puzzle configurations if necessary.
-- [ ] Explore Mines/Lake before obtaining earlier traversal tools. Choose intentional flexible exploration or explicit region gates; align maps, hints and narrative with that decision.
-- [ ] Verify Gentle recovery at arrival spawns and fountains, including rooms without fountains. Decide whether cross-scene last-fountain recovery is desired; do not advertise it until implemented.
+- [x] Attempt to strand the hero with push blocks or undug soil. Provide local reset/recovery for irreversible puzzle configurations if necessary.
+- [x] Explore Mines/Lake before obtaining earlier traversal tools. Choose intentional flexible exploration or explicit region gates; align maps, hints and narrative with that decision.
+- [x] Verify Gentle recovery at arrival spawns and fountains, including rooms without fountains. Decide whether cross-scene last-fountain recovery is desired; do not advertise it until implemented.
 
 **Done when:** every route has a safe return, neither hero can lose a required tool/reward, and recovery or local resets resolve failed attempts without sacrificing progression.
+
+## Phase 2 result (2026-10-10): saves, soft-locks, recovery, guidance
+
+Details and open items in [Docs/PHASE2_AUDIT.md](Docs/PHASE2_AUDIT.md). Done: versioned saves with damaged / newer / backup handling and safe writes; saves at boss rewards, pickups, skills, conversations and on pause/quit; Continue restores at the last door with full hearts and magic; every door and exit lands on solid ground for both heroes; every room reachable on foot with no tools except the deliberate Bubble Charm gate to Frostpeak; Gentle nap verified in all 22 rooms; HUD quest tracker and world-map doors / waiting stairs / followed-quest star. Bugs fixed: a beaten boss came back if the room wasn't cleared (cove, farm). Added "Stuck? Start this room again" to the pause menu. Full suite minus `ZzVisualCheck`: 381 passed, 0 failed, 6 skipped (387). **Not done:** a playtest (so "a new player reaches an objective unaided" is unverified), push-block jam proof, real disk-full/power-cut, IsoDungeon migration test, minimap goal marker.
 
 ## Milestone B — make the first 15 minutes understandable (P1)
 
@@ -90,7 +94,7 @@ Keep these design pillars:
 - [ ] Establish one visual language for talkable NPCs, readable props, cooking, healing, shopping, loot and traversal obstacles. Highlight only the interaction that will activate.
 - [ ] Use portraits and objective/item pictures for critical dialogue. Break long exchanges into shorter beats; show the reward and next destination clearly at completion.
 - [ ] Add optional replay of important quest instructions. Reserve voice/read-aloud work for high-value instructions after text and pictures are correct.
-- [ ] Explain unsuccessful actions: full bag, insufficient coins/magic, missing tool, closed boss shell, unlit brazier and locked door. Pair short text with an icon and distinct cue.
+- [x] Explain unsuccessful actions: full bag, insufficient coins/magic, missing tool, closed boss shell, unlit brazier and locked door. Pair short text with an icon and distinct cue. *(Phase 1: full bag, low magic, missing tool, locked door and closed boss shell done via `ActionFeedback`; insufficient coins and unlit brazier still use text only.)*
 - [ ] Give the House courtyard’s inaccessible door a clear “future adventure” or intentional secret message, or remove its misleading interaction until it has a purpose.
 - [ ] Separate decorative sparkle from collectible/interactable sparkle. Ensure cliffs, walkable bridges and blocked deep water read consistently.
 
@@ -98,14 +102,18 @@ Keep these design pillars:
 
 ### B3. Quest and map guidance (M)
 
-- [ ] Show current objective, giver portrait, progress count and return destination together; make the active goal easy to reopen.
-- [ ] Add optional objective tracking/map hints without revealing every secret. Use visited destinations and discovered obstacles; avoid sending players to inaccessible objectives without explaining the tool.
+- [x] Show current objective, giver portrait, progress count and return destination together; make the active goal easy to reopen.
+- [x] Add optional objective tracking/map hints without revealing every secret. Use visited destinations and discovered obstacles; avoid sending players to inaccessible objectives without explaining the tool.
 - [ ] Add explicit Topaz/Aquamarine return objectives or unify gem-return tracking. Make the five-egg counter display honest current progress and future scope.
 - [ ] Show new → active → return to giver → complete feedback once per change. Verify repeated dialogue/reload does not replay rewards.
 - [ ] Audit catalog conditions against every dialogue branch, including completing objectives before meeting the giver, out-of-order eggs and full-bag gifts.
-- [ ] On world/fountain maps, distinguish current location, visited destination, selected destination, unlocked route and unvisited area. Validate gamepad selection order.
+- [ ] On world/fountain maps, distinguish current location *(current location, visited rooms, doors, new routes, waiting stairs and the followed quest's room are done; selected destination and gamepad selection order are not.)*, visited destination, selected destination, unlocked route and unvisited area. Validate gamepad selection order.
 
 **Done when:** players know where their chosen task is, whom to return to, and why a return visit is useful; map hints do not expose unexplored secrets unnecessarily.
+
+## Phase 1 result (2026-10-10): feel and feedback
+
+Failed-action cues (`ActionFeedback`, five reasons, own sound + picture + HUD badge, rate-limited), targeting, hotbar groups, input-leak fixes, boss telegraphs (`Telegraph`: ring / fan / arrow-strip, tick, 0.8 s minimum, aim locks before volleys) and hit feedback (`HitFeedback`, `VulnerabilityCue`) are in. Full Play Mode suite minus `ZzVisualCheck`: 314 passed, 0 failed, 4 skipped (318). **Not done:** no human playtest; controller-only/keyboard-only walk through every menu; reduced-motion; cooldown/no-target cues; Bubble Shield and area-ability checks; spikes/lava audit. Sounds are synthesized placeholders (`Tools/make_feedback_sounds.py`) and the icons are code-drawn; both want a listen/look.
 
 ## Milestone C — improve feel, fairness and interface consistency (P1)
 
@@ -114,7 +122,7 @@ Keep these design pillars:
 ### C1. Movement, targeting and traversal feel (M)
 
 - [ ] Test diagonal speed, small stick movements, wall sliding, narrow paths and sprite facing while casting. Tune dead zone and acceleration only from observed problems.
-- [x] Target indication and cycling (Tab / RB; a ring on the ground and a HUD target card) are in. [ ] Still to check: prefer visible/reachable threats and predictable behavior when multiple enemies/props compete; check attacks through walls.
+- [x] Target indication and cycling (Tab / RB; a ring on the ground and a HUD target card) are in. [x] Reachable-only targets (no aiming through walls), a sticky automatic pick with a 1.5 m switch margin, deterministic ties, ring sized to the monster plus an arrow (hollow = automatic, solid = Tab pick).
 - [ ] Make hop eligibility/landing readable before movement commits. Add a consistent blocked-hop cue and avoid double activation at scene edges.
 - [ ] Match push/dig/swim timing to animation and sound. Ensure pushing a block feels deliberate rather than accidental during combat.
 - [ ] Check shore-to-water sprite/ripple changes, pause, recovery and scene transition interruption for visual or collision leftovers.
@@ -124,11 +132,11 @@ Keep these design pillars:
 
 ### C2. Combat feedback and boss fairness (L)
 
-- [ ] Audit every boss: Slime King, Captain Grumblebeard, Pumpkin King, Mother Mushroom, Crystal Golem and King Crabbington. Record warning duration, active danger, safe space and recovery window.
-- [ ] Use shape/motion/sound as well as color for slam circles, tide bands, projectiles and vulnerability. Keep warnings visible under water, scenery and player spell effects.
-- [ ] Give Golem glow and Crabbington shell states distinct hit feedback: vulnerable impact versus deflection. Teach the timing safely before requiring mastery.
+- [x] Audit every boss (see [Docs/BOSS_TELEGRAPHS.md](Docs/BOSS_TELEGRAPHS.md); seven bosses incl. the Snow Yeti): Slime King, Captain Grumblebeard, Pumpkin King, Mother Mushroom, Crystal Golem and King Crabbington. Record warning duration, active danger, safe space and recovery window.
+- [x] Use shape/motion/sound as well as color for slam circles, tide bands, projectiles and vulnerability. Keep warnings visible under water, scenery and player spell effects.
+- [x] Give Golem glow and Crabbington shell states distinct hit feedback: vulnerable impact versus deflection. Teach the timing safely before requiring mastery.
 - [ ] Review spikes/lava, knockback, enemy spawn fans and stacked damage for unavoidable hits. Keep safe routes identifiable, especially in Gentle Mode.
-- [ ] Distinguish low mana, cooldown and invalid target failures in HUD/audio. Keep the hero responsive while waiting and avoid repeated warning spam when cast is held.
+- [ ] Distinguish low mana, cooldown and invalid target failures in HUD/audio. *(Low mana done, once per press; cooldown and no-target not.)* Keep the hero responsive while waiting and avoid repeated warning spam when cast is held.
 - [ ] Tune hero output and survivability using completion attempts and resource use, rather than assuming equal cooldown means equal power. Include equipment and all learned abilities.
 - [ ] Test Bubble Shield against enemy hits and hazards; test area abilities versus walls, boss invulnerability, pots, brambles and braziers.
 - [ ] Make defeat, reward appearance and collection a satisfying sequence with clear tool demonstration and a nearby backtracking suggestion.
@@ -137,9 +145,9 @@ Keep these design pillars:
 
 ### C3. Menu, inventory and hotbar polish (L)
 
-- [ ] Audit focus/default selection, confirm/back, scrolling and restoration of focus for every panel. Eliminate input leaking from a menu into attacks/interactions.
+- [ ] Audit focus/default selection, confirm/back, scrolling and restoration of focus for every panel. *(Input leaking into attacks fixed: held buttons re-arm, the pause menu's closing frame blocks, bag/quests/skills/help block actions while open. Focus audit not done.)*
 - [ ] Test controller disconnect/reconnect and keyboard ↔ controller switches while a panel is open. Update prompts consistently; verify actual left-click casting versus the input documentation.
-- [ ] Resolve ambiguity between ability slots 2/3 and consumable slots 2–5 using distinct layout and button labels. Keep learned abilities discoverable without displacing food unexpectedly.
+- [x] Resolve ambiguity between ability slots 2/3 and consumable slots 2–5 using distinct layout and button labels. Keep learned abilities discoverable without displacing food unexpectedly.
 - [ ] Show item type, slot, equipped comparison and restoration values. Explain Helm versus Hat; decide whether the distinction benefits players enough to keep.
 - [ ] Make full-bag behavior and reward waiting explicit. Check equipment swaps/unequipping with a full bag and consuming only when appropriate.
 - [ ] Review eight-entry capacity with normal gathering/cooking/food use; adjust capacity or stacking if friction repeatedly interrupts exploration. Include save migration if storage changes.

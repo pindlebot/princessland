@@ -14,7 +14,7 @@ public class GolemCrystals : MonoBehaviour
     [SerializeField] private SpriteRenderer sprite;
     [SerializeField] private AudioClip glowSound;
     [SerializeField] private AudioClip dimSound;
-    [SerializeField] private AudioClip clinkSound;
+    [SerializeField] private AudioClip clinkSound;   // (the old "tink"; HitFeedback now rings the deflect sound. Kept so the builder's reference stays valid.)
 
     private static readonly Color DimTint = new Color(0.55f, 0.55f, 0.72f);
 
@@ -34,7 +34,10 @@ public class GolemCrystals : MonoBehaviour
         health = GetComponent<Health>();
         boss = GetComponent<BossAbilities>();
         health.AdjustDamage = amount => IsGlowing ? amount : 0;   // a hit while it's dark costs him nothing
-        health.Damaged += _ => { if (!IsGlowing && !health.IsDead) AudioManager.Play(clinkSound, 0.7f); };
+        // A hit on the dark stone bounces (a grey shield and a "ting", no flash); a hit while the crystals glow lands
+        // (a gold burst). The cue keeps a picture over him: a shield while it's dark, a star while it glows.
+        health.DeflectsNoDamageHits = true;
+        gameObject.AddComponent<VulnerabilityCue>().Bind(health, () => IsGlowing, "Wait for the glow!", sprite != null ? sprite.transform : null);
         health.Died += _ => RestoreLight();
     }
 

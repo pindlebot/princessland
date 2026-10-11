@@ -31,7 +31,10 @@ public class RainbowPost : MonoBehaviour, IInteractable
         if (bridge == null) return null;
         if (bridge.IsDrawn) return "A beautiful rainbow bridge. It hums softly.";
         if (!Abilities.Has(Abilities.RainbowChalk))
+        {
+            ActionFeedback.MissingTool(Abilities.RainbowChalk);
             return "A tall post wound with bands of colour. There's another one across the chasm. If only you had something to draw with...";
+        }
         bridge.Draw();
         Refresh();
         return "You draw a rainbow bridge across the chasm!";

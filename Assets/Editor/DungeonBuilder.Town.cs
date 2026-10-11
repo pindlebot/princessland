@@ -164,7 +164,7 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = new Color(1f, 0.85f, 0.55f);
         light.range = 3.5f;
-        light.intensity = 0.8f;
+        light.intensity = 0.8f * LightBoost;
         light.shadows = LightShadows.None;
         PrefabUtility.SaveAsPrefabAsset(root, AssetDatabase.GetAssetPath(lamppostPrefab));
         PrefabUtility.UnloadPrefabContents(root);

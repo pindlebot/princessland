@@ -131,3 +131,12 @@
     color: rgb(232, 196, 104);
     border-color: rgb(232, 196, 104);
 }
+
+/* A save that can't be read (or comes from a newer game): never mistaken for an empty slot */
+.slot.damaged .slot-tag {
+    color: rgb(190, 60, 60);
+}
+
+.slot.damaged .card-name {
+    color: rgb(190, 60, 60);
+}

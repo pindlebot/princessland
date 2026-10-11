@@ -10,6 +10,8 @@ public class WaterScroll : MonoBehaviour
     // How many times the texture repeats across the surface (a waterfall repeats once a metre).
     [SerializeField] private Vector2 tiling = Vector2.one;
 
+    // The texture's tiling and offset: _BaseMap_ST on the Universal Render Pipeline's Lit shader (_MainTex_ST on the old Standard one).
+    private static readonly int BaseMapST = Shader.PropertyToID("_BaseMap_ST");
     private static readonly int MainTexST = Shader.PropertyToID("_MainTex_ST");
     private Renderer rend;
     private MaterialPropertyBlock block;
@@ -23,7 +25,9 @@ public class WaterScroll : MonoBehaviour
     private void Update()
     {
         Vector2 offset = speed * Time.time;
-        block.SetVector(MainTexST, new Vector4(tiling.x, tiling.y, offset.x % 1f, offset.y % 1f));
+        var scrolled = new Vector4(tiling.x, tiling.y, offset.x % 1f, offset.y % 1f);
+        block.SetVector(BaseMapST, scrolled);
+        block.SetVector(MainTexST, scrolled);
         rend.SetPropertyBlock(block);
     }
 }
