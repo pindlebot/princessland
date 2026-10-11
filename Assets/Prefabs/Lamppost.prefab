@@ -59,7 +59,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::GroundShadow
   lift: 0.02
---- !u!1 &3540615051322850432
+--- !u!1 &3546020730099699766
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114,8 +114,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8175180009837204923}
-  - component: {fileID: 749908158093738830}
+  - component: {fileID: 5516019616350745899}
+  - component: {fileID: 3530701787895887512}
   m_Layer: 0
   m_Name: Lantern
   m_TagString: Untagged
@@ -123,13 +123,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8175180009837204923
+--- !u!4 &5516019616350745899
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3540615051322850432}
+  m_GameObject: {fileID: 3546020730099699766}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 3.1, z: -0.3}
@@ -138,13 +138,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 15924300257887200}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!108 &749908158093738830
+--- !u!108 &3530701787895887512
 Light:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3540615051322850432}
+  m_GameObject: {fileID: 3546020730099699766}
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 2
@@ -262,7 +262,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -340,7 +340,7 @@ Transform:
   m_Children:
   - {fileID: 8308530547650563592}
   - {fileID: 2332507795220102364}
-  - {fileID: 8175180009837204923}
+  - {fileID: 5516019616350745899}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &3440408580098713875

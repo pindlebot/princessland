@@ -53,6 +53,7 @@ public class ExitZone : MonoBehaviour
         {
             AudioManager.Play(openSound);
             GameSession.Flags.Add(LevelBootstrap.ClearedFlag); // remember, in case we leave and come back
+            SaveSystem.AutosaveSoon();
         }
         wasOpen = open;
         visual.transform.Rotate(0f, 60f * Time.deltaTime, 0f); // slow spin so it stands out

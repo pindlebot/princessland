@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // King Crabbington's tide: while he hides in his shell, a great wave sweeps across the court. A wide red band
-// shows on the floor first (the telegraph: longer in Gentle Mode), then the wave rolls along it, and anyone still in
+// shows on the floor first (the telegraph: arrowheads pointing the way it rolls; longer in Gentle Mode), then the wave rolls along it, and anyone still in
 // the band is knocked back and splashed like a slam. Step out of the band before it comes.
 [RequireComponent(typeof(BossAbilities))]
 public class TideWaves : MonoBehaviour
@@ -92,20 +92,20 @@ public class TideWaves : MonoBehaviour
         float sign = fromFar ? -1f : 1f;
         float from = fromFar ? length : start, to = fromFar ? start : length;
 
-        // The red band, centred on the lane across the whole court.
-        var warning = Flat("TideWarning", new Color(1f, 0.25f, 0.25f, 0.35f), -1);
+        // The warning band across the whole court, centred on the lane: arrowheads point the way the wave will roll, with
+        // rails along both edges (the shape says it; colour doesn't have to), a rising horn, and a tick as it locks in.
         float centre = (start + length) / 2f;
-        warning.transform.position = alongX ? new Vector3(centre, 0.04f, lane) : new Vector3(lane, 0.04f, centre);
-        warning.transform.localScale = alongX ? new Vector3(length - start, bandWidth, 1f) : new Vector3(bandWidth, length - start, 1f);
-        AudioManager.Play(waveSound);
-        float warn = warnSeconds * (GameSession.Settings.gentle ? BossAbilities.GentleWindupFactor : 1f);
+        var bandCentre = alongX ? new Vector3(centre, 0f, lane) : new Vector3(lane, 0f, centre);
+        float warn = Telegraph.Clamp(warnSeconds * (GameSession.Settings.gentle ? BossAbilities.GentleWindupFactor : 1f));
+        var band = Telegraph.Band(bandCentre, axis * sign, length - start, bandWidth, warn);
+        AudioManager.Play(ActionFeedback.Clip("tide_warn"));
         for (float t = 0f; t < warn; t += Time.deltaTime)
         {
-            if (health.IsDead) { Destroy(warning.gameObject); IsWaving = false; yield break; }
-            warning.color = new Color(1f, 0.25f, 0.25f, 0.18f + 0.22f * Mathf.PingPong(t * 4f, 1f));
+            if (health.IsDead) { band.Finish(); IsWaving = false; yield break; }
             yield return null;
         }
-        Destroy(warning.gameObject);
+        band.Finish();
+        AudioManager.Play(waveSound);
 
         // The wave itself: a pale-blue band rolling along it.
         var wave = Flat("TideWave", new Color(0.55f, 0.85f, 1f, 0.75f), 5);

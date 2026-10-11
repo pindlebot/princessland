@@ -18,7 +18,7 @@ public class PushAbility : MonoBehaviour
     {
         if (!Abilities.Has(Abilities.MoleMitts) || player.IsHopping || player.IsSeated) { pushing = 0f; return; }
         if (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) { pushing = 0f; return; }
-        if (GameInput.GameplayBlocked || player.MoveDirection.sqrMagnitude < 0.01f) { pushing = 0f; return; }
+        if (GameInput.ActionsBlocked || player.MoveDirection.sqrMagnitude < 0.01f) { pushing = 0f; return; }
 
         var dir = PushBlock.Snap(player.MoveDirection);
         var block = BlockAhead(dir);

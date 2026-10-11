@@ -14,11 +14,13 @@ public class BossReward : MonoBehaviour
     [SerializeField] private bool byBraziers;
 
     public bool IsShown => reward.activeSelf;
+    public bool ByBraziers => byBraziers;
 
     private void Start()
     {
         bool unlocked = byBraziers ? GameSession.Flags.Contains(Brazier.DoneFlag(SceneManager.GetActiveScene().name))
-                                   : GameSession.Flags.Contains(LevelBootstrap.ClearedFlag);
+                                   : GameSession.Flags.Contains(LevelBootstrap.ClearedFlag)
+                                     || GameSession.Flags.Contains(BossAbilities.DownFlag(SceneManager.GetActiveScene().name));
         var boss = byBraziers ? null : FindAnyObjectByType<BossAbilities>();
         reward.SetActive(unlocked || (!byBraziers && boss == null));
         if (unlocked) return;

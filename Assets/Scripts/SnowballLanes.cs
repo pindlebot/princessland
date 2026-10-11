@@ -21,7 +21,6 @@ public class SnowballLanes : MonoBehaviour
     private Transform player;
     private Health playerHealth;
     private float nextAt;
-    private static Sprite square;
 
     public bool IsRolling { get; private set; }
     public int BallsHit { get; private set; }
@@ -55,16 +54,6 @@ public class SnowballLanes : MonoBehaviour
         StartCoroutine(Roll());
     }
 
-    private static Sprite Square()
-    {
-        if (square == null)
-        {
-            var tex = Texture2D.whiteTexture;
-            square = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), tex.width);
-        }
-        return square;
-    }
-
     private IEnumerator Roll()
     {
         IsRolling = true;
@@ -77,33 +66,31 @@ public class SnowballLanes : MonoBehaviour
         lanePositions[0] = alongX ? player.position.z : player.position.x;
         for (int i = 1; i < lanes; i++) lanePositions[i] = Random.Range(2f, (alongX ? h : w) - 2f);
 
-        var strips = new SpriteRenderer[lanes];
-        for (int i = 0; i < lanes; i++)
-        {
-            var go = new GameObject("SnowLane");
-            go.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-            go.transform.position = alongX ? new Vector3((start + length) / 2f, 0.04f, lanePositions[i]) : new Vector3(lanePositions[i], 0.04f, (start + length) / 2f);
-            go.transform.localScale = alongX ? new Vector3(length - start, laneWidth, 1f) : new Vector3(laneWidth, length - start, 1f);
-            strips[i] = go.AddComponent<SpriteRenderer>();
-            strips[i].sprite = Square();
-            strips[i].color = new Color(1f, 0.3f, 0.3f, 0.3f);
-        }
-        AudioManager.Play(rollSound);
-        float warn = warnSeconds * (GameSession.Settings.gentle ? BossAbilities.GentleWindupFactor : 1f);
-        for (float t = 0f; t < warn; t += Time.deltaTime)
-        {
-            if (health.IsDead) { foreach (var s in strips) Destroy(s.gameObject); IsRolling = false; yield break; }
-            foreach (var s in strips) s.color = new Color(1f, 0.3f, 0.3f, 0.15f + 0.2f * Mathf.PingPong(t * 4f, 1f));
-            yield return null;
-        }
-        foreach (var s in strips) Destroy(s.gameObject);
-
-        // The snowballs roll, one per lane.
+        // Which way they'll roll is decided now, so the warning can point that way.
         bool fromFar = Random.value < 0.5f;
-        float from = fromFar ? length : start, to = fromFar ? start : length;
+        float dir = fromFar ? -1f : 1f;
         var axis = alongX ? Vector3.right : Vector3.forward;
         var across = alongX ? Vector3.forward : Vector3.right;
-        float dir = fromFar ? -1f : 1f;
+
+        // Each lane: a strip of arrowheads with rails along its edges (shape, not just colour), a charging shimmer, a tick.
+        float warn = Telegraph.Clamp(warnSeconds * (GameSession.Settings.gentle ? BossAbilities.GentleWindupFactor : 1f));
+        var strips = new TelegraphMarker[lanes];
+        for (int i = 0; i < lanes; i++)
+        {
+            var at = alongX ? new Vector3((start + length) / 2f, 0f, lanePositions[i]) : new Vector3(lanePositions[i], 0f, (start + length) / 2f);
+            strips[i] = Telegraph.Band(at, axis * dir, length - start, laneWidth, warn);
+        }
+        AudioManager.Play(ActionFeedback.Clip("warn_charge"));
+        for (float t = 0f; t < warn; t += Time.deltaTime)
+        {
+            if (health.IsDead) { foreach (var s in strips) s.Finish(); IsRolling = false; yield break; }
+            yield return null;
+        }
+        foreach (var s in strips) s.Finish();
+        AudioManager.Play(rollSound);
+
+        // The snowballs roll, one per lane.
+        float from = fromFar ? length : start, to = fromFar ? start : length;
         var balls = new SpriteRenderer[lanes];
         for (int i = 0; i < lanes; i++)
         {

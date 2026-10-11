@@ -92,7 +92,7 @@ public class QuestLogView : MonoBehaviour
         foreach (var quest in quests)
         {
             var step = QuestCatalog.CurrentStep(quest);
-            signature += $"{quest.Id}:{(step != null ? QuestCatalog.StepText(step) : "done")}|";
+            signature += $"{quest.Id}:{(step != null ? QuestCatalog.StepText(step) : "done")}:{GameSession.Flags.Contains(QuestCatalog.TrackFlagPrefix + quest.Id)}|";
         }
         if (signature == shown) return;
         shown = signature;
@@ -108,9 +108,17 @@ public class QuestLogView : MonoBehaviour
         var step = QuestCatalog.CurrentStep(quest);
         bool done = step == null;
 
-        var card = new VisualElement { pickingMode = PickingMode.Ignore };
+        var card = new VisualElement();   // clickable: a click follows this quest (the tracker on the HUD shows it)
         card.AddToClassList("quest-card");
         card.EnableInClassList("done", done);
+        card.EnableInClassList("tracked", !done && QuestCatalog.Tracked() == quest);
+        if (!done)
+            card.RegisterCallback<ClickEvent>(_ =>
+            {
+                QuestCatalog.Track(quest);
+                hud.ShowToast($"Following: {quest.Title}");
+                shown = ""; // redraw
+            });
 
         // Who gave it: their portrait (or, for a quest nobody gave, what it's about).
         var who = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -147,7 +155,7 @@ public class QuestLogView : MonoBehaviour
     }
 
     // "item:egg", "npc:Pearl" or "icon:frog" -> its picture.
-    private Sprite PictureFor(string key)
+    public Sprite PictureFor(string key)
     {
         if (string.IsNullOrEmpty(key)) return null;
         if (key.StartsWith("item:") && inventory != null)

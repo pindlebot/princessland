@@ -33,7 +33,7 @@ public class DungeonDoor : MonoBehaviour, IInteractable
     {
         if (locked && !GameSession.Flags.Contains(KeyFlag))
         {
-            AudioManager.Play(lockedSound);
+            ActionFeedback.Fail(FailReason.Locked, sound: lockedSound);
             return "It's locked tight. There must be a key somewhere in the maze...";
         }
         AudioManager.Play(openSound);

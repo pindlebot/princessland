@@ -155,8 +155,8 @@ public class PauseMenuTests : InputTestFixture
 
             Tap(keyboard.escapeKey);
             yield return Frames();
-            for (int i = 0; i < 7; i++) { Tap(keyboard.downArrowKey); yield return Frames(); }
-            Assert.AreEqual(6, Object.FindAnyObjectByType<PauseMenu>().Highlighted, "the last row, past the end stays put");
+            for (int i = 0; i < 8; i++) { Tap(keyboard.downArrowKey); yield return Frames(); }
+            Assert.AreEqual(7, Object.FindAnyObjectByType<PauseMenu>().Highlighted, "the last row, past the end stays put");
             Tap(keyboard.enterKey);
             yield return Frames();
 

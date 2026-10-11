@@ -56,6 +56,14 @@ public class LevelBootstrap : MonoBehaviour
                 Destroy(enemy.gameObject);
             }
 
+        // A boss beaten earlier stays beaten, even if the rest of the room was never cleared.
+        else if (GameSession.Flags.Contains(BossAbilities.DownFlag(SceneManager.GetActiveScene().name)))
+            foreach (var boss in FindObjectsByType<BossAbilities>())
+            {
+                boss.gameObject.SetActive(false);
+                Destroy(boss.gameObject);
+            }
+
         var spawn = spawnPoint;
         foreach (var named in namedSpawns)
             if (named != null && named.name == GameSession.NextSpawn)

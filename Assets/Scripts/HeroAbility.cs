@@ -48,9 +48,11 @@ public abstract class HeroAbility : MonoBehaviour
     {
         if (!Unlocked) return;
         if (GameManager.Instance != null && !GameManager.Instance.PlayerCanAct) return;
-        if (GameInput.GameplayBlocked) return;
+        if (GameInput.ActionsBlocked) return;
         if (movement != null && (movement.IsSeated || movement.IsSwimming)) return; // no abilities from the toilet either, or while swimming
-        if (GameInput.AbilityPressed(slot)) TryUse();
+        if (!GameInput.AbilityPressed(slot)) return;
+        // Ready but short of magic: a picture and a sound (once per press), so it's clear why nothing happened.
+        if (!TryUse() && Time.time >= readyAt && !CanAfford) ActionFeedback.Fail(FailReason.LowMana);
     }
 
     // Public so tests (or the HUD) can trigger it too.

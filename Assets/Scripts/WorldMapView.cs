@@ -134,6 +134,16 @@ public class WorldMapView : MonoBehaviour
             AddMarkers(room, scale, Place);
         }
 
+        // The quest being followed: a star on the room where its next step is (only once that room is on the map).
+        var followed = QuestCatalog.Tracked();
+        string goalScene = followed != null ? QuestCatalog.WhereNext(followed) : "";
+        var goalRoom = goalScene.Length > 0 ? shown.Find(r => r.scene == goalScene) : null;
+        if (goalRoom != null)
+        {
+            AddDot(Place(goalRoom, goalRoom.width / 2f, goalRoom.height / 2f), "world-goal", 18f, "*");
+            drawn.Add("goal:" + goalRoom.scene);
+        }
+
         // You are here.
         var current = data.Find(here);
         var player = LevelBootstrap.Current != null ? LevelBootstrap.Current.Player : null;
@@ -144,7 +154,13 @@ public class WorldMapView : MonoBehaviour
             AddDot(Place(current, m.x + 0.5f, m.y + 0.5f), "world-you", 12f, "");
             drawn.Add("you");
         }
-        legend.text = "You are here · ? a gap to come back to · a purple egg is one of Amethyra's · blue marks a fountain";
+        legend.text = "You are here · ? a gap to come back to · a purple egg is one of Amethyra's · blue marks a fountain · " +
+                      "small rings are doors (gold: somewhere new, grey x: stairs waiting for the monsters to be beaten)";
+        if (followed != null)
+        {
+            string place = goalScene.Length > 0 ? SaveSystem.PlaceName(goalScene) : "";
+            legend.text += $"\nFollowing: {followed.Title}" + (place.Length > 0 ? $" · go to {place}" + (goalRoom != null ? " (the star)" : "") : "");
+        }
     }
 
     private void AddMarkers(WorldMapData.Room room, float scale, System.Func<WorldMapData.Room, float, float, Vector2> place)
@@ -168,6 +184,16 @@ public class WorldMapView : MonoBehaviour
             {
                 kind = "world-egg";
                 drawn.Add("egg:" + marker.id);
+            }
+            else if (marker.kind == "exit" || marker.kind == "lockedexit")
+            {
+                // A way into another room: open (white), leading somewhere new (gold ring), or stairs still waiting for
+                // the room to be cleared (grey with a cross). Only the doors themselves: nothing about what is behind them.
+                bool waiting = marker.kind == "lockedexit" && !GameSession.Flags.Contains("cleared:" + room.scene);
+                bool isNew = !Visited(marker.id);
+                kind = waiting ? "world-exit locked" : isNew ? "world-exit new" : "world-exit";
+                text = waiting ? "x" : "";
+                drawn.Add((waiting ? "locked:" : "exit:") + room.scene + ">" + marker.id + (isNew && !waiting ? ":new" : ""));
             }
             if (kind == null) continue;
             AddDot(place(room, marker.col + 0.5f, marker.row + 0.5f), kind, Mathf.Max(11f, scale * 1.8f), text);

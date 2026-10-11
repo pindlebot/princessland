@@ -103,19 +103,23 @@ public class TitleController : MonoBehaviour
         {
             var card = root.Q($"slot-{i}");
             var data = SaveSystem.Peek(i);
+            var state = SaveSystem.StateOf(i);
+            bool unusable = state == SaveSystem.SlotState.Damaged || state == SaveSystem.SlotState.FromNewerGame;
             var hero = data == null ? null : System.Array.Find(heroes, h => h != null && h.name == data.hero);
-            card.EnableInClassList("empty", data == null);
+            card.EnableInClassList("empty", data == null && !unusable);
+            card.EnableInClassList("damaged", unusable);
             card.EnableInClassList("erasing", eraseArmed[i] > 0);
-            card.Q<Label>("slot-tag").text = eraseArmed[i] > 0 ? "Erase for good?" : data == null ? "+ New adventure" : "Continue";
+            card.Q<Label>("slot-tag").text = eraseArmed[i] > 0 ? "Erase for good?" : unusable ? "Can't open this" : data == null ? "+ New adventure" : "Continue";
 
             var portrait = card.Q("slot-portrait");
             portrait.style.backgroundImage = hero != null ? new StyleBackground(hero.Portrait) : new StyleBackground();
-            card.Q<Label>("slot-name").text = data == null ? "New adventure" : hero != null ? hero.DisplayName : data.hero;
-            card.Q<Label>("slot-place").text = data == null ? "" : SaveSystem.PlaceName(data.scene);
+            card.Q<Label>("slot-name").text = unusable ? (state == SaveSystem.SlotState.Damaged ? "Damaged save" : "Newer save")
+                                              : data == null ? "New adventure" : hero != null ? hero.DisplayName : data.hero;
+            card.Q<Label>("slot-place").text = unusable ? "A copy is kept" : data == null ? "" : SaveSystem.PlaceName(data.scene);
             card.Q<Label>("slot-stats").text = data == null ? "" : $"Level {data.level}   {data.gold} gold";
 
             var erase = card.Q<Button>("slot-erase");
-            erase.style.display = data == null ? DisplayStyle.None : DisplayStyle.Flex;
+            erase.style.display = data == null && !unusable ? DisplayStyle.None : DisplayStyle.Flex;
             erase.text = eraseArmed[i] > 0 ? "Really erase?" : "Erase";
         }
         if (continueButton.style.display == DisplayStyle.Flex) continueButton.text = ContinueText();
@@ -139,7 +143,11 @@ public class TitleController : MonoBehaviour
         string text;
         if (QuitHighlighted) text = "Enter closes the game. Your adventures are already saved.";
         else if (warn) text = $"Adventure {Highlighted + 1} will be gone for good. Click Erase again to be sure, or move away to keep it.";
-        else if (SaveSystem.Peek(Highlighted) != null) text = $"Enter continues adventure {Highlighted + 1}. (Nothing is lost.)";
+        else if (SaveSystem.StateOf(Highlighted) == SaveSystem.SlotState.Damaged)
+            text = $"Adventure {Highlighted + 1} can't be read, so it hasn't been touched. Erase it to start again (a copy is kept next to it).";
+        else if (SaveSystem.StateOf(Highlighted) == SaveSystem.SlotState.FromNewerGame)
+            text = $"Adventure {Highlighted + 1} was made by a newer version of the game, so it's being left alone. Use the newer game to play it.";
+        else if (SaveSystem.Peek(Highlighted) != null) text = $"Enter continues adventure {Highlighted + 1}. You start with full hearts and magic. (Nothing is lost.)";
         else text = $"Enter starts a new adventure in slot {Highlighted + 1}.";
         status.text = text;
         status.EnableInClassList("warning", warn);
@@ -168,6 +176,13 @@ public class TitleController : MonoBehaviour
     public void OpenSlot(int slot)
     {
         if (leaving) return;
+        var state = SaveSystem.StateOf(slot);
+        if (state == SaveSystem.SlotState.Damaged || state == SaveSystem.SlotState.FromNewerGame)
+        {
+            Highlight(slot);   // never start a new adventure on top of something unreadable: say what's wrong instead
+            UpdateStatus();
+            return;
+        }
         string scene = SaveSystem.Load(slot, heroes);
         if (scene == null)
         {

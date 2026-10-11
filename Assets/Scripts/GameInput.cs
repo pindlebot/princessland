@@ -161,7 +161,13 @@ public static class GameInput
 
     // Gameplay buttons are ignored while a conversation, the recipe card or the pause menu is open.
     public static bool GameplayBlocked =>
-        DialogueController.BlocksInput || CookingView.BlocksInput || FountainTravelView.BlocksInput || WorldMapView.BlocksInput || PauseMenu.IsOpen;
+        DialogueController.BlocksInput || CookingView.BlocksInput || FountainTravelView.BlocksInput || WorldMapView.BlocksInput || PauseMenu.BlocksInput;
+
+    // The bag, quest log, skill tree and help panel float over the game without pausing it (HudController keeps this
+    // up to date). Walking still works, but they're not for fighting: while one is open the action buttons (cast,
+    // abilities, talk, hop, push) do nothing, so a click or key meant for a menu never turns into an attack.
+    public static bool OverlayOpen { get; set; }
+    public static bool ActionsBlocked => GameplayBlocked || OverlayOpen;
 
     // Menu navigation: arrow keys, d-pad, or a flick of the stick.
     public static bool UpPressed =>

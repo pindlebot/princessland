@@ -12,9 +12,9 @@ public class WorldMapData : ScriptableObject
     [Serializable]
     public class Marker
     {
-        public string kind;   // "fountain", "egg" or "gap"
+        public string kind;   // "fountain", "egg", "gap", "exit" (a way into another room) or "lockedexit" (stairs that wait for the room to be cleared)
         public int col, row;
-        public string id;     // egg: the item id; gap: "Scene/col,row" (what HintBubble remembers having seen)
+        public string id;     // egg: the item id; gap: "Scene/col,row" (what HintBubble remembers having seen); exit: the room it leads to
     }
 
     [Serializable]

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 // A boss's special moves, layered on top of an ordinary EnemyAI (which still does the chasing and
@@ -17,6 +18,11 @@ using UnityEngine;
 //                and each is hit by a cannonball a moment later: keep moving. Captain Grumblebeard.
 //
 // Only one special move at a time; each has its own cooldown, so the fight has a rhythm.
+//
+// Every move warns first, on the floor, with a shape of its own (see Telegraph): a ring and stripes for the slam and each
+// cannon shell, a fan of lanes for a volley (the bolts then fly where the fan settled, so a last-moment sidestep works),
+// and a sound of its own too. No warning is shorter than Telegraph.MinWarningSeconds. Docs/BOSS_TELEGRAPHS.md has the
+// numbers for every boss.
 [RequireComponent(typeof(EnemyAI), typeof(Health))]
 public class BossAbilities : MonoBehaviour
 {
@@ -72,6 +78,9 @@ public class BossAbilities : MonoBehaviour
     [SerializeField] private float barrageSpread = 4f;      // how far from the player the later shots may fall
     [SerializeField] private int barrageDamage = 1;
     [SerializeField] private AudioClip barrageSound;
+
+    // "This room's boss has been beaten": it doesn't come back when you leave and return, even if other monsters remain.
+    public static string DownFlag(string scene) => "boss_down:" + scene;
 
     public string BossName => bossName;
     public Health Health => health;
@@ -165,6 +174,8 @@ public class BossAbilities : MonoBehaviour
     {
         Announce(defeatMessage);
         if (clearsLevel) GameSession.Flags.Add(LevelBootstrap.ClearedFlag); // the level stays safe when you come back
+        GameSession.Flags.Add(DownFlag(SceneManager.GetActiveScene().name));   // a beaten boss stays beaten, even if the rest of the room isn't cleared
+        SaveSystem.AutosaveSoon();                                         // and so does a beaten boss: the reward is safe too
     }
 
     // ---------- Split ----------
@@ -205,12 +216,13 @@ public class BossAbilities : MonoBehaviour
 
         // 1. Wind up: the warning circle grows where the player is standing.
         var warning = Instantiate(warningPrefab, new Vector3(target.x, 0.03f, target.z), Quaternion.Euler(90f, 0f, 0f));
+        float windup = Telegraph.Clamp(WindupSeconds);
+        var outline = Telegraph.Circle(target, slamRadius, windup);   // the exact edge of the danger, in a shape as well as a colour
         AudioManager.Play(windupSound);
         if (animator != null) animator.PlayAction(); // the lunge animation reads as "rearing back"
-        float windup = WindupSeconds;
         for (float t = 0f; t < windup; t += Time.deltaTime)
         {
-            if (health.IsDead) { Destroy(warning); yield break; }
+            if (health.IsDead) { Destroy(warning); outline.Finish(); yield break; }
             warning.transform.localScale = Vector3.one * slamRadius * Mathf.Lerp(0.3f, 1f, t / windup);
             yield return null;
         }
@@ -230,6 +242,7 @@ public class BossAbilities : MonoBehaviour
         transform.position = target;
         if (shadow != null) shadow.localPosition = shadowLocalPosition;
         Destroy(warning);
+        outline.Finish();
 
         // 3. Land.
         controller.enabled = true;
@@ -283,20 +296,24 @@ public class BossAbilities : MonoBehaviour
         IsVolleying = true;
         ai.enabled = false;
         Announce(volleyMessage);
-        AudioManager.Play(windupSound);
+        AudioManager.Play(ActionFeedback.Clip("warn_charge"));   // a rising shimmer: different from the slam's rumble
         if (animator != null) animator.PlayAction();
-        float windup = volleyWindup * (GameSession.Settings.gentle ? GentleWindupFactor : 1f);
+        float windup = Telegraph.Clamp(volleyWindup * (GameSession.Settings.gentle ? GentleWindupFactor : 1f));
+
+        // A fan of lanes on the floor, following the player until the last third of a second, then holding still:
+        // the bolts fly down those lanes, so the gaps between them are where to stand.
+        Vector3 aim = FlatToward(player.position);
+        var fan = Telegraph.Fan(transform, () => aim, volleyBolts, volleyArc, volleyRange + 1f, windup);
         for (float t = 0f; t < windup; t += Time.deltaTime)
         {
-            if (health.IsDead) yield break;
-            Face(player.position);
+            if (health.IsDead) { fan.Finish(); yield break; }
+            if (!fan.IsLocked) aim = FlatToward(player.position);
+            Face(transform.position + aim);
             yield return null;
         }
+        fan.Finish();
 
         Vector3 from = transform.position + Vector3.up * 0.8f;
-        Vector3 aim = player.position - transform.position;
-        aim.y = 0f;
-        if (aim.sqrMagnitude < 0.01f) aim = transform.forward;
         AudioManager.Play(volleySound);
         for (int i = 0; i < volleyBolts; i++)
         {
@@ -309,6 +326,14 @@ public class BossAbilities : MonoBehaviour
         ai.enabled = !health.IsDead;
         nextVolleyAt = Time.time + volleyCooldown;
         IsVolleying = false;
+    }
+
+    // The flat direction from the boss to a point (never zero).
+    private Vector3 FlatToward(Vector3 point)
+    {
+        var aim = point - transform.position;
+        aim.y = 0f;
+        return aim.sqrMagnitude < 0.01f ? transform.forward : aim.normalized;
     }
 
     // ---------- Barrage ----------
@@ -348,13 +373,17 @@ public class BossAbilities : MonoBehaviour
     private IEnumerator CannonShot(Vector3 at, float seconds)
     {
         var warning = Instantiate(warningPrefab, new Vector3(at.x, 0.03f, at.z), Quaternion.Euler(90f, 0f, 0f));
+        seconds = Telegraph.Clamp(seconds);
+        var outline = Telegraph.Circle(at, barrageRadius, seconds, tick: false);   // (each shell whistles instead of ticking)
+        AudioManager.Play(ActionFeedback.Clip("incoming"), 0.7f);                  // a falling whistle: a shell is coming down here
         for (float t = 0f; t < seconds; t += Time.deltaTime)
         {
-            if (health.IsDead) { Destroy(warning); yield break; } // beaten mid-barrage: the cannons go quiet
+            if (health.IsDead) { Destroy(warning); outline.Finish(); yield break; } // beaten mid-barrage: the cannons go quiet
             warning.transform.localScale = Vector3.one * barrageRadius * Mathf.Lerp(0.3f, 1f, t / seconds);
             yield return null;
         }
         Destroy(warning);
+        outline.Finish();
 
         AudioManager.Play(barrageSound, 0.8f);
         Instantiate(barrageImpactPrefab, new Vector3(at.x, 0.4f, at.z), Quaternion.identity);

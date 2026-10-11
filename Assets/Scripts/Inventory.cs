@@ -61,7 +61,11 @@ public class Inventory : MonoBehaviour
             OnChanged();
             return true;
         }
-        if (state.Bag.Count >= capacity) return false;
+        if (state.Bag.Count >= capacity)
+        {
+            ActionFeedback.Fail(FailReason.BagFull);   // a picture and a sound, wherever the item came from
+            return false;
+        }
         state.Bag.Add(item.Id);
         if (item.IsConsumable) AutoAssignQuickSlot(item);
         OnChanged();
@@ -164,7 +168,12 @@ public class Inventory : MonoBehaviour
 
     public bool Unequip(EquipSlot slot)
     {
-        if (!state.Equipped.TryGetValue(slot, out var id) || state.Bag.Count >= capacity) return false;
+        if (!state.Equipped.TryGetValue(slot, out var id)) return false;
+        if (state.Bag.Count >= capacity)
+        {
+            ActionFeedback.Fail(FailReason.BagFull);   // nowhere to put it down
+            return false;
+        }
         state.Equipped.Remove(slot);
         state.Bag.Add(id);
         OnChanged();

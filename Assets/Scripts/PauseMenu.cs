@@ -14,10 +14,14 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private string titleScene = "Title";
     [SerializeField] private AudioClip clickSound;
 
-    private enum Row { Resume, Music, Sounds, Mode, Map, Quit, Exit }
-    private static readonly Row[] Rows = { Row.Resume, Row.Music, Row.Sounds, Row.Mode, Row.Map, Row.Quit, Row.Exit };
+    private enum Row { Resume, Music, Sounds, Mode, Map, Stuck, Quit, Exit }
+    private static readonly Row[] Rows = { Row.Resume, Row.Music, Row.Sounds, Row.Mode, Row.Map, Row.Stuck, Row.Quit, Row.Exit };
 
     public static bool IsOpen { get; private set; }
+    private static int closedFrame = -1;
+
+    // The frame the menu closes still counts: the A / B / Enter that picked "Resume" must not also interact or hop.
+    public static bool BlocksInput => IsOpen || Time.frameCount == closedFrame;
     public int Highlighted { get; private set; }
 
     private VisualElement screen;
@@ -46,6 +50,7 @@ public class PauseMenu : MonoBehaviour
 
         root.Q<Button>("pause-resume").clicked += Close;
         root.Q<Button>("pause-map").clicked += OpenMap;
+        root.Q<Button>("pause-stuck").clicked += RestartRoom;
         root.Q<Button>("pause-quit").clicked += QuitToTitle;
         root.Q<Button>("pause-exit").clicked += QuitGame;
         foreach (var row in new[] { Row.Music, Row.Sounds, Row.Mode })
@@ -84,10 +89,24 @@ public class PauseMenu : MonoBehaviour
         {
             if (row == Row.Resume) Close();
             else if (row == Row.Map) OpenMap();
+            else if (row == Row.Stuck) RestartRoom();
             else if (row == Row.Quit) QuitToTitle();
             else if (row == Row.Exit) QuitGame();
             else if (row == Row.Mode) Change(row, +1); // A flips the mode too
         }
+    }
+
+    // "Stuck? Start this room again": the way out of any jam (a block pushed into a corner, a spot that can't be left).
+    // Reloads this room and puts the hero back where they came in. Nothing earned is lost: flags, items, gold and
+    // dug dirt stay (they're saved by the game, not the room); only the room's own state starts fresh (stone blocks
+    // back where they were, monsters that weren't beaten back in place).
+    public void RestartRoom()
+    {
+        string scene = SceneManager.GetActiveScene().name;
+        SaveSystem.Autosave(scene, GameSession.EnteredBy);
+        GameSession.NextSpawn = string.IsNullOrEmpty(GameSession.EnteredBy) ? null : GameSession.EnteredBy;
+        Close();
+        SceneManager.LoadScene(scene);
     }
 
     // "World map": put the pause menu away and show the map.
@@ -109,6 +128,7 @@ public class PauseMenu : MonoBehaviour
     public void Close()
     {
         if (!IsOpen) return;
+        closedFrame = Time.frameCount;
         SetOpen(false);
         AudioManager.Play(clickSound, 0.6f);
     }

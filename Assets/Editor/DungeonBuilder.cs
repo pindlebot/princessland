@@ -256,7 +256,7 @@ public static partial class DungeonBuilder
         EditorUtility.SetDirty(mats["PitWallEarth"]);
         var spike = Mat("Spike", new Color(0.78f, 0.78f, 0.86f)); // shiny steel
         spike.SetFloat("_Metallic", 0.6f);
-        spike.SetFloat("_Glossiness", 0.6f);
+        spike.SetFloat("_Smoothness", 0.6f);
         mats["Spike"] = spike;
         return mats;
     }
@@ -265,15 +265,18 @@ public static partial class DungeonBuilder
                                 Texture2D emissionMap = null)
     {
         string path = $"Assets/Materials/{name}.mat";
+        var lit = Shader.Find("Universal Render Pipeline/Lit"); // the Universal Render Pipeline's standard lit shader
         var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (mat == null)
         {
-            mat = new Material(Shader.Find("Standard"));
+            mat = new Material(lit);
             AssetDatabase.CreateAsset(mat, path);
         }
-        mat.color = color; // multiplied with the texture, so white = texture as drawn
-        mat.mainTexture = texture;
-        mat.SetFloat("_Glossiness", 0.15f);
+        if (mat.shader != lit) mat.shader = lit;              // materials made by an older build (Standard) are moved across
+        mat.SetColor("_BaseColor", color);                    // multiplied with the texture, so white = texture as drawn
+        mat.SetTexture("_BaseMap", texture);
+        mat.SetFloat("_Smoothness", 0.15f);
+        mat.SetFloat("_Metallic", 0f);
         if (emission.HasValue)
         {
             mat.EnableKeyword("_EMISSION");

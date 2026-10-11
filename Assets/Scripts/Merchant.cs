@@ -42,7 +42,11 @@ public class Merchant : Npc
     // Sells one if you have room and enough coins. Returns what the shopkeeper says.
     public string Buy(Inventory inventory)
     {
-        if (inventory.Bag.Count >= inventory.Capacity) return bagFull;
+        if (inventory.Bag.Count >= inventory.Capacity)
+        {
+            ActionFeedback.Fail(FailReason.BagFull);
+            return bagFull;
+        }
         var item = Ware;
         int cost = Price;
         string said = UsesAlt ? altThanks : thanks;

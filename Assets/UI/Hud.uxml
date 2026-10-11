@@ -90,6 +90,18 @@
             <ui:Label name="objective-hint" class="objective-hint" text="" />
         </ui:VisualElement>
 
+        <!-- The quest being followed (click it, or press J, for the whole quest log) -->
+        <ui:VisualElement name="tracker" class="panel tracker">
+            <ui:VisualElement name="tracker-portrait" class="tracker-portrait" picking-mode="Ignore" />
+            <ui:VisualElement class="tracker-body" picking-mode="Ignore">
+                <ui:Label name="tracker-title" class="tracker-title" text="" picking-mode="Ignore" />
+                <ui:Label name="tracker-step" class="tracker-step" text="" picking-mode="Ignore" />
+                <ui:VisualElement name="tracker-pips" class="tracker-pips" picking-mode="Ignore" />
+                <ui:Label name="tracker-where" class="tracker-where" text="" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="tracker-next" class="tracker-next" picking-mode="Ignore" />
+        </ui:VisualElement>
+
         <!-- Inventory (press I), on the left under the status card. On the left, the hero as a paper doll with
              each worn slot sitting on the part of the body it dresses (HudController finds each by name:
              equip-<slot>); on the right, the stats, the bag and the treasures. What an item is and does shows in the
@@ -228,10 +240,10 @@
                 <ui:Label class="help-line" text="W A S D or stick:  walk" />
                 <ui:Label class="help-line" text="Space, Click or X:  magic! (it aims by itself)" />
                 <ui:Label class="help-line" text="Tab or RB:  aim at a different monster" />
-                <ui:Label class="help-line" text="Q or LB,  F or LT:  abilities from the skill path" />
+                <ui:Label class="help-line" text="Q or LB,  F or LT:  learned abilities (the first group on the hotbar)" />
                 <ui:Label class="help-line" text="E or A:  open, talk, pick up" />
                 <ui:Label class="help-line" text="I or Y:  bag      K or View:  skills      J or R3:  quests" />
-                <ui:Label class="help-line" text="2 3 4 5 or right stick:  eat from the hotbar      T or L3:  fountain" />
+                <ui:Label class="help-line" text="2 3 4 5 or right stick:  eat food (the second group)      T or L3:  fountain" />
                 <ui:Label class="help-line" text="M:  world map (also in the pause menu)" />
                 <ui:Label class="help-line" text="H or hold RB + View:  this help      R:  try again" />
                 <ui:Label class="help-line" text="Esc or Start:  pause menu" />
@@ -252,7 +264,8 @@
                     </ui:VisualElement>
                     <ui:Label name="spell-key" class="spell-key" text="Space" picking-mode="Ignore" />
                 </ui:VisualElement>
-                <!-- The abilities from the skill path (steps 3 and 4): hidden until learned -->
+                <!-- The abilities from the skill path (steps 3 and 4): hidden until learned. Keys Q and F (LB and LT). -->
+                <ui:VisualElement name="abilities-group" class="hotbar-group abilities-group" picking-mode="Ignore">
                 <ui:VisualElement name="ability-2" class="hotbar-item future-slot" picking-mode="Ignore">
                     <ui:VisualElement name="slot-2" class="slot ability-slot">
                         <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
@@ -269,7 +282,10 @@
                     </ui:VisualElement>
                     <ui:Label class="spell-key" text="F" picking-mode="Ignore" />
                 </ui:VisualElement>
-                <!-- Consumables from the bag, on keys 2-5: hidden until something is on the slot -->
+                </ui:VisualElement>
+                <!-- Food from the bag, on keys 2-5 (the right stick): hidden until something is on the slot. A separate
+                     group from the abilities: rounder, smaller slots, with their own key caps. -->
+                <ui:VisualElement name="items-group" class="hotbar-group items-group" picking-mode="Ignore">
                 <ui:VisualElement name="quick-0" class="hotbar-item future-slot" picking-mode="Ignore">
                     <ui:VisualElement name="quick-slot-0" class="slot ability-slot quick-slot">
                         <ui:VisualElement class="slot-icon" picking-mode="Ignore" />
@@ -298,6 +314,7 @@
                     </ui:VisualElement>
                     <ui:Label class="spell-key" text="5" picking-mode="Ignore" />
                 </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement class="bottom-right" picking-mode="Ignore">
@@ -308,6 +325,17 @@
         <!-- One short hint at a time: "E: Open chest", "Space: Magic!", "W A S D: Walk" -->
         <ui:VisualElement class="centered-row prompt-row" picking-mode="Ignore">
             <ui:Label name="interact-prompt" class="panel interact-prompt" text="E: Open chest" picking-mode="Ignore" />
+        </ui:VisualElement>
+
+        <!-- "That didn't work, and here is why": a picture and a few words (HudController.OnActionFailed) -->
+        <ui:VisualElement class="centered-row fail-row" picking-mode="Ignore">
+            <ui:VisualElement name="fail-badge" class="panel fail-badge" picking-mode="Ignore">
+                <ui:VisualElement class="fail-icon-frame" picking-mode="Ignore">
+                    <ui:VisualElement name="fail-icon" class="fail-icon" picking-mode="Ignore" />
+                    <ui:VisualElement name="fail-no" class="fail-no" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="fail-text" class="fail-text" text="" picking-mode="Ignore" />
+            </ui:VisualElement>
         </ui:VisualElement>
 
         <!-- Short messages like "Level up!" that fade in and out -->
@@ -369,6 +397,7 @@
                 </ui:VisualElement>
                 <ui:Label name="pause-mode-description" class="pause-description" />
                 <ui:Button name="pause-map" class="pause-row pause-button" text="World map" />
+                <ui:Button name="pause-stuck" class="pause-row pause-button" text="Stuck? Start this room again" />
                 <ui:Button name="pause-quit" class="pause-row pause-button" text="Save and go to title" />
                 <ui:Button name="pause-exit" class="pause-row pause-button" text="Save and quit game" />
             </ui:VisualElement>

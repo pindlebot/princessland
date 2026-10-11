@@ -48,7 +48,15 @@ MonoBehaviour:
     - wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
     floorColor: {r: 0.93333334, g: 0.84705883, b: 0.6666667, a: 1}
     wallColor: {r: 0.6509804, g: 0.61960787, b: 0.7058824, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 15
+      row: 24
+      id: Level0
+    - kind: lockedexit
+      col: 39
+      row: 9
+      id: Dungeon
     secretTiles: []
   - scene: Dungeon
     title: Escape the dungeon
@@ -119,6 +127,14 @@ MonoBehaviour:
       col: 63
       row: 35
       id: dragon_egg_castle
+    - kind: exit
+      col: 50
+      row: 42
+      id: Lake1
+    - kind: lockedexit
+      col: 41
+      row: 41
+      id: Level0
     secretTiles:
     - 14,7
     - 15,7
@@ -201,7 +217,11 @@ MonoBehaviour:
     - HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
     floorColor: {r: 0.43137255, g: 0.47843137, b: 0.36862746, a: 1}
     wallColor: {r: 0.65882355, g: 0.6117647, b: 0.72156864, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 20
+      row: 0
+      id: Level0
     secretTiles: []
   - scene: Frost1
     title: 'Frostpeak: The Camp'
@@ -243,6 +263,14 @@ MonoBehaviour:
       col: 10
       row: 16
       id: 
+    - kind: exit
+      col: 39
+      row: 12
+      id: Frost2
+    - kind: exit
+      col: 29
+      row: 25
+      id: Lake3
     secretTiles: []
   - scene: Frost2
     title: 'Frostpeak: The Icy Slopes'
@@ -279,7 +307,15 @@ MonoBehaviour:
     - HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
     floorColor: {r: 0.8627451, g: 0.9098039, b: 0.95686275, a: 1}
     wallColor: {r: 0.5411765, g: 0.6509804, b: 0.78431374, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 0
+      row: 12
+      id: Frost1
+    - kind: exit
+      col: 43
+      row: 12
+      id: Frost3
     secretTiles: []
   - scene: Frost3
     title: 'Frostpeak: The Frozen Pass'
@@ -321,6 +357,14 @@ MonoBehaviour:
       col: 38
       row: 2
       id: dragon_egg_frost
+    - kind: exit
+      col: 0
+      row: 12
+      id: Frost2
+    - kind: exit
+      col: 39
+      row: 12
+      id: Frost4
     secretTiles: []
   - scene: Frost4
     title: 'Frostpeak: The Yeti''s Den'
@@ -355,7 +399,11 @@ MonoBehaviour:
     - HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
     floorColor: {r: 0.8627451, g: 0.9098039, b: 0.95686275, a: 1}
     wallColor: {r: 0.5411765, g: 0.6509804, b: 0.78431374, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 35
+      row: 12
+      id: Frost3
     secretTiles: []
   - scene: House
     title: '{hero}''s Home'
@@ -377,7 +425,15 @@ MonoBehaviour:
     - '############'
     floorColor: {r: 0.5882353, g: 0.40784314, b: 0.24313726, a: 1}
     wallColor: {r: 0.6666667, g: 0.6431373, b: 0.72156864, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 17
+      row: 7
+      id: Level0
+    - kind: exit
+      col: 16
+      row: 4
+      id: Kitchen
     secretTiles: []
   - scene: Kitchen
     title: '{hero}''s Kitchen'
@@ -396,7 +452,11 @@ MonoBehaviour:
     - '############'
     floorColor: {r: 0.7529412, g: 0.47058824, b: 0.34509805, a: 1}
     wallColor: {r: 0.6666667, g: 0.6431373, b: 0.72156864, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 8
+      row: 5
+      id: House
     secretTiles: []
   - scene: Lake1
     title: 'Puddlebrook Lake: The Shore'
@@ -438,6 +498,14 @@ MonoBehaviour:
       col: 8
       row: 16
       id: 
+    - kind: exit
+      col: 20
+      row: 0
+      id: Dungeon
+    - kind: exit
+      col: 39
+      row: 22
+      id: Lake2
     secretTiles: []
   - scene: Lake2
     title: 'Puddlebrook Lake: The Murky Reeds'
@@ -479,6 +547,14 @@ MonoBehaviour:
       col: 22
       row: 13
       id: dragon_egg_lake
+    - kind: exit
+      col: 0
+      row: 12
+      id: Lake1
+    - kind: exit
+      col: 43
+      row: 12
+      id: Lake3
     secretTiles: []
   - scene: Lake3
     title: 'Puddlebrook Lake: The Sunken Dock'
@@ -515,7 +591,19 @@ MonoBehaviour:
     - HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
     floorColor: {r: 0.54901963, g: 0.72156864, b: 0.5411765, a: 1}
     wallColor: {r: 0.30588236, g: 0.47843137, b: 0.41568628, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 0
+      row: 12
+      id: Lake2
+    - kind: exit
+      col: 39
+      row: 12
+      id: Lake4
+    - kind: exit
+      col: 29
+      row: 0
+      id: Frost1
     secretTiles: []
   - scene: Lake4
     title: 'Puddlebrook Lake: King Crabbington''s Court'
@@ -550,7 +638,11 @@ MonoBehaviour:
     - HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
     floorColor: {r: 0.54901963, g: 0.72156864, b: 0.5411765, a: 1}
     wallColor: {r: 0.30588236, g: 0.47843137, b: 0.41568628, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 0
+      row: 12
+      id: Lake3
     secretTiles: []
   - scene: Level0
     title: The Castle Grounds
@@ -604,6 +696,26 @@ MonoBehaviour:
       col: 52
       row: 31
       id: Level0/52,31
+    - kind: exit
+      col: 11
+      row: 1
+      id: House
+    - kind: exit
+      col: 3
+      row: 15
+      id: Cove
+    - kind: exit
+      col: 28
+      row: 33
+      id: Farm
+    - kind: exit
+      col: 0
+      row: 17
+      id: Woods1
+    - kind: lockedexit
+      col: 53
+      row: 18
+      id: Dungeon
     secretTiles: []
   - scene: Mines1
     title: 'Glimmer Mines: The Entrance'
@@ -639,6 +751,14 @@ MonoBehaviour:
       col: 12
       row: 4
       id: 
+    - kind: exit
+      col: 20
+      row: 0
+      id: Woods3
+    - kind: exit
+      col: 0
+      row: 10
+      id: Mines2
     secretTiles: []
   - scene: Mines2
     title: 'Glimmer Mines: The Mole Tunnels'
@@ -673,7 +793,15 @@ MonoBehaviour:
     - '############################################'
     floorColor: {r: 0.5411765, g: 0.47843137, b: 0.40784314, a: 1}
     wallColor: {r: 0.32941177, g: 0.28235295, b: 0.36862746, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 0
+      row: 12
+      id: Mines1
+    - kind: exit
+      col: 43
+      row: 12
+      id: Mines3
     secretTiles: []
   - scene: Mines3
     title: 'Glimmer Mines: The Crystal Cavern'
@@ -713,6 +841,14 @@ MonoBehaviour:
       col: 30
       row: 2
       id: dragon_egg_mines
+    - kind: exit
+      col: 39
+      row: 13
+      id: Mines2
+    - kind: exit
+      col: 0
+      row: 13
+      id: Mines4
     secretTiles: []
   - scene: Mines4
     title: 'Glimmer Mines: The Golem''s Chamber'
@@ -747,7 +883,11 @@ MonoBehaviour:
     - '####################################'
     floorColor: {r: 0.5411765, g: 0.47843137, b: 0.40784314, a: 1}
     wallColor: {r: 0.32941177, g: 0.28235295, b: 0.36862746, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 35
+      row: 12
+      id: Mines3
     secretTiles: []
   - scene: Woods1
     title: 'Whispering Woods: The Sleepy Glade'
@@ -787,6 +927,14 @@ MonoBehaviour:
       col: 13
       row: 13
       id: 
+    - kind: exit
+      col: 0
+      row: 12
+      id: Level0
+    - kind: exit
+      col: 37
+      row: 12
+      id: Woods2
     secretTiles: []
   - scene: Woods2
     title: 'Whispering Woods: The Spore Meadow'
@@ -823,7 +971,19 @@ MonoBehaviour:
     - HHHHHHHHHHHHHHHHHHHHH.HHHHHHHHHHHHHHHHHHHH
     floorColor: {r: 0.43137255, g: 0.6039216, b: 0.36862746, a: 1}
     wallColor: {r: 0.30588236, g: 0.47843137, b: 0.3137255, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 0
+      row: 13
+      id: Woods1
+    - kind: exit
+      col: 41
+      row: 13
+      id: Woods4
+    - kind: exit
+      col: 21
+      row: 25
+      id: Woods3
     secretTiles: []
   - scene: Woods3
     title: 'Whispering Woods: The Mushroom Hollow'
@@ -854,7 +1014,15 @@ MonoBehaviour:
     - HHHHHHHHHHHHHHH.HHHHHHHHHHHHHH
     floorColor: {r: 0.43137255, g: 0.6039216, b: 0.36862746, a: 1}
     wallColor: {r: 0.30588236, g: 0.47843137, b: 0.3137255, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 15
+      row: 0
+      id: Woods2
+    - kind: exit
+      col: 15
+      row: 19
+      id: Mines1
     secretTiles: []
   - scene: Woods4
     title: 'Whispering Woods: Mother Mushroom''s Grove'
@@ -889,5 +1057,9 @@ MonoBehaviour:
     - HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
     floorColor: {r: 0.43137255, g: 0.6039216, b: 0.36862746, a: 1}
     wallColor: {r: 0.30588236, g: 0.47843137, b: 0.3137255, a: 1}
-    markers: []
+    markers:
+    - kind: exit
+      col: 0
+      row: 12
+      id: Woods2
     secretTiles: []

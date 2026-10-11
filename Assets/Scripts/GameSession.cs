@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 // Things that need to survive loading a new scene. Every object in a scene is destroyed
 // when the next scene loads, but static fields live on, so this is the simplest way to
@@ -30,7 +31,15 @@ public static class GameSession
     // Things worth counting, e.g. "wishes" made at the fountain or "talks:Coralie".
     public static readonly Dictionary<string, int> Counters = new Dictionary<string, int>();
     public static int GetCounter(string key) => Counters.TryGetValue(key, out int n) ? n : 0;
-    public static int AddToCounter(string key, int amount = 1) => Counters[key] = GetCounter(key) + amount;
+    public static int AddToCounter(string key, int amount = 1)
+    {
+        int value = Counters[key] = GetCounter(key) + amount;
+        if (SavedCounters.Any(prefix => key.StartsWith(prefix))) SaveSystem.AutosaveSoon();
+        return value;
+    }
+
+    // Counters whose changes are progress worth saving at once: fish caught, moles found, trees woken, things bought, dirt dug.
+    private static readonly string[] SavedCounters = { "fish_caught", "moles_found", "trees_woken", "bought:", "dirt_dug", "heart", "star" };
 
     // Level, experience, gold and skills.
     public static Progression Progress = new Progression();
@@ -41,7 +50,11 @@ public static class GameSession
     // Things in the world that have been used up for good: an opened chest, a picked-up item.
     // Keyed by each object's persistent id (scene/col,row), so they stay used when you come back.
     public static bool IsUsed(string persistentId) => Flags.Contains("used:" + persistentId);
-    public static void MarkUsed(string persistentId) => Flags.Add("used:" + persistentId);
+    // (Using something up is worth keeping: a chest, a pickup, a treasure, a patch of dirt dug.)
+    public static void MarkUsed(string persistentId)
+    {
+        if (Flags.Add("used:" + persistentId)) SaveSystem.AutosaveSoon();
+    }
 
     // Called when a hero is picked (or a save is loaded): forget the previous playthrough.
     // The save slot is kept: the title screen picks it before the hero is chosen.
@@ -50,6 +63,7 @@ public static class GameSession
         SelectedCharacter = hero;
         NextSpawn = null;
         EnteredBy = "";
+        SaveRunner.Cancel(); // nothing from the old game is waiting to be written into the new one
         Settings = new GameSettings();
         Flags.Clear();
         Counters.Clear();

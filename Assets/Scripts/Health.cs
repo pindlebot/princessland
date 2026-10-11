@@ -18,6 +18,12 @@ public class Health : MonoBehaviour
     public event Action<Health> Revived;
     public event Action<Health> Healed;
     public event Action<Health> Blocked; // a hit that a shield took instead
+    // A hit that did no damage at all because this thing is shielded right now (a boss's closed shell, his dim crystals).
+    // Only raised when DeflectsNoDamageHits is on; the hit still counts as "something hit me" (Damaged) so monsters wake
+    // up, but there's no white flash and no hurt sound: it has to look and sound different from a hit that landed.
+    public event Action<Health> Deflected;
+    public bool DeflectsNoDamageHits;
+    public int LastDamage { get; private set; }
 
     // Optional: changes incoming damage (Gentle Mode halves the hero's). Returns the new amount.
     public Func<int, int> AdjustDamage;
@@ -49,6 +55,13 @@ public class Health : MonoBehaviour
             return;
         }
         if (AdjustDamage != null) amount = AdjustDamage(amount);
+        LastDamage = amount;
+        if (DeflectsNoDamageHits && amount <= 0)
+        {
+            Deflected?.Invoke(this);
+            Damaged?.Invoke(this);
+            return;
+        }
 
         // Even a hit that costs no heart still flashes and makes a sound: it was a "bump".
         Current = Mathf.Max(0, Current - amount);
@@ -88,13 +101,34 @@ public class Health : MonoBehaviour
         if (flashTimer <= 0f) SetFlash(false);
     }
 
-    // Brief white flash so hits are readable. Uses emission on the Standard shader.
+    // Brief white flash so hits are readable. A sprite (every hero and monster) is swapped for a flat white copy of itself
+    // for a moment (the SpriteFlash shader); a lit 3D object glows white through its emission instead.
+    private static Material flashMaterial;
+    private Material[] before;
+
     private void SetFlash(bool on)
     {
-        foreach (var r in renderers)
+        if (flashMaterial == null)
         {
-            if (on) r.material.EnableKeyword("_EMISSION");
-            r.material.SetColor("_EmissionColor", on ? Color.white : Color.black);
+            var shader = Resources.Load<Shader>("Shaders/SpriteFlash");
+            if (shader != null) flashMaterial = new Material(shader) { name = "SpriteFlash (shared)" };
+        }
+        if (before == null) before = new Material[renderers.Length];
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            var r = renderers[i];
+            if (r == null) continue;
+            if (r is SpriteRenderer)
+            {
+                if (flashMaterial == null) continue;
+                if (on) { if (before[i] == null) before[i] = r.sharedMaterial; r.sharedMaterial = flashMaterial; }
+                else if (before[i] != null) { r.sharedMaterial = before[i]; before[i] = null; }
+            }
+            else if (r.sharedMaterial != null && r.sharedMaterial.HasProperty("_EmissionColor"))
+            {
+                if (on) r.material.EnableKeyword("_EMISSION");
+                r.material.SetColor("_EmissionColor", on ? Color.white : Color.black);
+            }
         }
     }
 }
