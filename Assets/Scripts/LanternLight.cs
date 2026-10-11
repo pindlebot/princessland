@@ -5,6 +5,7 @@ using UnityEngine;
 // only while the lantern is in the treasures tab, so picking it up lights you up straight away.
 public class LanternLight : MonoBehaviour
 {
+    private const float Boost = 1.5f; // same as DungeonBuilder.LightBoost (the render pipeline's dimmer falloff)
     public const string ItemId = "fairy_lantern";
 
     private Light glow;
@@ -21,7 +22,7 @@ public class LanternLight : MonoBehaviour
         glow.type = LightType.Point;
         glow.color = new Color(1f, 0.92f, 0.62f);
         glow.range = 11f;
-        glow.intensity = 2.4f;
+        glow.intensity = 2.4f * Boost;
         glow.shadows = LightShadows.None;
         glow.enabled = false;
     }
@@ -30,6 +31,6 @@ public class LanternLight : MonoBehaviour
     {
         bool has = inventory != null && inventory.HasKeyItem(ItemId);
         if (glow.enabled != has) glow.enabled = has;
-        if (has) glow.intensity = 2.4f + Mathf.Sin(Time.time * 3f) * 0.25f; // a gentle twinkle
+        if (has) glow.intensity = (2.4f + Mathf.Sin(Time.time * 3f) * 0.25f) * Boost; // a gentle twinkle
     }
 }

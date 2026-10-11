@@ -302,7 +302,7 @@ public static partial class DungeonBuilder
         glow.type = LightType.Point;
         glow.color = spec.Glow;
         glow.range = 2.5f;
-        glow.intensity = 1.5f;
+        glow.intensity = 1.5f * LightBoost;
 
         var pickup = go.AddComponent<ItemPickup>();
         SetRef(pickup, "item", item);

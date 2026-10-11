@@ -18,7 +18,7 @@ public static partial class DungeonBuilder
         glow.type = LightType.Point;
         glow.color = new Color(1f, 0.85f, 0.4f);
         glow.range = 5f;
-        glow.intensity = 3f;
+        glow.intensity = 3f * LightBoost;
         SetFloat(glow.gameObject.AddComponent<FadeOutLight>(), "duration", 0.6f);
         return SavePrefab(sparkle, "ChestSparkle");
     }

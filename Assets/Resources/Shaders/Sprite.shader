@@ -1,13 +1,17 @@
-// A sprite drawn as a flat white silhouette (the picture's own shape and see-through parts, no colour): what a hit
-// flashes the hero or a monster to (Health.SetFlash swaps it in for a moment). Unlit, like the default sprite shader,
-// and for the Universal Render Pipeline. Lives in Resources so a build always includes it.
-Shader "Tidecrown/SpriteFlash"
+// The game's sprite shader for the Universal Render Pipeline: unlit, see-through, drawn in the transparent queue (the
+// same look as the old built-in Sprites/Default). Every sprite uses a material with it (Assets/Resources/Materials/SpriteUnlit).
+// _Flash blends the picture towards flat white (its own shape and see-through parts, no colour): at 1 it's the white
+// silhouette a hit flashes a hero or monster to (Health.SetFlash swaps that in for a moment).
+// (URP's own default sprite shader is not used: in this project it failed the depth test against the floor.)
+// Lives in Resources so a build always includes it.
+Shader "Tidecrown/Sprite"
 {
     Properties
     {
         _MainTex ("Sprite", 2D) = "white" {}
         _Color ("Tint", Color) = (1, 1, 1, 1)
-        _Flash ("Flash", Range(0, 1)) = 1
+        _Flash ("Flash", Range(0, 1)) = 0
+        [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 4
     }
 
     SubShader
@@ -24,6 +28,7 @@ Shader "Tidecrown/SpriteFlash"
         Blend SrcAlpha OneMinusSrcAlpha
         Cull Off
         ZWrite Off
+        ZTest [_ZTest]
 
         Pass
         {

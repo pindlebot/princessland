@@ -236,7 +236,7 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = new Color(1f, 0.72f, 0.28f);
         light.range = 12f;
-        light.intensity = 3f;
+        light.intensity = 3f * LightBoost;
         light.shadows = LightShadows.None;
         var crystals = go.AddComponent<GolemCrystals>();
         SetRef(crystals, "glowLight", light);

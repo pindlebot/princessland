@@ -197,10 +197,10 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = color;
         light.range = range;
-        light.intensity = intensity;
+        light.intensity = intensity * LightBoost;
         light.shadows = LightShadows.None;
         var flicker = light.gameObject.AddComponent<FlickerLight>();
-        SetFloat(flicker, "baseIntensity", intensity);
+        SetFloat(flicker, "baseIntensity", intensity * LightBoost);
         SetFloat(flicker, "flickerAmount", intensity * 0.3f);
         SetFloat(flicker, "speed", 6f);
         PrefabUtility.SaveAsPrefabAsset(root, AssetDatabase.GetAssetPath(prefab));
@@ -248,7 +248,7 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = new Color(0.55f, 1f, 0.8f);
         light.range = 3f;
-        light.intensity = 1.2f;
+        light.intensity = 1.2f * LightBoost;
         light.shadows = LightShadows.None;
         return SavePrefab(go, "Wisp");
     }

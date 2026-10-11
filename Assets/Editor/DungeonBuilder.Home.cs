@@ -192,7 +192,7 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = new Color(1f, 0.7f, 0.6f); // through a pink shade
         light.range = 5f;
-        light.intensity = 1.5f;
+        light.intensity = 1.5f * LightBoost;
         light.shadows = LightShadows.None;
         SetRef(nightstand, "lamp", light);
     }

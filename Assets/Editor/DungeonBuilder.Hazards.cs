@@ -95,7 +95,7 @@ public static partial class DungeonBuilder
             light.range = 5f;
             light.shadows = LightShadows.None;
             var glow = light.gameObject.AddComponent<FlickerLight>(); // a slow, molten pulse
-            SetFloat(glow, "baseIntensity", 1.5f);
+            SetFloat(glow, "baseIntensity", 1.5f * LightBoost);
             SetFloat(glow, "flickerAmount", 0.3f);
             SetFloat(glow, "speed", 1.2f);
         }

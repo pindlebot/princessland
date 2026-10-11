@@ -71,7 +71,7 @@ public class TideWaves : MonoBehaviour
     {
         var go = new GameObject(name);
         go.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-        var sr = go.AddComponent<SpriteRenderer>();
+        var sr = SpriteMaterial.Apply(go.AddComponent<SpriteRenderer>());
         sr.sprite = Square();
         sr.color = color;
         sr.sortingOrder = order;

@@ -75,7 +75,7 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = new Color(1f, 0.5f, 0.1f);
         light.range = 7f;
-        light.intensity = 3f;
+        light.intensity = 3f * LightBoost;
 
         SetRef(strike, "warning", warning.transform);
         SetRef(strike, "rock", rock.transform);
@@ -101,7 +101,7 @@ public static partial class DungeonBuilder
         glow.type = LightType.Point;
         glow.color = new Color(0.3f, 0.95f, 0.9f);
         glow.range = 6f;
-        glow.intensity = 2f;
+        glow.intensity = 2f * LightBoost;
         return SavePrefab<WhirlpoolZone>(go, "WhirlpoolZone");
     }
 

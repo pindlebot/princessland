@@ -27,6 +27,14 @@ using UnityEngine;
 //   DungeonBuilder.Title.cs            the title screen and its save slots
 public static partial class DungeonBuilder
 {
+    // Point lights (torches, glows, braziers, flashes) are drawn brighter by this much: the Universal Render Pipeline's
+    // smoother light falloff comes out dimmer than the old built-in pipeline's for the same intensity, so every
+    // non-sun light is multiplied by this to keep the look the game was tuned to. (Sunlight is left as it was.)
+    public const float LightBoost = 1.5f;
+    public const float AmbientBoost = 2.2f;         // for the dim scenes (see SetUpLighting)
+    public const float DarkAmbientBoost = 1.35f;     // the dark hollows stay dark: a lantern is what you see by
+    public const float DaylightAmbientBoost = 1.12f; // and for daylight
+
     private const float Tile = 2f;
     private const string TitleScenePath = "Assets/Scenes/Title.unity";
     private const string CharacterSelectScenePath = "Assets/Scenes/CharacterSelect.unity";
@@ -85,6 +93,7 @@ public static partial class DungeonBuilder
             .Select(path => new EditorBuildSettingsScene(path, true))
             .ToArray();
         AssetDatabase.SaveAssets();
+        SpriteMaterials.ApplyEverywhere(); // every sprite uses the game's own sprite material (see SpriteMaterials)
         EditorSceneManager.OpenScene(TitleScenePath);
         Debug.Log($"[DungeonBuilder] Built Title, CharacterSelect, {string.Join(", ", maps.Select(m => m.Name))}");
     }

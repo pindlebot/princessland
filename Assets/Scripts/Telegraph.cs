@@ -96,7 +96,7 @@ public static class Telegraph
     {
         var go = new GameObject(name);
         go.transform.SetParent(parent, false);
-        var sr = go.AddComponent<SpriteRenderer>();
+        var sr = SpriteMaterial.Apply(go.AddComponent<SpriteRenderer>());
         sr.sprite = sprite;
         sr.sortingOrder = order;
         return sr;

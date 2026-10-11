@@ -627,6 +627,14 @@ public static partial class DungeonBuilder
             sun.intensity = 0.5f;
             sun.shadowStrength = 0.55f;
         }
+
+        // The Universal Render Pipeline lights the shadowed side of things less than the old built-in pipeline did for the same
+        // ambient colour, and the darker the scene the bigger the gap, so the ambient is raised to match the look the scenes
+        // were tuned to: a lot for the dim ones (indoors, the mines, the dark hollows), a little for daylight, none for snow.
+        bool dim = theme != Theme.Outdoor || mood == "dark" || mood == "mines";
+        float boost = mood == "dark" ? DarkAmbientBoost : dim ? AmbientBoost : mood == "snow" ? 1f : DaylightAmbientBoost;
+        var a = RenderSettings.ambientLight;
+        RenderSettings.ambientLight = new Color(a.r * boost, a.g * boost, a.b * boost, 1f);
     }
 
     private static int CountAround(string[] map, int col, int row, char c) =>
@@ -712,9 +720,9 @@ public static partial class DungeonBuilder
         light.type = LightType.Point;
         light.color = new Color(0.3f, 1f, 0.4f);
         light.range = 6f;
-        light.intensity = 2.4f;
+        light.intensity = 2.4f * LightBoost;
         var pulse = light.gameObject.AddComponent<FlickerLight>(); // a gentle pulsing glow
-        SetFloat(pulse, "baseIntensity", 2.4f);
+        SetFloat(pulse, "baseIntensity", 2.4f * LightBoost);
         SetFloat(pulse, "flickerAmount", 0.8f);
         SetFloat(pulse, "speed", 2.5f);
 

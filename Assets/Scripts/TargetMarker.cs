@@ -23,7 +23,7 @@ public class TargetMarker : MonoBehaviour
         var go = new GameObject("TargetMarker");
         marker = go.transform;
         marker.rotation = Quaternion.Euler(90f, 0f, 0f);
-        sprite = go.AddComponent<SpriteRenderer>();
+        sprite = SpriteMaterial.Apply(go.AddComponent<SpriteRenderer>());
         sprite.sprite = RingSprite();
         sprite.sortingOrder = -1; // under characters, level with their shadows
         sprite.enabled = false;
@@ -31,7 +31,7 @@ public class TargetMarker : MonoBehaviour
 
         var arrowGo = new GameObject("TargetArrow");
         arrow = arrowGo.transform;
-        arrowSprite = arrowGo.AddComponent<SpriteRenderer>();
+        arrowSprite = SpriteMaterial.Apply(arrowGo.AddComponent<SpriteRenderer>());
         arrowSprite.sortingOrder = 20; // over everything: it has to be findable behind scenery
         arrowSprite.enabled = false;
         arrowGo.AddComponent<Billboard>();

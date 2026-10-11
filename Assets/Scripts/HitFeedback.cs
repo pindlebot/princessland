@@ -39,7 +39,7 @@ public static class HitFeedback
         root.AddComponent<Billboard>();
         var art = new GameObject("Art");
         art.transform.SetParent(root.transform, false);
-        var renderer = art.AddComponent<SpriteRenderer>();
+        var renderer = SpriteMaterial.Apply(art.AddComponent<SpriteRenderer>());
         renderer.sprite = sprite;
         renderer.sortingOrder = 25;
         root.AddComponent<PopRunner>().Begin(art.transform, renderer, from, to, seconds, rise);
@@ -98,7 +98,7 @@ public class VulnerabilityCue : MonoBehaviour
         var go = new GameObject("WeakSpotCue");
         cue = go.transform;
         go.AddComponent<Billboard>();
-        cueSprite = go.AddComponent<SpriteRenderer>();
+        cueSprite = SpriteMaterial.Apply(go.AddComponent<SpriteRenderer>());
         cueSprite.sortingOrder = 22;
         lastState = !isVulnerable();
     }

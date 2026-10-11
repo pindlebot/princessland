@@ -103,16 +103,11 @@ public class Health : MonoBehaviour
 
     // Brief white flash so hits are readable. A sprite (every hero and monster) is swapped for a flat white copy of itself
     // for a moment (the SpriteFlash shader); a lit 3D object glows white through its emission instead.
-    private static Material flashMaterial;
     private Material[] before;
 
     private void SetFlash(bool on)
     {
-        if (flashMaterial == null)
-        {
-            var shader = Resources.Load<Shader>("Shaders/SpriteFlash");
-            if (shader != null) flashMaterial = new Material(shader) { name = "SpriteFlash (shared)" };
-        }
+        var flashMaterial = SpriteMaterial.Flash;
         if (before == null) before = new Material[renderers.Length];
         for (int i = 0; i < renderers.Length; i++)
         {

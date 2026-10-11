@@ -95,7 +95,7 @@ public class SnowballLanes : MonoBehaviour
         for (int i = 0; i < lanes; i++)
         {
             var go = new GameObject("Snowball");
-            balls[i] = go.AddComponent<SpriteRenderer>();
+            balls[i] = SpriteMaterial.Apply(go.AddComponent<SpriteRenderer>());
             balls[i].sortingOrder = 8;
             go.AddComponent<Billboard>();
         }

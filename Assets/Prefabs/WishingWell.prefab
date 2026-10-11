@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3631890628473506285}
   - component: {fileID: 3625260340339382381}
-  - component: {fileID: 4022581304978664964}
+  - component: {fileID: 3000400057715679539}
   m_Layer: 0
   m_Name: WishingWell
   m_TagString: Untagged
@@ -56,7 +56,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2, y: 1.2, z: 1.6}
   m_Center: {x: 0, y: 0.6, z: 0}
---- !u!114 &4022581304978664964
+--- !u!114 &3000400057715679539
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -133,7 +133,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 71993a945e78548ac8729a90af31a328, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -239,7 +239,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 71993a945e78548ac8729a90af31a328, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

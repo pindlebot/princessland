@@ -60,7 +60,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 71993a945e78548ac8729a90af31a328, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502420a4bf9fa47588f60892af5832e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Billboard
---- !u!1 &7809524144215749510
+--- !u!1 &7816769984949774237
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -134,9 +134,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6194399577039476830}
-  - component: {fileID: 8522857147056051430}
-  - component: {fileID: 3698697083023556922}
+  - component: {fileID: 1161193408025121176}
+  - component: {fileID: 2407422282915191664}
+  - component: {fileID: 6231129083310711205}
   m_Layer: 0
   m_Name: Glow
   m_TagString: Untagged
@@ -144,13 +144,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6194399577039476830
+--- !u!4 &1161193408025121176
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7809524144215749510}
+  m_GameObject: {fileID: 7816769984949774237}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.6, z: -0.3}
@@ -159,18 +159,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3907972594259513828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!108 &8522857147056051430
+--- !u!108 &2407422282915191664
 Light:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7809524144215749510}
+  m_GameObject: {fileID: 7816769984949774237}
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 2
   m_Color: {r: 1, g: 0.6, b: 0.25, a: 1}
-  m_Intensity: 1.6
+  m_Intensity: 2.4
   m_Range: 3.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.802082
@@ -224,19 +224,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &3698697083023556922
+--- !u!114 &6231129083310711205
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7809524144215749510}
+  m_GameObject: {fileID: 7816769984949774237}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48724c393adf344a089352e54c96a074, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::FlickerLight
-  baseIntensity: 1.6
+  baseIntensity: 2.4
   flickerAmount: 0.48000002
   speed: 6
 --- !u!1 &7933914035949299681
@@ -298,7 +298,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 71993a945e78548ac8729a90af31a328, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -377,7 +377,7 @@ Transform:
   m_Children:
   - {fileID: 3285466760830118926}
   - {fileID: 4495110332001480543}
-  - {fileID: 6194399577039476830}
+  - {fileID: 1161193408025121176}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &5067757489983418302

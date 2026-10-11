@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // Keeps pixel art crisp while things move. Point-filtered sprites drawn at a fraction of a
 // screen pixel come out with some art pixels a screen pixel wider than others, which
@@ -9,6 +10,10 @@ using UnityEngine;
 //
 // Billboards (upright sprites) register themselves; flat sprites such as blob shadows get
 // this component.
+//
+// "Just before the camera draws" is a different event in each render pipeline: the camera's onPreCull / onPostRender in
+// the built-in pipeline, and RenderPipelineManager's begin / endCameraRendering in a scriptable one (URP). Both are
+// hooked, and only the ones the current pipeline actually raises ever fire, so the nudge happens exactly once.
 [DisallowMultipleComponent]
 public class PixelSnap : MonoBehaviour
 {
@@ -27,12 +32,17 @@ public class PixelSnap : MonoBehaviour
         {
             Camera.onPreCull += Snap;
             Camera.onPostRender += Restore;
+            RenderPipelineManager.beginCameraRendering += SnapSrp;
+            RenderPipelineManager.endCameraRendering += RestoreSrp;
             hooked = true;
         }
         if (!Registered.Contains(t)) Registered.Add(t);
     }
 
     public static void Unregister(Transform t) => Registered.Remove(t);
+
+    private static void SnapSrp(ScriptableRenderContext context, Camera cam) => Snap(cam);
+    private static void RestoreSrp(ScriptableRenderContext context, Camera cam) => Restore(cam);
 
     private static void Snap(Camera cam)
     {
@@ -43,6 +53,7 @@ public class PixelSnap : MonoBehaviour
         float unit = 2f * cam.orthographicSize / cam.pixelHeight;
         Transform view = cam.transform;
         Vector3 origin = view.position, right = view.right, up = view.up, forward = view.forward;
+        Registered.RemoveAll(t => t == null); // (a scene was unloaded under it, or something was destroyed without leaving)
         foreach (var t in Registered)
         {
             Saved.Add((t, t.localPosition));
